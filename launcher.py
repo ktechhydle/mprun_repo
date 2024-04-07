@@ -41,7 +41,7 @@ class Dialog(CTk):
 
         # Labels with links
         link1 = CTkLabel(self, text="Read the acknowledgements", font=web_link_font, cursor="hand2")
-        link1.place(x=390, y=80)
+        link1.place(x=385, y=79)
         link1.bind("<Button-1>", lambda e: self.open_link("https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing"))
 
         # Frame for other widgets
@@ -148,12 +148,9 @@ class Dialog(CTk):
 
 
     def launch_project(self):
-        win = QApplication([])
         self.app = MPRUN()
         self.app.show()
         self.set_attr()
-        win.setStyle('windowsvista')
-        sys.exit(win.exec_())
 
     def set_attr(self):
         selected_template = self.template_combo.get()
@@ -165,5 +162,7 @@ class Dialog(CTk):
 
 
 if __name__ == '__main__':
+    win = QApplication([])
     app = Dialog()
     app.mainloop()
+    sys.exit(win.exec_())
