@@ -6,14 +6,16 @@ from PIL import Image, ImageTk
 from customtkinter import *
 import tkinter as tk
 import webbrowser
+import sys
 
-class Dialog(tk.Tk):
+class Dialog(CTk):
     def __init__(self):
         super().__init__()
 
         self.title('MPRUN - Main Window')
         self.geometry("1080x600+100+75")
         self.resizable(False, False)
+        self.iconbitmap('logos and icons/MPRUN_icon.ico')
 
         self.create_ui()
 
@@ -25,21 +27,21 @@ class Dialog(tk.Tk):
         iog = Image.open('logos and icons/MPRUN_icon.png')
         ir = iog.resize((80, 76))
         image = ImageTk.PhotoImage(ir)
-        mprun_img_label = tk.Label(self, image=image)
+        mprun_img_label = CTkLabel(self, image=image, text='')
         mprun_img_label.image = image
         mprun_img_label.place(x=20, y=20)
 
         # Welcome label
-        welcome_label = tk.Label(self, text='MPRUN Community Edition', font=('Arial', 20), fg='lightgray')
+        welcome_label = CTkLabel(self, text='MPRUN Community Edition', font=('Arial', 20), text_color='lightgray')
         welcome_label.place(x=110, y=50)
 
         # Copyright label
-        copyright_label = tk.Label(self, text='Copyright © K-TECH Industries 2024, All Rights Reserved.', font=('Arial', 10), fg='lightgray')
+        copyright_label = CTkLabel(self, text='Copyright © K-TECH Industries 2024, All Rights Reserved.', font=('Arial', 10), text_color='lightgray')
         copyright_label.place(x=110, y=80)
 
         # Labels with links
         link1 = CTkLabel(self, text="Read the acknowledgements", font=web_link_font, cursor="hand2")
-        link1.place(x=390, y=75)
+        link1.place(x=390, y=80)
         link1.bind("<Button-1>", lambda e: self.open_link("https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing"))
 
         # Frame for other widgets
@@ -150,7 +152,8 @@ class Dialog(tk.Tk):
         self.app = MPRUN()
         self.app.show()
         self.set_attr()
-        win.exec_()
+        win.setStyle('windowsvista')
+        sys.exit(win.exec_())
 
     def set_attr(self):
         selected_template = self.template_combo.get()
