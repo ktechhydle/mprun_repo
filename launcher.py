@@ -138,6 +138,16 @@ class Dialog(CTk):
                                         command=lambda: self.template_combo.set(
                                             'Template 7: Tablet Size (1024 × 1366, [Medium Quality], 264 PPI'))
 
+        template_img_7 = Image.open('logos and icons/create_custom_icon.png').resize((115, 150))
+        template_img_7n = ImageTk.PhotoImage(template_img_7)
+        tablet_size_btn = CTkButton(frame2, text='Create a Custom Template',
+                                    image=template_img_7n,
+                                    compound='top',
+                                    text_color='white',
+                                    fg_color='#2B2B2B',
+                                    hover_color='#3d3d3d',
+                                    command=self.open_create_template_dialog)
+
         # Add widgets
         letter_size_btn.pack(pady=5, side='left')
         letter_sizeD_btn.pack(pady=5, side='left')
@@ -159,6 +169,57 @@ class Dialog(CTk):
 
     def open_link(self, url):
         webbrowser.open_new(url)
+
+    def open_create_template_dialog(self):
+        a = CreateTemplateDialog()
+        a.mainloop()
+
+class CreateTemplateDialog(CTk):
+    def __init__(self):
+        super().__init__()
+
+        self.title('Create Template')
+        self.iconbitmap('logos and icons/MPRUN_icon.ico')
+        self.geometry('300x300')
+        self.resizable(False, False)
+        self.attributes('-topmost', True)
+
+        self.checks = tk.IntVar(value=0)
+
+        self.create_ui()
+
+    def create_ui(self):
+        # Checkboxes
+        self.check1 = CTkCheckBox(self, checkbox_width=15, checkbox_height=15, text='Default Text Block', textvariable=self.checks)
+
+        # Entries
+        self.x_size_entry = CTkEntry(self, placeholder_text='X width (in px)', width=100)
+        self.y_size_entry = CTkEntry(self, placeholder_text='Y width (in px)', width=100)
+        self.default_text_entry = CTkEntry(self, placeholder_text='Default Text', width=100)
+
+        create_project_btn = CTkButton(self, text='Create Project', text_color='white', fg_color='#525252', hover_color='gray', command=self.create_project)
+
+        # Place widgets
+        self.x_size_entry.place(x=10, y=10)
+        self.y_size_entry.place(x=120, y=10)
+        self.check1.place(x=10, y=50)
+        self.default_text_entry.place(x=130, y=50)
+
+    def create_project(self):
+        self.app = MPRUN()
+        self.app.show()
+        self.set_attr()
+
+    def set_attr(self):
+        if self.check1.get() == 1:
+            self.app.custom_template(self.x_size_entry.get(), self.y_size_entry.get(), self.default_text_entry.get())
+
+        else:
+            self.app.custom_template(self.x_size_entry.get(), self.y_size_entry.get(), '''Run #:   
+Page #:   
+Competition:    
+Athlete:    
+Date:   ''')
 
 
 if __name__ == '__main__':

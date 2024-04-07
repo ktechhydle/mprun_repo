@@ -932,6 +932,12 @@ Date:   """)
         else:
             pass
 
+    def custom_template(self, x, y, default_text):
+        self.canvas_view.setSceneRect(0, 0, x, y)
+        self.canvas.setSceneRect(0, 0, x, y)
+        self.paper.setRect(0, 0, x, y)
+        self.paper_text.setPlainText(default_text)
+
 class CourseElementsWin(QWidget):
     def __init__(self, canvas):
         super().__init__()
