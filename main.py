@@ -15,6 +15,7 @@ class item_stack:
 
     def get(self):
         return self._value
+
 class CustomGraphicsItemGroup(QGraphicsItemGroup):
 
     def __init__(self, widget, parent=None):
@@ -64,6 +65,7 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         else:
             # Call the superclass's mouseMoveEvent to move the item as normal
             super().mouseMoveEvent(event)
+
 class EditableTextBlock(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
@@ -81,6 +83,7 @@ class EditableTextBlock(QGraphicsTextItem):
     def focusOutEvent(self, event):
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         super().focusOutEvent(event)
+
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2):
         super().__init__()
@@ -112,9 +115,8 @@ class CustomGraphicsView(QGraphicsView):
                 self.path2.moveTo(self.mapToScene(event.pos()))
                 self.setDragMode(QGraphicsView.NoDrag)
 
-                self.text = QGraphicsTextItem('An Editable Text Block')
+                self.text = EditableTextBlock('An Editable Text Block')
                 self.text.setPos(self.mapToScene(event.pos()))
-                self.text.setTextInteractionFlags(Qt.TextEditorInteraction)
                 self.text.setDefaultTextColor(QColor('black'))
                 self.text.setToolTip("Partially locked text block (This item's position is determined by the position of another element)")
 
@@ -222,6 +224,7 @@ class CustomGraphicsView(QGraphicsView):
                     self.setDragMode(QGraphicsView.RubberBandDrag)
 
         super().mouseReleaseEvent(event)
+
 class MPRUN(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -234,7 +237,6 @@ class MPRUN(QMainWindow):
         # Drawing undoing, redoing
         self.last_drawing = []
         self.drawing_history = []
-        self.polyline_item = None
 
         # File
         self.file_name = None
@@ -439,11 +441,9 @@ Shortcuts:
         lock_btn = QAction('Lock Item', self)
         lock_btn.setToolTip('''Lock Item:
         1. Locks the item position and removes moving functionality from the item attributes.
-        2. If the item is an Editable Text Block, the text will be set to a Locked Text Block.
-        
+    	
 Methods:
         - Lock items to maintain their position during the course creation process.
-        - Lock Editable Text Blocks to prevent further editing.
         
 Shortcuts: 
         Command+X (MacOS) or Control+X (Windows)''')
@@ -454,8 +454,7 @@ Shortcuts:
         unlock_btn = QAction('Unlock Item', self)
         unlock_btn.setToolTip('''Unlock Item:
         1. Unlocks the item position and adds moving functionality to the item attributes.
-        2. If the item is a Locked Text Block, the text will become editable again.
-
+		
 Methods:
         - Unlock previously locked items.
 
@@ -595,7 +594,7 @@ Date:   """)
         self.paper_text.setFont(QFont("Helvetica", 9))
         self.paper_text.setFlag(QGraphicsItem.ItemIsSelectable)
         self.paper_text.setZValue(-1)
-        self.paper_text.setToolTip(f"Partially Locked Text Block (This item's position is locked)")
+        self.paper_text.setToolTip(f"Locked Text Block (This item's position is locked)")
         self.canvas.addItem(self.paper_text)
 
     def keyPressEvent(self, event):
@@ -717,26 +716,11 @@ Date:   """)
             items.setFlag(QGraphicsItem.ItemIsMovable, False)
             items.setToolTip('Locked MPRUN Element')
 
-            # Check if the item is text
-            if isinstance(items, QGraphicsTextItem):
-                items.setTextInteractionFlags(Qt.NoTextInteraction)
-
-                # Set the object name
-                items.setToolTip(f"Locked Text Block (MPRUN Element)")
-
     def unlock_item(self):
         item = self.canvas.selectedItems()
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable)
             items.setToolTip('Free MPRUN Element')
-
-            # Check if the item is text
-            if isinstance(items, QGraphicsTextItem):
-                items.setTextInteractionFlags(Qt.TextEditorInteraction)
-
-                # Set the object name
-                items.setObjectName('Editable Text Block (MPRUN Element)')
-                items.setToolTip(f"{items.objectName()}")
 
     def insert_image(self):
         # Create Options
@@ -878,6 +862,13 @@ Date:   """)
 
             elif isinstance(items, CustomGraphicsItemGroup):
                 self.group.setToolTip('Grouped Object (Free MPRUN Element)')
+                
+            elif isinstance(items, EditableTextBlock):
+                items.setTextInteractionFlags(Qt.NoTextInteraction)
+
+                # Set an object name
+                items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+
 
             # Add items to group
             self.group.addToGroup(items)
