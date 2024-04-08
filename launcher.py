@@ -180,7 +180,7 @@ class CreateTemplateDialog(CTk):
 
         self.title('Create Template')
         self.iconbitmap('logos and icons/MPRUN_icon.ico')
-        self.geometry('220x500')
+        self.geometry('220x500+200+200')
         self.resizable(False, False)
 
         self.checks = tk.IntVar(value=0)
@@ -200,7 +200,7 @@ class CreateTemplateDialog(CTk):
         # Entries
         self.x_size_entry = CTkEntry(self, placeholder_text='X width (in px)', width=200)
         self.y_size_entry = CTkEntry(self, placeholder_text='Y width (in px)', width=200)
-        self.default_text_entry = CTkTextbox(self, width=170, height=50)
+        self.default_text_entry = CTkTextbox(self, width=180, height=50)
 
         create_project_btn = CTkButton(self, text='Create Project', text_color='white', fg_color='#525252', hover_color='gray', command=self.create_project)
 
@@ -223,12 +223,12 @@ class CreateTemplateDialog(CTk):
     def create_project(self):
         self.app = MPRUN()
         self.app.show()
-        self.destroy()
         self.set_attr()
+        self.destroy()
 
     def set_attr(self):
         if self.check1.get() == 1:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get())
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'))
 
         else:
             self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '''Run #:   
