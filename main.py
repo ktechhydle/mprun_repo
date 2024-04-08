@@ -224,6 +224,15 @@ class CustomGraphicsView(QGraphicsView):
                     self.setDragMode(QGraphicsView.RubberBandDrag)
 
         super().mouseReleaseEvent(event)
+        
+    def wheelEvent(self, event):
+        # Handle trackpad zoom events
+        if event.angleDelta().y() > 0:
+            self.scale(1.1, 1.1)
+        elif event.angleDelta().y() < 0:
+            self.scale(0.9, 0.9)
+
+        super().wheelEvent(event)
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -626,15 +635,6 @@ Date:   """)
 
         super().keyPressEvent(event)
 
-    def wheelEvent(self, event):
-        # Handle trackpad zoom events
-        if event.angleDelta().y() > 0:
-            self.canvas_view.scale(1.1, 1.1)
-        elif event.angleDelta().y() < 0:
-            self.canvas_view.scale(0.9, 0.9)
-
-        super().wheelEvent(event)
-
     def closeEvent(self, event):
         # Display a confirmation dialog
         confirmation_dialog = QMessageBox()
@@ -665,12 +665,12 @@ Date:   """)
         self.outline_color.set(self.outline_color_dialog.getColor())
 
     def launch_course_elements(self):
-        self.w = CourseElementsWin(self.canvas)
-        self.w.show()
+        self.course_elements = CourseElementsWin(self.canvas)
+        self.course_elements.show()
 
     def show_rotate_manager(self):
-        self.app = RotateManager(self.canvas)
-        self.app.show()
+        self.rotate_manger = RotateManager(self.canvas)
+        self.rotate_manger.show()
 
     def show_scale_manager(self):
         self.scale_manager = ScaleManager(self.canvas)
