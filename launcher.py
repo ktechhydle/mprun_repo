@@ -180,42 +180,58 @@ class CreateTemplateDialog(CTk):
 
         self.title('Create Template')
         self.iconbitmap('logos and icons/MPRUN_icon.ico')
-        self.geometry('300x300')
+        self.geometry('220x500')
         self.resizable(False, False)
-        self.attributes('-topmost', True)
 
         self.checks = tk.IntVar(value=0)
 
         self.create_ui()
 
     def create_ui(self):
+        # Labels
+        welcome_label = CTkLabel(self, text='Template Attributes', font=('Arial', 20))
+        width_label = CTkLabel(self, text='Width')
+        height_label = CTkLabel(self, text='Height')
+        default_text_label = CTkLabel(self, text='Default Text')
+
         # Checkboxes
-        self.check1 = CTkCheckBox(self, checkbox_width=15, checkbox_height=15, text='Default Text Block', textvariable=self.checks)
+        self.check1 = CTkCheckBox(self, checkbox_width=15, checkbox_height=15, text='', textvariable=self.checks)
 
         # Entries
-        self.x_size_entry = CTkEntry(self, placeholder_text='X width (in px)', width=100)
-        self.y_size_entry = CTkEntry(self, placeholder_text='Y width (in px)', width=100)
-        self.default_text_entry = CTkEntry(self, placeholder_text='Default Text', width=100)
+        self.x_size_entry = CTkEntry(self, placeholder_text='X width (in px)', width=200)
+        self.y_size_entry = CTkEntry(self, placeholder_text='Y width (in px)', width=200)
+        self.default_text_entry = CTkTextbox(self, width=170, height=50)
 
         create_project_btn = CTkButton(self, text='Create Project', text_color='white', fg_color='#525252', hover_color='gray', command=self.create_project)
 
         # Place widgets
-        self.x_size_entry.place(x=10, y=10)
-        self.y_size_entry.place(x=120, y=10)
-        self.check1.place(x=10, y=50)
-        self.default_text_entry.place(x=130, y=50)
+        welcome_label.place(x=10, y=5)
+        width_label.place(x=10, y=40)
+        self.x_size_entry.place(x=10, y=65)
+        height_label.place(x=10, y=100)
+        self.y_size_entry.place(x=10, y=125)
+        self.check1.place(x=10, y=170)
+        self.default_text_entry.place(x=30, y=170)
+
+        create_project_btn.place(x=10, y=235)
+
+        # Insert default values
+        self.x_size_entry.insert('end', '1920')
+        self.y_size_entry.insert('end', '1080')
+        self.default_text_entry.insert('0.0', 'This is an Editable Text Block that will be placed on the canvas during creation')
 
     def create_project(self):
         self.app = MPRUN()
         self.app.show()
+        self.destroy()
         self.set_attr()
 
     def set_attr(self):
         if self.check1.get() == 1:
-            self.app.custom_template(self.x_size_entry.get(), self.y_size_entry.get(), self.default_text_entry.get())
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get())
 
         else:
-            self.app.custom_template(self.x_size_entry.get(), self.y_size_entry.get(), '''Run #:   
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '''Run #:   
 Page #:   
 Competition:    
 Athlete:    
