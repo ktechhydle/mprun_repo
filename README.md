@@ -21,12 +21,14 @@ Use the 'Line and Label' tool to create Leader lines along your Path.
 Edit these labels to include your tricks along each part of the Path.
 Lock Element positions to prevent further editing.
 ### 4. And its that simple. 
-MPRUN can be a simple software, and a powerful software when necessary.
+> [!TIP]
+> MPRUN can be a simple software, and a powerful software when necessary.
 
-# Why MPRUN Though?
-MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
-#### Why is that important though? 
-This step is crucial to ensure athletes don't go into competitions without a plan and more of the 'Just wing it' mindset.
+> [!IMPORTANT]
+> # Why MPRUN Though?
+> MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
+> #### Why is that important though? 
+> This step is crucial to ensure athletes don't go into competitions without a plan and more of the 'Just wing it' mindset.
 
 # TL;DR
 MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and lock elements for optimal performance. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
