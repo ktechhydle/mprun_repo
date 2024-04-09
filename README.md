@@ -9,7 +9,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 
 # How It Works...
 ### 1. Setup the course:
-- Drag and drop the included "Course Elements", or import your own .SVG files.
+- Drag and drop the included "Course Elements", or import your own SVG files.
 - Scale, Rotate, or Group Elements to achieve the desired course setup.
 - Lock Element positions to prevent further editing.
 ### 2. Draw your path:
