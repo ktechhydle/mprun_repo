@@ -31,8 +31,8 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 	> That's right. You will often see things like `Editable Text Block` or `Free MPRUN Element` on the Canvas.
 - Text block tool:
 	> Adds an Editable Text Block to the Canvas
-- > [!TIP] 
-> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
+> [!TIP] 
+> - Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
 
 # Why MPRUN Though?
 MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
