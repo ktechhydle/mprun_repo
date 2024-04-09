@@ -534,7 +534,7 @@ Date:   """)
 
     def export_canvas(self, filename):
         # Create a QImage with the size of the scene
-        image = QImage(self.canvas.sceneRect().size().toSize(), QImage.Format_ARGB32)
+        image = QImage(self.paper.boundingRect().size().toSize(), QImage.Format_ARGB32)
 
         # Fill the image with transparent background
         image.fill(0)
@@ -578,8 +578,8 @@ Date:   """)
                 # Export as SVG
                 svg_generator = QSvgGenerator()
                 svg_generator.setFileName(file_path)
-                svg_generator.setSize(self.canvas.sceneRect().size().toSize())
-                svg_generator.setViewBox(self.canvas.sceneRect())
+                svg_generator.setSize(self.paper.boundingRect().size().toSize())
+                svg_generator.setViewBox(self.paper.boundingRect())
 
                 # Clear selection
                 self.canvas.clearSelection()
