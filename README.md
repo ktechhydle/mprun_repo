@@ -4,7 +4,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 
 > [!NOTE]
 > # Install
-> 1. Clone the git, and use '''pip install -requirements.txt'''
+> 1. Clone the git, and use `pip install -requirements.txt`
 > 2. Run launcher.py, and see the full app.
 
 # How It Works...
