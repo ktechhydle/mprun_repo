@@ -29,8 +29,10 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 	> Items are named according to there current state (Locked, Grouped, etc.)
 - Elements are named:
 	> That's right. You will often see things like `Editable Text Block` or `Free MPRUN Element` on the Canvas.
+- Insert tool:
+	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Text block tool:
-	> Adds an Editable Text Block to the Canvas
+	> Adds an Editable Text Block to the Canvas.
 > [!TIP] 
 > - Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
 
