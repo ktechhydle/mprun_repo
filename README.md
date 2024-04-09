@@ -30,7 +30,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 - Item management:
 	> Items are named according to there current state (Locked, Grouped, etc.)
 - Elements are named:
-	> You will often see elements named `Editable Text Block` or `Free MPRUN Element` on the Canvas ***Hover your mouse over an item to see the element name.***
+	> You will often see elements named `Editable Text Block` or `Free MPRUN Element` on the Canvas. ***Hover your mouse over an element to see the element name***
 - Insert different files:
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Export multiple file types:
