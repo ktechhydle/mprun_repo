@@ -27,8 +27,8 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 # Additional Features
 - Vector Graphics:
 	> MPRUN uses a Vector Graphics Engine (`QGraphicsScene`), making the use of SVG's a better choice.
-- Item management:
-	> Items are named according to their current state (Locked, Grouped, etc.)
+- Element management:
+	> Elements are managed according to their current state (Locked, Grouped, etc.)
 - Elements are named:
 	> You will often see elements named `Editable Text Block` or `Free MPRUN Element` on the Canvas. ***Hover your mouse over an element to see the element name.***
 - Insert different files:
