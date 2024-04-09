@@ -140,7 +140,7 @@ class Dialog(CTk):
 
         template_img_7 = Image.open('logos and icons/create_custom_icon.png').resize((115, 150))
         template_img_7n = ImageTk.PhotoImage(template_img_7)
-        tablet_size_btn = CTkButton(frame2, text='Create a Custom Template',
+        custom_size_btn = CTkButton(frame2, text='Create a Custom Template',
                                     image=template_img_7n,
                                     compound='top',
                                     text_color='white',
@@ -149,12 +149,13 @@ class Dialog(CTk):
                                     command=self.open_create_template_dialog)
 
         # Add widgets
+        custom_size_btn.pack(pady=5, side='left')
         letter_size_btn.pack(pady=5, side='left')
-        letter_sizeD_btn.pack(pady=5, side='left')
         post_card_size_btn.pack(pady=5, side='left')
-        post_card_sizeD_btn.pack(pady=5, side='left')
         phone_size_btn.pack(pady=5, side='left')
         tablet_size_btn.pack(pady=5, side='left')
+        letter_sizeD_btn.pack(pady=5, side='left')
+        post_card_sizeD_btn.pack(pady=5, side='left')
 
 
     def launch_project(self):
