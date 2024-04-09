@@ -21,14 +21,14 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 - Edit these labels to include your tricks along each part of the Path.
 - Lock Element positions to prevent further editing.
 ### 4. And its that simple. 
-> [!TIP]
+> [!IMPORTANT]
 > MPRUN can be a simple software, and a powerful software when necessary.
 
 # Additional Features
 - Item management:
 	> Items are named according to there current state (Locked, Grouped, etc.)
 - Elements are named:
-	> That's right. You will often see things like `Editable Text Blocks` or `Free MPRUN Element` on the Canvas.
+	> That's right. You will often see things like `Editable Text Block` or `Free MPRUN Element` on the Canvas.
 - Text block tool:
 	> Adds an Editable Text Block to the Canvas
 > [!TIP] 
