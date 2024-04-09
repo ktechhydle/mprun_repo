@@ -28,11 +28,11 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 - Item management:
 	> Items are named according to there current state (Locked, Grouped, etc.)
 - Elements are named:
-	> That's right. You will often see things like '''Editable Text Blocks''' or '''MPRUN Element''' on the Canvas.
+	> That's right. You will often see things like `Editable Text Blocks` or `Free MPRUN Element` on the Canvas.
 - Text block tool:
 	> Adds an Editable Text Block to the Canvas
 > [!TIP] 
-> Enable '''GSNAP''' in the action toolbar to enable grid-snapping for grouped items.
+> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
 
 # Why MPRUN Though?
 MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
