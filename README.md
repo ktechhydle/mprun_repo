@@ -49,4 +49,5 @@ This step is crucial to ensure athletes don't go into competitions without a pla
 > [!IMPORTANT]
 > MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and lock elements for optimal performance. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
 
+# Footnotes
 [^1]: This reference will be added, give me time
