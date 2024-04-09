@@ -25,12 +25,16 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 > MPRUN can be a simple software, and a powerful software when necessary.
 
 # Additional Features
+- Vector Graphics:
+	> MPRUN uses a Vector Graphics Engine, making the use of SVG's a better choice.
 - Item management:
 	> Items are named according to there current state (Locked, Grouped, etc.)
 - Elements are named:
 	> That's right. You will often see things like `Editable Text Block` or `Free MPRUN Element` on the Canvas.
 - Insert tool:
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
+- Export tool:
+	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file (beta).
 - Text block tool:
 	> Adds an Editable Text Block to the Canvas.
 > [!TIP] 
