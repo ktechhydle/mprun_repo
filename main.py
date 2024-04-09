@@ -88,6 +88,9 @@ class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2):
         super().__init__()
         self.setMouseTracking(True)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+		self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        
         self.button = button
         self.button2 = button2
         self.canvas = canvas
