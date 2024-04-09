@@ -24,14 +24,14 @@ Lock Element positions to prevent further editing.
 > [!TIP]
 > MPRUN can be a simple software, and a powerful software when necessary.
 
-> [!IMPORTANT]
-> # Why MPRUN Though?
-> MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
-> #### Why is that important though? 
-> This step is crucial to ensure athletes don't go into competitions without a plan and more of the 'Just wing it' mindset.
+# Why MPRUN Though?
+MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
+#### Why is that important though? 
+This step is crucial to ensure athletes don't go into competitions without a plan and more of the 'Just wing it' mindset.
 
 # TL;DR
-MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and lock elements for optimal performance. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
+> [!IMPORTANT]
+> MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and lock elements for optimal performance. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
 
 
 > [!NOTE]
