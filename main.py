@@ -101,10 +101,6 @@ class MPRUN(QMainWindow):
         self.gsnap_label.setStyleSheet("font-size: 10px;")
         self.gsnap_check_btn = QCheckBox(self)
 
-
-
-
-
         #----toolbar buttons----#
 
         #Image
