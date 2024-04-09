@@ -2,6 +2,10 @@
 
 With MPRUN, you can setup custom courses matching the competition enviroment, and print out these setups to achieve best competition performance.
 
+# Install
+1. Clone the git, and use ''pip install -requirements.txt''
+2. Run launcher.py, and see the full app.
+
 # How It Works...
 ### 1. Setup the course:
 Drag and drop the included "Course Elements", or import your own .SVG files.
