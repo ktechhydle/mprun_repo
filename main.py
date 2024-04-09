@@ -123,15 +123,7 @@ class MPRUN(QMainWindow):
         # Path draw button
         self.path_btn = QAction("Path", self)
         self.path_btn.setCheckable(True)
-        self.path_btn.setToolTip('''Path Draw:
-        1. Creates a line (path) wherever drawn.
-
-Methods:
-        - Draw the path or line taken on the course for your run.
-        - Draw course features.
-        - Draw anything!
-                            
-Shortcut:
+        self.path_btn.setToolTip('''Shortcut:
         Key-L''')
         self.path_btn.setShortcut(QKeySequence('L'))
         self.path_btn.triggered.connect(self.path_btn.setChecked)  # Connect to method to toggle path drawing
@@ -139,155 +131,77 @@ Shortcut:
         # Label draw button
         self.label_btn = QAction("Line and Label", self)
         self.label_btn.setCheckable(True)
-        self.label_btn.setToolTip('''Line and Label:
-                1. Creates a leader line (line) wherever drawn.
-                2. Creates an Editable Text Element at the end of the line.
-
-        Methods:
-                - Label tricks along paths.
-                - Label course elements.
-
-        Shortcut:
-                Key-A''')
+        self.label_btn.setToolTip('''Shortcut:
+        Key-A''')
         self.label_btn.setShortcut(QKeySequence('A'))
         self.label_btn.triggered.connect(self.label_btn.setChecked)  # Connect to method to toggle path drawing
 
         # Add Text Button
         add_text_btn = QAction('Text', self)
-        add_text_btn.setToolTip('''Text Tool:
-        1. Inserts an Editable Text Block on the canvas.
-        2. Sets the text color to the chosen stroke color.
-        
-Methods:
-        - Create labels for paths.
-        - Add text to the scene for anything!
-        
-Shortcuts:
+        add_text_btn.setToolTip('''Shortcuts:
         Command+T (MacOS) or Control+T (Windows)''')
         add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
         add_text_btn.triggered.connect(self.use_text)
 
         # Erase Button
         erase_btn = QAction('Erase', self)
-        erase_btn.setToolTip('''Erase Tool:
-                        1. Activates the Path Tool, and sets the color to white.
-
-                Methods:
-                        - Draw white strokes to erase items.
-                        - Draw white strokes to add detail to items.
-
-                Shortcut:
-                        Key-E''')
+        erase_btn.setToolTip('''Shortcut:
+        Key-E''')
         erase_btn.setShortcut(QKeySequence('E'))
         erase_btn.triggered.connect(self.use_erase)
 
         # Set Layer Button
         layer_set_btn = QAction('Set Layer', self)
-        layer_set_btn.setToolTip('''Set Layer:
-        1. Sets the selected item to the chosen layer.
-        
-Methods:
-        - Set layers for various objects to keep items in order
-        - Create custom course elements by setting layers for various geometric items.
-        
-Shortcuts:
+        layer_set_btn.setToolTip('''Shortcuts:
         Command+L (MacOS) or Control+L (Windows)''')
         layer_set_btn.setShortcut(QKeySequence('Ctrl+L'))
         layer_set_btn.triggered.connect(self.set_layer)
 
         # Rotate Manager Button
         rotate_btn = QAction('Rotate', self)
-        rotate_btn.setToolTip('''Rotate Manager:
-        1. Launches the Rotate Manager.
-        2. Rotates selected items to the input amount.
-        
-Methods:
-        - Rotate items to create accurate course setups
-        - Rotate labels to fit text to odd angles.
-        
-Shortcuts:
+        rotate_btn.setToolTip('''Shortcuts:
         Command+3 (MacOS) or Control+3 (Windows), or Key-R''')
         rotate_btn.setShortcut(QKeySequence('Ctrl+3'))
         rotate_btn.triggered.connect(self.show_rotate_manager)
 
         # Scale Manager Button
         scale_btn = QAction('Scale', self)
-        scale_btn.setToolTip('''Scale Manager:
-                1. Launches the Scale Manager.
-                2. Scales selected items to the input amount.
-
-        Methods:
-                - Scale course elements to desired sizes.
-                - Scale anything!
-
-        Shortcuts:
-                Command+4 (MacOS) or Control+4 (Windows), or Key-S''')
+        scale_btn.setToolTip('''Shortcuts:
+        Command+4 (MacOS) or Control+4 (Windows), or Key-S''')
         scale_btn.setShortcut(QKeySequence('Ctrl+4'))
         scale_btn.triggered.connect(self.show_scale_manager)
 
         # Lock Item Button
         lock_btn = QAction('Lock Item', self)
-        lock_btn.setToolTip('''Lock Item:
-        1. Locks the item position and removes moving functionality from the item attributes.
-    	
-Methods:
-        - Lock items to maintain their position during the course creation process.
-        
-Shortcuts: 
+        lock_btn.setToolTip('''Shortcuts: 
         Command+X (MacOS) or Control+X (Windows)''')
         lock_btn.setShortcut(QKeySequence('Ctrl+X'))
         lock_btn.triggered.connect(self.lock_item)
 
         # Unlock Item Button
         unlock_btn = QAction('Unlock Item', self)
-        unlock_btn.setToolTip('''Unlock Item:
-        1. Unlocks the item position and adds moving functionality to the item attributes.
-		
-Methods:
-        - Unlock previously locked items.
-
-Shortcuts: 
+        unlock_btn.setToolTip('''Shortcuts: 
         Command+B (MacOS) or Control+B (Windows)''')
         unlock_btn.setShortcut(QKeySequence('Ctrl+B'))
         unlock_btn.triggered.connect(self.unlock_item)
 
         # Create Group Button
         group_create_btn = QAction('Group Create', self)
-        group_create_btn.setToolTip('''Group Create:
-        1. Combines all selected items in to one group.
-        2. Turns the group into one draggable and selectable item.
-        3. Allows you to enable Group Snapping (GSNAP) to move the item at a grid based level.
-        
-Methods:
-        - Create course elements by grouping various geometric items.
-        - Group paths/lines, or any vector shapes to create anything!
-        
-Shortcut: 
+        group_create_btn.setToolTip('''Shortcut: 
         Key-G''')
         group_create_btn.setShortcut(QKeySequence('G'))
         group_create_btn.triggered.connect(self.create_group)
 
         # Insert Button
         insert_btn = QAction('Insert', self)
-        insert_btn.setToolTip('''Insert Tool:
-        1. Inserts a selected image file onto the canvas.
-
-Methods: 
-        - Insert images for course elements.
-        - Insert custom logos, designs, or anything else to decorate before export.
-        
-Shortcut:
+        insert_btn.setToolTip('''Shortcut:
         Key-I''')
         insert_btn.setShortcut(QKeySequence('I'))
         insert_btn.triggered.connect(self.insert_image)
 
         # Export Button
         export_btn = QAction('Export', self)
-        export_btn.setToolTip('''Export Tool:
-        1. Asks for a file name and file type.
-        2. Exports the scene as the file name and type.
-        
-Shortcuts:
+        export_btn.setToolTip('''Shortcuts:
         Command+E (MacOS) or Control+E (Windows)''')
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
         export_btn.triggered.connect(self.export)
