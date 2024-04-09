@@ -41,10 +41,12 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 > > Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
 
 # Why MPRUN Though?
-[^1]: MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
-  #### Why is that important though? 
-  This step is crucial to ensure athletes don't go into competitions without a plan and a 'just wing it' mindset.
+MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
+#### Why is that important though? 
+This step is crucial to ensure athletes don't go into competitions without a plan and a 'just wing it' mindset.
 
 # TL;DR
 > [!IMPORTANT]
 > MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and lock elements for optimal performance. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
+
+[^1]: This reference will be added, give me time
