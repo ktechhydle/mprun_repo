@@ -150,13 +150,12 @@ class Dialog(CTk):
 
         # Add widgets
         custom_size_btn.pack(pady=5, side='left')
-        letter_size_btn.pack(pady=5, side='left')
-        post_card_size_btn.pack(pady=5, side='left')
-        phone_size_btn.pack(pady=5, side='left')
-        tablet_size_btn.pack(pady=5, side='left')
         letter_sizeD_btn.pack(pady=5, side='left')
         post_card_sizeD_btn.pack(pady=5, side='left')
-
+        phone_size_btn.pack(pady=5, side='left')
+        tablet_size_btn.pack(pady=5, side='left')
+        letter_size_btn.pack(pady=5, side='left')
+        post_card_size_btn.pack(pady=5, side='left')
 
     def launch_project(self):
         self.app = MPRUN()
