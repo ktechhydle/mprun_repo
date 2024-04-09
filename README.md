@@ -1,6 +1,6 @@
 # Introducing MPRUN, the ultimate snowboard and ski competion run planning software.
 
-With MPRUN, you can setup custom courses matching the competition enviroment, and print out these setups to achieve best competition performance.
+With MPRUN, you can setup custom courses matching the competition enviroment, and print out these setups to achieve best competition performance[^1]
 
 > [!NOTE]
 > # Install
@@ -30,7 +30,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 - Item management:
 	> Items are named according to there current state (Locked, Grouped, etc.)
 - Elements are named:
-	> You will often see elements named `Editable Text Block` or `Free MPRUN Element` on the Canvas. ***Hover your mouse over an element to see the element name***
+	> You will often see elements named `Editable Text Block` or `Free MPRUN Element` on the Canvas. ***Hover your mouse over an element to see the element name.***
 - Insert different files:
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Export multiple file types:
@@ -40,7 +40,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 > [!TIP] 
 > > Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
 
-# Why MPRUN Though?
+[^1]: # Why MPRUN Though?
 MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
 #### Why is that important though? 
 This step is crucial to ensure athletes don't go into competitions without a plan and a 'just wing it' mindset.
