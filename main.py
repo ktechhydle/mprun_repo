@@ -89,7 +89,6 @@ class CustomGraphicsView(QGraphicsView):
         super().__init__()
         self.setMouseTracking(True)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         
         self.button = button
         self.button2 = button2
@@ -556,6 +555,7 @@ Shortcuts:
     def create_canvas(self):
         # Canvas, canvas color
         self.canvas = QGraphicsScene()
+        self.canvas.setSceneRect(0, 0, 1000, 700)
         brush1 = QBrush(QColor('#545454'))
         self.canvas.setBackgroundBrush(brush1)
 
