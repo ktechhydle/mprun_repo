@@ -25,8 +25,8 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 > MPRUN can be a simple software, and a powerful software when necessary.
 
 # Additional Features
-- Text block tool
-	- Adds an Editable Text Block to the Canvas
+- Text block tool:
+	> Adds an Editable Text Block to the Canvas
 
 # Why MPRUN Though?
 MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
