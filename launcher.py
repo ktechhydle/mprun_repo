@@ -41,7 +41,7 @@ class Dialog(CTk):
 
         # Labels with links
         link1 = CTkLabel(self, text="Read the acknowledgements", font=web_link_font, cursor="hand2")
-        link1.place(x=385, y=79)
+        link1.place(x=368, y=79)
         link1.bind("<Button-1>", lambda e: self.open_link("https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing"))
 
         # Frame for other widgets
@@ -192,7 +192,6 @@ class CreateTemplateDialog(CTk):
         welcome_label = CTkLabel(self, text='Template Attributes', font=('Arial', 20))
         width_label = CTkLabel(self, text='Width')
         height_label = CTkLabel(self, text='Height')
-        default_text_label = CTkLabel(self, text='Default Text')
 
         # Checkboxes
         self.check1 = CTkCheckBox(self, checkbox_width=15, checkbox_height=15, text='', textvariable=self.checks)
