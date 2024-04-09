@@ -332,7 +332,6 @@ Shortcuts:
     def create_canvas(self):
         # Canvas, canvas color
         self.canvas = QGraphicsScene()
-        self.canvas.setSceneRect(0, 0, 1000, 700)
         brush1 = QBrush(QColor('#545454'))
         self.canvas.setBackgroundBrush(brush1)
 
