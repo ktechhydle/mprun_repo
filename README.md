@@ -9,17 +9,17 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 
 # How It Works...
 ### 1. Setup the course:
-Drag and drop the included "Course Elements", or import your own .SVG files.
-Scale, Rotate, or Group Elements to achieve the desired course setup.
-Lock Element positions to prevent further editing.
+- Drag and drop the included "Course Elements", or import your own .SVG files.
+- Scale, Rotate, or Group Elements to achieve the desired course setup.
+- Lock Element positions to prevent further editing.
 ### 2. Draw your path:
-Use the 'Path' tool to draw your line along the course.
-The Path colors and stroke styles can be changed for any reason you find necessary.
-Lock the Path position to prevent further editing.
+- Use the 'Path' tool to draw your line along the course.
+- The Path colors and stroke styles can be changed for any reason you find necessary.
+- Lock the Path position to prevent further editing.
 ### 3. Label your path:
-Use the 'Line and Label' tool to create Leader lines along your Path.
-Edit these labels to include your tricks along each part of the Path.
-Lock Element positions to prevent further editing.
+- Use the 'Line and Label' tool to create Leader lines along your Path.
+- Edit these labels to include your tricks along each part of the Path.
+- Lock Element positions to prevent further editing.
 ### 4. And its that simple. 
 > [!TIP]
 > MPRUN can be a simple software, and a powerful software when necessary.
