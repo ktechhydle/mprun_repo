@@ -1,11 +1,12 @@
 # Introducing MPRUN, the ultimate snowboard and ski competion run planning software.
 
-With MPRUN, you can setup custom courses matching the competition enviroment, and print out these setups to achieve best competition performance[^1]
+With MPRUN, you can setup custom courses matching the competition enviroment, and print out these setups to achieve best competition performance and communication between coaches and athletes[^1]
 
 > [!NOTE]
 > # Install
 > 1. Clone the git, and use `pip install -requirements.txt`
 > 2. Run launcher.py, and see the full app.
+> 3. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it.***](license.txt)
 
 # How It Works...
 ### 1. Setup the course:
@@ -40,7 +41,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 - Export multiple file types:
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file (beta).
 - Add text blocks:
-	> Add Editable Text Block's on to the Canvas.
+	> Add `Editable Text Block`'s on to the Canvas.
 > [!TIP]
 > - Snap-to-grid functionality:
 > 	> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
@@ -48,11 +49,11 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 # Why MPRUN Though?
 MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
 #### Why is that important though? 
-This step is crucial to ensure athletes don't go into competitions without a plan and a 'just wing it' mindset.
+This is important because it ensures athletes don't go into competitions without a plan and a 'just wing it' mindset.
 
 # TL;DR
 > [!IMPORTANT]
 > MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and lock elements for optimal performance. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
 
-# Final Info
+# For More Info,
 [^1]: Read the acknowledgments at https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit

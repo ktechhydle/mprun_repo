@@ -74,6 +74,10 @@ class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2):
         super().__init__()
         self.setMouseTracking(True)
+        self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         
         self.button = button
         self.button2 = button2
@@ -220,3 +224,17 @@ class CustomGraphicsView(QGraphicsView):
             self.scale(0.9, 0.9)
 
         super().wheelEvent(event)
+        
+    def fitInView(self, scale=True):
+        rect = QRectF(self.canvas.rect())
+        if not rect.isNull():
+            self.setSceneRect(rect)
+            unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
+            self.scale(1 / unity.width(), 1 / unity.height())
+            viewrect = self.viewport().rect()
+            scenerect = self.transform().mapRect(rect)
+            factor = min(viewrect.width() / scenerect.width(), viewrect.height() / scenerect.height())
+            self.scale(factor, factor)
+        
+    def set_grid_size(self, size):
+        self.block_size = size

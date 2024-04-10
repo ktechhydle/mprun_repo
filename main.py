@@ -254,13 +254,11 @@ class MPRUN(QMainWindow):
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
-
+        
+		# Set flags for view
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
-        self.canvas_view.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.canvas_view.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
         self.stroke_size_spin.valueChanged.connect(lambda: self.canvas_view.update_pen(
@@ -275,7 +273,6 @@ class MPRUN(QMainWindow):
                 QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
         self.canvas_view.setScene(self.canvas)
-        self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.use_select()
         self.setCentralWidget(self.canvas_view)
 
@@ -335,7 +332,7 @@ Date:   """)
         # Display a confirmation dialog
         confirmation_dialog = QMessageBox()
         confirmation_dialog.setIcon(QMessageBox.Warning)
-        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy all progress)")
+        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress)")
         confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         confirmation_dialog.setDefaultButton(QMessageBox.No)
 
@@ -619,9 +616,8 @@ Date:   """)
         else:
             pass
 
-    def custom_template(self, x, y, default_text):
-        self.canvas_view.setSceneRect(0, 0, x, y)
-        self.canvas.setSceneRect(0, 0, x, y)
+    def custom_template(self, x, y, default_text, grid_size):
+        self.canvas_view.set_grid_size(grid_size)
         self.paper.setRect(0, 0, x, y)
         self.paper_text.setPlainText(default_text)
 
