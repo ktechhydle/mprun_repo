@@ -81,7 +81,7 @@ class CustomGraphicsView(QGraphicsView):
         self.temp_path_item = None
         self.pen = None
         
-        self.fitInView()
+        self.fitInView(self.canvas.itemsBoundingRect())
 
     def update_pen(self, pen):
         self.pen = pen
@@ -140,6 +140,9 @@ class CustomGraphicsView(QGraphicsView):
             if event.button() == Qt.LeftButton:
                 self.path2.lineTo(self.mapToScene(event.pos()))
                 self.canvas.update()
+                
+        else:
+            self.fitInView(self.canvas.itemsBoundingRect())
 
         super().mouseMoveEvent(event)
 
