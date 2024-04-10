@@ -75,6 +75,7 @@ class CustomGraphicsView(QGraphicsView):
         super().__init__()
         self.setMouseTracking(True)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
         
         self.button = button
         self.button2 = button2
