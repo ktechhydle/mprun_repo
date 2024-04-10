@@ -246,6 +246,7 @@ class MPRUN(QMainWindow):
     def create_canvas(self):
         # Canvas, canvas color
         self.canvas = QGraphicsScene()
+        self.canvas.setSceneRect(0, 0, 6000, 6000)
         brush1 = QBrush(QColor('#545454'))
         self.canvas.setBackgroundBrush(brush1)
 
