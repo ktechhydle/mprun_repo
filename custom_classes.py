@@ -80,7 +80,7 @@ class CustomGraphicsView(QGraphicsView):
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
-		self.lp = None
+        self.lp = None
 
     def update_pen(self, pen):
         self.pen = pen
