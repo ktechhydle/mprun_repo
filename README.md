@@ -6,7 +6,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 > # Install
 > 1. Clone the git, and use `pip install -requirements.txt`
 > 2. Run launcher.py, and see the full app.
-> 3. MPRUN is licensed under the GNU General Public Licence v3.0, [***If you are not familiar with this license please read it***](license.txt)
+> 3. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it.***](license.txt)
 
 # How It Works...
 ### 1. Setup the course:
