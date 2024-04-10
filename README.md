@@ -57,4 +57,4 @@ This step is crucial to ensure athletes don't go into competitions without a pla
 
 # Final Info
 [^1]: Read the acknowledgments at https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit
-[^2]: [LICENCE](README.md)
+[^2]: [LICENCE](licence.txt)
