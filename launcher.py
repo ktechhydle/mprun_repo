@@ -229,10 +229,10 @@ class CreateTemplateDialog(CTk):
 
     def set_attr(self):
         if self.check1.get() == 1:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'))
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'), 10)
 
         else:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '')
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '', 10)
 
 
 if __name__ == '__main__':
