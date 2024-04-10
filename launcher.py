@@ -194,6 +194,7 @@ class CreateTemplateDialog(CTk):
         width_label = CTkLabel(self, text='Width')
         height_label = CTkLabel(self, text='Height')
         default_text_label = CTkLabel(self, text='Default Text')
+        gsnap_grid_size_label = CTkLabel(self, text='GSNAP Grid Size')
 
         # Checkboxes
         self.check1 = CTkCheckBox(self, checkbox_width=15, checkbox_height=15, text='', textvariable=self.checks)
@@ -202,6 +203,7 @@ class CreateTemplateDialog(CTk):
         self.x_size_entry = CTkEntry(self, placeholder_text='X width (in px)', width=200)
         self.y_size_entry = CTkEntry(self, placeholder_text='Y width (in px)', width=200)
         self.default_text_entry = CTkTextbox(self, width=180, height=50)
+        self.grid_size_entry = CTkEntry(self, placeholder_text='Grid size (in px)', width=200)
 
         create_project_btn = CTkButton(self, text='Create Project', text_color='white', fg_color='#525252', hover_color='gray', command=self.create_project)
 
@@ -213,13 +215,16 @@ class CreateTemplateDialog(CTk):
         self.y_size_entry.place(x=10, y=125)
         self.check1.place(x=10, y=170)
         self.default_text_entry.place(x=30, y=170)
+        self.gsnap_grid_size_label.place(x=10, y=240)
+        self.grid_size_entry.place(x=10, y=265)
 
-        create_project_btn.place(x=10, y=235)
+        create_project_btn.place(x=10, y=400)
 
         # Insert default values
         self.x_size_entry.insert('end', '1920')
         self.y_size_entry.insert('end', '1080')
         self.default_text_entry.insert('0.0', 'This is an Editable Text Block that will be placed on the canvas during creation')
+        self.grid_size_entry.insert('end', '10')
 
     def create_project(self):
         self.app = MPRUN()
@@ -229,10 +234,10 @@ class CreateTemplateDialog(CTk):
 
     def set_attr(self):
         if self.check1.get() == 1:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'), 10)
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'), int(self.grid_size_entry.get()))
 
         else:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '', 10)
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '', int(self.grid_size_entry.get()))
 
 
 if __name__ == '__main__':
