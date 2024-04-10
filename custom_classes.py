@@ -75,6 +75,14 @@ class CustomGraphicsView(QGraphicsView):
         super().__init__()
         self.setMouseTracking(True)
         
+        # Allow scrolling past the scroll regions
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        
+        # Set the maximum range of the scroll bars to allow scrolling past the scene rect
+        self.horizontalScrollBar().setRange(0, 10000)
+        self.verticalScrollBar().setRange(0, 10000)
+        
         self.button = button
         self.button2 = button2
         self.canvas = canvas
