@@ -256,6 +256,8 @@ class MPRUN(QMainWindow):
         data2 = self.stroke_pencap_combo.itemData(index2)
 
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
+        self.canvas_view.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
         self.canvas_view.setSceneRect(-6000, -6000, 6000, 6000)
 
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
