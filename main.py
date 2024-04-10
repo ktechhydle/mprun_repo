@@ -256,7 +256,6 @@ class MPRUN(QMainWindow):
         data2 = self.stroke_pencap_combo.itemData(index2)
 
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
-        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
