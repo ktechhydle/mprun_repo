@@ -63,7 +63,8 @@ class Dialog(CTk):
                   'Template 4: Phone Size (1080 x 1920, [High Quality])': 4,
                        'Template 5: Postcard Size (591 x 399, [Low Quality])': 5,
                        'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality])': 6,
-                       'Template 7: Tablet Size (1024 × 1366, [Medium Quality])': 7}
+                       'Template 7: Tablet Size (1024 × 1366, [Medium Quality])': 7,
+                    'Template 8: Webview size (1920 x 1080, [High Quality])': 8}
 
         self.template_combo = CTkComboBox(frame, width=500, values=list(self.values.keys()))
         self.template_combo.place(x=180, y=40)
@@ -156,7 +157,6 @@ class Dialog(CTk):
         tablet_size_btn.pack(pady=5, side='left')
         letter_sizeD_btn.pack(pady=5, side='left')
         post_card_sizeD_btn.pack(pady=5, side='left')
-        
         
     def launch_project(self):
         self.app = MPRUN()
