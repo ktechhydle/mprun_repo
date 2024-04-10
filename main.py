@@ -617,9 +617,8 @@ Date:   """)
         else:
             pass
 
-    def custom_template(self, x, y, default_text):
-        self.canvas_view.setSceneRect(0, 0, x, y)
-        self.canvas.setSceneRect(0, 0, x, y)
+    def custom_template(self, x, y, default_text, grid_size):
+        self.canvas_view.set_grid_size(grid_size)
         self.paper.setRect(0, 0, x, y)
         self.paper_text.setPlainText(default_text)
 
