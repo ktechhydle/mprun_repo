@@ -225,16 +225,5 @@ class CustomGraphicsView(QGraphicsView):
 
         super().wheelEvent(event)
         
-    def fitInView(self, scale=True):
-        rect = QRectF(self.canvas.rect())
-        if not rect.isNull():
-            self.setSceneRect(rect)
-            unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
-            self.scale(1 / unity.width(), 1 / unity.height())
-            viewrect = self.viewport().rect()
-            scenerect = self.transform().mapRect(rect)
-            factor = min(viewrect.width() / scenerect.width(), viewrect.height() / scenerect.height())
-            self.scale(factor, factor)
-        
     def set_grid_size(self, size):
         self.block_size = size
