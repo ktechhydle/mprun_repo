@@ -49,7 +49,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 # Why MPRUN Though?
 MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes.
 #### Why is that important though? 
-This step is crucial to ensure athletes don't go into competitions without a plan and a 'just wing it' mindset.
+This is important because it ensures athletes don't go into competitions without a plan and a 'just wing it' mindset.
 
 # TL;DR
 > [!IMPORTANT]
