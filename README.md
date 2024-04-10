@@ -40,7 +40,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 - Export multiple file types:
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file (beta).
 - Add text blocks:
-	> Add Editable Text Block's on to the Canvas.
+	> Add `Editable Text Block`'s on to the Canvas.
 > [!TIP]
 > - Snap-to-grid functionality:
 > 	> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
