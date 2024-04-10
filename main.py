@@ -254,14 +254,11 @@ class MPRUN(QMainWindow):
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
-
+        
+		# Set flags for view
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
-        self.canvas_view.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.canvas_view.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
-
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
         self.stroke_size_spin.valueChanged.connect(lambda: self.canvas_view.update_pen(
