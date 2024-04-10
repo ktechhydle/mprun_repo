@@ -74,21 +74,16 @@ class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2):
         super().__init__()
         self.setMouseTracking(True)
-        
-        # Allow scrolling past the scroll regions
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        
-        # Set the maximum range of the scroll bars to allow scrolling past the scene rect
-        self.horizontalScrollBar().setRange(0, 10000)
-        self.verticalScrollBar().setRange(0, 10000)
+        self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         
         self.button = button
         self.button2 = button2
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
-        self.lp = None
 
     def update_pen(self, pen):
         self.pen = pen
@@ -121,9 +116,6 @@ class CustomGraphicsView(QGraphicsView):
                 self.rect.setPos(self.mapToScene(event.pos()))
 
                 self.canvas.update()
-                
-        elif event.buttons() == Qt.MiddleButton:
-            self.lp = event.pos()
 
         super().mousePressEvent(event)
 
@@ -150,13 +142,6 @@ class CustomGraphicsView(QGraphicsView):
             if event.button() == Qt.LeftButton:
                 self.path2.lineTo(self.mapToScene(event.pos()))
                 self.canvas.update()
-                
-        elif self.lp is not None:
-            if event.buttons() == Qt.MiddleButton:
-            	offset = event.pos() - self.lp
-            	self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - offset.x())
-            	self.verticalScrollBar().setValue(self.verticalScrollBar().value() - offset.y())
-            	self.lp = event.pos()
 
         super().mouseMoveEvent(event)
 
@@ -239,6 +224,17 @@ class CustomGraphicsView(QGraphicsView):
             self.scale(0.9, 0.9)
 
         super().wheelEvent(event)
+        
+    def fitInView(self, scale=True):
+        rect = QRectF(self.canvas.rect())
+        if not rect.isNull():
+            self.setSceneRect(rect)
+            unity = self.transform().mapRect(QRectF(0, 0, 1, 1))
+            self.scale(1 / unity.width(), 1 / unity.height())
+            viewrect = self.viewport().rect()
+            scenerect = self.transform().mapRect(rect)
+            factor = min(viewrect.width() / scenerect.width(), viewrect.height() / scenerect.height())
+            self.scale(factor, factor)
         
     def set_grid_size(self, size):
         self.block_size = size
