@@ -57,13 +57,13 @@ class Dialog(CTk):
         create_project_btn.place(x=20, y=40)
 
         # Template dropdown
-        self.values = {'Template 1: Default (1000 x 700, [Medium Quality], 100 PPI)': 1,
-                  'Template 2: Paper Size (828 x 621, [Low Quality], 72 PPI)': 2,
-                  'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality], 300 PPI)': 3,
-                  'Template 4: Phone Size (1080 x 1920, [High Quality], 300 PPI)': 4,
-                       'Template 5: Postcard Size (591 x 399, [Low Quality], 96 PPI)': 5,
-                       'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality], 300 PPI)': 6,
-                       'Template 7: Tablet Size (1024 × 1366, [Medium Quality], 264 PPI': 7}
+        self.values = {'Template 1: Default (1000 x 700, [Medium Quality])': 1,
+                  'Template 2: Paper Size (828 x 621, [Low Quality])': 2,
+                  'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality])': 3,
+                  'Template 4: Phone Size (1080 x 1920, [High Quality])': 4,
+                       'Template 5: Postcard Size (591 x 399, [Low Quality])': 5,
+                       'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality])': 6,
+                       'Template 7: Tablet Size (1024 × 1366, [Medium Quality])': 7}
 
         self.template_combo = CTkComboBox(frame, width=500, values=list(self.values.keys()))
         self.template_combo.place(x=180, y=40)
@@ -81,7 +81,7 @@ class Dialog(CTk):
                                   text_color='white',
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
-                                  command=lambda: self.template_combo.set('Template 2: Paper Size (828 x 621, [Low Quality], 72 PPI)'))
+                                  command=lambda: self.template_combo.set('Template 2: Paper Size (828 x 621, [Low Quality])'))
 
         template_img_2 = Image.open('logos and icons/detailed_letter_size_icon.png').resize((115, 150))
         template_img_2n = ImageTk.PhotoImage(template_img_2)
@@ -92,7 +92,7 @@ class Dialog(CTk):
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set(
-                                      'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality], 300 PPI)'))
+                                      'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality])'))
 
         template_img_3 = Image.open('logos and icons/phone_icon.png').resize((115, 150))
         template_img_3n = ImageTk.PhotoImage(template_img_3)
@@ -103,7 +103,7 @@ class Dialog(CTk):
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set(
-                                      'Template 4: Phone Size (1080 x 1920, [High Quality], 300 PPI)'))
+                                      'Template 4: Phone Size (1080 x 1920, [High Quality])'))
 
         template_img_4 = Image.open('logos and icons/post_card_icon.png').resize((115, 150))
         template_img_4n = ImageTk.PhotoImage(template_img_4)
@@ -114,7 +114,7 @@ class Dialog(CTk):
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set(
-                                      'Template 5: Postcard Size (591 x 399, [Low Quality], 96 PPI)'))
+                                      'Template 5: Postcard Size (591 x 399, [Low Quality])'))
 
         template_img_5 = Image.open('logos and icons/detailed_post_card_icon.png').resize((115, 150))
         template_img_5n = ImageTk.PhotoImage(template_img_5)
@@ -125,7 +125,7 @@ class Dialog(CTk):
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set(
-                                      'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality], 300 PPI)'))
+                                      'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality])'))
 
         template_img_6 = Image.open('logos and icons/ipad_icon.png').resize((115, 150))
         template_img_6n = ImageTk.PhotoImage(template_img_6)
@@ -136,7 +136,7 @@ class Dialog(CTk):
                                         fg_color='#2B2B2B',
                                         hover_color='#3d3d3d',
                                         command=lambda: self.template_combo.set(
-                                            'Template 7: Tablet Size (1024 × 1366, [Medium Quality], 264 PPI'))
+                                            'Template 7: Tablet Size (1024 × 1366, [Medium Quality])'))
 
         template_img_7 = Image.open('logos and icons/create_custom_icon.png').resize((115, 150))
         template_img_7n = ImageTk.PhotoImage(template_img_7)
