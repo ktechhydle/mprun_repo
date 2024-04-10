@@ -6,7 +6,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 > # Install
 > 1. Clone the git, and use `pip install -requirements.txt`
 > 2. Run launcher.py, and see the full app.
-> 3. MPRUN is licensed under the GNU General Public Licence v3.0, ***if you are not familiar with this license please read it***[^2]
+> 3. MPRUN is licensed under the GNU General Public Licence v3.0, [***If you are not familiar with this license please read it***](license.txt)
 
 # How It Works...
 ### 1. Setup the course:
@@ -57,4 +57,3 @@ This step is crucial to ensure athletes don't go into competitions without a pla
 
 # Final Info
 [^1]: Read the acknowledgments at https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit
-[^2]: [LICENSE](license.txt)
