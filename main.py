@@ -246,7 +246,6 @@ class MPRUN(QMainWindow):
     def create_canvas(self):
         # Canvas, canvas color
         self.canvas = QGraphicsScene()
-        self.canvas.setSceneRect(0, 0, 6000, 6000)
         brush1 = QBrush(QColor('#545454'))
         self.canvas.setBackgroundBrush(brush1)
 
@@ -257,6 +256,7 @@ class MPRUN(QMainWindow):
         data2 = self.stroke_pencap_combo.itemData(index2)
 
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
+        self.canvas_view.setSceneRect(0, 0, 6000, 6000)
 
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
