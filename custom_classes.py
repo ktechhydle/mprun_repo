@@ -231,3 +231,6 @@ class CustomGraphicsView(QGraphicsView):
             self.scale(0.9, 0.9)
 
         super().wheelEvent(event)
+        
+    def set_grid_size(self, size):
+        self.block_size = size
