@@ -80,8 +80,7 @@ class CustomGraphicsView(QGraphicsView):
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
-        
-        self.fitInView(self.canvas.itemsBoundingRect())
+		self.lp = None
 
     def update_pen(self, pen):
         self.pen = pen
@@ -114,6 +113,9 @@ class CustomGraphicsView(QGraphicsView):
                 self.rect.setPos(self.mapToScene(event.pos()))
 
                 self.canvas.update()
+                
+        elif event.buttons() == Qt.MiddleButton:
+            self.lp = event.pos()
 
         super().mousePressEvent(event)
 
@@ -141,8 +143,12 @@ class CustomGraphicsView(QGraphicsView):
                 self.path2.lineTo(self.mapToScene(event.pos()))
                 self.canvas.update()
                 
-        else:
-            self.fitInView(self.canvas.itemsBoundingRect())
+        elif self.lp is not None:
+            if event.buttons() == Qt.MiddleButton:
+            	offset = event.pos() - self.lp
+            	self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - offset.x())
+            	self.verticalScrollBar().setValue(self.verticalScrollBar().value() - offset.y())
+            	self.lp = event.pos()
 
         super().mouseMoveEvent(event)
 
@@ -225,6 +231,3 @@ class CustomGraphicsView(QGraphicsView):
             self.scale(0.9, 0.9)
 
         super().wheelEvent(event)
-        
-    def fitInView(self, rect, mode=Qt.IgnoreAspectRatio):
-        return
