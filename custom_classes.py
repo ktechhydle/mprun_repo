@@ -220,3 +220,6 @@ class CustomGraphicsView(QGraphicsView):
             self.scale(0.9, 0.9)
 
         super().wheelEvent(event)
+        
+    def fitInView(self, rect, mode=Qt.IgnoreAspectRatio):
+        return
