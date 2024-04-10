@@ -156,8 +156,8 @@ class Dialog(CTk):
         tablet_size_btn.pack(pady=5, side='left')
         letter_sizeD_btn.pack(pady=5, side='left')
         post_card_sizeD_btn.pack(pady=5, side='left')
-
-
+        
+        
     def launch_project(self):
         self.app = MPRUN()
         self.app.show()
@@ -231,11 +231,7 @@ class CreateTemplateDialog(CTk):
             self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'))
 
         else:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '''Run #:   
-Page #:   
-Competition:    
-Athlete:    
-Date:   ''')
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '')
 
 
 if __name__ == '__main__':

@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
+from custom_classes import *
 
 class item_stack:
     def __init__(self, initial_value=""):
@@ -15,227 +16,6 @@ class item_stack:
 
     def get(self):
         return self._value
-
-class CustomGraphicsItemGroup(QGraphicsItemGroup):
-
-    def __init__(self, widget, parent=None):
-        super().__init__(parent)
-        self.mouse_offset = QPoint(0, 0)
-        self.block_size = 10
-        self.widget = widget
-
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setColor(QColor("#e00202"))
-            pen.setWidth(2)
-            pen.setCapStyle(Qt.RoundCap)
-            painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.mouse_offset = event.pos()
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.widget.isChecked():
-            if self.isSelected():
-                # Calculate the position relative to the scene's coordinate system
-                scene_pos = event.scenePos()
-                x = (
-                    int(scene_pos.x() / self.block_size) * self.block_size
-                    - self.mouse_offset.x()
-                )
-                y = (
-                    int(scene_pos.y() / self.block_size) * self.block_size
-                    - self.mouse_offset.y()
-                )
-
-                # Set the position relative to the scene's coordinate system
-                self.setPos(x, y)
-            else:
-                # Call the superclass's mouseMoveEvent to move the item as normal
-                super().mouseMoveEvent(event)
-
-        else:
-            # Call the superclass's mouseMoveEvent to move the item as normal
-            super().mouseMoveEvent(event)
-
-class EditableTextBlock(QGraphicsTextItem):
-    def __init__(self, text="", parent=None):
-        super().__init__(text, parent)
-
-        self.setToolTip('Editable Text Block')
-
-    def mouseDoubleClickEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.setTextInteractionFlags(Qt.TextEditorInteraction)
-            self.setFocus(Qt.MouseFocusReason)
-            event.accept()
-        else:
-            super().mouseDoubleClickEvent(event)
-
-    def focusOutEvent(self, event):
-        self.setTextInteractionFlags(Qt.NoTextInteraction)
-        super().focusOutEvent(event)
-
-class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2):
-        super().__init__()
-        self.setMouseTracking(True)
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
-        
-        self.button = button
-        self.button2 = button2
-        self.canvas = canvas
-        self.temp_path_item = None
-        self.pen = None
-
-    def update_pen(self, pen):
-        self.pen = pen
-
-    def mousePressEvent(self, event):
-        if self.button.isChecked():
-            self.button2.setChecked(False)
-
-            if event.button() == Qt.LeftButton:
-                self.path = QPainterPath()  # Create a new QPainterPath
-                self.path.moveTo(self.mapToScene(event.pos()))
-                self.last_point = event.pos()
-                self.setDragMode(QGraphicsView.NoDrag)
-
-        elif self.button2.isChecked():
-            self.button.setChecked(False)
-
-            if event.button() == Qt.LeftButton:
-                self.path2 = QPainterPath()  # Create a new QPainterPath
-                self.path2.moveTo(self.mapToScene(event.pos()))
-                self.setDragMode(QGraphicsView.NoDrag)
-
-                self.text = EditableTextBlock('An Editable Text Block')
-                self.text.setPos(self.mapToScene(event.pos()))
-                self.text.setDefaultTextColor(QColor('black'))
-                self.text.setToolTip("Partially locked text block (This item's position is determined by the position of another element)")
-
-                self.rect = QGraphicsRectItem(self.text.boundingRect())
-                self.rect.setPen(self.pen)
-                self.rect.setPos(self.mapToScene(event.pos()))
-
-                self.canvas.update()
-
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.button.isChecked():
-            if event.buttons() == Qt.LeftButton:
-                self.path.lineTo(self.mapToScene(event.pos()))
-                self.canvas.update()
-                self.last_point = event.pos()
-
-                if self.temp_path_item:
-                    self.canvas.removeItem(self.temp_path_item)
-
-                # Load path as QGraphicsItem
-                self.temp_path_item = QGraphicsPathItem(self.path)
-                self.temp_path_item.setPen(self.pen)
-                self.temp_path_item.setZValue(2)
-
-                self.canvas.addItem(self.temp_path_item)
-
-                self.canvas.update()
-
-        elif self.button2.isChecked():
-            if event.button() == Qt.LeftButton:
-                self.path2.lineTo(self.mapToScene(event.pos()))
-                self.canvas.update()
-
-        super().mouseMoveEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        if self.button.isChecked():
-            if event.button() == Qt.LeftButton:
-                self.path.lineTo(self.mapToScene(event.pos()))
-
-                if self.temp_path_item:
-                    self.canvas.removeItem(self.temp_path_item)
-
-                self.canvas.update()
-
-                # Load path as QGraphicsItem
-                path_item = QGraphicsPathItem(self.path)
-                path_item.setPen(self.pen)
-                path_item.setZValue(2)
-
-                # Add item
-                self.canvas.addItem(path_item)
-
-                # Set Flags
-                path_item.setFlag(QGraphicsItem.ItemIsSelectable)
-                path_item.setFlag(QGraphicsItem.ItemIsMovable)
-
-                # Set Tooltop
-                path_item.setToolTip('MPRUN Path Element')
-
-                # Check if item is selected or moved so we can turn tool off
-                if self.canvas.selectedItems():
-                    self.button.setChecked(False)
-                    self.setDragMode(QGraphicsView.RubberBandDrag)
-
-        elif self.button2.isChecked():
-            if event.button() == Qt.LeftButton:
-                self.path2.lineTo(self.mapToScene(event.pos()))
-                self.canvas.update()
-
-                # Draw circle at the end
-                scene_pos = self.mapToScene(event.pos())
-                circle = QGraphicsEllipseItem(scene_pos.x() - 3, scene_pos.y() - 3, 6, 6)
-                circle.setZValue(2)
-                circle.setPen(self.pen)
-
-                self.canvas.update()
-
-                # Load path as QGraphicsItem, set parent items
-                path_item = QGraphicsPathItem(self.path2)
-                path_item.setPen(self.pen)
-                path_item.setZValue(2)
-                circle.setParentItem(path_item)
-                self.text.setParentItem(circle)
-                self.rect.setParentItem(circle)
-
-                # Add items
-                self.canvas.addItem(path_item)
-
-                # Set Flags
-                path_item.setFlag(QGraphicsItem.ItemIsSelectable)
-                path_item.setFlag(QGraphicsItem.ItemIsMovable)
-                circle.setFlag(QGraphicsItem.ItemIsSelectable)
-                self.text.setFlag(QGraphicsItem.ItemIsSelectable)
-
-                # Set Tooltips
-                path_item.setToolTip('Leader Line Element')
-                circle.setToolTip('Leader Line End Element')
-
-                # Check if item is selected or moved so we can turn tool off
-                if self.canvas.selectedItems():
-                    self.button2.setChecked(False)
-                    self.setDragMode(QGraphicsView.RubberBandDrag)
-
-        super().mouseReleaseEvent(event)
-        
-    def wheelEvent(self, event):
-        # Handle trackpad zoom events
-        if event.angleDelta().y() > 0:
-            self.scale(1.1, 1.1)
-        elif event.angleDelta().y() < 0:
-            self.scale(0.9, 0.9)
-
-        super().wheelEvent(event)
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -321,10 +101,6 @@ class MPRUN(QMainWindow):
         self.gsnap_label.setStyleSheet("font-size: 10px;")
         self.gsnap_check_btn = QCheckBox(self)
 
-
-
-
-
         #----toolbar buttons----#
 
         #Image
@@ -347,15 +123,7 @@ class MPRUN(QMainWindow):
         # Path draw button
         self.path_btn = QAction("Path", self)
         self.path_btn.setCheckable(True)
-        self.path_btn.setToolTip('''Path Draw:
-        1. Creates a line (path) wherever drawn.
-
-Methods:
-        - Draw the path or line taken on the course for your run.
-        - Draw course features.
-        - Draw anything!
-                            
-Shortcut:
+        self.path_btn.setToolTip('''Shortcut:
         Key-L''')
         self.path_btn.setShortcut(QKeySequence('L'))
         self.path_btn.triggered.connect(self.path_btn.setChecked)  # Connect to method to toggle path drawing
@@ -363,155 +131,77 @@ Shortcut:
         # Label draw button
         self.label_btn = QAction("Line and Label", self)
         self.label_btn.setCheckable(True)
-        self.label_btn.setToolTip('''Line and Label:
-                1. Creates a leader line (line) wherever drawn.
-                2. Creates an Editable Text Element at the end of the line.
-
-        Methods:
-                - Label tricks along paths.
-                - Label course elements.
-
-        Shortcut:
-                Key-A''')
+        self.label_btn.setToolTip('''Shortcut:
+        Key-A''')
         self.label_btn.setShortcut(QKeySequence('A'))
         self.label_btn.triggered.connect(self.label_btn.setChecked)  # Connect to method to toggle path drawing
 
         # Add Text Button
         add_text_btn = QAction('Text', self)
-        add_text_btn.setToolTip('''Text Tool:
-        1. Inserts an Editable Text Block on the canvas.
-        2. Sets the text color to the chosen stroke color.
-        
-Methods:
-        - Create labels for paths.
-        - Add text to the scene for anything!
-        
-Shortcuts:
+        add_text_btn.setToolTip('''Shortcuts:
         Command+T (MacOS) or Control+T (Windows)''')
         add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
         add_text_btn.triggered.connect(self.use_text)
 
         # Erase Button
         erase_btn = QAction('Erase', self)
-        erase_btn.setToolTip('''Erase Tool:
-                        1. Activates the Path Tool, and sets the color to white.
-
-                Methods:
-                        - Draw white strokes to erase items.
-                        - Draw white strokes to add detail to items.
-
-                Shortcut:
-                        Key-E''')
+        erase_btn.setToolTip('''Shortcut:
+        Key-E''')
         erase_btn.setShortcut(QKeySequence('E'))
         erase_btn.triggered.connect(self.use_erase)
 
         # Set Layer Button
         layer_set_btn = QAction('Set Layer', self)
-        layer_set_btn.setToolTip('''Set Layer:
-        1. Sets the selected item to the chosen layer.
-        
-Methods:
-        - Set layers for various objects to keep items in order
-        - Create custom course elements by setting layers for various geometric items.
-        
-Shortcuts:
+        layer_set_btn.setToolTip('''Shortcuts:
         Command+L (MacOS) or Control+L (Windows)''')
         layer_set_btn.setShortcut(QKeySequence('Ctrl+L'))
         layer_set_btn.triggered.connect(self.set_layer)
 
         # Rotate Manager Button
         rotate_btn = QAction('Rotate', self)
-        rotate_btn.setToolTip('''Rotate Manager:
-        1. Launches the Rotate Manager.
-        2. Rotates selected items to the input amount.
-        
-Methods:
-        - Rotate items to create accurate course setups
-        - Rotate labels to fit text to odd angles.
-        
-Shortcuts:
+        rotate_btn.setToolTip('''Shortcuts:
         Command+3 (MacOS) or Control+3 (Windows), or Key-R''')
         rotate_btn.setShortcut(QKeySequence('Ctrl+3'))
         rotate_btn.triggered.connect(self.show_rotate_manager)
 
         # Scale Manager Button
         scale_btn = QAction('Scale', self)
-        scale_btn.setToolTip('''Scale Manager:
-                1. Launches the Scale Manager.
-                2. Scales selected items to the input amount.
-
-        Methods:
-                - Scale course elements to desired sizes.
-                - Scale anything!
-
-        Shortcuts:
-                Command+4 (MacOS) or Control+4 (Windows), or Key-S''')
+        scale_btn.setToolTip('''Shortcuts:
+        Command+4 (MacOS) or Control+4 (Windows), or Key-S''')
         scale_btn.setShortcut(QKeySequence('Ctrl+4'))
         scale_btn.triggered.connect(self.show_scale_manager)
 
         # Lock Item Button
         lock_btn = QAction('Lock Item', self)
-        lock_btn.setToolTip('''Lock Item:
-        1. Locks the item position and removes moving functionality from the item attributes.
-    	
-Methods:
-        - Lock items to maintain their position during the course creation process.
-        
-Shortcuts: 
+        lock_btn.setToolTip('''Shortcuts: 
         Command+X (MacOS) or Control+X (Windows)''')
         lock_btn.setShortcut(QKeySequence('Ctrl+X'))
         lock_btn.triggered.connect(self.lock_item)
 
         # Unlock Item Button
         unlock_btn = QAction('Unlock Item', self)
-        unlock_btn.setToolTip('''Unlock Item:
-        1. Unlocks the item position and adds moving functionality to the item attributes.
-		
-Methods:
-        - Unlock previously locked items.
-
-Shortcuts: 
+        unlock_btn.setToolTip('''Shortcuts: 
         Command+B (MacOS) or Control+B (Windows)''')
         unlock_btn.setShortcut(QKeySequence('Ctrl+B'))
         unlock_btn.triggered.connect(self.unlock_item)
 
         # Create Group Button
         group_create_btn = QAction('Group Create', self)
-        group_create_btn.setToolTip('''Group Create:
-        1. Combines all selected items in to one group.
-        2. Turns the group into one draggable and selectable item.
-        3. Allows you to enable Group Snapping (GSNAP) to move the item at a grid based level.
-        
-Methods:
-        - Create course elements by grouping various geometric items.
-        - Group paths/lines, or any vector shapes to create anything!
-        
-Shortcut: 
+        group_create_btn.setToolTip('''Shortcut: 
         Key-G''')
         group_create_btn.setShortcut(QKeySequence('G'))
         group_create_btn.triggered.connect(self.create_group)
 
         # Insert Button
         insert_btn = QAction('Insert', self)
-        insert_btn.setToolTip('''Insert Tool:
-        1. Inserts a selected image file onto the canvas.
-
-Methods: 
-        - Insert images for course elements.
-        - Insert custom logos, designs, or anything else to decorate before export.
-        
-Shortcut:
+        insert_btn.setToolTip('''Shortcut:
         Key-I''')
         insert_btn.setShortcut(QKeySequence('I'))
         insert_btn.triggered.connect(self.insert_image)
 
         # Export Button
         export_btn = QAction('Export', self)
-        export_btn.setToolTip('''Export Tool:
-        1. Asks for a file name and file type.
-        2. Exports the scene as the file name and type.
-        
-Shortcuts:
+        export_btn.setToolTip('''Shortcuts:
         Command+E (MacOS) or Control+E (Windows)''')
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
         export_btn.triggered.connect(self.export)
@@ -757,7 +447,7 @@ Date:   """)
 
     def export_canvas(self, filename):
         # Create a QImage with the size of the scene
-        image = QImage(self.canvas.sceneRect().size().toSize(), QImage.Format_ARGB32)
+        image = QImage(self.paper.boundingRect().size().toSize(), QImage.Format_ARGB32)
 
         # Fill the image with transparent background
         image.fill(0)
@@ -801,8 +491,8 @@ Date:   """)
                 # Export as SVG
                 svg_generator = QSvgGenerator()
                 svg_generator.setFileName(file_path)
-                svg_generator.setSize(self.canvas.sceneRect().size().toSize())
-                svg_generator.setViewBox(self.canvas.sceneRect())
+                svg_generator.setSize(self.paper.boundingRect().size().toSize())
+                svg_generator.setViewBox(self.paper.boundingRect())
 
                 # Clear selection
                 self.canvas.clearSelection()
@@ -1074,6 +764,7 @@ class CourseElementsWin(QWidget):
             event.accept()
         else:
             event.ignore()
+
 class RotateManager(QWidget):
     def __init__(self, canvas):
         super().__init__()
@@ -1100,6 +791,7 @@ class RotateManager(QWidget):
         items = self.canvas.selectedItems()
         for item in items:
             item.setRotation(value)
+
 class ScaleManager(QWidget):
     def __init__(self, canvas):
         super().__init__()
