@@ -273,7 +273,6 @@ class MPRUN(QMainWindow):
                 QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
         self.canvas_view.setScene(self.canvas)
-        self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.use_select()
         self.setCentralWidget(self.canvas_view)
 
@@ -333,7 +332,7 @@ Date:   """)
         # Display a confirmation dialog
         confirmation_dialog = QMessageBox()
         confirmation_dialog.setIcon(QMessageBox.Warning)
-        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy all progress)")
+        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress)")
         confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         confirmation_dialog.setDefaultButton(QMessageBox.No)
 
