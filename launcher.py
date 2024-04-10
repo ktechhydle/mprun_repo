@@ -24,7 +24,7 @@ class Dialog(CTk):
         web_link_font = CTkFont(family="Arial", size=10, weight="bold", underline=True)
 
         # App image and label
-        iog = Image.open('logos and icons/MPRUN_icon.png')
+        iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png')
         ir = iog.resize((80, 76))
         image = ImageTk.PhotoImage(ir)
         mprun_img_label = CTkLabel(self, image=image, text='')
