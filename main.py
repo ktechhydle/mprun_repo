@@ -259,6 +259,7 @@ class MPRUN(QMainWindow):
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
+        self.canvas_view.setSceneRect(QRectF(-6000, -6000, 6000, 6000))
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
         self.stroke_size_spin.valueChanged.connect(lambda: self.canvas_view.update_pen(
