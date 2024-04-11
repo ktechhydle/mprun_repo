@@ -24,7 +24,7 @@ class Dialog(CTk):
         web_link_font = CTkFont(family="Arial", size=10, weight="bold", underline=True)
 
         # App image and label
-        iog = Image.open('logos and icons/MPRUN_icon.png')
+        iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png')
         ir = iog.resize((80, 76))
         image = ImageTk.PhotoImage(ir)
         mprun_img_label = CTkLabel(self, image=image, text='')
@@ -41,7 +41,7 @@ class Dialog(CTk):
 
         # Labels with links
         link1 = CTkLabel(self, text="Read the acknowledgements", font=web_link_font, cursor="hand2")
-        link1.place(x=368, y=79)
+        link1.place(x=385, y=79)
         link1.bind("<Button-1>", lambda e: self.open_link("https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing"))
 
         # Frame for other widgets
@@ -57,13 +57,14 @@ class Dialog(CTk):
         create_project_btn.place(x=20, y=40)
 
         # Template dropdown
-        self.values = {'Template 1: Default (1000 x 700, [Medium Quality], 100 PPI)': 1,
-                  'Template 2: Paper Size (828 x 621, [Low Quality], 72 PPI)': 2,
-                  'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality], 300 PPI)': 3,
-                  'Template 4: Phone Size (1080 x 1920, [High Quality], 300 PPI)': 4,
-                       'Template 5: Postcard Size (591 x 399, [Low Quality], 96 PPI)': 5,
-                       'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality], 300 PPI)': 6,
-                       'Template 7: Tablet Size (1024 × 1366, [Medium Quality], 264 PPI': 7}
+        self.values = {'Template 1: Default (1000 x 700, [Medium Quality])': 1,
+                  'Template 2: Paper Size (828 x 621, [Low Quality])': 2,
+                  'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality])': 3,
+                  'Template 4: Phone Size (1080 x 1920, [High Quality])': 4,
+                       'Template 5: Postcard Size (591 x 399, [Low Quality])': 5,
+                       'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality])': 6,
+                       'Template 7: Tablet Size (1024 × 1366, [Medium Quality])': 7,
+                    'Template 8: Webview size (1920 x 1080, [High Quality])': 8}
 
         self.template_combo = CTkComboBox(frame, width=500, values=list(self.values.keys()))
         self.template_combo.place(x=180, y=40)
@@ -81,18 +82,7 @@ class Dialog(CTk):
                                   text_color='white',
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
-                                  command=lambda: self.template_combo.set('Template 2: Paper Size (828 x 621, [Low Quality], 72 PPI)'))
-
-        template_img_2 = Image.open('logos and icons/detailed_letter_size_icon.png').resize((115, 150))
-        template_img_2n = ImageTk.PhotoImage(template_img_2)
-        letter_sizeD_btn = CTkButton(frame2, text='Detailed Letter Size (1725 x 1293)',
-                                  image=template_img_2n,
-                                  compound='top',
-                                  text_color='white',
-                                  fg_color='#2B2B2B',
-                                  hover_color='#3d3d3d',
-                                  command=lambda: self.template_combo.set(
-                                      'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality], 300 PPI)'))
+                                  command=lambda: self.template_combo.set('Template 2: Paper Size (828 x 621, [Low Quality])'))
 
         template_img_3 = Image.open('logos and icons/phone_icon.png').resize((115, 150))
         template_img_3n = ImageTk.PhotoImage(template_img_3)
@@ -103,7 +93,7 @@ class Dialog(CTk):
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set(
-                                      'Template 4: Phone Size (1080 x 1920, [High Quality], 300 PPI)'))
+                                      'Template 4: Phone Size (1080 x 1920, [High Quality])'))
 
         template_img_4 = Image.open('logos and icons/post_card_icon.png').resize((115, 150))
         template_img_4n = ImageTk.PhotoImage(template_img_4)
@@ -114,18 +104,7 @@ class Dialog(CTk):
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set(
-                                      'Template 5: Postcard Size (591 x 399, [Low Quality], 96 PPI)'))
-
-        template_img_5 = Image.open('logos and icons/detailed_post_card_icon.png').resize((115, 150))
-        template_img_5n = ImageTk.PhotoImage(template_img_5)
-        post_card_sizeD_btn = CTkButton(frame2, text='Detailed Post Card Size (1847 x 1247)',
-                                  image=template_img_5n,
-                                  compound='top',
-                                  text_color='white',
-                                  fg_color='#2B2B2B',
-                                  hover_color='#3d3d3d',
-                                  command=lambda: self.template_combo.set(
-                                      'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality], 300 PPI)'))
+                                      'Template 5: Postcard Size (591 x 399, [Low Quality])'))
 
         template_img_6 = Image.open('logos and icons/ipad_icon.png').resize((115, 150))
         template_img_6n = ImageTk.PhotoImage(template_img_6)
@@ -136,7 +115,19 @@ class Dialog(CTk):
                                         fg_color='#2B2B2B',
                                         hover_color='#3d3d3d',
                                         command=lambda: self.template_combo.set(
-                                            'Template 7: Tablet Size (1024 × 1366, [Medium Quality], 264 PPI'))
+                                            'Template 7: Tablet Size (1024 × 1366, [Medium Quality])'))
+                                            
+        template_img_8 = Image.open('logos and icons/webview_icon.png').resize((115, 150))
+        template_img_8n = ImageTk.PhotoImage(template_img_8)
+        webview_size_btn = CTkButton(frame2, text='Tablet Size (1366 x 1024)',
+                                        image=template_img_8n,
+                                        compound='top',
+                                        text_color='white',
+                                        fg_color='#2B2B2B',
+                                        hover_color='#3d3d3d',
+                                        command=lambda: self.template_combo.set(
+                                            'Template 8: Webview size (1920 x 1080, [High Quality])'))
+
 
         template_img_7 = Image.open('logos and icons/create_custom_icon.png').resize((115, 150))
         template_img_7n = ImageTk.PhotoImage(template_img_7)
@@ -154,9 +145,7 @@ class Dialog(CTk):
         post_card_size_btn.pack(pady=5, side='left')
         phone_size_btn.pack(pady=5, side='left')
         tablet_size_btn.pack(pady=5, side='left')
-        letter_sizeD_btn.pack(pady=5, side='left')
-        post_card_sizeD_btn.pack(pady=5, side='left')
-        
+        webview_size_btn.pack(pady=5, side='left')
         
     def launch_project(self):
         self.app = MPRUN()
@@ -193,6 +182,8 @@ class CreateTemplateDialog(CTk):
         welcome_label = CTkLabel(self, text='Template Attributes', font=('Arial', 20))
         width_label = CTkLabel(self, text='Width')
         height_label = CTkLabel(self, text='Height')
+        default_text_label = CTkLabel(self, text='Default Text')
+        gsnap_grid_size_label = CTkLabel(self, text='GSNAP Grid Size')
 
         # Checkboxes
         self.check1 = CTkCheckBox(self, checkbox_width=15, checkbox_height=15, text='', textvariable=self.checks)
@@ -201,6 +192,7 @@ class CreateTemplateDialog(CTk):
         self.x_size_entry = CTkEntry(self, placeholder_text='X width (in px)', width=200)
         self.y_size_entry = CTkEntry(self, placeholder_text='Y width (in px)', width=200)
         self.default_text_entry = CTkTextbox(self, width=180, height=50)
+        self.grid_size_entry = CTkEntry(self, placeholder_text='Grid size (in px)', width=200)
 
         create_project_btn = CTkButton(self, text='Create Project', text_color='white', fg_color='#525252', hover_color='gray', command=self.create_project)
 
@@ -212,13 +204,16 @@ class CreateTemplateDialog(CTk):
         self.y_size_entry.place(x=10, y=125)
         self.check1.place(x=10, y=170)
         self.default_text_entry.place(x=30, y=170)
+        self.gsnap_grid_size_label.place(x=10, y=240)
+        self.grid_size_entry.place(x=10, y=265)
 
-        create_project_btn.place(x=10, y=235)
+        create_project_btn.place(x=10, y=400)
 
         # Insert default values
         self.x_size_entry.insert('end', '1920')
         self.y_size_entry.insert('end', '1080')
         self.default_text_entry.insert('0.0', 'This is an Editable Text Block that will be placed on the canvas during creation')
+        self.grid_size_entry.insert('end', '10')
 
     def create_project(self):
         self.app = MPRUN()
@@ -228,10 +223,10 @@ class CreateTemplateDialog(CTk):
 
     def set_attr(self):
         if self.check1.get() == 1:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'), 10)
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), self.default_text_entry.get('0.0', 'end-1c'), int(self.grid_size_entry.get()))
 
         else:
-            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '', 10)
+            self.app.custom_template(int(self.x_size_entry.get()), int(self.y_size_entry.get()), '', int(self.grid_size_entry.get()))
 
 
 if __name__ == '__main__':

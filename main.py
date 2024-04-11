@@ -259,6 +259,7 @@ class MPRUN(QMainWindow):
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
+        self.canvas_view.setSceneRect(QRectF(-6000, -6000, 6000, 6000))
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
         self.stroke_size_spin.valueChanged.connect(lambda: self.canvas_view.update_pen(
@@ -579,39 +580,31 @@ Date:   """)
             pass
 
         elif template_choice == 2:
-            self.canvas_view.setSceneRect(0, 0, 828, 621)
-            self.canvas.setSceneRect(0, 0, 828, 621)
             self.paper.setRect(0, 0, 828, 621)
 
         elif template_choice == 3:
-            self.canvas_view.setSceneRect(0, 0, 1725, 1293)
-            self.canvas.setSceneRect(0, 0, 1725, 1293)
             self.paper.setRect(0, 0, 1725, 1293)
             self.paper_text.setScale(2.5)
 
         elif template_choice == 4:
-            self.canvas_view.setSceneRect(0, 0, 1080, 1920)
-            self.canvas.setSceneRect(0, 0, 1080, 1920)
             self.paper.setRect(0, 0, 1080, 1920)
             self.paper_text.setScale(2.5)
 
         elif template_choice == 5:
-            self.canvas_view.setSceneRect(0, 0, 591, 399)
-            self.canvas.setSceneRect(0, 0, 591, 399)
             self.paper.setRect(0, 0, 591, 399)
             self.paper_text.setScale(1)
 
         elif template_choice == 6:
-            self.canvas_view.setSceneRect(0, 0, 1847, 1247)
-            self.canvas.setSceneRect(0, 0, 1847, 1247)
             self.paper.setRect(0, 0, 1847, 1247)
             self.paper_text.setScale(2.5)
 
         elif template_choice == 7:
-            self.canvas_view.setSceneRect(0, 0, 1366, 1024)
-            self.canvas.setSceneRect(0, 0, 1366, 1024)
             self.paper.setRect(0, 0, 1366, 1024)
             self.paper_text.setScale(2)
+            
+        elif template_choice == 8:
+            self.paper.setRect(0, 0, 1920, 1080)
+            self.paper_text.setScale(2.5)
 
         else:
             pass
