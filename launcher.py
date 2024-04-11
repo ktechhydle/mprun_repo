@@ -204,7 +204,7 @@ class CreateTemplateDialog(CTk):
         self.y_size_entry.place(x=10, y=125)
         self.check1.place(x=10, y=170)
         self.default_text_entry.place(x=30, y=170)
-        self.gsnap_grid_size_label.place(x=10, y=240)
+        gsnap_grid_size_label.place(x=10, y=240)
         self.grid_size_entry.place(x=10, y=265)
 
         create_project_btn.place(x=10, y=400)
