@@ -600,7 +600,7 @@ Date:   """)
             pass
 
     def custom_template(self, x, y, default_text, grid_size):
-        self.canvas_view.set_grid_size(grid_size)
+        self.group.set_grid_size(grid_size)
         self.paper.setRect(0, 0, x, y)
         self.paper_text.setPlainText(default_text)
 
