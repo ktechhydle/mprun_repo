@@ -7,16 +7,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
 
-class item_stack:
-    def __init__(self, initial_value=""):
-        self._value = initial_value
-
-    def set(self, value):
-        self._value = value
-
-    def get(self):
-        return self._value
-
 class MPRUN(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -610,7 +600,7 @@ Date:   """)
             pass
 
     def custom_template(self, x, y, default_text, grid_size):
-        self.canvas_view.set_grid_size(grid_size)
+        self.group.set_grid_size(grid_size)
         self.paper.setRect(0, 0, x, y)
         self.paper_text.setPlainText(default_text)
 
