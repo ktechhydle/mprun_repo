@@ -211,7 +211,7 @@ class CreateTemplateDialog(CTk):
         # Insert default values
         self.x_size_entry.insert('end', '1920')
         self.y_size_entry.insert('end', '1080')
-        self.default_text_entry.insert('0.0', 'This is an Editable Text Block that will be placed on the canvas during creation')
+        self.default_text_entry.insert('0.0', 'Default text on canvas')
         self.grid_size_entry.insert('end', '10')
 
     def create_project(self):
