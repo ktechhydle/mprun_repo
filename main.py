@@ -289,6 +289,8 @@ Date:   """)
         self.paper_text.setZValue(-1)
         self.paper_text.setToolTip(f"Locked Text Block (This item's position is locked)")
         self.canvas.addItem(self.paper_text)
+        
+        self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
 
     def keyPressEvent(self, event):
         if event.key() == QKeySequence('Backspace'):
@@ -520,7 +522,6 @@ Date:   """)
 
     def create_group(self):
         item = self.canvas.selectedItems()
-        self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
 
         # Set flags for group
         self.group.setFlag(QGraphicsItem.ItemIsMovable)
