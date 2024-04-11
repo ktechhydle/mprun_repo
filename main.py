@@ -236,6 +236,9 @@ class MPRUN(QMainWindow):
     def create_canvas(self):
         # Canvas, canvas color
         self.canvas = QGraphicsScene()
+        width = 64000
+        height= 64000
+        self.canvas.setSceneRect(-width//2, -height//2, width, height)
         brush1 = QBrush(QColor('#545454'))
         self.canvas.setBackgroundBrush(brush1)
 
@@ -363,10 +366,10 @@ Date:   """)
         self.scale_manager.show()
 
     def use_select(self):
-        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+        self.canvas.setDragMode(QGraphicsView.RubberBandDrag)
 
     def use_pan(self):
-        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.canvas.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_erase(self):
         index1 = self.stroke_style_combo.currentIndex()
@@ -602,7 +605,7 @@ Date:   """)
 
     def custom_template(self, x, y, default_text, grid_size):
         self.group.set_grid_size(grid_size)
-        self.paper.setRect(0, 0, x, y)
+        self.paper.setRect(-100, -100, x-100, y-100)
         self.paper_text.setPlainText(default_text)
 
 class CourseElementsWin(QWidget):
