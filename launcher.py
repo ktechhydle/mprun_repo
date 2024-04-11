@@ -84,17 +84,6 @@ class Dialog(CTk):
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set('Template 2: Paper Size (828 x 621, [Low Quality])'))
 
-        template_img_2 = Image.open('logos and icons/detailed_letter_size_icon.png').resize((115, 150))
-        template_img_2n = ImageTk.PhotoImage(template_img_2)
-        letter_sizeD_btn = CTkButton(frame2, text='Detailed Letter Size (1725 x 1293)',
-                                  image=template_img_2n,
-                                  compound='top',
-                                  text_color='white',
-                                  fg_color='#2B2B2B',
-                                  hover_color='#3d3d3d',
-                                  command=lambda: self.template_combo.set(
-                                      'Template 3: Detailed-Paper Size (1725 x 1293, [High Quality])'))
-
         template_img_3 = Image.open('logos and icons/phone_icon.png').resize((115, 150))
         template_img_3n = ImageTk.PhotoImage(template_img_3)
         phone_size_btn = CTkButton(frame2, text='Phone Size (1080 x 1920)',
@@ -117,17 +106,6 @@ class Dialog(CTk):
                                   command=lambda: self.template_combo.set(
                                       'Template 5: Postcard Size (591 x 399, [Low Quality])'))
 
-        template_img_5 = Image.open('logos and icons/detailed_post_card_icon.png').resize((115, 150))
-        template_img_5n = ImageTk.PhotoImage(template_img_5)
-        post_card_sizeD_btn = CTkButton(frame2, text='Detailed Post Card Size (1847 x 1247)',
-                                  image=template_img_5n,
-                                  compound='top',
-                                  text_color='white',
-                                  fg_color='#2B2B2B',
-                                  hover_color='#3d3d3d',
-                                  command=lambda: self.template_combo.set(
-                                      'Template 6: Detailed-Postcard Size (1847 x 1247, [High Quality])'))
-
         template_img_6 = Image.open('logos and icons/ipad_icon.png').resize((115, 150))
         template_img_6n = ImageTk.PhotoImage(template_img_6)
         tablet_size_btn = CTkButton(frame2, text='Tablet Size (1366 x 1024)',
@@ -138,8 +116,20 @@ class Dialog(CTk):
                                         hover_color='#3d3d3d',
                                         command=lambda: self.template_combo.set(
                                             'Template 7: Tablet Size (1024 × 1366, [Medium Quality])'))
+                                            
+        template_img_8 = Image.open('logos and icons/webview_icon.png').resize((115, 150))
+        template_img_8n = ImageTk.PhotoImage(template_img_8)
+        webview_size_btn = CTkButton(frame2, text='Tablet Size (1366 x 1024)',
+                                        image=template_img_8n,
+                                        compound='top',
+                                        text_color='white',
+                                        fg_color='#2B2B2B',
+                                        hover_color='#3d3d3d',
+                                        command=lambda: self.template_combo.set(
+                                            'Template 8: Webview size (1920 x 1080, [High Quality])'))
 
-        template_img_7 = Image.open('logos and icons/create_custom_icon.png').resize((115, 150))
+
+        template_img_7 = Image.open('logos and icons/custom_size_icon.png').resize((115, 150))
         template_img_7n = ImageTk.PhotoImage(template_img_7)
         custom_size_btn = CTkButton(frame2, text='Create a Custom Template',
                                     image=template_img_7n,
@@ -155,8 +145,7 @@ class Dialog(CTk):
         post_card_size_btn.pack(pady=5, side='left')
         phone_size_btn.pack(pady=5, side='left')
         tablet_size_btn.pack(pady=5, side='left')
-        letter_sizeD_btn.pack(pady=5, side='left')
-        post_card_sizeD_btn.pack(pady=5, side='left')
+        webview_size_btn.pack(pady=5, side='left')
         
     def launch_project(self):
         self.app = MPRUN()
