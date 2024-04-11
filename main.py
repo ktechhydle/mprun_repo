@@ -580,39 +580,31 @@ Date:   """)
             pass
 
         elif template_choice == 2:
-            self.canvas_view.setSceneRect(0, 0, 828, 621)
-            self.canvas.setSceneRect(0, 0, 828, 621)
             self.paper.setRect(0, 0, 828, 621)
 
         elif template_choice == 3:
-            self.canvas_view.setSceneRect(0, 0, 1725, 1293)
-            self.canvas.setSceneRect(0, 0, 1725, 1293)
             self.paper.setRect(0, 0, 1725, 1293)
             self.paper_text.setScale(2.5)
 
         elif template_choice == 4:
-            self.canvas_view.setSceneRect(0, 0, 1080, 1920)
-            self.canvas.setSceneRect(0, 0, 1080, 1920)
             self.paper.setRect(0, 0, 1080, 1920)
             self.paper_text.setScale(2.5)
 
         elif template_choice == 5:
-            self.canvas_view.setSceneRect(0, 0, 591, 399)
-            self.canvas.setSceneRect(0, 0, 591, 399)
             self.paper.setRect(0, 0, 591, 399)
             self.paper_text.setScale(1)
 
         elif template_choice == 6:
-            self.canvas_view.setSceneRect(0, 0, 1847, 1247)
-            self.canvas.setSceneRect(0, 0, 1847, 1247)
             self.paper.setRect(0, 0, 1847, 1247)
             self.paper_text.setScale(2.5)
 
         elif template_choice == 7:
-            self.canvas_view.setSceneRect(0, 0, 1366, 1024)
-            self.canvas.setSceneRect(0, 0, 1366, 1024)
             self.paper.setRect(0, 0, 1366, 1024)
             self.paper_text.setScale(2)
+            
+        elif template_choice == 8:
+            self.paper.setRect(0, 0, 1920, 1080)
+            self.paper_text.setScale(2.5)
 
         else:
             pass
