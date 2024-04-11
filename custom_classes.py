@@ -3,6 +3,16 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 
+class item_stack:
+    def __init__(self, initial_value=""):
+        self._value = initial_value
+
+    def set(self, value):
+        self._value = value
+
+    def get(self):
+        return self._value
+
 class CustomGraphicsItemGroup(QGraphicsItemGroup):
     def __init__(self, widget, parent=None):
         super().__init__(parent)
@@ -51,6 +61,9 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         else:
             # Call the superclass's mouseMoveEvent to move the item as normal
             super().mouseMoveEvent(event)
+            
+    def set_grid_size(self, size):
+        self.block_size = size
 
 class EditableTextBlock(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
@@ -224,6 +237,3 @@ class CustomGraphicsView(QGraphicsView):
             self.scale(0.9, 0.9)
 
         super().wheelEvent(event)
-        
-    def set_grid_size(self, size):
-        self.block_size = size
