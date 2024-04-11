@@ -129,7 +129,7 @@ class Dialog(CTk):
                                             'Template 8: Webview size (1920 x 1080, [High Quality])'))
 
 
-        template_img_7 = Image.open('logos and icons/custom_size_icon.png').resize((115, 150))
+        template_img_7 = Image.open('logos and icons/create_custom_icon.png').resize((115, 150))
         template_img_7n = ImageTk.PhotoImage(template_img_7)
         custom_size_btn = CTkButton(frame2, text='Create a Custom Template',
                                     image=template_img_7n,
