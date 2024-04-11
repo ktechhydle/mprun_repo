@@ -290,6 +290,7 @@ Date:   """)
         self.paper_text.setToolTip(f"Locked Text Block (This item's position is locked)")
         self.canvas.addItem(self.paper_text)
         
+        # Create initial group (this method is for setting GSNAP size in Create Custom Template Dialog)
         self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
 
     def keyPressEvent(self, event):
