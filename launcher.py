@@ -24,9 +24,8 @@ class Dialog(CTk):
         web_link_font = CTkFont(family="Arial", size=10, weight="bold", underline=True)
 
         # App image and label
-        iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png')
-        ir = iog.resize((80, 76))
-        image = ImageTk.PhotoImage(ir)
+        iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png').resize((80, 76))
+        image = ImageTk.PhotoImage(iog)
         mprun_img_label = CTkLabel(self, image=image, text='')
         mprun_img_label.image = image
         mprun_img_label.place(x=20, y=20)
@@ -212,7 +211,7 @@ class CreateTemplateDialog(CTk):
         # Insert default values
         self.x_size_entry.insert('end', '1920')
         self.y_size_entry.insert('end', '1080')
-        self.default_text_entry.insert('0.0', 'This is an Editable Text Block that will be placed on the canvas during creation')
+        self.default_text_entry.insert('0.0', 'Default text on canvas')
         self.grid_size_entry.insert('end', '10')
 
     def create_project(self):
