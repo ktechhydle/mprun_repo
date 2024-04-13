@@ -88,7 +88,6 @@ class EditableTextBlock(QGraphicsTextItem):
             pen = painter.pen()
             pen.setColor(QColor("#007bff"))
             pen.setWidth(2)
-            pen.setCapStyle(Qt.RoundCap)
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
