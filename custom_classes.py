@@ -79,6 +79,19 @@ class EditableTextBlock(QGraphicsTextItem):
         else:
             super().mouseDoubleClickEvent(event)
 
+    def paint(self, painter, option, widget=None):
+        # Call the parent class paint method first
+        super().paint(painter, option, widget)
+
+        # If the item is selected, draw a custom selection highlight
+        if option.state & QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setColor(QColor("#007bff"))
+            pen.setWidth(2)
+            pen.setCapStyle(Qt.RoundCap)
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
+
     def focusOutEvent(self, event):
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         super().focusOutEvent(event)
@@ -86,17 +99,25 @@ class EditableTextBlock(QGraphicsTextItem):
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2):
         super().__init__()
+        # Set flags
         self.setMouseTracking(True)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        
+
+        # Set widgets
         self.button = button
         self.button2 = button2
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
+
+        # Add methods for zooming
+        self.zoomInFactor = 1.25
+        self.zoomClamp = True
+        self.zoom = 10
+        self.zoomStep = 1
+        self.zoomRange = [0, 10]
 
     def update_pen(self, pen):
         self.pen = pen
@@ -230,10 +251,22 @@ class CustomGraphicsView(QGraphicsView):
         super().mouseReleaseEvent(event)
         
     def wheelEvent(self, event):
-        # Handle trackpad zoom events
-        if event.angleDelta().y() > 0:
-            self.scale(1.1, 1.1)
-        elif event.angleDelta().y() < 0:
-            self.scale(0.9, 0.9)
+        # Calculate zoom Factor
+        zoomOutFactor = 1 / self.zoomInFactor
 
-        super().wheelEvent(event)
+        # Calculate zoom
+        if event.angleDelta().y() > 0:
+            zoomFactor = self.zoomInFactor
+            self.zoom += self.zoomStep
+        else:
+            zoomFactor = zoomOutFactor
+            self.zoom -= self.zoomStep
+
+        # Deal with clamping!
+        clamped = False
+        if self.zoom < self.zoomRange[0]: self.zoom, clamped = self.zoomRange[0], True
+        if self.zoom > self.zoomRange[1]: self.zoom, clamped = self.zoomRange[1], True
+
+        if not clamped or self.zoomClamp is False:
+            self.scale(zoomFactor, zoomFactor)
+
