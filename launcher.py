@@ -25,7 +25,7 @@ class Dialog(CTk):
 
         # App image and label
         iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png').resize((80, 80))
-        image = ImageTk.PhotoImage(iog)
+        image = CTkImage(iog)
         mprun_img_label = CTkLabel(self, image=image, text='')
         mprun_img_label.image = image
         mprun_img_label.place(x=20, y=20)
