@@ -24,7 +24,7 @@ class Dialog(CTk):
         web_link_font = CTkFont(family="Arial", size=10, weight="bold", underline=True)
 
         # App image and label
-        iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png').resize((80, 76))
+        iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png').resize((80, 80))
         image = ImageTk.PhotoImage(iog)
         mprun_img_label = CTkLabel(self, image=image, text='')
         mprun_img_label.image = image
@@ -32,7 +32,7 @@ class Dialog(CTk):
 
         # Welcome label
         welcome_label = CTkLabel(self, text='MPRUN Community Edition', font=('Arial', 20), text_color='lightgray')
-        welcome_label.place(x=110, y=50)
+        welcome_label.place(x=110, y=55)
 
         # Copyright label
         copyright_label = CTkLabel(self, text='Copyright © K-TECH Industries 2024, All Rights Reserved.', font=('Arial', 10), text_color='lightgray')
@@ -75,7 +75,7 @@ class Dialog(CTk):
         # Template select buttons
         template_img_1 = Image.open('logos and icons/letter_size_icon.png').resize((115, 150))
         template_img_1n = ImageTk.PhotoImage(template_img_1)
-        letter_size_btn = CTkButton(frame2, text='Letter Size (828 x 621)',
+        letter_size_btn = CTkButton(frame2, text='Letter (828 x 621)',
                                   image=template_img_1n,
                                   compound='top',
                                   text_color='white',
@@ -85,7 +85,7 @@ class Dialog(CTk):
 
         template_img_3 = Image.open('logos and icons/phone_icon.png').resize((115, 150))
         template_img_3n = ImageTk.PhotoImage(template_img_3)
-        phone_size_btn = CTkButton(frame2, text='Phone Size (1080 x 1920)',
+        phone_size_btn = CTkButton(frame2, text='Phone (1080 x 1920)',
                                   image=template_img_3n,
                                   compound='top',
                                   text_color='white',
@@ -96,7 +96,7 @@ class Dialog(CTk):
 
         template_img_4 = Image.open('logos and icons/post_card_icon.png').resize((115, 150))
         template_img_4n = ImageTk.PhotoImage(template_img_4)
-        post_card_size_btn = CTkButton(frame2, text='Post Card Size (591 x 399)',
+        post_card_size_btn = CTkButton(frame2, text='Post Card (591 x 399)',
                                   image=template_img_4n,
                                   compound='top',
                                   text_color='white',
@@ -107,7 +107,7 @@ class Dialog(CTk):
 
         template_img_6 = Image.open('logos and icons/ipad_icon.png').resize((115, 150))
         template_img_6n = ImageTk.PhotoImage(template_img_6)
-        tablet_size_btn = CTkButton(frame2, text='Tablet Size (1366 x 1024)',
+        tablet_size_btn = CTkButton(frame2, text='Tablet (1366 x 1024)',
                                         image=template_img_6n,
                                         compound='top',
                                         text_color='white',
@@ -118,7 +118,7 @@ class Dialog(CTk):
                                             
         template_img_8 = Image.open('logos and icons/webview_icon.png').resize((115, 150))
         template_img_8n = ImageTk.PhotoImage(template_img_8)
-        webview_size_btn = CTkButton(frame2, text='Tablet Size (1366 x 1024)',
+        webview_size_btn = CTkButton(frame2, text='Webview (1920 x 1080)',
                                         image=template_img_8n,
                                         compound='top',
                                         text_color='white',

@@ -366,10 +366,10 @@ Date:   """)
         self.scale_manager.show()
 
     def use_select(self):
-        self.canvas.setDragMode(QGraphicsView.RubberBandDrag)
+        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def use_pan(self):
-        self.canvas.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_erase(self):
         index1 = self.stroke_style_combo.currentIndex()
