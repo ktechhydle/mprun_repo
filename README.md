@@ -1,6 +1,6 @@
 # Introducing MPRUN, the ultimate snowboard and ski competion run planning software.
 
-With MPRUN, you can setup custom courses matching the competition enviroment, and print out these setups to achieve best competition performance and communication between coaches and athletes[^1]
+With MPRUN, you can set up custom courses matching the competition environment, and print out these setups to achieve the best competition performance and communication between coaches and athletes[^1]
 
 > [!NOTE]
 > # Install
@@ -9,7 +9,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 > 3. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it.***](license.txt)
 
 # How It Works...
-### 1. Setup the course:
+### 1. Set up the course:
 - Use the `Course Elements Picker`, or import your own SVG files to add features to the Canvas.
 - Scale, Rotate, or Group Elements to achieve the desired course setup.
 - Lock Element positions to prevent further editing.
@@ -21,7 +21,7 @@ With MPRUN, you can setup custom courses matching the competition enviroment, an
 - Use the `Line and Label` tool to create Leader lines along your Path.
 - Edit these labels to include your tricks along each part of the Path.
 - Lock Element positions to prevent further editing.
-### 4. And its that simple. 
+### 4. And it's that simple. 
 > [!IMPORTANT]
 > MPRUN can be a simple software, and a powerful software when necessary.
 
@@ -56,4 +56,4 @@ This is important because it ensures athletes don't go into competitions without
 > MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and lock elements for optimal performance. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
 
 # For More Info,
-[^1]: Read the acknowledgments at https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit
+[^1]: Read the acknowledgments at: https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit
