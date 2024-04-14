@@ -23,15 +23,16 @@ class MPRUN(QMainWindow):
         # File
         self.file_name = None
 
-        # Drawing strokes
+        # Drawing stroke methods
         self.outline_color = item_stack()
         self.fill_color = item_stack()
         self.outline_color.set('black')
         self.fill_color.set('black')
 
-        self.start_pos = None
-        self.end_pos = None
+        # GSNAP Grid Size
+        self.gsnap_grid_size = 10
 
+        # Create GUI
         self.create_menu()
         self.create_toolbars()
         self.create_canvas()
@@ -248,7 +249,7 @@ class MPRUN(QMainWindow):
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
         
-		# Set flags for view
+        # Set flags for view
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
@@ -291,8 +292,8 @@ Date:   """)
         self.paper_text.setZValue(-1)
         self.paper_text.setToolTip(f"Locked Text Block (This item's position is locked)")
         self.canvas.addItem(self.paper_text)
-        
-        # Create initial group (this method is for setting GSNAP size in Create Custom Template Dialog)
+
+        # Create initial group
         self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
 
     def keyPressEvent(self, event):
@@ -524,42 +525,45 @@ Date:   """)
 
 
     def create_group(self):
-        item = self.canvas.selectedItems()
+        if self.group is not None:
+            self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
+            self.group.set_grid_size(self.gsnap_grid_size)
 
-        # Set flags for group
-        self.group.setFlag(QGraphicsItem.ItemIsMovable)
-        self.group.setFlag(QGraphicsItem.ItemIsSelectable)
+            item = self.canvas.selectedItems()
 
-        # Add group
-        self.canvas.addItem(self.group)
-        self.canvas.update()
+            # Set flags for group
+            self.group.setFlag(QGraphicsItem.ItemIsMovable)
+            self.group.setFlag(QGraphicsItem.ItemIsSelectable)
 
-        for items in item:
-            # Clear Selection
-            self.canvas.clearSelection()
+            # Add group
+            self.canvas.addItem(self.group)
+            self.canvas.update()
 
-            # Set flag
-            items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+            for items in item:
+                # Clear Selection
+                self.canvas.clearSelection()
 
-            # Check if the item is an instance
-            if isinstance(items, QGraphicsTextItem):
-                items.setTextInteractionFlags(Qt.NoTextInteraction)
+                # Set flag
+                items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
-                # Set an object name
-                items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+                # Check if the item is an instance
+                if isinstance(items, QGraphicsTextItem):
+                    items.setTextInteractionFlags(Qt.NoTextInteraction)
 
-            elif isinstance(items, CustomGraphicsItemGroup):
-                self.group.setToolTip('Grouped Object (Free MPRUN Element)')
-                
-            elif isinstance(items, EditableTextBlock):
-                items.setTextInteractionFlags(Qt.NoTextInteraction)
+                    # Set an object name
+                    items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
 
-                # Set an object name
-                items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+                elif isinstance(items, CustomGraphicsItemGroup):
+                    self.group.setToolTip('Grouped Object (Free MPRUN Element)')
 
+                elif isinstance(items, EditableTextBlock):
+                    items.setTextInteractionFlags(Qt.NoTextInteraction)
 
-            # Add items to group
-            self.group.addToGroup(items)
+                        # Set an object name
+                    items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+
+                # Add items to group
+                self.group.addToGroup(items)
 
     def create_item_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -574,39 +578,48 @@ Date:   """)
             pass
 
         elif template_choice == 2:
-            self.paper.setRect(0, 0, 828, 621)
+            self.paper.setRect(-100, -100, 728, 521)
+            self.paper_text.setPos(-98, -98)
 
         elif template_choice == 3:
-            self.paper.setRect(0, 0, 1725, 1293)
+            self.paper.setRect(-100, -100, 1625, 1193)
             self.paper_text.setScale(2.5)
+            self.paper_text.setPos(-98, -98)
 
         elif template_choice == 4:
-            self.paper.setRect(0, 0, 1080, 1920)
+            self.paper.setRect(-100, -100, 980, 1820)
             self.paper_text.setScale(2.5)
+            self.paper_text.setPos(-98, -98)
 
         elif template_choice == 5:
-            self.paper.setRect(0, 0, 591, 399)
+            self.paper.setRect(-100, -100, 491, 299)
             self.paper_text.setScale(1)
+            self.paper_text.setPos(-98, -98)
 
         elif template_choice == 6:
-            self.paper.setRect(0, 0, 1847, 1247)
+            self.paper.setRect(-100, -100, 1747, 1147)
             self.paper_text.setScale(2.5)
+            self.paper_text.setPos(-98, -98)
 
         elif template_choice == 7:
-            self.paper.setRect(0, 0, 1366, 1024)
+            self.paper.setRect(-100, -100, 1266, 924)
             self.paper_text.setScale(2)
+            self.paper_text.setPos(-98, -98)
             
         elif template_choice == 8:
-            self.paper.setRect(0, 0, 1920, 1080)
+            self.paper.setRect(-100, -100, 1820, 980)
             self.paper_text.setScale(2.5)
+            self.paper_text.setPos(-98, -98)
 
         else:
             pass
 
     def custom_template(self, x, y, default_text, grid_size):
         self.group.set_grid_size(grid_size)
+        self.gsnap_grid_size = grid_size
         self.paper.setRect(-100, -100, x-100, y-100)
         self.paper_text.setPlainText(default_text)
+        self.paper_text.setPos(-98, -98)
 
 class CourseElementsWin(QWidget):
     def __init__(self, canvas):
