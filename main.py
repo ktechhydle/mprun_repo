@@ -96,19 +96,22 @@ class MPRUN(QMainWindow):
         #----toolbar buttons----#
 
         #Image
-        icon = QAction(QIcon('logos and icons/rotate_screen_icon.png'), '', self)
+        icon = QAction(QIcon('logos and icons/Tool Icons/rotate_screen_icon.png'), '', self)
+        icon.setToolTip('''Rotate View:
+        Command+R (MacOS) or Control+R (Windows)''')
+        icon.setShortcut(QKeySequence('Ctrl+R'))
         icon.triggered.connect(self.use_rotate_screen)
 
         # Select Button
-        select_btn = QAction('Select', self)
-        select_btn.setToolTip('''Shortcut:
+        select_btn = QAction(QIcon('logos and icons/Tool Icons/selection_icon.png'), '', self)
+        select_btn.setToolTip('''Select Tool:
         Key-Spacebar''')
         select_btn.setShortcut(QKeySequence(Qt.Key_Space))
         select_btn.triggered.connect(self.use_select)
 
         # Pan Button
         pan_btn = QAction('Pan', self)
-        pan_btn.setToolTip('''Shortcut:
+        pan_btn.setToolTip('''Pan Tool:
         Key-P''')
         pan_btn.setShortcut(QKeySequence("P"))
         pan_btn.triggered.connect(self.use_pan)
@@ -116,7 +119,7 @@ class MPRUN(QMainWindow):
         # Path draw button
         self.path_btn = QAction("Path", self)
         self.path_btn.setCheckable(True)
-        self.path_btn.setToolTip('''Shortcut:
+        self.path_btn.setToolTip('''Path Draw Tool:
         Key-L''')
         self.path_btn.setShortcut(QKeySequence('L'))
         self.path_btn.triggered.connect(self.path_btn.setChecked)  # Connect to method to toggle path drawing
@@ -124,77 +127,77 @@ class MPRUN(QMainWindow):
         # Label draw button
         self.label_btn = QAction("Line and Label", self)
         self.label_btn.setCheckable(True)
-        self.label_btn.setToolTip('''Shortcut:
-        Key-A''')
-        self.label_btn.setShortcut(QKeySequence('A'))
+        self.label_btn.setToolTip('''Line and Label Tool:
+        Key-T''')
+        self.label_btn.setShortcut(QKeySequence('T'))
         self.label_btn.triggered.connect(self.label_btn.setChecked)  # Connect to method to toggle path drawing
 
         # Add Text Button
         add_text_btn = QAction('Text', self)
-        add_text_btn.setToolTip('''Shortcuts:
+        add_text_btn.setToolTip('''Text Tool:
         Command+T (MacOS) or Control+T (Windows)''')
         add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
         add_text_btn.triggered.connect(self.use_text)
 
         # Erase Button
         erase_btn = QAction('Erase', self)
-        erase_btn.setToolTip('''Shortcut:
+        erase_btn.setToolTip('''Erase Tool:
         Key-E''')
         erase_btn.setShortcut(QKeySequence('E'))
         erase_btn.triggered.connect(self.use_erase)
 
         # Set Layer Button
         layer_set_btn = QAction('Set Layer', self)
-        layer_set_btn.setToolTip('''Shortcuts:
+        layer_set_btn.setToolTip('''Set Layer Tool:
         Command+L (MacOS) or Control+L (Windows)''')
         layer_set_btn.setShortcut(QKeySequence('Ctrl+L'))
         layer_set_btn.triggered.connect(self.set_layer)
 
         # Rotate Manager Button
         rotate_btn = QAction('Rotate', self)
-        rotate_btn.setToolTip('''Shortcuts:
+        rotate_btn.setToolTip('''Rotate Tool:
         Command+3 (MacOS) or Control+3 (Windows), or Key-R''')
         rotate_btn.setShortcut(QKeySequence('Ctrl+3'))
         rotate_btn.triggered.connect(self.show_rotate_manager)
 
         # Scale Manager Button
         scale_btn = QAction('Scale', self)
-        scale_btn.setToolTip('''Shortcuts:
+        scale_btn.setToolTip('''Scale Tool:
         Command+4 (MacOS) or Control+4 (Windows), or Key-S''')
         scale_btn.setShortcut(QKeySequence('Ctrl+4'))
         scale_btn.triggered.connect(self.show_scale_manager)
 
         # Lock Item Button
         lock_btn = QAction('Lock Item', self)
-        lock_btn.setToolTip('''Shortcuts: 
+        lock_btn.setToolTip('''Lock Position Tool: 
         Command+X (MacOS) or Control+X (Windows)''')
         lock_btn.setShortcut(QKeySequence('Ctrl+X'))
         lock_btn.triggered.connect(self.lock_item)
 
         # Unlock Item Button
         unlock_btn = QAction('Unlock Item', self)
-        unlock_btn.setToolTip('''Shortcuts: 
+        unlock_btn.setToolTip('''Unlock Position Tool: 
         Command+B (MacOS) or Control+B (Windows)''')
         unlock_btn.setShortcut(QKeySequence('Ctrl+B'))
         unlock_btn.triggered.connect(self.unlock_item)
 
         # Create Group Button
         group_create_btn = QAction('Group Create', self)
-        group_create_btn.setToolTip('''Shortcut: 
+        group_create_btn.setToolTip('''Group Create Tool: 
         Key-G''')
         group_create_btn.setShortcut(QKeySequence('G'))
         group_create_btn.triggered.connect(self.create_group)
 
         # Insert Button
         insert_btn = QAction('Insert', self)
-        insert_btn.setToolTip('''Shortcut:
+        insert_btn.setToolTip('''Insert Tool:
         Key-I''')
         insert_btn.setShortcut(QKeySequence('I'))
         insert_btn.triggered.connect(self.insert_image)
 
         # Export Button
         export_btn = QAction('Export', self)
-        export_btn.setToolTip('''Shortcuts:
+        export_btn.setToolTip('''Export Tool:
         Command+E (MacOS) or Control+E (Windows)''')
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
         export_btn.triggered.connect(self.export)
