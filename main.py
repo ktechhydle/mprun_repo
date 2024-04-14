@@ -462,7 +462,14 @@ Date:   """)
         painter.end()
 
         # Save the image to file
-        image.save(filename)
+        success = image.save(filename)
+
+        if success:
+            # If saving was successful, show a notification
+            QMessageBox.information(self, "Export Finished", "Export completed successfully.")
+        else:
+            # If saving failed, show an error notification
+            QMessageBox.critical(self, "Export Error", "Failed to export canvas to file.")
 
     def export(self):
         options = QFileDialog.Options()
@@ -511,6 +518,10 @@ Date:   """)
                 # End painting
                 painter.end()
 
+                # Show export finished notification
+                QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
+                                        QMessageBox.Ok)
+
             elif selected_extension == '.pdf':
                 # Export as PDF
                 printer = QPdfWriter(file_path)
@@ -524,6 +535,10 @@ Date:   """)
                 painter = QPainter(printer)
                 self.canvas.render(painter)
                 painter.end()
+
+                # Show export finished notification
+                QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
+                                        QMessageBox.Ok)
 
             else:
                 self.canvas.clearSelection()
