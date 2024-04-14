@@ -69,7 +69,7 @@ class Dialog(CTk):
         self.template_combo.place(x=180, y=40)
 
         # Frame 2
-        frame2 = CTkScrollableFrame(self, width=690, height=300, orientation='horizontal')
+        frame2 = CTkScrollableFrame(self, width=690, height=250, orientation='horizontal')
         frame2.place(x=190, y=215)
 
         # Template select buttons

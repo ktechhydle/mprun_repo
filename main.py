@@ -240,7 +240,7 @@ class MPRUN(QMainWindow):
         # Canvas, canvas color
         self.canvas = QGraphicsScene()
         width = 64000
-        height= 64000
+        height = 64000
         self.canvas.setSceneRect(-width//2, -height//2, width, height)
         brush1 = QBrush(QColor('#545454'))
         self.canvas.setBackgroundBrush(brush1)
@@ -402,7 +402,6 @@ Date:   """)
         data = self.layer_combo.itemData(index)
         item = self.canvas.selectedItems()
         for items in item:
-            z = items.zValue()
             items.setZValue(data)
 
     def lock_item(self):
