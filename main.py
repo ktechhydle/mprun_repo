@@ -449,15 +449,16 @@ Date:   """)
 
 
     def export_canvas(self, filename):
-        # Create a QImage with the size of the scene
-        image = QImage(self.paper.boundingRect().size().toSize(), QImage.Format_ARGB32)
+        # Create a QImage with the size of the QGraphicsRectItem
+        rect = self.paper.boundingRect()
+        image = QImage(rect.size().toSize(), QImage.Format_ARGB32)
 
         # Fill the image with transparent background
-        image.fill(0)
+        image.fill(Qt.transparent)
 
-        # Render the scene onto the image
+        # Render the QGraphicsRectItem onto the image
         painter = QPainter(image)
-        self.canvas.render(painter)
+        self.canvas.render(painter, target=QRectF(image.rect()), source=rect)
         painter.end()
 
         # Save the image to file

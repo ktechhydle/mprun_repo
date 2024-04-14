@@ -55,11 +55,11 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
                 # Set the position relative to the scene's coordinate system
                 self.setPos(x, y)
             else:
-                # Call the superclass's mouseMoveEvent to move the item as normal
+                # Call the superclasses mouseMoveEvent to move the item as normal
                 super().mouseMoveEvent(event)
 
         else:
-            # Call the superclass's mouseMoveEvent to move the item as normal
+            # Call the superclasses mouseMoveEvent to move the item as normal
             super().mouseMoveEvent(event)
             
     def set_grid_size(self, size):
