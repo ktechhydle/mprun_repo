@@ -704,6 +704,10 @@ class CourseElementsWin(QWidget):
         btn6.setText("Halfpipe 1 (22')")
         btn6.clicked.connect(lambda: self.create_img("Course Element/halfpipe 1 (22').svg"))
 
+        btn7 = QPushButton()
+        btn7.setText("Rail 2 (Skinny)")
+        btn7.clicked.connect(lambda: self.create_img("Course Element/rail 2 (skinny).svg"))
+
         # Other Buttons
         import_btn = QPushButton()
         import_btn.setText('Import Course Element...')
@@ -719,6 +723,7 @@ class CourseElementsWin(QWidget):
         self.layout.addWidget(rail_label)
         self.layout.addWidget(btn1)
         self.layout.addWidget(btn2)
+        self.layout.addWidget(btn7)
         self.layout.addWidget(jump_label)
         self.layout.addWidget(btn3)
         self.layout.addWidget(btn4)
@@ -811,6 +816,13 @@ class RotateManager(QWidget):
     def rotate(self, value):
         items = self.canvas.selectedItems()
         for item in items:
+            # Calculate the center point of the item
+            center = item.boundingRect().center()
+
+            # Set the transformation origin to the center point
+            item.setTransformOriginPoint(center)
+
+            # Rotate the item
             item.setRotation(value)
 
 class ScaleManager(QWidget):
@@ -851,6 +863,12 @@ class ScaleManager(QWidget):
             value = float(value)
             items = self.canvas.selectedItems()
             for item in items:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
                 item.setScale(value)
         except ValueError:
             pass
@@ -860,6 +878,12 @@ class ScaleManager(QWidget):
             value = float(value)
             items = self.canvas.selectedItems()
             for item in items:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
                 transform = QTransform()
                 transform.scale(value, 1.0)
                 item.setTransform(transform)
@@ -871,6 +895,12 @@ class ScaleManager(QWidget):
             value = float(value)
             items = self.canvas.selectedItems()
             for item in items:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
                 transform = QTransform()
                 transform.scale(1.0, value)
                 item.setTransform(transform)
