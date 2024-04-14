@@ -160,6 +160,7 @@ class CustomGraphicsView(QGraphicsView):
                 self.canvas.update()
                 self.last_point = event.pos()
 
+                # Remove temporary path
                 if self.temp_path_item:
                     self.canvas.removeItem(self.temp_path_item)
 
@@ -168,13 +169,23 @@ class CustomGraphicsView(QGraphicsView):
                 self.temp_path_item.setPen(self.pen)
                 self.temp_path_item.setZValue(2)
 
+                # Add item
                 self.canvas.addItem(self.temp_path_item)
+
+                # Create a custom tooltip
+                scene_pos = self.mapToScene(event.pos())
+                QToolTip.showText(event.pos(), f'dx{scene_pos.x()}, dy{scene_pos.y()}')
 
                 self.canvas.update()
 
         elif self.button2.isChecked():
             if event.button() == Qt.LeftButton:
                 self.path2.lineTo(self.mapToScene(event.pos()))
+
+                # Create a custom tooltip
+                scene_pos = self.mapToScene(event.pos())
+                QToolTip.showText(event.pos(), f'dx{scene_pos.x()}, dy{scene_pos.y()}')
+
                 self.canvas.update()
 
         super().mouseMoveEvent(event)
