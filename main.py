@@ -255,12 +255,9 @@ class MPRUN(QMainWindow):
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
-        self.stroke_size_spin.valueChanged.connect(lambda: self.canvas_view.update_pen(
-            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)))
-        self.stroke_style_combo.currentIndexChanged.connect(lambda: self.canvas_view.update_pen(
-            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)))
-        self.stroke_pencap_combo.currentIndexChanged.connect(lambda: self.canvas_view.update_pen(
-            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)))
+        self.stroke_size_spin.valueChanged.connect(self.update_pen)
+        self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
+        self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
 
         if self.path_btn.isChecked():
             self.canvas_view.update_pen(
