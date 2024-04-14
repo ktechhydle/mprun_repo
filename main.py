@@ -117,7 +117,7 @@ class MPRUN(QMainWindow):
         pan_btn.triggered.connect(self.use_pan)
 
         # Path draw button
-        self.path_btn = QAction("Path", self)
+        self.path_btn = QAction(QIcon('logos and icons/Tool Icons/path_draw_icon.png'), '', self)
         self.path_btn.setCheckable(True)
         self.path_btn.setToolTip('''Path Draw Tool:
         Key-L''')
@@ -140,7 +140,7 @@ class MPRUN(QMainWindow):
         add_text_btn.triggered.connect(self.use_text)
 
         # Erase Button
-        erase_btn = QAction('Erase', self)
+        erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
         erase_btn.setToolTip('''Erase Tool:
         Key-E''')
         erase_btn.setShortcut(QKeySequence('E'))
