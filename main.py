@@ -29,8 +29,9 @@ class MPRUN(QMainWindow):
         self.outline_color.set('black')
         self.fill_color.set('black')
 
-        # GSNAP Grid Size
+        # Grid Size and rotating screens
         self.gsnap_grid_size = 10
+        self.screen_rotate_size = 0
 
         # Create GUI
         self.create_menu()
@@ -95,7 +96,8 @@ class MPRUN(QMainWindow):
         #----toolbar buttons----#
 
         #Image
-        icon = QAction(QIcon('logos and icons/MPRUN_icon.png'), '', self)
+        icon = QAction(QIcon('logos and icons/rotate_screen_icon.png'), '', self)
+        icon.triggered.connect(self.use_rotate_screen)
 
         # Select Button
         select_btn = QAction('Select', self)
@@ -387,6 +389,13 @@ Date:   """)
         text.setPos(200, 200)
 
         self.create_item_attributes(text)
+
+    def use_rotate_screen(self):
+        self.screen_rotate_size += 90
+        transform = QTransform()
+        transform.rotate(self.screen_rotate_size)
+
+        self.canvas_view.setTransform(transform)
 
     def set_layer(self):
         index = self.layer_combo.currentIndex()
