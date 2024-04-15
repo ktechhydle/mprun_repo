@@ -182,7 +182,7 @@ class EditableTextBlock(QGraphicsTextItem):
         self.locked = True
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2):
+    def __init__(self, canvas, button, button2, button3):
         super().__init__()
         # Set flags
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
@@ -194,6 +194,7 @@ class CustomGraphicsView(QGraphicsView):
         # Set widgets
         self.button = button
         self.button2 = button2
+        self.button3 = button3
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
@@ -289,6 +290,9 @@ class CustomGraphicsView(QGraphicsView):
                 # Load path as QGraphicsItem
                 path_item = CustomPathItem(self.path)
                 path_item.setPen(self.pen)
+                if self.button3.isChecked():
+                    path_item.setBrush(QBrush(QColor('white')))
+
                 path_item.setZValue(2)
 
                 # Add item

@@ -96,6 +96,11 @@ class MPRUN(QMainWindow):
         self.gsnap_label.setStyleSheet("font-size: 10px;")
         self.gsnap_check_btn = QCheckBox(self)
 
+        # Stroke fill related widgets
+        stroke_fill_label = QLabel('Stroke Fill Enabled:', self)
+        stroke_fill_label.setStyleSheet("font-size: 10px;")
+        self.stroke_fill_check_btn = QCheckBox(self)
+
         #----toolbar buttons----#
 
         #Image
@@ -266,6 +271,8 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(self.gsnap_label)
         self.action_toolbar.addWidget(self.gsnap_check_btn)
+        self.action_toolbar.addWidget(stroke_fill_label)
+        self.action_toolbar.addWidget(self.stroke_fill_check_btn)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(self.stroke_size_spin)
         self.action_toolbar.addWidget(self.outline_color_btn)
@@ -291,7 +298,7 @@ class MPRUN(QMainWindow):
         data2 = self.stroke_pencap_combo.itemData(index2)
         
         # Set flags for view
-        self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
+        self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn, self.stroke_fill_check_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setScene(self.canvas)
