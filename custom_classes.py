@@ -65,6 +65,54 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
     def set_grid_size(self, size):
         self.block_size = size
 
+class CustomPathItem(QGraphicsPathItem):
+    def __init__(self, widget, parent=None):
+        super().__init__(parent)
+
+    def paint(self, painter, option, widget=None):
+        # Call the parent class paint method first
+        super().paint(painter, option, widget)
+
+        # If the item is selected, draw a custom selection highlight
+        if option.state & QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setColor(QColor("#007bff"))
+            pen.setWidth(2)
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
+
+class CustomPixmapItem(QGraphicsPixmapItem):
+    def __init__(self, widget, parent=None):
+        super().__init__(parent)
+
+    def paint(self, painter, option, widget=None):
+        # Call the parent class paint method first
+        super().paint(painter, option, widget)
+
+        # If the item is selected, draw a custom selection highlight
+        if option.state & QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setColor(QColor("#007bff"))
+            pen.setWidth(2)
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
+
+class CustomSvgItem(QGraphicsSvgItem):
+    def __init__(self, widget, parent=None):
+        super().__init__(parent)
+
+    def paint(self, painter, option, widget=None):
+        # Call the parent class paint method first
+        super().paint(painter, option, widget)
+
+        # If the item is selected, draw a custom selection highlight
+        if option.state & QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setColor(QColor("#007bff"))
+            pen.setWidth(2)
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
+
 class EditableTextBlock(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)

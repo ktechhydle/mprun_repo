@@ -12,7 +12,7 @@ class MPRUN(QMainWindow):
         super().__init__()
         # Creating the main window
         self.setWindowTitle('MPRUN - Workspace')
-        self.setWindowIcon(QIcon('logos and icons/MPRUN_icon.ico'))
+        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
 
@@ -51,6 +51,7 @@ class MPRUN(QMainWindow):
 
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
+        self.action_toolbar.setStyleSheet('QToolBar{spacing: 3px;}')
         self.addToolBar(self.action_toolbar)
 
         #----action toolbar widgets----#
@@ -110,7 +111,7 @@ class MPRUN(QMainWindow):
         select_btn.triggered.connect(self.use_select)
 
         # Pan Button
-        pan_btn = QAction('Pan', self)
+        pan_btn = QAction(QIcon('logos and icons/Tool Icons/pan_icon.png'), '', self)
         pan_btn.setToolTip('''Pan Tool:
         Key-P''')
         pan_btn.setShortcut(QKeySequence("P"))
@@ -125,7 +126,7 @@ class MPRUN(QMainWindow):
         self.path_btn.triggered.connect(self.path_btn.setChecked)  # Connect to method to toggle path drawing
 
         # Label draw button
-        self.label_btn = QAction("Line and Label", self)
+        self.label_btn = QAction(QIcon('logos and icons/Tool Icons/line_and_label_icon.png'), "", self)
         self.label_btn.setCheckable(True)
         self.label_btn.setToolTip('''Line and Label Tool:
         Key-T''')
@@ -133,7 +134,7 @@ class MPRUN(QMainWindow):
         self.label_btn.triggered.connect(self.label_btn.setChecked)  # Connect to method to toggle path drawing
 
         # Add Text Button
-        add_text_btn = QAction('Text', self)
+        add_text_btn = QAction(QIcon('logos and icons/Tool Icons/text_icon.png'), '', self)
         add_text_btn.setToolTip('''Text Tool:
         Command+T (MacOS) or Control+T (Windows)''')
         add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
@@ -147,63 +148,63 @@ class MPRUN(QMainWindow):
         erase_btn.triggered.connect(self.use_erase)
 
         # Set Layer Button
-        layer_set_btn = QAction('Set Layer', self)
+        layer_set_btn = QAction(QIcon('logos and icons/Tool Icons/set_layer_icon.png'), '', self)
         layer_set_btn.setToolTip('''Set Layer Tool:
         Command+L (MacOS) or Control+L (Windows)''')
         layer_set_btn.setShortcut(QKeySequence('Ctrl+L'))
-        layer_set_btn.triggered.connect(self.set_layer)
+        layer_set_btn.triggered.connect(self.use_set_layer)
 
         # Rotate Manager Button
-        rotate_btn = QAction('Rotate', self)
+        rotate_btn = QAction(QIcon('logos and icons/Tool Icons/rotate_icon.png'), '', self)
         rotate_btn.setToolTip('''Rotate Tool:
         Key-R''')
         rotate_btn.setShortcut(QKeySequence('Ctrl+3'))
         rotate_btn.triggered.connect(self.show_rotate_manager)
 
         # Scale Manager Button
-        scale_btn = QAction('Scale', self)
+        scale_btn = QAction(QIcon('logos and icons/Tool Icons/scale_icon.png'), '', self)
         scale_btn.setToolTip('''Scale Tool:
         Key-S''')
         scale_btn.setShortcut(QKeySequence('Ctrl+4'))
         scale_btn.triggered.connect(self.show_scale_manager)
 
         # Lock Item Button
-        lock_btn = QAction('Lock Item', self)
+        lock_btn = QAction(QIcon('logos and icons/Tool Icons/lock_icon.png'), '', self)
         lock_btn.setToolTip('''Lock Position Tool: 
         Command+X (MacOS) or Control+X (Windows)''')
         lock_btn.setShortcut(QKeySequence('Ctrl+X'))
         lock_btn.triggered.connect(self.lock_item)
 
         # Unlock Item Button
-        unlock_btn = QAction('Unlock Item', self)
+        unlock_btn = QAction(QIcon('logos and icons/Tool Icons/unlock_icon.png'), '', self)
         unlock_btn.setToolTip('''Unlock Position Tool: 
         Command+B (MacOS) or Control+B (Windows)''')
         unlock_btn.setShortcut(QKeySequence('Ctrl+B'))
         unlock_btn.triggered.connect(self.unlock_item)
 
         # Create Group Button
-        group_create_btn = QAction('Group Create', self)
+        group_create_btn = QAction(QIcon('logos and icons/Tool Icons/group_icon.png'), '', self)
         group_create_btn.setToolTip('''Group Create Tool: 
         Key-G''')
         group_create_btn.setShortcut(QKeySequence('G'))
         group_create_btn.triggered.connect(self.create_group)
 
         # Refill Button
-        refill_button = QAction('Refill', self)
+        refill_button = QAction(QIcon('logos and icons/Tool Icons/refill_icon.png'), '', self)
         refill_button.setToolTip('''Refill Tool: 
         Key-U''')
         refill_button.setShortcut(QKeySequence('U'))
         refill_button.triggered.connect(self.use_refill)
 
         # Insert Button
-        insert_btn = QAction('Insert', self)
+        insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
         insert_btn.setToolTip('''Insert Tool:
         Key-I''')
         insert_btn.setShortcut(QKeySequence('I'))
         insert_btn.triggered.connect(self.insert_image)
 
         # Export Button
-        export_btn = QAction('Export', self)
+        export_btn = QAction(QIcon('logos and icons/Tool Icons/export_icon.png'), '', self)
         export_btn.setToolTip('''Export Tool:
         Command+E (MacOS) or Control+E (Windows)''')
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
@@ -366,21 +367,26 @@ Date:   """)
         self.outline_color.set(self.outline_color_dialog.getColor())
 
     def launch_course_elements(self):
+        self.path_btn.setChecked(False)
         self.course_elements = CourseElementsWin(self.canvas)
         self.course_elements.show()
 
     def show_rotate_manager(self):
+        self.path_btn.setChecked(False)
         self.rotate_manger = RotateManager(self.canvas)
         self.rotate_manger.show()
 
     def show_scale_manager(self):
+        self.path_btn.setChecked(False)
         self.scale_manager = ScaleManager(self.canvas)
         self.scale_manager.show()
 
     def use_select(self):
+        self.path_btn.setChecked(False)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def use_pan(self):
+        self.path_btn.setChecked(False)
         self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_erase(self):
@@ -393,6 +399,7 @@ Date:   """)
         self.path_btn.setChecked(True)
 
     def use_text(self):
+        self.path_btn.setChecked(False)
         text = EditableTextBlock('An Editable Text Block')
         text.setDefaultTextColor(QColor(self.outline_color.get()))
 
@@ -403,6 +410,7 @@ Date:   """)
         self.create_item_attributes(text)
 
     def use_rotate_screen(self):
+        self.path_btn.setChecked(False)
         self.screen_rotate_size += 90
         transform = QTransform()
         transform.rotate(self.screen_rotate_size)
@@ -410,6 +418,7 @@ Date:   """)
         self.canvas_view.setTransform(transform)
 
     def use_refill(self):
+        self.path_btn.setChecked(False)
         for item in self.canvas.selectedItems():
             if isinstance(item, QGraphicsPathItem):
                 index1 = self.stroke_style_combo.currentIndex()
@@ -426,7 +435,8 @@ Date:   """)
             elif isinstance(item, QGraphicsTextItem):
                 item.setDefaultTextColor(QColor(self.outline_color.get()))
 
-    def set_layer(self):
+    def use_set_layer(self):
+        self.path_btn.setChecked(False)
         index = self.layer_combo.currentIndex()
         data = self.layer_combo.itemData(index)
         item = self.canvas.selectedItems()
@@ -434,6 +444,7 @@ Date:   """)
             items.setZValue(data)
 
     def lock_item(self):
+        self.path_btn.setChecked(False)
         item = self.canvas.selectedItems()
 
         for items in item:
@@ -441,12 +452,16 @@ Date:   """)
             items.setToolTip('Locked MPRUN Element')
 
     def unlock_item(self):
+        self.path_btn.setChecked(False)
         item = self.canvas.selectedItems()
+
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable)
             items.setToolTip('Free MPRUN Element')
 
     def insert_image(self):
+        self.path_btn.setChecked(False)
+
         # Create Options
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -478,6 +493,8 @@ Date:   """)
 
 
     def export_canvas(self, filename):
+        self.path_btn.setChecked(False)
+
         # Create a QImage with the size of the QGraphicsRectItem
         rect = self.paper.boundingRect()
         image = QImage(rect.size().toSize(), QImage.Format_ARGB32)
@@ -501,6 +518,8 @@ Date:   """)
             QMessageBox.critical(self, "Export Error", "Failed to export canvas to file.")
 
     def export(self):
+        self.path_btn.setChecked(False)
+
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
 
@@ -575,6 +594,8 @@ Date:   """)
 
 
     def create_group(self):
+        self.path_btn.setChecked(False)
+
         if self.group is not None:
             self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
             self.group.set_grid_size(self.gsnap_grid_size)
@@ -678,6 +699,7 @@ class CourseElementsWin(QWidget):
         self.canvas = canvas
 
         self.setWindowTitle('Course Elements Picker')
+        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(50, 100, 300, 250)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
@@ -763,7 +785,7 @@ class CourseElementsWin(QWidget):
         self.layout.addWidget(import_btn)
 
     def create_img(self, svg_file):
-        svg_item = QGraphicsSvgItem(svg_file)
+        svg_item = CustomSvgItem(svg_file)
         self.canvas.addItem(svg_item)
         svg_item.setPos(450, 300)
         svg_item.setToolTip('MPRUN Course Element')
@@ -826,6 +848,7 @@ class RotateManager(QWidget):
         self.canvas = canvas
 
         self.setWindowTitle('Rotate Manager')
+        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(50, 373, 300, 50)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
@@ -860,6 +883,7 @@ class ScaleManager(QWidget):
         self.canvas = canvas
 
         self.setWindowTitle('Scale Manager')
+        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(50, 456, 300, 50)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
