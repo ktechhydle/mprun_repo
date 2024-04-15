@@ -2,3 +2,4 @@ PyQt5~=5.15.10
 pillow~=10.3.0
 customtkinter~=5.2.2
 numpy~=1.26.4
+pixels2svg~=0.2.2
