@@ -23,6 +23,7 @@ class MPRUN(QMainWindow):
 
         # File
         self.file_name = None
+        self.another_main_window = None
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -117,6 +118,13 @@ class MPRUN(QMainWindow):
         Key-P''')
         pan_btn.setShortcut(QKeySequence("P"))
         pan_btn.triggered.connect(self.use_pan)
+
+        # Refit Button
+        refit_btn = QAction(QIcon('logos and icons/Tool Icons/refit_view_icon.png'), '', self)
+        refit_btn.setToolTip('''Refit View Tool:
+        Key-W''')
+        refit_btn.setShortcut(QKeySequence("W"))
+        refit_btn.triggered.connect(self.use_refit_screen)
 
         # Path draw button
         self.path_btn = QAction(QIcon('logos and icons/Tool Icons/path_draw_icon.png'), '', self)
@@ -230,6 +238,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(select_btn)
         self.toolbar.addAction(pan_btn)
+        self.toolbar.addAction(refit_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(self.path_btn)
         self.toolbar.addAction(erase_btn)
@@ -285,8 +294,14 @@ class MPRUN(QMainWindow):
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
+        self.canvas_view.setScene(self.canvas)
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
+        # Use default tools
+        self.use_select()
+        self.setCentralWidget(self.canvas_view)
+
+        # If any stroke changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
@@ -294,10 +309,6 @@ class MPRUN(QMainWindow):
         if self.path_btn.isChecked():
             self.canvas_view.update_pen(
                 QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
-
-        self.canvas_view.setScene(self.canvas)
-        self.use_select()
-        self.setCentralWidget(self.canvas_view)
 
         # Drawing paper
         self.paper = QGraphicsRectItem(0, 0, 1000, 700)
@@ -322,8 +333,11 @@ Date:   """)
         self.paper_text.setToolTip(f"Locked Text Block (This item's position is locked)")
         self.canvas.addItem(self.paper_text)
 
-        # Create initial group
+        # Create initial group (This method is used to set grid size)
         self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
+
+        # Refit view after everything
+        self.use_refit_screen()
 
     def keyPressEvent(self, event):
         if event.key() == QKeySequence('Backspace'):
@@ -412,6 +426,8 @@ Date:   """)
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
 
+        self.canvas_view.fitInView(self.paper.boundingRect(), Qt.KeepAspectRatio)
+
     def use_erase(self):
         self.label_btn.setChecked(False)
         index1 = self.stroke_style_combo.currentIndex()
@@ -481,7 +497,7 @@ Date:   """)
                 try:
                     pixels2svg(input_path=item.return_filename(), output_path='Vector Converts/output.svg')
 
-                    # Display inforamation
+                    # Display information
                     QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
 
                     # Add the item to the scene
@@ -690,7 +706,6 @@ Date:   """)
                 self.canvas.clearSelection()
                 self.export_canvas(file_path)
 
-
     def create_group(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
@@ -784,12 +799,18 @@ Date:   """)
         else:
             pass
 
+        # Refit screen
+        self.use_refit_screen()
+
     def custom_template(self, x, y, default_text, grid_size):
         self.group.set_grid_size(grid_size)
         self.gsnap_grid_size = grid_size
         self.paper.setRect(-100, -100, x-100, y-100)
         self.paper_text.setPlainText(default_text)
         self.paper_text.setPos(-98, -98)
+
+        # Refit screen
+        self.use_refit_screen()
 
 class CourseElementsWin(QWidget):
     def __init__(self, canvas):
