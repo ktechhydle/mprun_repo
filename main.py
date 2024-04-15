@@ -196,12 +196,12 @@ class MPRUN(QMainWindow):
         group_create_btn.setShortcut(QKeySequence('G'))
         group_create_btn.triggered.connect(self.create_group)
 
-        # Refill Button
-        refill_button = QAction(QIcon('logos and icons/Tool Icons/refill_icon.png'), '', self)
-        refill_button.setToolTip('''Refill Tool: 
+        # Restroke Button
+        restroke_button = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), '', self)
+        restroke_button.setToolTip('''Restroke Tool: 
         Key-U''')
-        refill_button.setShortcut(QKeySequence('U'))
-        refill_button.triggered.connect(self.use_refill)
+        restroke_button.setShortcut(QKeySequence('U'))
+        restroke_button.triggered.connect(self.use_refill)
 
         # Insert Button
         insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
@@ -236,7 +236,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(permanent_lock_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
-        self.toolbar.addAction(refill_button)
+        self.toolbar.addAction(restroke_button)
         self.toolbar.addSeparator()
         self.toolbar.addAction(insert_btn)
         self.toolbar.addAction(export_btn)
