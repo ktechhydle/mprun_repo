@@ -199,6 +199,7 @@ class CustomGraphicsView(QGraphicsView):
         self.temp_path_item = None
         self.pen = None
         self.stroke_fill_color = None
+        self.layer_height = None
 
         # Add methods for zooming
         self.zoomInFactor = 1.25

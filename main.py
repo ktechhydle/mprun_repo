@@ -20,6 +20,7 @@ class MPRUN(QMainWindow):
         # Drawing undoing, redoing
         self.last_drawing = []
         self.drawing_history = []
+        self.duplicate_stack = []
 
         # File
         self.file_name = None
@@ -29,7 +30,7 @@ class MPRUN(QMainWindow):
         self.outline_color = item_stack()
         self.fill_color = item_stack()
         self.outline_color.set('black')
-        self.fill_color.set('black')
+        self.fill_color.set('white')
 
         # Grid Size and rotating screens
         self.gsnap_grid_size = 10
@@ -73,6 +74,12 @@ class MPRUN(QMainWindow):
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.outline_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
+
+        # Fill Color Button
+        fill_color_btn = QPushButton('Fill Color', self)
+        fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
+        fill_color_btn.clicked.connect(self.fill_color_chooser)
+        fill_color_btn.clicked.connect(self.update_pen)
 
         # Course Elements Launcher Button
         course_elements_launcher_btn = QPushButton('Course Elements Picker', self)
@@ -182,6 +189,13 @@ class MPRUN(QMainWindow):
         scale_btn.setShortcut(QKeySequence('Ctrl+4'))
         scale_btn.triggered.connect(self.show_scale_manager)
 
+        # Duplicate Button
+        duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/refit_view_icon.png'), '', self)
+        duplicate_btn.setToolTip('''Duplicate Tool:
+        Command+V (MacOS) or Control+V (Windows)''')
+        duplicate_btn.setShortcut(QKeySequence("Ctrl+V"))
+        duplicate_btn.triggered.connect(self.use_duplicate)
+
         # Lock Item Button
         lock_btn = QAction(QIcon('logos and icons/Tool Icons/lock_icon.png'), '', self)
         lock_btn.setToolTip('''Lock Position Tool: 
@@ -253,6 +267,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(rotate_btn)
         self.toolbar.addAction(scale_btn)
+        self.toolbar.addAction(duplicate_btn)
         self.toolbar.addAction(lock_btn)
         self.toolbar.addAction(unlock_btn)
         self.toolbar.addAction(permanent_lock_btn)
@@ -278,6 +293,8 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(self.outline_color_btn)
         self.action_toolbar.addWidget(self.stroke_style_combo)
         self.action_toolbar.addWidget(self.stroke_pencap_combo)
+        self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(fill_color_btn)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(course_elements_launcher_btn)
         self.action_toolbar.addSeparator()
@@ -317,7 +334,7 @@ class MPRUN(QMainWindow):
         if self.path_btn.isChecked():
             self.canvas_view.update_pen(
                 QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
-            self.canvas_view.update_stroke_fill_color(self.outline_color.get())
+            self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Drawing paper
         self.paper = QGraphicsRectItem(0, 0, 1000, 700)
@@ -401,11 +418,15 @@ Date:   """)
         data2 = self.stroke_pencap_combo.itemData(index2)
         self.canvas_view.update_pen(
             QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
-        self.canvas_view.update_stroke_fill_color(self.outline_color.get())
+        self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
     def outline_color_chooser(self):
         self.outline_color_dialog = QColorDialog(self)
         self.outline_color.set(self.outline_color_dialog.getColor())
+
+    def fill_color_chooser(self):
+        self.fill_color_dialog = QColorDialog(self)
+        self.fill_color.set(self.fill_color_dialog.getColor())
 
     def launch_course_elements(self):
         self.path_btn.setChecked(False)
@@ -522,6 +543,24 @@ Date:   """)
 
             else:
                 pass
+
+    def use_duplicate(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        items = self.canvas.selectedItems()
+        self.duplicate_stack.append(items)
+
+        for item in items:
+            try:
+                items = self.duplicate_stack.pop()
+
+                print(self.duplicate_stack)
+
+                self.canvas.addItem(items)
+
+            except Exception as e:
+                print(e)
 
     def lock_item(self):
         self.label_btn.setChecked(False)
