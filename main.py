@@ -45,7 +45,7 @@ class MPRUN(QMainWindow):
     def create_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
-        self.toolbar.setIconSize(QSize(16, 16))
+        self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setOrientation(Qt.Vertical)
         self.addToolBar(self.toolbar)
 
@@ -156,14 +156,14 @@ class MPRUN(QMainWindow):
         # Rotate Manager Button
         rotate_btn = QAction('Rotate', self)
         rotate_btn.setToolTip('''Rotate Tool:
-        Command+3 (MacOS) or Control+3 (Windows), or Key-R''')
+        Key-R''')
         rotate_btn.setShortcut(QKeySequence('Ctrl+3'))
         rotate_btn.triggered.connect(self.show_rotate_manager)
 
         # Scale Manager Button
         scale_btn = QAction('Scale', self)
         scale_btn.setToolTip('''Scale Tool:
-        Command+4 (MacOS) or Control+4 (Windows), or Key-S''')
+        Key-S''')
         scale_btn.setShortcut(QKeySequence('Ctrl+4'))
         scale_btn.triggered.connect(self.show_scale_manager)
 
@@ -187,6 +187,13 @@ class MPRUN(QMainWindow):
         Key-G''')
         group_create_btn.setShortcut(QKeySequence('G'))
         group_create_btn.triggered.connect(self.create_group)
+
+        # Refill Button
+        refill_button = QAction('Refill', self)
+        refill_button.setToolTip('''Refill Tool: 
+        Key-U''')
+        refill_button.setShortcut(QKeySequence('U'))
+        refill_button.triggered.connect(self.use_refill)
 
         # Insert Button
         insert_btn = QAction('Insert', self)
@@ -220,6 +227,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(unlock_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
+        self.toolbar.addAction(refill_button)
         self.toolbar.addSeparator()
         self.toolbar.addAction(insert_btn)
         self.toolbar.addAction(export_btn)
@@ -228,6 +236,7 @@ class MPRUN(QMainWindow):
         # Add action toolbar actions
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(self.layer_combo)
+        self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(self.gsnap_label)
         self.action_toolbar.addWidget(self.gsnap_check_btn)
         self.action_toolbar.addSeparator()
@@ -399,6 +408,23 @@ Date:   """)
         transform.rotate(self.screen_rotate_size)
 
         self.canvas_view.setTransform(transform)
+
+    def use_refill(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, QGraphicsPathItem):
+                index1 = self.stroke_style_combo.currentIndex()
+                data1 = self.stroke_style_combo.itemData(index1)
+                index2 = self.stroke_pencap_combo.currentIndex()
+                data2 = self.stroke_pencap_combo.itemData(index2)
+
+                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
+                item.setPen(pen)
+
+            elif isinstance(item, EditableTextBlock):
+                item.setDefaultTextColor(QColor(self.outline_color.get()))
+
+            elif isinstance(item, QGraphicsTextItem):
+                item.setDefaultTextColor(QColor(self.outline_color.get()))
 
     def set_layer(self):
         index = self.layer_combo.currentIndex()
