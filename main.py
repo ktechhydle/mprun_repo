@@ -400,13 +400,20 @@ Date:   """)
 
     def use_select(self):
         self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def use_pan(self):
         self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
         self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
+    def use_refit_screen(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
     def use_erase(self):
+        self.label_btn.setChecked(False)
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
@@ -416,6 +423,7 @@ Date:   """)
         self.path_btn.setChecked(True)
 
     def use_text(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
         text = EditableTextBlock('An Editable Text Block')
         text.setDefaultTextColor(QColor(self.outline_color.get()))
@@ -427,6 +435,7 @@ Date:   """)
         self.create_item_attributes(text)
 
     def use_rotate_screen(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
         self.screen_rotate_size += 90
         transform = QTransform()
@@ -435,6 +444,7 @@ Date:   """)
         self.canvas_view.setTransform(transform)
 
     def use_refill(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
         for item in self.canvas.selectedItems():
             if isinstance(item, QGraphicsPathItem):
@@ -453,6 +463,7 @@ Date:   """)
                 item.setDefaultTextColor(QColor(self.outline_color.get()))
 
     def use_set_layer(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
         index = self.layer_combo.currentIndex()
         data = self.layer_combo.itemData(index)
@@ -461,13 +472,16 @@ Date:   """)
             items.setZValue(data)
 
     def use_vectorize(self):
-        for item in self.canvas.selectedItems():
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
 
+        for item in self.canvas.selectedItems():
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
                 try:
                     pixels2svg(input_path=item.return_filename(), output_path='Vector Converts/output.svg')
 
+                    # Display inforamation
                     QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
 
                     # Add the item to the scene
@@ -483,6 +497,7 @@ Date:   """)
                 pass
 
     def lock_item(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
         item = self.canvas.selectedItems()
 
@@ -494,6 +509,7 @@ Date:   """)
                 items.set_locked()
 
     def unlock_item(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
         item = self.canvas.selectedItems()
 
@@ -505,6 +521,7 @@ Date:   """)
                 items.set_unlocked()
 
     def permanent_lock_item(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
         if self.canvas.selectedItems():
@@ -537,6 +554,7 @@ Date:   """)
                 pass
 
     def insert_image(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
         # Create Options
@@ -571,6 +589,7 @@ Date:   """)
 
 
     def export_canvas(self, filename):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
         # Create a QImage with the size of the QGraphicsRectItem
@@ -596,6 +615,7 @@ Date:   """)
             QMessageBox.critical(self, "Export Error", "Failed to export canvas to file.")
 
     def export(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
         options = QFileDialog.Options()
@@ -672,6 +692,7 @@ Date:   """)
 
 
     def create_group(self):
+        self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
         if self.group is not None:
