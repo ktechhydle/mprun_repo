@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
+from pixels2svg import *
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -203,6 +204,13 @@ class MPRUN(QMainWindow):
         restroke_button.setShortcut(QKeySequence('U'))
         restroke_button.triggered.connect(self.use_refill)
 
+        # Vectorize Button
+        vectorize_btn = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), 'Vectorize', self)
+        vectorize_btn.setToolTip('''Vectorize Tool: 
+        Key-V''')
+        vectorize_btn.setShortcut(QKeySequence('V'))
+        vectorize_btn.triggered.connect(self.use_vectorize)
+
         # Insert Button
         insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
         insert_btn.setToolTip('''Insert Tool:
@@ -237,6 +245,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
         self.toolbar.addAction(restroke_button)
+        self.toolbar.addAction(vectorize_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(insert_btn)
         self.toolbar.addAction(export_btn)
@@ -451,6 +460,28 @@ Date:   """)
         for items in item:
             items.setZValue(data)
 
+    def use_vectorize(self):
+        for item in self.canvas.selectedItems():
+
+            if isinstance(item, CustomPixmapItem):
+                # Convert the pixmap to SVG
+                try:
+                    pixels2svg(item.return_filename(), 'Vector Converts/output.svg')
+
+                    QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
+
+                    # Add the item to the scene
+                    item = CustomSvgItem('Vector Converts/output.svg')
+                    self.canvas.addItem(item)
+                    self.create_item_attributes(item)
+                    item.setToolTip('Converted Vector (MPRUN Element)')
+
+                except Exception as e:
+                    QMessageBox.critical(self, "Convert Error", f"Failed to convert bitmap to vector: {e}")
+
+            else:
+                pass
+
     def lock_item(self):
         self.path_btn.setChecked(False)
         item = self.canvas.selectedItems()
@@ -531,6 +562,7 @@ Date:   """)
             else:
                 image1 = QPixmap(file_path)
                 image2 = CustomPixmapItem(image1)
+                image2.store_filename(file_path)
 
                 self.canvas.addItem(image2)
                 image2.setToolTip('Imported Bitmap Item (Not an MPRUN Element)')

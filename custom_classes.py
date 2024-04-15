@@ -100,6 +100,8 @@ class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):
         super().__init__(file)
 
+        self.filename = None
+
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
         super().paint(painter, option, widget)
@@ -113,6 +115,12 @@ class CustomPixmapItem(QGraphicsPixmapItem):
             pen.setColor(QColor("#f06013"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
+
+    def store_filename(self, file):
+        self.filename = file
+
+    def return_filename(self):
+        return str(self.filename)
 
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, file):
