@@ -617,6 +617,8 @@ Date:   """)
 
         # Render the QGraphicsRectItem onto the image
         painter = QPainter(image)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
         self.canvas.render(painter, target=QRectF(image.rect()), source=rect)
         painter.end()
 
@@ -642,17 +644,17 @@ Date:   """)
         file_dialog.setDefaultSuffix('.png')
 
         file_path, selected_filter = file_dialog.getSaveFileName(self, 'Export Canvas', '',
-                                                                 'PNG files (*.png);;JPEG files (*.jpeg);;TIFF files (*.tiff);;PDF files (*.pdf);;SVG files (*.svg)',
+                                                                 'SVG files (*.svg);;PNG files (*.png);;JPEG files (*.jpeg);;TIFF files (*.tiff);;PDF files (*.pdf)',
                                                                  options=options)
 
         if file_path:
             # Get the selected filter's extension
             filter_extensions = {
+                'SVG files (*.svg)': '.svg',
                 'PNG files (*.png)': '.png',
                 'JPEG files (*.jpeg)': '.jpeg',
                 'TIFF files (*.tiff)': '.tiff',
                 'PDF files (*.pdf)': '.pdf',
-                'SVG files (*.svg)': '.svg'
             }
             selected_extension = filter_extensions.get(selected_filter, '.png')
 
@@ -661,28 +663,48 @@ Date:   """)
                 file_path += selected_extension
 
             if selected_extension == '.svg':
-                # Export as SVG
-                svg_generator = QSvgGenerator()
-                svg_generator.setFileName(file_path)
-                svg_generator.setSize(self.paper.boundingRect().size().toSize())
-                svg_generator.setViewBox(self.paper.boundingRect())
+                try:
+                    # Get the bounding rect
+                    rect = self.paper.boundingRect()
 
-                # Clear selection
-                self.canvas.clearSelection()
+                    # Export as SVG
+                    svg_generator = QSvgGenerator()
+                    svg_generator.setFileName(file_path)
+                    svg_generator.setSize(rect.size().toSize())
+                    svg_generator.setViewBox(rect)
 
-                # Create a QPainter to paint onto the QSvgGenerator
-                painter = QPainter()
-                painter.begin(svg_generator)
+                    # Get input for title
+                    title, ok1 = QInputDialog.getText(self, 'SVG Document Title', 'Enter a title for the SVG')
 
-                # Render the scene onto the QPainter
-                self.canvas.render(painter)
+                    if ok1:
+                        svg_generator.setTitle(title)
+                    else:
+                        svg_generator.setTitle('MPRUN SVG Document (Powered by QSvgGenerator)')
 
-                # End painting
-                painter.end()
+                    # Clear selection
+                    self.canvas.clearSelection()
 
-                # Show export finished notification
-                QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
-                                        QMessageBox.Ok)
+                    # Create a QPainter to paint onto the QSvgGenerator
+                    painter = QPainter()
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                    painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+                    painter.begin(svg_generator)
+
+                    # Render the scene onto the QPainter
+                    self.canvas.render(painter, target=self.paper.boundingRect(), source=self.paper.boundingRect())
+
+                    # End painting
+                    painter.end()
+
+                    # Show export finished notification
+                    QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
+                                            QMessageBox.Ok)
+
+                except Exception as e:
+                    # Show export error notification
+                    QMessageBox.information(self, 'Export Failed', f'Export failed: {e}',
+                                            QMessageBox.Ok)
+
 
             elif selected_extension == '.pdf':
                 # Export as PDF
@@ -695,6 +717,8 @@ Date:   """)
 
                 # Create painter, save file
                 painter = QPainter(printer)
+                painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
                 self.canvas.render(painter)
                 painter.end()
 
