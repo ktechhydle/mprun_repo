@@ -304,8 +304,9 @@ class MPRUN(QMainWindow):
         self.canvas_view.setScene(self.canvas)
         self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
 
-        # Use default tools
+        # Use default tools, set central widget
         self.use_select()
+        self.canvas_view.update_stroke_fill_color('white')
         self.setCentralWidget(self.canvas_view)
 
         # If any stroke changes are made, update them
@@ -316,6 +317,7 @@ class MPRUN(QMainWindow):
         if self.path_btn.isChecked():
             self.canvas_view.update_pen(
                 QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
+            self.canvas_view.update_stroke_fill_color(self.outline_color.get())
 
         # Drawing paper
         self.paper = QGraphicsRectItem(0, 0, 1000, 700)
@@ -399,6 +401,7 @@ Date:   """)
         data2 = self.stroke_pencap_combo.itemData(index2)
         self.canvas_view.update_pen(
             QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
+        self.canvas_view.update_stroke_fill_color(self.outline_color.get())
 
     def outline_color_chooser(self):
         self.outline_color_dialog = QColorDialog(self)
@@ -443,6 +446,7 @@ Date:   """)
         data2 = self.stroke_pencap_combo.itemData(index2)
 
         self.canvas_view.update_pen(QPen(QColor('white'), self.stroke_size_spin.value(), data1, data2))
+        self.canvas_view.update_stroke_fill_color('white')
         self.path_btn.setChecked(True)
 
     def use_text(self):

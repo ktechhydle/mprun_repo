@@ -198,6 +198,7 @@ class CustomGraphicsView(QGraphicsView):
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
+        self.stroke_fill_color = None
 
         # Add methods for zooming
         self.zoomInFactor = 1.25
@@ -208,6 +209,9 @@ class CustomGraphicsView(QGraphicsView):
 
     def update_pen(self, pen):
         self.pen = pen
+
+    def update_stroke_fill_color(self, color):
+        self.stroke_fill_color = color
 
     def mousePressEvent(self, event):
         if self.button.isChecked():
@@ -291,7 +295,7 @@ class CustomGraphicsView(QGraphicsView):
                 path_item = CustomPathItem(self.path)
                 path_item.setPen(self.pen)
                 if self.button3.isChecked():
-                    path_item.setBrush(QBrush(QColor('white')))
+                    path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
 
                 path_item.setZValue(2)
 
