@@ -205,7 +205,7 @@ class MPRUN(QMainWindow):
         restroke_button.triggered.connect(self.use_refill)
 
         # Vectorize Button
-        vectorize_btn = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), 'Vectorize', self)
+        vectorize_btn = QAction(QIcon('logos and icons/Tool Icons/vectorize_icon.png'), '', self)
         vectorize_btn.setToolTip('''Vectorize Tool: 
         Key-V''')
         vectorize_btn.setShortcut(QKeySequence('V'))
@@ -466,7 +466,7 @@ Date:   """)
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
                 try:
-                    pixels2svg(item.return_filename(), 'Vector Converts/output.svg')
+                    pixels2svg(input_path=item.return_filename(), output_path='Vector Converts/output.svg')
 
                     QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
 
