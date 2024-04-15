@@ -475,7 +475,7 @@ Date:   """)
 
         if file_path:
             if file_path.endswith('.svg'):
-                svg_item = QGraphicsSvgItem(file_path)
+                svg_item = CustomSvgItem(file_path)
                 self.canvas.addItem(svg_item)
                 svg_item.setPos(450, 300)
                 svg_item.setToolTip('Imported SVG Item (Not an MPRUN Element)')
@@ -484,7 +484,7 @@ Date:   """)
 
             else:
                 image1 = QPixmap(file_path)
-                image2 = QGraphicsPixmapItem(image1)
+                image2 = CustomPixmapItem(image1)
 
                 self.canvas.addItem(image2)
                 image2.setToolTip('Imported Bitmap Item (Not an MPRUN Element)')
@@ -811,7 +811,7 @@ class CourseElementsWin(QWidget):
                 # Add element
                 btn = QPushButton()
                 btn.setText(entry)
-                btn.clicked.connect(lambda: self.create_item(QGraphicsSvgItem(file_path)))
+                btn.clicked.connect(lambda: self.create_item(CustomSvgItem(file_path)))
                 self.layout.addWidget(btn)
 
     def create_item(self, item):

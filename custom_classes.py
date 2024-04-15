@@ -27,9 +27,10 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setColor(QColor("#e00202"))
             pen.setWidth(2)
-            pen.setCapStyle(Qt.RoundCap)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.SquareCap)
+            pen.setColor(QColor("#ff0000"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -66,8 +67,8 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         self.block_size = size
 
 class CustomPathItem(QGraphicsPathItem):
-    def __init__(self, widget, parent=None):
-        super().__init__(parent)
+    def __init__(self, path):
+        super().__init__(path)
 
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
@@ -76,14 +77,16 @@ class CustomPathItem(QGraphicsPathItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setColor(QColor("#007bff"))
             pen.setWidth(2)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.SquareCap)
+            pen.setColor(QColor("#f06013"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
 class CustomPixmapItem(QGraphicsPixmapItem):
-    def __init__(self, widget, parent=None):
-        super().__init__(parent)
+    def __init__(self, file):
+        super().__init__(file)
 
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
@@ -92,14 +95,16 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setColor(QColor("#007bff"))
             pen.setWidth(2)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.SquareCap)
+            pen.setColor(QColor("#f06013"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
 class CustomSvgItem(QGraphicsSvgItem):
-    def __init__(self, widget, parent=None):
-        super().__init__(parent)
+    def __init__(self, file):
+        super().__init__(file)
 
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
@@ -108,8 +113,10 @@ class CustomSvgItem(QGraphicsSvgItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setColor(QColor("#007bff"))
             pen.setWidth(2)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.SquareCap)
+            pen.setColor(QColor("#f06013"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -134,8 +141,10 @@ class EditableTextBlock(QGraphicsTextItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setColor(QColor("#007bff"))
             pen.setWidth(2)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.SquareCap)
+            pen.setColor(QColor("#f06013"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -213,7 +222,7 @@ class CustomGraphicsView(QGraphicsView):
                     self.canvas.removeItem(self.temp_path_item)
 
                 # Load path as QGraphicsItem
-                self.temp_path_item = QGraphicsPathItem(self.path)
+                self.temp_path_item = CustomPathItem(self.path)
                 self.temp_path_item.setPen(self.pen)
                 self.temp_path_item.setZValue(2)
 
@@ -222,7 +231,7 @@ class CustomGraphicsView(QGraphicsView):
 
                 # Create a custom tooltip
                 scene_pos = self.mapToScene(event.pos())
-                QToolTip.showText(event.pos(), f'dx{scene_pos.x()}, dy{scene_pos.y()}')
+                QToolTip.showText(event.pos(), f'dx: {scene_pos.x()}, dy: {scene_pos.y()}')
 
                 self.canvas.update()
 
@@ -232,7 +241,7 @@ class CustomGraphicsView(QGraphicsView):
 
                 # Create a custom tooltip
                 scene_pos = self.mapToScene(event.pos())
-                QToolTip.showText(event.pos(), f'dx{scene_pos.x()}, dy{scene_pos.y()}')
+                QToolTip.showText(event.pos(), f'dx: {scene_pos.x()}, dy: {scene_pos.y()}')
 
                 self.canvas.update()
 
@@ -249,7 +258,7 @@ class CustomGraphicsView(QGraphicsView):
                 self.canvas.update()
 
                 # Load path as QGraphicsItem
-                path_item = QGraphicsPathItem(self.path)
+                path_item = CustomPathItem(self.path)
                 path_item.setPen(self.pen)
                 path_item.setZValue(2)
 
@@ -282,7 +291,7 @@ class CustomGraphicsView(QGraphicsView):
                 self.canvas.update()
 
                 # Load path as QGraphicsItem, set parent items
-                path_item = QGraphicsPathItem(self.path2)
+                path_item = CustomPathItem(self.path2)
                 path_item.setPen(self.pen)
                 path_item.setZValue(2)
                 circle.setParentItem(path_item)
