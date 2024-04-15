@@ -182,6 +182,13 @@ class MPRUN(QMainWindow):
         unlock_btn.setShortcut(QKeySequence('Ctrl+B'))
         unlock_btn.triggered.connect(self.unlock_item)
 
+        # Permanent Lock Button
+        permanent_lock_btn = QAction(QIcon('logos and icons/Tool Icons/permanent_lock_icon.png'), '', self)
+        permanent_lock_btn.setToolTip('''Permanent Lock Tool: 
+        Command+Shift+Q (MacOS) or Control+Shift+Q (Windows)''')
+        permanent_lock_btn.setShortcut(QKeySequence('Ctrl+Shift+Q'))
+        permanent_lock_btn.triggered.connect(self.permanent_lock_item)
+
         # Create Group Button
         group_create_btn = QAction(QIcon('logos and icons/Tool Icons/group_icon.png'), '', self)
         group_create_btn.setToolTip('''Group Create Tool: 
@@ -226,6 +233,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(scale_btn)
         self.toolbar.addAction(lock_btn)
         self.toolbar.addAction(unlock_btn)
+        self.toolbar.addAction(permanent_lock_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
         self.toolbar.addAction(refill_button)
@@ -341,7 +349,7 @@ Date:   """)
         # Display a confirmation dialog
         confirmation_dialog = QMessageBox()
         confirmation_dialog.setIcon(QMessageBox.Warning)
-        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress)")
+        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
         confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         confirmation_dialog.setDefaultButton(QMessageBox.No)
 
@@ -458,6 +466,34 @@ Date:   """)
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable)
             items.setToolTip('Free MPRUN Element')
+
+    def permanent_lock_item(self):
+        self.path_btn.setChecked(False)
+
+        # Display a confirmation dialog
+        confirmation_dialog = QMessageBox()
+        confirmation_dialog.setIcon(QMessageBox.Warning)
+        confirmation_dialog.setText("Are you sure you want to permanently lock the selected Element? (The Element will no longer be selectable!)")
+        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        confirmation_dialog.setDefaultButton(QMessageBox.No)
+
+        # Get the result of the confirmation dialog
+        result = confirmation_dialog.exec_()
+
+        # If the user clicked Yes, close the window
+        if result == QMessageBox.Yes:
+            item = self.canvas.selectedItems()
+
+            for items in item:
+                items.setFlag(QGraphicsItem.ItemIsMovable, False)
+                items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                items.setToolTip('Permanently Locked MPRUN Element')
+
+                if isinstance(items, EditableTextBlock):
+                    items.set_locked()
+
+        else:
+            pass
 
     def insert_image(self):
         self.path_btn.setChecked(False)

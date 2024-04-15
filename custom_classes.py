@@ -126,11 +126,17 @@ class EditableTextBlock(QGraphicsTextItem):
 
         self.setToolTip('Editable Text Block')
 
+        self.locked = False
+
     def mouseDoubleClickEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.setTextInteractionFlags(Qt.TextEditorInteraction)
-            self.setFocus(Qt.MouseFocusReason)
-            event.accept()
+        if self.locked == False:
+            if event.button() == Qt.LeftButton:
+                self.setTextInteractionFlags(Qt.TextEditorInteraction)
+                self.setFocus(Qt.MouseFocusReason)
+                event.accept()
+            else:
+                super().mouseDoubleClickEvent(event)
+
         else:
             super().mouseDoubleClickEvent(event)
 
@@ -151,6 +157,9 @@ class EditableTextBlock(QGraphicsTextItem):
     def focusOutEvent(self, event):
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         super().focusOutEvent(event)
+
+    def set_locked(self):
+        self.locked = True
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2):
