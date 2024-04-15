@@ -11,7 +11,7 @@ class MPRUN(QMainWindow):
     def __init__(self):
         super().__init__()
         # Creating the main window
-        self.setWindowTitle('MPRUN - Workspace')
+        self.setWindowTitle('MPRUN - Vectorspace')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
