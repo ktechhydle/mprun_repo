@@ -20,6 +20,8 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         self.block_size = 10
         self.widget = widget
 
+        self.locked = False
+
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
         super().paint(painter, option, widget)
@@ -40,31 +42,41 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self.widget.isChecked():
-            if self.isSelected():
-                # Calculate the position relative to the scene's coordinate system
-                scene_pos = event.scenePos()
-                x = (
-                    int(scene_pos.x() / self.block_size) * self.block_size
-                    - self.mouse_offset.x()
-                )
-                y = (
-                    int(scene_pos.y() / self.block_size) * self.block_size
-                    - self.mouse_offset.y()
-                )
+        if self.locked == False:
+            if self.widget.isChecked():
+                if self.isSelected():
+                    # Calculate the position relative to the scene's coordinate system
+                    scene_pos = event.scenePos()
+                    x = (
+                        int(scene_pos.x() / self.block_size) * self.block_size
+                        - self.mouse_offset.x()
+                    )
+                    y = (
+                        int(scene_pos.y() / self.block_size) * self.block_size
+                        - self.mouse_offset.y()
+                    )
 
-                # Set the position relative to the scene's coordinate system
-                self.setPos(x, y)
+                    # Set the position relative to the scene's coordinate system
+                    self.setPos(x, y)
+                else:
+                    # Call the superclasses mouseMoveEvent to move the item as normal
+                    super().mouseMoveEvent(event)
+
             else:
                 # Call the superclasses mouseMoveEvent to move the item as normal
                 super().mouseMoveEvent(event)
-
         else:
             # Call the superclasses mouseMoveEvent to move the item as normal
             super().mouseMoveEvent(event)
             
     def set_grid_size(self, size):
         self.block_size = size
+
+    def set_locked(self):
+        self.locked = True
+
+    def set_unlocked(self):
+        self.locked = False
 
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):

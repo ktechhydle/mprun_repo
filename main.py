@@ -459,6 +459,9 @@ Date:   """)
             items.setFlag(QGraphicsItem.ItemIsMovable, False)
             items.setToolTip('Locked MPRUN Element')
 
+            if isinstance(items, CustomGraphicsItemGroup):
+                items.set_locked()
+
     def unlock_item(self):
         self.path_btn.setChecked(False)
         item = self.canvas.selectedItems()
@@ -466,6 +469,9 @@ Date:   """)
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable)
             items.setToolTip('Free MPRUN Element')
+
+            if isinstance(items, CustomGraphicsItemGroup):
+                items.set_unlocked()
 
     def permanent_lock_item(self):
         self.path_btn.setChecked(False)
@@ -491,6 +497,9 @@ Date:   """)
                     items.setToolTip('Permanently Locked MPRUN Element')
 
                     if isinstance(items, EditableTextBlock):
+                        items.set_locked()
+
+                    if isinstance(items, CustomGraphicsItemGroup):
                         items.set_locked()
 
             else:
