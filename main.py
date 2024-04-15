@@ -470,30 +470,31 @@ Date:   """)
     def permanent_lock_item(self):
         self.path_btn.setChecked(False)
 
-        # Display a confirmation dialog
-        confirmation_dialog = QMessageBox()
-        confirmation_dialog.setIcon(QMessageBox.Warning)
-        confirmation_dialog.setText("Are you sure you want to permanently lock the selected Element? (The Element will no longer be selectable!)")
-        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        confirmation_dialog.setDefaultButton(QMessageBox.No)
+        if self.canvas.selectedItems():
+            # Display a confirmation dialog
+            confirmation_dialog = QMessageBox()
+            confirmation_dialog.setIcon(QMessageBox.Warning)
+            confirmation_dialog.setText("Are you sure you want to permanently lock the selected Element? (The Element will no longer be editable!)")
+            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            confirmation_dialog.setDefaultButton(QMessageBox.No)
 
-        # Get the result of the confirmation dialog
-        result = confirmation_dialog.exec_()
+            # Get the result of the confirmation dialog
+            result = confirmation_dialog.exec_()
 
-        # If the user clicked Yes, close the window
-        if result == QMessageBox.Yes:
-            item = self.canvas.selectedItems()
+            # If the user clicked Yes, close the window
+            if result == QMessageBox.Yes:
+                item = self.canvas.selectedItems()
 
-            for items in item:
-                items.setFlag(QGraphicsItem.ItemIsMovable, False)
-                items.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                items.setToolTip('Permanently Locked MPRUN Element')
+                for items in item:
+                    items.setFlag(QGraphicsItem.ItemIsMovable, False)
+                    items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    items.setToolTip('Permanently Locked MPRUN Element')
 
-                if isinstance(items, EditableTextBlock):
-                    items.set_locked()
+                    if isinstance(items, EditableTextBlock):
+                        items.set_locked()
 
-        else:
-            pass
+            else:
+                pass
 
     def insert_image(self):
         self.path_btn.setChecked(False)
@@ -705,7 +706,7 @@ Date:   """)
 
         elif template_choice == 6:
             self.paper.setRect(-100, -100, 1747, 1147)
-            self.paper_text.setScale(2.5)
+            self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
 
         elif template_choice == 7:
@@ -715,7 +716,7 @@ Date:   """)
             
         elif template_choice == 8:
             self.paper.setRect(-100, -100, 1820, 980)
-            self.paper_text.setScale(2.5)
+            self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
 
         else:
