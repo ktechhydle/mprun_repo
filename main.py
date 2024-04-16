@@ -568,8 +568,16 @@ Date:   """)
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
                 try:
+                    # Set cursor loading
+                    self.setCursor(Qt.WaitCursor)
+
+                    # Create vector
                     pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg')
-                    self.setCursor(Qt.WaitCursor)                    # Display information
+
+                    # Set cursor back
+                    self.setCursor(Qt.ArrowCursor)
+
+                    # Display information
                     QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
 
                     # Add the item to the scene
