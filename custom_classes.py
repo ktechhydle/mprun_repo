@@ -538,18 +538,18 @@ class CustomGraphicsView(QGraphicsView):
                 path_item = CustomPathItem(self.leader_line)
                 path_item.setPen(self.pen)
                 path_item.setZValue(0)
-                circle.setParentItem(path_item)
+                path_item.setParentItem(circle)
                 self.text_box_rect.setParentItem(circle)
                 self.label_text.setParentItem(circle)
 
                 # Add items (no need to add rect, circle, and label because parent is path_item)
-                self.canvas.addItem(path_item)
+                self.canvas.addItem(circle)
 
                 # Set flags
-                path_item.setFlag(QGraphicsItem.ItemIsSelectable)
-                path_item.setFlag(QGraphicsItem.ItemIsMovable)
-                circle.setFlag(QGraphicsItem.ItemIsSelectable)
-                self.label_text.setFlag(QGraphicsItem.ItemIsSelectable)
+                circle.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+                circle.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+                path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemStacksBehindParent)
+                self.label_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
                 # Set Tooltips for elements
                 path_item.setToolTip('Leader Line Element')
