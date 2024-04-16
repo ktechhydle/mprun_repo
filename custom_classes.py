@@ -1,5 +1,3 @@
-from copy import deepcopy
-
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -104,6 +102,8 @@ class CustomRectangleItem(QGraphicsRectItem):
         item = CustomRectangleItem(rect)
         item.setPen(self.pen())
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -136,6 +136,8 @@ class CustomCircleItem(QGraphicsEllipseItem):
         item = CustomCircleItem(rect)
         item.setPen(self.pen())
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -168,6 +170,8 @@ class CustomPathItem(QGraphicsPathItem):
         item.setPen(self.pen())
         item.setBrush(self.brush())
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -206,6 +210,8 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         item = CustomPixmapItem(pixmap)
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
         item.store_filename(self.return_filename())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -245,6 +251,8 @@ class CustomSvgItem(QGraphicsSvgItem):
 
         item = CustomSvgItem(svg)
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
         item.store_filename(svg)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -299,6 +307,8 @@ class EditableTextBlock(QGraphicsTextItem):
         item.setDefaultTextColor(self.defaultTextColor())
         item.setPlainText(self.toPlainText())
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
