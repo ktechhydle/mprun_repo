@@ -384,6 +384,9 @@ class CustomGraphicsView(QGraphicsView):
                 # Load path as QGraphicsItem
                 self.temp_path_item = CustomPathItem(self.path)
                 self.temp_path_item.setPen(self.pen)
+                if self.button3.isChecked():
+                    self.temp_path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
+
                 self.temp_path_item.setZValue(2)
 
                 # Add item
@@ -391,7 +394,7 @@ class CustomGraphicsView(QGraphicsView):
 
                 # Create a custom tooltip
                 scene_pos = self.mapToScene(event.pos())
-                QToolTip.showText(event.pos(), f'dx: {scene_pos.x()}, dy: {scene_pos.y()}')
+                QToolTip.showText(event.pos(), f'dx: {round(scene_pos.x(), 1)}, dy: {round(scene_pos.y(), 1)}')
 
                 self.canvas.update()
 

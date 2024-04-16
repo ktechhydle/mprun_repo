@@ -582,6 +582,7 @@ Date:   """)
             elif isinstance(item, CustomSvgItem):
                 item.duplicate()
 
+
     def lock_item(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
@@ -1083,8 +1084,11 @@ class GeometryManager(QWidget):
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         self.layout = QVBoxLayout()
+        self.horizontal_layout = QHBoxLayout()
 
         self.setLayout(self.layout)
+
+        self.vertical_value = 0
 
         self.create_ui()
 
@@ -1110,12 +1114,18 @@ class GeometryManager(QWidget):
         self.entry3.textChanged.connect(self.scale_y)
         self.entry3.setPlaceholderText("Enter vertical scale factor")
 
+        align_vertical_btn = QPushButton('Vertical')
+        align_vertical_btn.clicked.connect(self.use_align_vertical)
+
         self.layout.addWidget(rotation_label)
         self.layout.addWidget(self.spinbox)
         self.layout.addWidget(scale_label)
         self.layout.addWidget(self.entry1)
         self.layout.addWidget(self.entry2)
         self.layout.addWidget(self.entry3)
+        self.layout.addLayout(self.horizontal_layout)
+
+        self.horizontal_layout.addWidget(align_vertical_btn)
 
     def scale_all(self, value):
         try:
@@ -1177,6 +1187,26 @@ class GeometryManager(QWidget):
 
             # Rotate the item
             item.setRotation(value)
+
+    def use_align_vertical(self):
+        # Sort selected items by their vertical position to ensure correct alignment
+        items = sorted(self.canvas.selectedItems(), key=lambda item: item.y())
+
+        # Initialize vertical position
+        vertical_value = 0
+
+        for item in items:
+            # Get the bounding rectangle of the item
+            rect = item.boundingRect()
+
+            # Calculate the vertical offset based on the height of the item
+            vertical_offset = rect.height() / 2  # Adjust if needed
+
+            # Set the position of the item
+            item.setPos(0, vertical_value + vertical_offset)
+
+            # Update the vertical position for the next item
+            vertical_value += rect.height()
 
 
 if __name__ == '__main__':
