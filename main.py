@@ -365,7 +365,7 @@ class MPRUN(QMainWindow):
         # Drawing paper
         self.paper = QGraphicsRectItem(0, 0, 1000, 700)
         brush = QBrush(QColor('white'))
-        pen = QPen(QColor('black'), 2, Qt.SolidLine)
+        pen = QPen(QColor('white'), 2, Qt.SolidLine)
         self.paper.setBrush(brush)
         self.paper.setPen(pen)
         self.paper.setZValue(-1)
@@ -408,6 +408,9 @@ Date:   """)
 
         elif event.key() == QKeySequence('Z'):
             self.gsnap_check_btn.setChecked(False) if self.gsnap_check_btn.isChecked() else self.gsnap_check_btn.setChecked(True)
+
+        elif event.key() == QKeySequence('X'):
+            self.stroke_fill_check_btn.setChecked(False) if self.stroke_fill_check_btn.isChecked() else self.stroke_fill_check_btn.setChecked(True)
 
         elif event.key() == QKeySequence('R'):
             self.show_rotate_manager()
@@ -521,7 +524,7 @@ Date:   """)
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
         for item in self.canvas.selectedItems():
-            if isinstance(item, QGraphicsPathItem):
+            if isinstance(item, CustomPathItem):
                 index1 = self.stroke_style_combo.currentIndex()
                 data1 = self.stroke_style_combo.itemData(index1)
                 index2 = self.stroke_pencap_combo.currentIndex()
@@ -529,11 +532,9 @@ Date:   """)
 
                 pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                 item.setPen(pen)
+                item.setBrush(QColor(self.fill_color.get()))
 
             elif isinstance(item, EditableTextBlock):
-                item.setDefaultTextColor(QColor(self.outline_color.get()))
-
-            elif isinstance(item, QGraphicsTextItem):
                 item.setDefaultTextColor(QColor(self.outline_color.get()))
 
     def use_set_layer(self):
