@@ -1080,7 +1080,6 @@ class GeometryManager(QWidget):
         self.setWindowTitle('Geometry Manager')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(60, 373, 250, 50)
-        self.setFixedSize(250, 160)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         self.layout = QVBoxLayout()
@@ -1189,24 +1188,11 @@ class GeometryManager(QWidget):
             item.setRotation(value)
 
     def use_align_vertical(self):
-        # Sort selected items by their vertical position to ensure correct alignment
-        items = sorted(self.canvas.selectedItems(), key=lambda item: item.y())
-
-        # Initialize vertical position
-        vertical_value = 0
+        items = self.canvas.selectedItems()
 
         for item in items:
-            # Get the bounding rectangle of the item
-            rect = item.boundingRect()
-
-            # Calculate the vertical offset based on the height of the item
-            vertical_offset = rect.height() / 2  # Adjust if needed
-
             # Set the position of the item
-            item.setPos(0, vertical_value + vertical_offset)
-
-            # Update the vertical position for the next item
-            vertical_value += rect.height()
+            item.setPos(0, item.y())
 
 
 if __name__ == '__main__':
