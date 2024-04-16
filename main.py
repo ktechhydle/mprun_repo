@@ -572,7 +572,7 @@ Date:   """)
                     self.setCursor(Qt.WaitCursor)
 
                     # Create vector
-                    pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg')
+                    pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg', color_tolerance=)
 
                     # Set cursor back
                     self.setCursor(Qt.ArrowCursor)
