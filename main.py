@@ -704,6 +704,9 @@ Date:   """)
         if success:
             # If saving was successful, show a notification
             QMessageBox.information(self, "Export Finished", "Export completed successfully.")
+
+            # Open the image with the default image viewer
+            QDesktopServices.openUrl(QUrl.fromLocalFile(filename))
         else:
             # If saving failed, show an error notification
             QMessageBox.critical(self, "Export Error", "Failed to export canvas to file.")
@@ -776,6 +779,9 @@ Date:   """)
                     QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
                                             QMessageBox.Ok)
 
+                    # Open the image with the default image viewer
+                    QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
+
                 except Exception as e:
                     # Show export error notification
                     QMessageBox.information(self, 'Export Failed', f'Export failed: {e}',
@@ -795,12 +801,19 @@ Date:   """)
                 painter = QPainter(printer)
                 painter.setRenderHint(QPainter.RenderHint.Antialiasing)
                 painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-                self.canvas.render(painter)
+
+                # Render the scene onto the QPainter
+                self.canvas.render(painter, target=self.paper.boundingRect(), source=self.paper.boundingRect())
+
+                # End painting
                 painter.end()
 
                 # Show export finished notification
                 QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
                                         QMessageBox.Ok)
+
+                # Open the image with the default image viewer
+                QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
 
             else:
                 self.canvas.clearSelection()
