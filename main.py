@@ -533,6 +533,9 @@ Date:   """)
                 if self.stroke_fill_check_btn.isChecked():
                     item.setBrush(QColor(self.fill_color.get()))
 
+                else:
+                    item.setBrush(QColor(self.fill_color.get()))
+
             elif isinstance(item, EditableTextBlock):
                 item.setDefaultTextColor(QColor(self.outline_color.get()))
 
@@ -1140,9 +1143,15 @@ class GeometryManager(QWidget):
         other_label = QLabel('Other:')
 
         # Entries
-        self.spinbox = QSpinBox()
-        self.spinbox.setMaximum(360)
-        self.spinbox.valueChanged.connect(self.rotate)
+        rotate_slider = QSlider()
+        rotate_slider.setRange(0, 360)
+        rotate_slider.setOrientation(Qt.Horizontal)
+        rotate_slider.valueChanged.connect(self.rotate)
+
+        scale_slider = QSlider()
+        scale_slider.setRange(1, 10)
+        scale_slider.setOrientation(Qt.Horizontal)
+        scale_slider.valueChanged.connect(self.scale_all)
 
         self.entry1 = QLineEdit()
         self.entry1.textChanged.connect(self.scale_all)
@@ -1157,8 +1166,9 @@ class GeometryManager(QWidget):
         self.entry3.setPlaceholderText("Enter vertical scale factor")
 
         self.layout.addWidget(rotation_label)
-        self.layout.addWidget(self.spinbox)
+        self.layout.addWidget(rotate_slider)
         self.layout.addWidget(scale_label)
+        self.layout.addWidget(scale_slider)
         self.layout.addWidget(self.entry1)
         self.layout.addWidget(self.entry2)
         self.layout.addWidget(self.entry3)
