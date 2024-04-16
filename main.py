@@ -50,14 +50,35 @@ class MPRUN(QMainWindow):
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setOrientation(Qt.Vertical)
-        self.addToolBar(self.toolbar)
+        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
-        self.action_toolbar.setStyleSheet('QToolBar{spacing: 3px;}')
-        self.addToolBar(self.action_toolbar)
+        self.action_toolbar.setStyleSheet('QToolBar{spacing: 10px;}')
+        self.addToolBar(Qt.RightToolBarArea, self.action_toolbar)
 
         #----action toolbar widgets----#
+
+        # All labels
+        layers_label = QLabel('Layer Options:', self)
+        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        layers_label.setAlignment(Qt.AlignCenter)
+
+        options_label = QLabel('Canvas Options:', self)
+        options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        options_label.setAlignment(Qt.AlignCenter)
+
+        stroke_options_label = QLabel('Stroke Options:', self)
+        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        stroke_options_label.setAlignment(Qt.AlignCenter)
+
+        fill_options_label = QLabel('Fill Options:', self)
+        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        fill_options_label.setAlignment(Qt.AlignCenter)
+
+        course_elements_label = QLabel('Course Elements:', self)
+        course_elements_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        course_elements_label.setAlignment(Qt.AlignCenter)
 
         # Stroke size spinbox
         self.stroke_size_spin = QSpinBox()
@@ -282,20 +303,25 @@ class MPRUN(QMainWindow):
 
         # Add action toolbar actions
         self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(layers_label)
         self.action_toolbar.addWidget(self.layer_combo)
         self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(options_label)
         self.action_toolbar.addWidget(self.gsnap_label)
         self.action_toolbar.addWidget(self.gsnap_check_btn)
-        self.action_toolbar.addWidget(stroke_fill_label)
-        self.action_toolbar.addWidget(self.stroke_fill_check_btn)
         self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(stroke_options_label)
         self.action_toolbar.addWidget(self.stroke_size_spin)
         self.action_toolbar.addWidget(self.outline_color_btn)
         self.action_toolbar.addWidget(self.stroke_style_combo)
         self.action_toolbar.addWidget(self.stroke_pencap_combo)
         self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(fill_options_label)
         self.action_toolbar.addWidget(fill_color_btn)
+        self.action_toolbar.addWidget(stroke_fill_label)
+        self.action_toolbar.addWidget(self.stroke_fill_check_btn)
         self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(course_elements_label)
         self.action_toolbar.addWidget(course_elements_launcher_btn)
         self.action_toolbar.addSeparator()
 
