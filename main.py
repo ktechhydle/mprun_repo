@@ -20,7 +20,7 @@ class MPRUN(QMainWindow):
         # Drawing undoing, redoing
         self.last_drawing = []
         self.drawing_history = []
-        self.duplicate_stack = []
+        self.layer_height = 0
 
         # File
         self.file_name = None
@@ -95,6 +95,16 @@ class MPRUN(QMainWindow):
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.outline_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
+
+        # Raise Layer Button
+        raise_layer_btn = QPushButton('Raise Layer', self)
+        raise_layer_btn.setShortcut(QKeySequence('+'))
+        raise_layer_btn.clicked.connect(self.use_raise_layer)
+
+        # Lower Layer Button
+        lower_layer_btn = QPushButton('Lower Layer', self)
+        lower_layer_btn.setShortcut(QKeySequence('-'))
+        lower_layer_btn.clicked.connect(self.use_lower_layer)
 
         # Fill Color Button
         fill_color_btn = QPushButton('Fill Color', self)
@@ -197,9 +207,9 @@ class MPRUN(QMainWindow):
         layer_set_btn.triggered.connect(self.use_set_layer)
 
         # Geometry Manager Button
-        geometry_manager_btn = QAction(QIcon('logos and icons/Tool Icons/rotate_icon.png'), '', self)
+        geometry_manager_btn = QAction(QIcon('logos and icons/Tool Icons/geometry_icon.png'), '', self)
         geometry_manager_btn.setToolTip('''Geometry Manager Tool:
-        Key-R''')
+        Key-M''')
         geometry_manager_btn.setShortcut(QKeySequence('Ctrl+3'))
         geometry_manager_btn.triggered.connect(self.show_geometry_manager)
 
@@ -297,6 +307,8 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(layers_label)
         self.action_toolbar.addWidget(self.layer_combo)
+        self.action_toolbar.addWidget(raise_layer_btn)
+        self.action_toolbar.addWidget(lower_layer_btn)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(options_label)
         self.action_toolbar.addWidget(self.gsnap_label)
@@ -404,7 +416,7 @@ Date:   """)
         elif event.key() == QKeySequence('X'):
             self.stroke_fill_check_btn.setChecked(False) if self.stroke_fill_check_btn.isChecked() else self.stroke_fill_check_btn.setChecked(True)
 
-        elif event.key() == QKeySequence('R'):
+        elif event.key() == QKeySequence('M'):
             self.show_geometry_manager()
 
         elif event.key() == QKeySequence('B'):
@@ -516,7 +528,10 @@ Date:   """)
 
                 pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                 item.setPen(pen)
-                item.setBrush(QColor(self.fill_color.get()))
+
+                # Check if widget is pressed
+                if self.stroke_fill_check_btn.isChecked():
+                    item.setBrush(QColor(self.fill_color.get()))
 
             elif isinstance(item, EditableTextBlock):
                 item.setDefaultTextColor(QColor(self.outline_color.get()))
@@ -582,6 +597,33 @@ Date:   """)
             elif isinstance(item, CustomSvgItem):
                 item.duplicate()
 
+    def use_raise_layer(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        # Raise layer
+        self.layer_height += 1
+
+        for item in self.canvas.selectedItems():
+            if self.layer_height >= 3:
+                QMessageBox.critical(self, 'Raise Layer', "You cannot raise this Element any higher.")
+
+            else:
+                item.setZValue(self.layer_height)
+
+    def use_lower_layer(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        # Lower layer
+        self.layer_height -= 1
+
+        for item in self.canvas.selectedItems():
+            if self.layer_height <= 0:
+                QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+
+            else:
+                item.setZValue(self.layer_height)
 
     def lock_item(self):
         self.label_btn.setChecked(False)
@@ -1095,7 +1137,7 @@ class GeometryManager(QWidget):
         # Labels
         rotation_label = QLabel('Rotating:')
         scale_label = QLabel('Scaling:')
-        align_label = QLabel('Aligning:')
+        other_label = QLabel('Other:')
 
         # Entries
         self.spinbox = QSpinBox()
@@ -1114,24 +1156,14 @@ class GeometryManager(QWidget):
         self.entry3.textChanged.connect(self.scale_y)
         self.entry3.setPlaceholderText("Enter vertical scale factor")
 
-        align_vertical_btn = QPushButton('Vertical Align')
-        align_vertical_btn.clicked.connect(self.use_align_vertical)
-
-        align_horizontal_btn = QPushButton('Horizontal Align')
-        align_horizontal_btn.clicked.connect(self.use_align_horizontal)
-
         self.layout.addWidget(rotation_label)
         self.layout.addWidget(self.spinbox)
         self.layout.addWidget(scale_label)
         self.layout.addWidget(self.entry1)
         self.layout.addWidget(self.entry2)
         self.layout.addWidget(self.entry3)
-        self.layout.addWidget(align_label)
+        self.layout.addWidget(other_label)
         self.layout.addLayout(self.horizontal_layout)
-
-        self.horizontal_layout.addWidget(align_vertical_btn)
-        self.horizontal_layout.addWidget(align_horizontal_btn)
-
 
     def scale_all(self, value):
         try:
@@ -1193,20 +1225,6 @@ class GeometryManager(QWidget):
 
             # Rotate the item
             item.setRotation(value)
-
-    def use_align_vertical(self):
-        items = self.canvas.selectedItems()
-
-        for item in items:
-            # Set the position of the item
-            item.setPos(0, item.y())
-
-    def use_align_horizontal(self):
-        items = self.canvas.selectedItems()
-
-        for item in items:
-            # Set the position of the item
-            item.setPos(item.x(), 0)
 
 
 if __name__ == '__main__':
