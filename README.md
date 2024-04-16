@@ -40,9 +40,13 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Insert different files:
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Export multiple file types:
-	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file (beta).
+	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
 - Add text blocks:
 	> Add `Editable Text Block`'s on to the Canvas.
+- Vector conversion:
+  	> Use the `Vectorize` tool ***(beta)*** to convert raster imagery to Vector tiles.
+- Element position managment:
+  	> Lock or unlock element positions, or even use the `Permanent Lock Tool` to lock Elements permanently.
 > [!TIP]
 > - Snap-to-grid functionality:
 > 	> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
