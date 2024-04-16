@@ -204,13 +204,6 @@ class MPRUN(QMainWindow):
         erase_btn.setShortcut(QKeySequence('E'))
         erase_btn.triggered.connect(self.use_erase)
 
-        # Set Layer Button
-        layer_set_btn = QAction(QIcon('logos and icons/Tool Icons/set_layer_icon.png'), '', self)
-        layer_set_btn.setToolTip('''Set Layer Tool:
-        Command+L (MacOS) or Control+L (Windows)''')
-        layer_set_btn.setShortcut(QKeySequence('Ctrl+L'))
-        layer_set_btn.triggered.connect(self.use_set_layer)
-
         # Geometry Manager Button
         geometry_manager_btn = QAction(QIcon('logos and icons/Tool Icons/geometry_icon.png'), '', self)
         geometry_manager_btn.setToolTip('''Element Manager Tool:
@@ -299,7 +292,6 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(erase_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(add_text_btn)
-        self.toolbar.addAction(layer_set_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(geometry_manager_btn)
         self.toolbar.addAction(duplicate_btn)
@@ -370,10 +362,11 @@ class MPRUN(QMainWindow):
         self.canvas_view.update_stroke_fill_color('white')
         self.setCentralWidget(self.canvas_view)
 
-        # If any stroke changes are made, update them
+        # If any stroke or layer changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
+        self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
 
         if self.path_btn.isChecked():
             self.canvas_view.update_pen(
@@ -530,6 +523,7 @@ Date:   """)
         self.canvas.addItem(text)
 
         text.setPos(200, 200)
+        text.setZValue(0)
 
         self.create_item_attributes(text)
 
