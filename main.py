@@ -196,19 +196,12 @@ class MPRUN(QMainWindow):
         layer_set_btn.setShortcut(QKeySequence('Ctrl+L'))
         layer_set_btn.triggered.connect(self.use_set_layer)
 
-        # Rotate Manager Button
-        rotate_btn = QAction(QIcon('logos and icons/Tool Icons/rotate_icon.png'), '', self)
-        rotate_btn.setToolTip('''Rotate Tool:
+        # Geometry Manager Button
+        geometry_manager_btn = QAction(QIcon('logos and icons/Tool Icons/rotate_icon.png'), '', self)
+        geometry_manager_btn.setToolTip('''Geometry Manager Tool:
         Key-R''')
-        rotate_btn.setShortcut(QKeySequence('Ctrl+3'))
-        rotate_btn.triggered.connect(self.show_rotate_manager)
-
-        # Scale Manager Button
-        scale_btn = QAction(QIcon('logos and icons/Tool Icons/scale_icon.png'), '', self)
-        scale_btn.setToolTip('''Scale Tool:
-        Key-S''')
-        scale_btn.setShortcut(QKeySequence('Ctrl+4'))
-        scale_btn.triggered.connect(self.show_scale_manager)
+        geometry_manager_btn.setShortcut(QKeySequence('Ctrl+3'))
+        geometry_manager_btn.triggered.connect(self.show_geometry_manager)
 
         # Duplicate Button
         duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/duplicate_icon.png'), '', self)
@@ -286,8 +279,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(add_text_btn)
         self.toolbar.addAction(layer_set_btn)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(rotate_btn)
-        self.toolbar.addAction(scale_btn)
+        self.toolbar.addAction(geometry_manager_btn)
         self.toolbar.addAction(duplicate_btn)
         self.toolbar.addAction(lock_btn)
         self.toolbar.addAction(unlock_btn)
@@ -413,10 +405,7 @@ Date:   """)
             self.stroke_fill_check_btn.setChecked(False) if self.stroke_fill_check_btn.isChecked() else self.stroke_fill_check_btn.setChecked(True)
 
         elif event.key() == QKeySequence('R'):
-            self.show_rotate_manager()
-
-        elif event.key() == QKeySequence('S'):
-            self.show_scale_manager()
+            self.show_geometry_manager()
 
         elif event.key() == QKeySequence('B'):
             self.outline_color_chooser()
@@ -462,15 +451,10 @@ Date:   """)
         self.course_elements = CourseElementsWin(self.canvas)
         self.course_elements.show()
 
-    def show_rotate_manager(self):
+    def show_geometry_manager(self):
         self.path_btn.setChecked(False)
-        self.rotate_manger = RotateManager(self.canvas)
-        self.rotate_manger.show()
-
-    def show_scale_manager(self):
-        self.path_btn.setChecked(False)
-        self.scale_manager = ScaleManager(self.canvas)
-        self.scale_manager.show()
+        self.geometry_manager = GeometryManager(self.canvas)
+        self.geometry_manager.show()
 
     def use_select(self):
         self.path_btn.setChecked(False)
@@ -1087,14 +1071,15 @@ class CourseElementsWin(QWidget):
         else:
             event.ignore()
 
-class RotateManager(QWidget):
+class GeometryManager(QWidget):
     def __init__(self, canvas):
         super().__init__()
         self.canvas = canvas
 
-        self.setWindowTitle('Rotate Manager')
+        self.setWindowTitle('Geometry Manager')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-        self.setGeometry(50, 373, 300, 50)
+        self.setGeometry(60, 373, 250, 50)
+        self.setFixedSize(250, 160)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         self.layout = QVBoxLayout()
@@ -1104,41 +1089,15 @@ class RotateManager(QWidget):
         self.create_ui()
 
     def create_ui(self):
+        # Labels
+        rotation_label = QLabel('Rotating:')
+        scale_label = QLabel('Scaling:')
+
+        # Entries
         self.spinbox = QSpinBox()
         self.spinbox.setMaximum(360)
         self.spinbox.valueChanged.connect(self.rotate)
 
-        self.layout.addWidget(self.spinbox)
-
-    def rotate(self, value):
-        items = self.canvas.selectedItems()
-        for item in items:
-            # Calculate the center point of the item
-            center = item.boundingRect().center()
-
-            # Set the transformation origin to the center point
-            item.setTransformOriginPoint(center)
-
-            # Rotate the item
-            item.setRotation(value)
-
-class ScaleManager(QWidget):
-    def __init__(self, canvas):
-        super().__init__()
-        self.canvas = canvas
-
-        self.setWindowTitle('Scale Manager')
-        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-        self.setGeometry(50, 456, 300, 50)
-        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-
-        self.layout = QVBoxLayout()
-
-        self.setLayout(self.layout)
-
-        self.create_ui()
-
-    def create_ui(self):
         self.entry1 = QLineEdit()
         self.entry1.textChanged.connect(self.scale_all)
         self.entry1.setPlaceholderText("Enter overall scale factor")
@@ -1151,10 +1110,12 @@ class ScaleManager(QWidget):
         self.entry3.textChanged.connect(self.scale_y)
         self.entry3.setPlaceholderText("Enter vertical scale factor")
 
+        self.layout.addWidget(rotation_label)
+        self.layout.addWidget(self.spinbox)
+        self.layout.addWidget(scale_label)
         self.layout.addWidget(self.entry1)
         self.layout.addWidget(self.entry2)
         self.layout.addWidget(self.entry3)
-
 
     def scale_all(self, value):
         try:
@@ -1205,6 +1166,17 @@ class ScaleManager(QWidget):
         except ValueError:
             pass
 
+    def rotate(self, value):
+        items = self.canvas.selectedItems()
+        for item in items:
+            # Calculate the center point of the item
+            center = item.boundingRect().center()
+
+            # Set the transformation origin to the center point
+            item.setTransformOriginPoint(center)
+
+            # Rotate the item
+            item.setRotation(value)
 
 
 if __name__ == '__main__':
