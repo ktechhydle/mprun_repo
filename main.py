@@ -78,10 +78,6 @@ class MPRUN(QMainWindow):
         fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
         fill_options_label.setAlignment(Qt.AlignCenter)
 
-        course_elements_label = QLabel('Course Elements:', self)
-        course_elements_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        course_elements_label.setAlignment(Qt.AlignCenter)
-
         vector_options_label = QLabel('Vector Options:', self)
         vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
         vector_options_label.setAlignment(Qt.AlignCenter)
@@ -125,11 +121,6 @@ class MPRUN(QMainWindow):
         fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         fill_color_btn.clicked.connect(self.fill_color_chooser)
         fill_color_btn.clicked.connect(self.update_pen)
-
-        # Course Elements Launcher Button
-        course_elements_launcher_btn = QPushButton('Course Elements Picker', self)
-        course_elements_launcher_btn.setShortcut(QKeySequence('Ctrl+2'))
-        course_elements_launcher_btn.clicked.connect(self.launch_course_elements)
 
         # Stroke Style Combobox
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine, 'Dotted Stroke': Qt.DotLine, 'Dashed Stroke': Qt.DashLine, 'Dashed Dot Stroke': Qt.DashDotLine, 'Dashed Double Dot Stroke': Qt.DashDotDotLine}
@@ -276,6 +267,13 @@ class MPRUN(QMainWindow):
         vectorize_btn.setShortcut(QKeySequence('V'))
         vectorize_btn.triggered.connect(self.use_vectorize)
 
+        # Course Elements Launcher Button
+        course_elements_launcher_btn = QAction(QIcon('logos and icons/Tool Icons/course_elements_icon.png'), '', self)
+        course_elements_launcher_btn.setToolTip('''Course Elements Picker Tool:
+        Key-C''')
+        course_elements_launcher_btn.setShortcut(QKeySequence('C'))
+        course_elements_launcher_btn.triggered.connect(self.launch_course_elements)
+
         # Insert Button
         insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
         insert_btn.setToolTip('''Insert Tool:
@@ -313,6 +311,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(restroke_button)
         self.toolbar.addAction(vectorize_btn)
         self.toolbar.addSeparator()
+        self.toolbar.addAction(course_elements_launcher_btn)
         self.toolbar.addAction(insert_btn)
         self.toolbar.addAction(export_btn)
         self.toolbar.addSeparator()
@@ -338,9 +337,6 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(fill_color_btn)
         self.action_toolbar.addWidget(stroke_fill_label)
         self.action_toolbar.addWidget(self.stroke_fill_check_btn)
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(course_elements_label)
-        self.action_toolbar.addWidget(course_elements_launcher_btn)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(vector_options_label)
         self.action_toolbar.addWidget(color_tolerance_label)
@@ -577,6 +573,7 @@ Date:   """)
         item = self.canvas.selectedItems()
         for items in item:
             items.setZValue(data)
+            self.layer_height = data
 
     def use_vectorize(self):
         self.label_btn.setChecked(False)
@@ -1201,6 +1198,7 @@ class ElementManager(QWidget):
         self.opacity_slider = QSlider()
         self.opacity_slider.setRange(1, 100)
         self.opacity_slider.setOrientation(Qt.Horizontal)
+        self.opacity_slider.setSliderPosition(100)
         self.opacity_slider.valueChanged.connect(self.change_opacity)
 
         self.entry1 = QLineEdit()

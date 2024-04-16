@@ -96,8 +96,6 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Duplicated MPRUN Element')
 
-
-
 class CustomRectangleItem(QGraphicsRectItem):
     def __init__(self, *coords):
         super().__init__(*coords)
@@ -124,6 +122,7 @@ class CustomRectangleItem(QGraphicsRectItem):
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.setScale(self.scale())
         item.setRotation(self.rotation())
+        item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -158,6 +157,7 @@ class CustomCircleItem(QGraphicsEllipseItem):
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.setScale(self.scale())
         item.setRotation(self.rotation())
+        item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -192,6 +192,7 @@ class CustomPathItem(QGraphicsPathItem):
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.setScale(self.scale())
         item.setRotation(self.rotation())
+        item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -248,6 +249,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.setScale(self.scale())
         item.setRotation(self.rotation())
+        item.setZValue(0)
         item.store_filename(self.return_filename())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -289,6 +291,7 @@ class CustomSvgItem(QGraphicsSvgItem):
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.setScale(self.scale())
         item.setRotation(self.rotation())
+        item.setZValue(0)
         item.store_filename(svg)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -345,6 +348,7 @@ class EditableTextBlock(QGraphicsTextItem):
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.setScale(self.scale())
         item.setRotation(self.rotation())
+        item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -492,7 +496,7 @@ class CustomGraphicsView(QGraphicsView):
                 # Load main path as QGraphicsItem
                 path_item = CustomPathItem(self.path)
                 path_item.setPen(self.pen)
-                path_item.setZValue(2)
+                path_item.setZValue(0)
 
                 # If stroke fill button is checked, set the brush
                 if self.button3.isChecked():
@@ -525,7 +529,7 @@ class CustomGraphicsView(QGraphicsView):
                 # Draw circle at the end of path
                 scene_pos = self.mapToScene(event.pos())
                 circle = CustomCircleItem(scene_pos.x() - 3, scene_pos.y() - 3, 6, 6)
-                circle.setZValue(2)
+                circle.setZValue(1)
                 circle.setPen(self.pen)
 
                 self.canvas.update()
@@ -533,7 +537,7 @@ class CustomGraphicsView(QGraphicsView):
                 # Load path as QGraphicsItem, set parent items
                 path_item = CustomPathItem(self.leader_line)
                 path_item.setPen(self.pen)
-                path_item.setZValue(2)
+                path_item.setZValue(0)
                 circle.setParentItem(path_item)
                 self.text_box_rect.setParentItem(circle)
                 self.label_text.setParentItem(circle)
