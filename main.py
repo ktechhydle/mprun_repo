@@ -208,10 +208,10 @@ class MPRUN(QMainWindow):
 
         # Geometry Manager Button
         geometry_manager_btn = QAction(QIcon('logos and icons/Tool Icons/geometry_icon.png'), '', self)
-        geometry_manager_btn.setToolTip('''Geometry Manager Tool:
+        geometry_manager_btn.setToolTip('''Element Manager Tool:
         Key-M''')
         geometry_manager_btn.setShortcut(QKeySequence('Ctrl+3'))
-        geometry_manager_btn.triggered.connect(self.show_geometry_manager)
+        geometry_manager_btn.triggered.connect(self.show_element_manager)
 
         # Duplicate Button
         duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/duplicate_icon.png'), '', self)
@@ -417,7 +417,7 @@ Date:   """)
             self.stroke_fill_check_btn.setChecked(False) if self.stroke_fill_check_btn.isChecked() else self.stroke_fill_check_btn.setChecked(True)
 
         elif event.key() == QKeySequence('M'):
-            self.show_geometry_manager()
+            self.show_element_manager()
 
         elif event.key() == QKeySequence('B'):
             self.outline_color_chooser()
@@ -451,31 +451,43 @@ Date:   """)
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
     def outline_color_chooser(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
         self.outline_color_dialog = QColorDialog(self)
         self.outline_color.set(self.outline_color_dialog.getColor())
 
     def fill_color_chooser(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
         self.fill_color_dialog = QColorDialog(self)
         self.fill_color.set(self.fill_color_dialog.getColor())
 
     def launch_course_elements(self):
         self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
         self.course_elements = CourseElementsWin(self.canvas)
         self.course_elements.show()
 
-    def show_geometry_manager(self):
+    def show_element_manager(self):
         self.path_btn.setChecked(False)
-        self.geometry_manager = GeometryManager(self.canvas)
-        self.geometry_manager.show()
+        self.label_btn.setChecked(False)
+
+        self.element_manager = ElementManager(self.canvas)
+        self.element_manager.show()
 
     def use_select(self):
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
+
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def use_pan(self):
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
+
         self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_refit_screen(self):
@@ -534,7 +546,7 @@ Date:   """)
                     item.setBrush(QColor(self.fill_color.get()))
 
                 else:
-                    item.setBrush(QColor(self.fill_color.get()))
+                    item.setBrush(QBrush(QColor(Qt.TransparentMode)))
 
             elif isinstance(item, EditableTextBlock):
                 item.setDefaultTextColor(QColor(self.outline_color.get()))
@@ -1117,12 +1129,12 @@ class CourseElementsWin(QWidget):
         else:
             event.ignore()
 
-class GeometryManager(QWidget):
+class ElementManager(QWidget):
     def __init__(self, canvas):
         super().__init__()
         self.canvas = canvas
 
-        self.setWindowTitle('Geometry Manager')
+        self.setWindowTitle('Element Manager')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(60, 373, 250, 50)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
@@ -1140,7 +1152,7 @@ class GeometryManager(QWidget):
         # Labels
         rotation_label = QLabel('Rotating:')
         scale_label = QLabel('Scaling:')
-        other_label = QLabel('Other:')
+        opacity_label = QLabel('Opacity:')
 
         # Entries
         rotate_slider = QSlider()
@@ -1152,6 +1164,11 @@ class GeometryManager(QWidget):
         scale_slider.setRange(1, 10)
         scale_slider.setOrientation(Qt.Horizontal)
         scale_slider.valueChanged.connect(self.scale_all)
+
+        self.opacity_slider = QSlider()
+        self.opacity_slider.setRange(1, 100)
+        self.opacity_slider.setOrientation(Qt.Horizontal)
+        self.opacity_slider.valueChanged.connect(self.change_opacity)
 
         self.entry1 = QLineEdit()
         self.entry1.textChanged.connect(self.scale_all)
@@ -1172,7 +1189,8 @@ class GeometryManager(QWidget):
         self.layout.addWidget(self.entry1)
         self.layout.addWidget(self.entry2)
         self.layout.addWidget(self.entry3)
-        self.layout.addWidget(other_label)
+        self.layout.addWidget(opacity_label)
+        self.layout.addWidget(self.opacity_slider)
         self.layout.addLayout(self.horizontal_layout)
 
     def scale_all(self, value):
@@ -1235,6 +1253,20 @@ class GeometryManager(QWidget):
 
             # Rotate the item
             item.setRotation(value)
+
+    def change_opacity(self, value):
+        # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
+        opacity = value / self.opacity_slider.maximum()
+
+        # Create effect
+        effect = QGraphicsOpacityEffect()
+
+        # Set opacity value
+        effect.setOpacity(opacity)
+
+        # Apply the effect to selected items
+        for item in self.canvas.selectedItems():
+            item.setGraphicsEffect(effect)
 
 
 if __name__ == '__main__':
