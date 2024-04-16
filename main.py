@@ -1095,6 +1095,7 @@ class GeometryManager(QWidget):
         # Labels
         rotation_label = QLabel('Rotating:')
         scale_label = QLabel('Scaling:')
+        align_label = QLabel('Aligning:')
 
         # Entries
         self.spinbox = QSpinBox()
@@ -1113,8 +1114,11 @@ class GeometryManager(QWidget):
         self.entry3.textChanged.connect(self.scale_y)
         self.entry3.setPlaceholderText("Enter vertical scale factor")
 
-        align_vertical_btn = QPushButton('Vertical')
+        align_vertical_btn = QPushButton('Vertical Align')
         align_vertical_btn.clicked.connect(self.use_align_vertical)
+
+        align_horizontal_btn = QPushButton('Horizontal Align')
+        align_horizontal_btn.clicked.connect(self.use_align_horizontal)
 
         self.layout.addWidget(rotation_label)
         self.layout.addWidget(self.spinbox)
@@ -1122,9 +1126,12 @@ class GeometryManager(QWidget):
         self.layout.addWidget(self.entry1)
         self.layout.addWidget(self.entry2)
         self.layout.addWidget(self.entry3)
+        self.layout.addWidget(align_label)
         self.layout.addLayout(self.horizontal_layout)
 
         self.horizontal_layout.addWidget(align_vertical_btn)
+        self.horizontal_layout.addWidget(align_horizontal_btn)
+
 
     def scale_all(self, value):
         try:
@@ -1193,6 +1200,13 @@ class GeometryManager(QWidget):
         for item in items:
             # Set the position of the item
             item.setPos(0, item.y())
+
+    def use_align_horizontal(self):
+        items = self.canvas.selectedItems()
+
+        for item in items:
+            # Set the position of the item
+            item.setPos(item.x(), 0)
 
 
 if __name__ == '__main__':

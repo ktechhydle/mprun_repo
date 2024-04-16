@@ -424,6 +424,7 @@ class CustomGraphicsView(QGraphicsView):
         if self.button.isChecked():
             if event.button() == Qt.LeftButton:
                 self.path.lineTo(self.mapToScene(event.pos()))
+                self.path.closeSubpath()
 
                 if self.temp_path_item:
                     self.canvas.removeItem(self.temp_path_item)
