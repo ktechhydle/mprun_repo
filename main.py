@@ -568,14 +568,14 @@ Date:   """)
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
                 try:
-                    pixels2svg(input_path=item.return_filename(), output_path='Vector Converts/output.svg')
+                    pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg')
 
                     # Display information
                     QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
 
                     # Add the item to the scene
-                    item = CustomSvgItem('Vector Converts/output.svg')
-                    item.store_filename('Vector Converts/output.svg')
+                    item = CustomSvgItem('V-C STOR/output.svg')
+                    item.store_filename('V-C STOR/output.svg')
                     self.canvas.addItem(item)
                     self.create_item_attributes(item)
                     item.setToolTip('Converted Vector (MPRUN Element)')
@@ -872,6 +872,112 @@ Date:   """)
                 self.canvas.clearSelection()
                 self.export_canvas(file_path)
 
+    def export_selection(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+
+        # File dialog, filepath
+        file_dialog = QFileDialog()
+        file_dialog.setDefaultSuffix('.png')
+
+        file_path, selected_filter = file_dialog.getSaveFileName(self, 'Export Selection', '',
+                                                                 'SVG files (*.svg);;PNG files (*.png);;JPEG files (*.jpeg);;TIFF files (*.tiff);;PDF files (*.pdf)',
+                                                                 options=options)
+
+        if file_path:
+            # Get all the selected items
+            items = self.canvas.selectedItems()
+            item_rect = items.boundingRect()
+
+            # Get the selected filter's extension
+            filter_extensions = {
+                'SVG files (*.svg)': '.svg',
+                'PNG files (*.png)': '.png',
+                'JPEG files (*.jpeg)': '.jpeg',
+                'TIFF files (*.tiff)': '.tiff',
+                'PDF files (*.pdf)': '.pdf',
+            }
+            selected_extension = filter_extensions.get(selected_filter, '.png')
+
+            # Ensure the file_path has the selected extension
+            if not file_path.endswith(selected_extension):
+                file_path += selected_extension
+
+            if selected_extension == '.svg':
+                try:
+                    # Export as SVG
+                    svg_generator = QSvgGenerator()
+                    svg_generator.setFileName(file_path)
+                    svg_generator.setSize(items.size().toSize())
+                    svg_generator.setViewBox(items)
+
+                    # Get input for title
+                    title, ok1 = QInputDialog.getText(self, 'SVG Document Title', 'Enter a title for the SVG')
+
+                    if ok1:
+                        svg_generator.setTitle(title)
+                    else:
+                        svg_generator.setTitle('MPRUN SVG Document (Powered by QSvgGenerator)')
+
+                    # Clear selection
+                    self.canvas.clearSelection()
+
+                    # Create a QPainter to paint onto the QSvgGenerator
+                    painter = QPainter()
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                    painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+                    painter.begin(svg_generator)
+                    painter.fill(Qt.transparent)
+
+                    # Render the scene onto the QPainter
+                    self.canvas.render(painter, target=item_rect, source=item_rect)
+
+                    # End painting
+                    painter.end()
+
+                    # Show export finished notification
+                    QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
+                                            QMessageBox.Ok)
+
+                    # Open the image with the default image viewer
+                    QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
+
+                except Exception as e:
+                    # Show export error notification
+                    QMessageBox.information(self, 'Export Failed', f'Export failed: {e}',
+                                            QMessageBox.Ok)
+
+
+            elif selected_extension == '.pdf':
+                # Export as PDF
+                printer = QPdfWriter(file_path)
+                printer.setPageSize(QPdfWriter.A4)
+                printer.setResolution(300)  # Set the resolution (in DPI)
+
+                # Clear selection
+                self.canvas.clearSelection()
+
+                # Create painter, save file
+                painter = QPainter(printer)
+                painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+
+                # Render the scene onto the QPainter
+                self.canvas.render(painter, target=self.paper.boundingRect(), source=self.paper.boundingRect())
+
+                # End painting
+                painter.end()
+
+                # Show export finished notification
+                QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
+                                        QMessageBox.Ok)
+
+                # Open the image with the default image viewer
+                QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
+
     def create_group(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
@@ -1160,10 +1266,11 @@ class ElementManager(QWidget):
         rotate_slider.setOrientation(Qt.Horizontal)
         rotate_slider.valueChanged.connect(self.rotate)
 
-        scale_slider = QSlider()
-        scale_slider.setRange(1, 10)
-        scale_slider.setOrientation(Qt.Horizontal)
-        scale_slider.valueChanged.connect(self.scale_all)
+        self.scale_slider = QSlider()
+        self.scale_slider.setRange(1, 100)
+        self.scale_slider.setOrientation(Qt.Horizontal)
+        self.scale_slider.setSliderPosition(10)
+        self.scale_slider.valueChanged.connect(self.scale_all)
 
         self.opacity_slider = QSlider()
         self.opacity_slider.setRange(1, 100)
@@ -1185,7 +1292,7 @@ class ElementManager(QWidget):
         self.layout.addWidget(rotation_label)
         self.layout.addWidget(rotate_slider)
         self.layout.addWidget(scale_label)
-        self.layout.addWidget(scale_slider)
+        self.layout.addWidget(self.scale_slider)
         self.layout.addWidget(self.entry1)
         self.layout.addWidget(self.entry2)
         self.layout.addWidget(self.entry3)
@@ -1198,13 +1305,18 @@ class ElementManager(QWidget):
             value = float(value)
             items = self.canvas.selectedItems()
             for item in items:
+                # Calculate value
+                scale_factor = value / 100.0
+                scale = 0.1 + (scale_factor * 9.9)
+
                 # Calculate the center point of the item
                 center = item.boundingRect().center()
 
                 # Set the transformation origin to the center point
                 item.setTransformOriginPoint(center)
 
-                item.setScale(value)
+                # Scale item
+                item.setScale(scale)
         except ValueError:
             pass
 
