@@ -103,7 +103,7 @@ class CustomRectangleItem(QGraphicsRectItem):
 
         item = CustomRectangleItem(rect)
         item.setPen(self.pen())
-        item.setPos(self.pos())
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -135,7 +135,7 @@ class CustomCircleItem(QGraphicsEllipseItem):
 
         item = CustomCircleItem(rect)
         item.setPen(self.pen())
-        item.setPos(self.pos())
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -167,7 +167,7 @@ class CustomPathItem(QGraphicsPathItem):
         item = CustomPathItem(path)
         item.setPen(self.pen())
         item.setBrush(self.brush())
-        item.setPos(self.pos())
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -205,7 +205,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         pixmap = QPixmap(self.return_filename())
 
         item = CustomPixmapItem(pixmap)
-        item.setPos(self.pos())
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.store_filename(self.return_filename())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -244,7 +244,7 @@ class CustomSvgItem(QGraphicsSvgItem):
         svg = self.return_filename()
 
         item = CustomSvgItem(svg)
-        item.setPos(self.pos())
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
         item.store_filename(svg)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -298,7 +298,7 @@ class EditableTextBlock(QGraphicsTextItem):
         item = EditableTextBlock()
         item.setDefaultTextColor(self.defaultTextColor())
         item.setPlainText(self.toPlainText())
-        item.setPos(self.pos())
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
