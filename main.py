@@ -546,7 +546,7 @@ Date:   """)
                     item.setBrush(QColor(self.fill_color.get()))
 
                 else:
-                    item.setBrush(QBrush(QColor(Qt.TransparentMode)))
+                    item.setBrush(QBrush(QColor(Qt.transparent)))
 
             elif isinstance(item, EditableTextBlock):
                 item.setDefaultTextColor(QColor(self.outline_color.get()))

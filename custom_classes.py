@@ -179,6 +179,22 @@ class CustomPathItem(QGraphicsPathItem):
 
         self.scene().addItem(item)
 
+    def duplicate_but_better(self):
+        path = self.path()
+
+        item = CustomPathItem(path)
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+        self.scene().addItem(item)
+
 class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):
         super().__init__(file)
