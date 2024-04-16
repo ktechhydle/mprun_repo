@@ -21,6 +21,7 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         self.widget = widget
 
         self.locked = False
+        self.stored_items = None
 
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
@@ -77,6 +78,25 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
 
     def set_unlocked(self):
         self.locked = False
+
+    def store_items(self, items):
+        self.stored_items = items
+
+    def duplicate(self):
+        item = CustomGraphicsItemGroup(self.widget)
+        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
+
+        self.scene().addItem(item)
+
+        item.addToGroup(self.parentItem()) # I need help here)
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+
 
 class CustomRectangleItem(QGraphicsRectItem):
     def __init__(self, *coords):

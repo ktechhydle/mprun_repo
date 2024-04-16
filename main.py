@@ -48,13 +48,15 @@ class MPRUN(QMainWindow):
     def create_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
+        self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setOrientation(Qt.Vertical)
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
-        self.action_toolbar.setStyleSheet('QToolBar{spacing: 10px;}')
+        self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
+        self.action_toolbar.setMovable(False)
         self.addToolBar(Qt.RightToolBarArea, self.action_toolbar)
 
         #----action toolbar widgets----#
@@ -80,9 +82,21 @@ class MPRUN(QMainWindow):
         course_elements_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
         course_elements_label.setAlignment(Qt.AlignCenter)
 
+        vector_options_label = QLabel('Vector Options:', self)
+        vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        vector_options_label.setAlignment(Qt.AlignCenter)
+
+        color_tolerance_label = QLabel('Vectorize Color Tolerance:')
+        color_tolerance_label.setStyleSheet('font-size: 10px;')
+
         # Stroke size spinbox
         self.stroke_size_spin = QSpinBox()
         self.stroke_size_spin.setValue(3)
+
+        # Vector convert tolerence spinbox
+        self.color_tolerance_spin = QSpinBox()
+        self.color_tolerance_spin.setMaximum(1028)
+        self.color_tolerance_spin.setValue(256)
 
         # Layer Combobox
         self.layer_options = {'Layer 0 (Default)': 0,'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2, 'Layer 3 (Text/Labels)': 3}
@@ -98,12 +112,12 @@ class MPRUN(QMainWindow):
 
         # Raise Layer Button
         raise_layer_btn = QPushButton('Raise Layer', self)
-        raise_layer_btn.setShortcut(QKeySequence('+'))
+        raise_layer_btn.setShortcut(QKeySequence('Ctrl++'))
         raise_layer_btn.clicked.connect(self.use_raise_layer)
 
         # Lower Layer Button
         lower_layer_btn = QPushButton('Lower Layer', self)
-        lower_layer_btn.setShortcut(QKeySequence('-'))
+        lower_layer_btn.setShortcut(QKeySequence('Ctrl+-'))
         lower_layer_btn.clicked.connect(self.use_lower_layer)
 
         # Fill Color Button
@@ -327,6 +341,10 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(course_elements_label)
         self.action_toolbar.addWidget(course_elements_launcher_btn)
+        self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(vector_options_label)
+        self.action_toolbar.addWidget(color_tolerance_label)
+        self.action_toolbar.addWidget(self.color_tolerance_spin)
         self.action_toolbar.addSeparator()
 
     def create_canvas(self):
@@ -572,7 +590,7 @@ Date:   """)
                     self.setCursor(Qt.WaitCursor)
 
                     # Create vector
-                    pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg', color_tolerance=)
+                    pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg', color_tolerance=self.color_tolerance_spin.value())
 
                     # Set cursor back
                     self.setCursor(Qt.ArrowCursor)
@@ -588,6 +606,9 @@ Date:   """)
                     item.setToolTip('Converted Vector (MPRUN Element)')
 
                 except Exception as e:
+                    # Set cursor back
+                    self.setCursor(Qt.ArrowCursor)
+
                     QMessageBox.critical(self, "Convert Error", f"Failed to convert bitmap to vector: {e}")
 
             else:
@@ -617,6 +638,9 @@ Date:   """)
                 item.duplicate()
 
             elif isinstance(item, CustomSvgItem):
+                item.duplicate()
+
+            elif isinstance(item, CustomGraphicsItemGroup):
                 item.duplicate()
 
     def use_raise_layer(self):
