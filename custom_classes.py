@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -78,6 +80,69 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
     def set_unlocked(self):
         self.locked = False
 
+class CustomRectangleItem(QGraphicsRectItem):
+    def __init__(self, coords):
+        super().__init__(coords)
+
+    def paint(self, painter, option, widget=None):
+        # Call the parent class paint method first
+        super().paint(painter, option, widget)
+
+        # If the item is selected, draw a custom selection highlight
+        if option.state & QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setWidth(2)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.SquareCap)
+            pen.setColor(QColor("#f06013"))
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
+
+    def duplicate(self):
+        rect = self.rect()
+
+        item = CustomRectangleItem(rect)
+        item.setPen(self.pen())
+        item.setPos(self.pos())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+
+        self.scene().addItem(item)
+
+class CustomCircleItem(QGraphicsEllipseItem):
+    def __init__(self, coords):
+        super().__init__(coords)
+
+    def paint(self, painter, option, widget=None):
+        # Call the parent class paint method first
+        super().paint(painter, option, widget)
+
+        # If the item is selected, draw a custom selection highlight
+        if option.state & QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setWidth(2)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.SquareCap)
+            pen.setColor(QColor("#f06013"))
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
+
+    def duplicate(self):
+        rect = self.rect()
+
+        item = CustomCircleItem(rect)
+        item.setPen(self.pen())
+        item.setPos(self.pos())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+        self.scene().addItem(item)
+
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)
@@ -95,6 +160,20 @@ class CustomPathItem(QGraphicsPathItem):
             pen.setColor(QColor("#f06013"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
+
+    def duplicate(self):
+        path = self.path()
+
+        item = CustomPathItem(path)
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+        item.setPos(self.pos())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+        self.scene().addItem(item)
 
 class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):
@@ -122,9 +201,24 @@ class CustomPixmapItem(QGraphicsPixmapItem):
     def return_filename(self):
         return str(self.filename)
 
+    def duplicate(self):
+        pixmap = QPixmap(self.return_filename())
+
+        item = CustomPixmapItem(pixmap)
+        item.setPos(self.pos())
+        item.store_filename(self.return_filename())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+        self.scene().addItem(item)
+
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, file):
         super().__init__(file)
+
+        self.filename = None
 
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
@@ -139,6 +233,25 @@ class CustomSvgItem(QGraphicsSvgItem):
             pen.setColor(QColor("#f06013"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
+
+    def store_filename(self, file):
+        self.filename = file
+
+    def return_filename(self):
+        return str(self.filename)
+
+    def duplicate(self):
+        svg = self.return_filename()
+
+        item = CustomSvgItem(svg)
+        item.setPos(self.pos())
+        item.store_filename(svg)
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+        self.scene().addItem(item)
 
 class EditableTextBlock(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
@@ -180,6 +293,18 @@ class EditableTextBlock(QGraphicsTextItem):
 
     def set_locked(self):
         self.locked = True
+
+    def duplicate(self):
+        item = EditableTextBlock()
+        item.setDefaultTextColor(self.defaultTextColor())
+        item.setPlainText(self.toPlainText())
+        item.setPos(self.pos())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Duplicated MPRUN Element')
+
+        self.scene().addItem(item)
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2, button3):
@@ -237,7 +362,7 @@ class CustomGraphicsView(QGraphicsView):
                 self.text.setDefaultTextColor(QColor('black'))
                 self.text.setToolTip("Partially locked text block (This item's position is determined by the position of another element)")
 
-                self.rect = QGraphicsRectItem(self.text.boundingRect())
+                self.rect = CustomRectangleItem(self.text.boundingRect())
                 self.rect.setPen(self.pen)
                 self.rect.setPos(self.mapToScene(event.pos()))
 
@@ -322,7 +447,7 @@ class CustomGraphicsView(QGraphicsView):
 
                 # Draw circle at the end
                 scene_pos = self.mapToScene(event.pos())
-                circle = QGraphicsEllipseItem(scene_pos.x() - 3, scene_pos.y() - 3, 6, 6)
+                circle = CustomCircleItem(scene_pos.x() - 3, scene_pos.y() - 3, 6, 6)
                 circle.setZValue(2)
                 circle.setPen(self.pen)
 

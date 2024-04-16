@@ -211,10 +211,10 @@ class MPRUN(QMainWindow):
         scale_btn.triggered.connect(self.show_scale_manager)
 
         # Duplicate Button
-        duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/refit_view_icon.png'), '', self)
+        duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/duplicate_icon.png'), '', self)
         duplicate_btn.setToolTip('''Duplicate Tool:
-        Command+V (MacOS) or Control+V (Windows)''')
-        duplicate_btn.setShortcut(QKeySequence("Ctrl+V"))
+        Key-D''')
+        duplicate_btn.setShortcut(QKeySequence("D"))
         duplicate_btn.triggered.connect(self.use_duplicate)
 
         # Lock Item Button
@@ -560,6 +560,7 @@ Date:   """)
 
                     # Add the item to the scene
                     item = CustomSvgItem('Vector Converts/output.svg')
+                    item.store_filename('Vector Converts/output.svg')
                     self.canvas.addItem(item)
                     self.create_item_attributes(item)
                     item.setToolTip('Converted Vector (MPRUN Element)')
@@ -574,19 +575,27 @@ Date:   """)
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
-        items = self.canvas.selectedItems()
-        self.duplicate_stack.append(items)
+        # Get selected items and create a copy
+        selected_items = self.canvas.selectedItems()
 
-        for item in items:
-            try:
-                items = self.duplicate_stack.pop()
+        for item in selected_items:
+            if isinstance(item, EditableTextBlock):
+                item.duplicate()
 
-                print(self.duplicate_stack)
+            elif isinstance(item, CustomPathItem):
+                item.duplicate()
 
-                self.canvas.addItem(items)
+            elif isinstance(item, CustomRectangleItem):
+                item.duplicate()
 
-            except Exception as e:
-                print(e)
+            elif isinstance(item, CustomCircleItem):
+                item.duplicate()
+
+            elif isinstance(item, CustomPixmapItem):
+                item.duplicate()
+
+            elif isinstance(item, CustomSvgItem):
+                item.duplicate()
 
     def lock_item(self):
         self.label_btn.setChecked(False)
@@ -663,8 +672,9 @@ Date:   """)
         if file_path:
             if file_path.endswith('.svg'):
                 svg_item = CustomSvgItem(file_path)
+                svg_item.store_filename(file_path)
+
                 self.canvas.addItem(svg_item)
-                svg_item.setPos(450, 300)
                 svg_item.setToolTip('Imported SVG Item (Not an MPRUN Element)')
 
                 self.create_item_attributes(svg_item)
@@ -1019,6 +1029,7 @@ class CourseElementsWin(QWidget):
 
     def create_img(self, svg_file):
         svg_item = CustomSvgItem(svg_file)
+        svg_item.store_filename(svg_file)
         self.canvas.addItem(svg_item)
         svg_item.setPos(450, 300)
         svg_item.setToolTip('MPRUN Course Element')
