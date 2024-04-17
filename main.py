@@ -871,7 +871,7 @@ Date:   """)
 
         # File Dialog, file path
         file_dialog = QFileDialog()
-        file_dialog.setNameFilter("SVG files (*.svg);;JPG files (*.jpg);;JPEG files (*.jpeg);;PNG files (*.png);;Bitmap files (*.bmp)")
+        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;Bitmap files (*.bmp)")
 
         file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;JPG files (*.jpg);;JPEG files (*.jpeg);;PNG files (*.png);;BMP files (*.bmp)",
                                                    options=options)
