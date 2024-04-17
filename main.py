@@ -135,7 +135,17 @@ class MPRUN(QMainWindow):
         # Vector convert tolerence spinbox
         self.color_tolerance_spin = QSpinBox()
         self.color_tolerance_spin.setMaximum(1028)
+        self.color_tolerance_spin.setMinimum(128)
         self.color_tolerance_spin.setValue(256)
+
+        # Vector convert background widgets
+        widget1 = QWidget(self)
+        layout1 = QHBoxLayout()
+        widget1.setLayout(layout1)
+        background_remove_label = QLabel('Remove Background')
+        self.background_remove_check_btn = QCheckBox(self)
+        layout1.addWidget(self.background_remove_check_btn)
+        layout1.addWidget(background_remove_label)
 
         # Layer Combobox
         self.layer_options = {'Layer 0 (Default)': 0,'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2, 'Layer 3 (Text/Labels)': 3}
@@ -380,6 +390,7 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(vector_options_label)
         self.action_toolbar.addWidget(color_tolerance_label)
         self.action_toolbar.addWidget(self.color_tolerance_spin)
+        self.action_toolbar.addWidget(widget1)
         self.action_toolbar.addSeparator()
 
         # Add hotbar widgets
@@ -625,7 +636,10 @@ Date:   """)
                     self.setCursor(Qt.WaitCursor)
 
                     # Create vector
-                    pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg', color_tolerance=self.color_tolerance_spin.value())
+                    pixels2svg(input_path=item.return_filename(),
+                               output_path='V-C STOR/output.svg',
+                               color_tolerance=self.color_tolerance_spin.value(),
+                               remove_background=True if self.background_remove_check_btn.isChecked() else False)
 
                     # Set cursor back
                     self.setCursor(Qt.ArrowCursor)
