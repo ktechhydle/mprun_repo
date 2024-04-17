@@ -485,6 +485,8 @@ Date:   """)
     def closeEvent(self, event):
         # Display a confirmation dialog
         confirmation_dialog = QMessageBox()
+        confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
+        confirmation_dialog.setWindowTitle('Close Project')
         confirmation_dialog.setIcon(QMessageBox.Warning)
         confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
         confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
@@ -509,9 +511,6 @@ Date:   """)
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
     def outline_color_chooser(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         self.outline_color_dialog = QColorDialog(self)
         self.outline_color.set(self.outline_color_dialog.getColor())
 
@@ -1041,9 +1040,6 @@ Date:   """)
             self.canvas.update()
 
             for items in item:
-                # Clear Selection
-                self.canvas.clearSelection()
-
                 # Set flag
                 items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
@@ -1054,17 +1050,17 @@ Date:   """)
                     # Set an object name
                     items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
 
-                elif isinstance(items, CustomGraphicsItemGroup):
-                    self.group.setToolTip('Grouped Object (Free MPRUN Element)')
-
                 elif isinstance(items, EditableTextBlock):
                     items.setTextInteractionFlags(Qt.NoTextInteraction)
 
                         # Set an object name
                     items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
 
+                items.stackBefore(None)
+
                 # Add items to group
                 self.group.addToGroup(items)
+                self.group.setToolTip('Grouped Object (Free MPRUN Element)')
 
     def create_item_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
