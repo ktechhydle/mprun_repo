@@ -1,4 +1,4 @@
-![MPRUN_logo_rounded_corners_version](https://github.com/ktechhydle/mprun_repo/assets/151480646/74f4966f-56e3-467a-9da0-9b9d91ecd4ce)
+![MPRUN_logo_rounded_corners_version copy](https://github.com/ktechhydle/mprun_repo/assets/151480646/ebc27d9a-651a-430e-bfe4-d345d6bef3fe)
 
 # Introducing MPRUN, the ultimate snowboard and ski competion run planning software.
 
