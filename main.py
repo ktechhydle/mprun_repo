@@ -67,6 +67,44 @@ class MPRUN(QMainWindow):
 
         #----action toolbar widgets----#
 
+        # Labels
+        rotation_label = QLabel('Rotating:')
+        rotation_label.setStyleSheet('font-size: 10px;')
+        scale_label = QLabel('Scaling:')
+        scale_label.setStyleSheet('font-size: 10px;')
+        opacity_label = QLabel('Opacity:')
+        opacity_label.setStyleSheet('font-size: 10px;')
+
+        # Entries
+        self.rotate_slider = QSlider()
+        self.rotate_slider.setRange(0, 360)
+        self.rotate_slider.setOrientation(Qt.Horizontal)
+        self.rotate_slider.valueChanged.connect(self.use_rotate)
+
+        self.scale_slider = QSlider()
+        self.scale_slider.setRange(1, 100)
+        self.scale_slider.setOrientation(Qt.Horizontal)
+        self.scale_slider.setSliderPosition(10)
+        self.scale_slider.valueChanged.connect(self.use_scale_all)
+
+        self.opacity_slider = QSlider()
+        self.opacity_slider.setRange(1, 100)
+        self.opacity_slider.setOrientation(Qt.Horizontal)
+        self.opacity_slider.setSliderPosition(100)
+        self.opacity_slider.valueChanged.connect(self.use_change_opacity)
+
+        self.entry1 = QLineEdit()
+        self.entry1.textChanged.connect(self.use_scale_all)
+        self.entry1.setPlaceholderText("Enter overall scale factor")
+
+        self.entry2 = QLineEdit()
+        self.entry2.textChanged.connect(self.use_scale_x)
+        self.entry2.setPlaceholderText("Enter horizontal scale factor")
+
+        self.entry3 = QLineEdit()
+        self.entry3.textChanged.connect(self.use_scale_y)
+        self.entry3.setPlaceholderText("Enter vertical scale factor")
+
         # All labels
         properties_label = QLabel('Element Properties:', self)
         properties_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
@@ -112,15 +150,18 @@ class MPRUN(QMainWindow):
         self.outline_color_btn.clicked.connect(self.outline_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
 
-        # Raise Layer Button
-        raise_layer_btn = QPushButton('Raise Layer', self)
+        # Layer Associated Widgets
+        raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
         raise_layer_btn.setShortcut(QKeySequence('Ctrl++'))
         raise_layer_btn.clicked.connect(self.use_raise_layer)
-
-        # Lower Layer Button
-        lower_layer_btn = QPushButton('Lower Layer', self)
+        lower_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/lower_layer_icon.png'), '', self)
         lower_layer_btn.setShortcut(QKeySequence('Ctrl+-'))
         lower_layer_btn.clicked.connect(self.use_lower_layer)
+        horizontal_widget_for_layer_buttons = QWidget()
+        horizontal_layout_for_layer_buttons = QHBoxLayout()
+        horizontal_widget_for_layer_buttons.setLayout(horizontal_layout_for_layer_buttons)
+        horizontal_layout_for_layer_buttons.addWidget(raise_layer_btn)
+        horizontal_layout_for_layer_buttons.addWidget(lower_layer_btn)
 
         # Fill Color Button
         fill_color_btn = QPushButton('Fill Color', self)
@@ -139,6 +180,7 @@ class MPRUN(QMainWindow):
         self.stroke_pencap_combo = QComboBox()
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
+
 
         #----toolbar buttons----#
 
@@ -282,44 +324,6 @@ class MPRUN(QMainWindow):
         stroke_fill_label.setStyleSheet("font-size: 13px;")
         self.stroke_fill_check_btn = QCheckBox(self)
 
-        # Labels
-        rotation_label = QLabel('Rotating:')
-        rotation_label.setStyleSheet('font-size: 10px;')
-        scale_label = QLabel('Scaling:')
-        scale_label.setStyleSheet('font-size: 10px;')
-        opacity_label = QLabel('Opacity:')
-        opacity_label.setStyleSheet('font-size: 10px;')
-
-        # Entries
-        self.rotate_slider = QSlider()
-        self.rotate_slider.setRange(0, 360)
-        self.rotate_slider.setOrientation(Qt.Horizontal)
-        self.rotate_slider.valueChanged.connect(self.use_rotate)
-
-        self.scale_slider = QSlider()
-        self.scale_slider.setRange(1, 100)
-        self.scale_slider.setOrientation(Qt.Horizontal)
-        self.scale_slider.setSliderPosition(10)
-        self.scale_slider.valueChanged.connect(self.use_scale_all)
-
-        self.opacity_slider = QSlider()
-        self.opacity_slider.setRange(1, 100)
-        self.opacity_slider.setOrientation(Qt.Horizontal)
-        self.opacity_slider.setSliderPosition(100)
-        self.opacity_slider.valueChanged.connect(self.use_change_opacity)
-
-        self.entry1 = QLineEdit()
-        self.entry1.textChanged.connect(self.use_scale_all)
-        self.entry1.setPlaceholderText("Enter overall scale factor")
-
-        self.entry2 = QLineEdit()
-        self.entry2.textChanged.connect(self.use_scale_x)
-        self.entry2.setPlaceholderText("Enter horizontal scale factor")
-
-        self.entry3 = QLineEdit()
-        self.entry3.textChanged.connect(self.use_scale_y)
-        self.entry3.setPlaceholderText("Enter vertical scale factor")
-
         # ----add actions----#
 
         # Add toolbar actions
@@ -362,8 +366,7 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(layers_label)
         self.action_toolbar.addWidget(self.layer_combo)
-        self.action_toolbar.addWidget(raise_layer_btn)
-        self.action_toolbar.addWidget(lower_layer_btn)
+        self.action_toolbar.addWidget(horizontal_widget_for_layer_buttons)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(stroke_options_label)
         self.action_toolbar.addWidget(self.stroke_size_spin)
@@ -605,10 +608,11 @@ Date:   """)
         self.path_btn.setChecked(False)
         index = self.layer_combo.currentIndex()
         data = self.layer_combo.itemData(index)
-        item = self.canvas.selectedItems()
-        for items in item:
-            items.setZValue(data)
-            self.layer_height = data
+
+        if self.canvas.selectedItems():
+            for items in self.canvas.selectedItems():
+                items.setZValue(data)
+                self.layer_height = data
 
     def use_vectorize(self):
         self.label_btn.setChecked(False)
@@ -679,29 +683,33 @@ Date:   """)
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
-        # Raise layer
-        self.layer_height += 1
+        if self.canvas.selectedItems():
+            # Raise layer
+            self.layer_height += 1
 
-        for item in self.canvas.selectedItems():
-            if self.layer_height >= 3:
-                QMessageBox.critical(self, 'Raise Layer', "You cannot raise this Element any higher.")
-
-            else:
+            for item in self.canvas.selectedItems():
                 item.setZValue(self.layer_height)
+
+        else:
+            pass
 
     def use_lower_layer(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
-        # Lower layer
-        self.layer_height -= 1
+        if self.canvas.selectedItems():
+            # Lower layer
+            self.layer_height -= 1
 
-        for item in self.canvas.selectedItems():
-            if self.layer_height <= 0:
-                QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+            for item in self.canvas.selectedItems():
+                if self.layer_height <= 0:
+                    QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
 
-            else:
-                item.setZValue(self.layer_height)
+                else:
+                    item.setZValue(self.layer_height)
+
+        else:
+            pass
 
     def use_scale_all(self, value):
         try:
@@ -874,7 +882,6 @@ Date:   """)
                 image2.setToolTip('Imported Bitmap Item (Not an MPRUN Element)')
 
                 self.create_item_attributes(image2)
-
 
     def export_canvas(self, filename):
         self.label_btn.setChecked(False)
