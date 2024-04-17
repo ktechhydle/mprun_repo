@@ -51,13 +51,19 @@ class MPRUN(QMainWindow):
         self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setOrientation(Qt.Vertical)
-        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
+        self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
         self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
         self.action_toolbar.setMovable(False)
-        self.addToolBar(Qt.RightToolBarArea, self.action_toolbar)
+        self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
+
+        # Hotbar Toolbar
+        self.hotbar = QToolBar('MPRUN Hotbar')
+        self.hotbar.setStyleSheet('QToolBar{spacing: 10px;}')
+        self.hotbar.setMovable(False)
+        self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.hotbar)
 
         #----action toolbar widgets----#
 
@@ -65,10 +71,6 @@ class MPRUN(QMainWindow):
         layers_label = QLabel('Layer Options:', self)
         layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
         layers_label.setAlignment(Qt.AlignCenter)
-
-        options_label = QLabel('Canvas Options:', self)
-        options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        options_label.setAlignment(Qt.AlignCenter)
 
         stroke_options_label = QLabel('Stroke Options:', self)
         stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
@@ -133,16 +135,6 @@ class MPRUN(QMainWindow):
         self.stroke_pencap_combo = QComboBox()
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
-
-        # GSNAP Related widgets
-        self.gsnap_label = QLabel('GSNAP Enabled:', self)
-        self.gsnap_label.setStyleSheet("font-size: 10px;")
-        self.gsnap_check_btn = QCheckBox(self)
-
-        # Stroke fill related widgets
-        stroke_fill_label = QLabel('Stroke Fill Enabled:', self)
-        stroke_fill_label.setStyleSheet("font-size: 10px;")
-        self.stroke_fill_check_btn = QCheckBox(self)
 
         #----toolbar buttons----#
 
@@ -281,6 +273,20 @@ class MPRUN(QMainWindow):
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
         export_btn.triggered.connect(self.export)
 
+        # ----hotbar widgets----#
+
+        # GSNAP Related widgets
+        gsnap_label = QLabel('GSNAP Enabled:', self)
+        gsnap_label.setStyleSheet("font-size: 13px;")
+        self.gsnap_check_btn = QCheckBox(self)
+
+        # Stroke fill related widgets
+        stroke_fill_label = QLabel('Stroke Fill Enabled:', self)
+        stroke_fill_label.setStyleSheet("font-size: 13px;")
+        self.stroke_fill_check_btn = QCheckBox(self)
+
+        # ----add actions----#
+
         # Add toolbar actions
         self.toolbar.addAction(icon)
         self.toolbar.addSeparator()
@@ -315,10 +321,6 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(raise_layer_btn)
         self.action_toolbar.addWidget(lower_layer_btn)
         self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(options_label)
-        self.action_toolbar.addWidget(self.gsnap_label)
-        self.action_toolbar.addWidget(self.gsnap_check_btn)
-        self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(stroke_options_label)
         self.action_toolbar.addWidget(self.stroke_size_spin)
         self.action_toolbar.addWidget(self.outline_color_btn)
@@ -327,13 +329,18 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(fill_options_label)
         self.action_toolbar.addWidget(fill_color_btn)
-        self.action_toolbar.addWidget(stroke_fill_label)
-        self.action_toolbar.addWidget(self.stroke_fill_check_btn)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(vector_options_label)
         self.action_toolbar.addWidget(color_tolerance_label)
         self.action_toolbar.addWidget(self.color_tolerance_spin)
         self.action_toolbar.addSeparator()
+
+        # Add hotbar widgets
+        self.hotbar.addWidget(gsnap_label)
+        self.hotbar.addWidget(self.gsnap_check_btn)
+        self.hotbar.addWidget(stroke_fill_label)
+        self.hotbar.addWidget(self.stroke_fill_check_btn)
+
 
     def create_canvas(self):
         # Canvas, canvas color
