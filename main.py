@@ -284,8 +284,11 @@ class MPRUN(QMainWindow):
 
         # Labels
         rotation_label = QLabel('Rotating:')
+        rotation_label.setStyleSheet('font-size: 10px;')
         scale_label = QLabel('Scaling:')
+        scale_label.setStyleSheet('font-size: 10px;')
         opacity_label = QLabel('Opacity:')
+        opacity_label.setStyleSheet('font-size: 10px;')
 
         # Entries
         self.rotate_slider = QSlider()
@@ -1011,7 +1014,6 @@ Date:   """)
             else:
                 self.canvas.clearSelection()
                 self.export_canvas(file_path)
-
 
     def create_group(self):
         self.label_btn.setChecked(False)
