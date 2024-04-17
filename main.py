@@ -24,7 +24,6 @@ class MPRUN(QMainWindow):
 
         # File
         self.file_name = None
-        self.another_main_window = None
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -67,6 +66,30 @@ class MPRUN(QMainWindow):
 
         #----action toolbar widgets----#
 
+        # All labels
+        properties_label = QLabel('Element Properties:', self)
+        properties_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        properties_label.setAlignment(Qt.AlignLeft)
+
+        layers_label = QLabel('Layer Options:', self)
+        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        layers_label.setAlignment(Qt.AlignLeft)
+
+        stroke_options_label = QLabel('Stroke Options:', self)
+        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        stroke_options_label.setAlignment(Qt.AlignLeft)
+
+        fill_options_label = QLabel('Fill Options:', self)
+        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        fill_options_label.setAlignment(Qt.AlignLeft)
+
+        vector_options_label = QLabel('Vector Options:', self)
+        vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label.setAlignment(Qt.AlignLeft)
+
+        color_tolerance_label = QLabel('Vectorize Color Tolerance:')
+        color_tolerance_label.setStyleSheet('font-size: 10px;')
+
         # Labels
         rotation_label = QLabel('Rotating:')
         rotation_label.setStyleSheet('font-size: 10px;')
@@ -95,39 +118,15 @@ class MPRUN(QMainWindow):
 
         self.entry1 = QLineEdit()
         self.entry1.textChanged.connect(self.use_scale_all)
-        self.entry1.setPlaceholderText("Enter overall scale factor")
+        self.entry1.setPlaceholderText("Overall scale factor")
 
         self.entry2 = QLineEdit()
         self.entry2.textChanged.connect(self.use_scale_x)
-        self.entry2.setPlaceholderText("Enter horizontal scale factor")
+        self.entry2.setPlaceholderText("Horizontal scale factor")
 
         self.entry3 = QLineEdit()
         self.entry3.textChanged.connect(self.use_scale_y)
-        self.entry3.setPlaceholderText("Enter vertical scale factor")
-
-        # All labels
-        properties_label = QLabel('Element Properties:', self)
-        properties_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        properties_label.setAlignment(Qt.AlignLeft)
-
-        layers_label = QLabel('Layer Options:', self)
-        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
-        layers_label.setAlignment(Qt.AlignLeft)
-
-        stroke_options_label = QLabel('Stroke Options:', self)
-        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
-        stroke_options_label.setAlignment(Qt.AlignLeft)
-
-        fill_options_label = QLabel('Fill Options:', self)
-        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
-        fill_options_label.setAlignment(Qt.AlignLeft)
-
-        vector_options_label = QLabel('Vector Options:', self)
-        vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
-        vector_options_label.setAlignment(Qt.AlignLeft)
-
-        color_tolerance_label = QLabel('Vectorize Color Tolerance:')
-        color_tolerance_label.setStyleSheet('font-size: 10px;')
+        self.entry3.setPlaceholderText("Vertical scale factor")
 
         # Stroke size spinbox
         self.stroke_size_spin = QSpinBox()
@@ -353,6 +352,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
 
         # Add action toolbar actions
+        self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(properties_label)
         self.action_toolbar.addWidget(rotation_label)
         self.action_toolbar.addWidget(self.rotate_slider)
