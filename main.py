@@ -20,7 +20,7 @@ class MPRUN(QMainWindow):
         # Drawing undoing, redoing
         self.last_drawing = []
         self.drawing_history = []
-        self.duplicate_stack = []
+        self.layer_height = 0
 
         # File
         self.file_name = None
@@ -48,41 +48,57 @@ class MPRUN(QMainWindow):
     def create_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
+        self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setOrientation(Qt.Vertical)
-        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
+        self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
-        self.action_toolbar.setStyleSheet('QToolBar{spacing: 10px;}')
-        self.addToolBar(Qt.RightToolBarArea, self.action_toolbar)
+        self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
+        self.action_toolbar.setMovable(False)
+        self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
+
+        # Hotbar Toolbar
+        self.hotbar = QToolBar('MPRUN Hotbar')
+        self.hotbar.setStyleSheet('QToolBar{spacing: 10px;}')
+        self.hotbar.setMovable(False)
+        self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.hotbar)
 
         #----action toolbar widgets----#
 
         # All labels
-        layers_label = QLabel('Layer Options:', self)
-        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        layers_label.setAlignment(Qt.AlignCenter)
+        properties_label = QLabel('Element Properties:', self)
+        properties_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        properties_label.setAlignment(Qt.AlignLeft)
 
-        options_label = QLabel('Canvas Options:', self)
-        options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        options_label.setAlignment(Qt.AlignCenter)
+        layers_label = QLabel('Layer Options:', self)
+        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        layers_label.setAlignment(Qt.AlignLeft)
 
         stroke_options_label = QLabel('Stroke Options:', self)
-        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        stroke_options_label.setAlignment(Qt.AlignCenter)
+        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        stroke_options_label.setAlignment(Qt.AlignLeft)
 
         fill_options_label = QLabel('Fill Options:', self)
-        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        fill_options_label.setAlignment(Qt.AlignCenter)
+        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        fill_options_label.setAlignment(Qt.AlignLeft)
 
-        course_elements_label = QLabel('Course Elements:', self)
-        course_elements_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        course_elements_label.setAlignment(Qt.AlignCenter)
+        vector_options_label = QLabel('Vector Options:', self)
+        vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label.setAlignment(Qt.AlignLeft)
+
+        color_tolerance_label = QLabel('Vectorize Color Tolerance:')
+        color_tolerance_label.setStyleSheet('font-size: 10px;')
 
         # Stroke size spinbox
         self.stroke_size_spin = QSpinBox()
         self.stroke_size_spin.setValue(3)
+
+        # Vector convert tolerence spinbox
+        self.color_tolerance_spin = QSpinBox()
+        self.color_tolerance_spin.setMaximum(1028)
+        self.color_tolerance_spin.setValue(256)
 
         # Layer Combobox
         self.layer_options = {'Layer 0 (Default)': 0,'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2, 'Layer 3 (Text/Labels)': 3}
@@ -96,16 +112,21 @@ class MPRUN(QMainWindow):
         self.outline_color_btn.clicked.connect(self.outline_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
 
+        # Raise Layer Button
+        raise_layer_btn = QPushButton('Raise Layer', self)
+        raise_layer_btn.setShortcut(QKeySequence('Ctrl++'))
+        raise_layer_btn.clicked.connect(self.use_raise_layer)
+
+        # Lower Layer Button
+        lower_layer_btn = QPushButton('Lower Layer', self)
+        lower_layer_btn.setShortcut(QKeySequence('Ctrl+-'))
+        lower_layer_btn.clicked.connect(self.use_lower_layer)
+
         # Fill Color Button
         fill_color_btn = QPushButton('Fill Color', self)
         fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         fill_color_btn.clicked.connect(self.fill_color_chooser)
         fill_color_btn.clicked.connect(self.update_pen)
-
-        # Course Elements Launcher Button
-        course_elements_launcher_btn = QPushButton('Course Elements Picker', self)
-        course_elements_launcher_btn.setShortcut(QKeySequence('Ctrl+2'))
-        course_elements_launcher_btn.clicked.connect(self.launch_course_elements)
 
         # Stroke Style Combobox
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine, 'Dotted Stroke': Qt.DotLine, 'Dashed Stroke': Qt.DashLine, 'Dashed Dot Stroke': Qt.DashDotLine, 'Dashed Double Dot Stroke': Qt.DashDotDotLine}
@@ -118,16 +139,6 @@ class MPRUN(QMainWindow):
         self.stroke_pencap_combo = QComboBox()
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
-
-        # GSNAP Related widgets
-        self.gsnap_label = QLabel('GSNAP Enabled:', self)
-        self.gsnap_label.setStyleSheet("font-size: 10px;")
-        self.gsnap_check_btn = QCheckBox(self)
-
-        # Stroke fill related widgets
-        stroke_fill_label = QLabel('Stroke Fill Enabled:', self)
-        stroke_fill_label.setStyleSheet("font-size: 10px;")
-        self.stroke_fill_check_btn = QCheckBox(self)
 
         #----toolbar buttons----#
 
@@ -189,20 +200,6 @@ class MPRUN(QMainWindow):
         erase_btn.setShortcut(QKeySequence('E'))
         erase_btn.triggered.connect(self.use_erase)
 
-        # Set Layer Button
-        layer_set_btn = QAction(QIcon('logos and icons/Tool Icons/set_layer_icon.png'), '', self)
-        layer_set_btn.setToolTip('''Set Layer Tool:
-        Command+L (MacOS) or Control+L (Windows)''')
-        layer_set_btn.setShortcut(QKeySequence('Ctrl+L'))
-        layer_set_btn.triggered.connect(self.use_set_layer)
-
-        # Geometry Manager Button
-        geometry_manager_btn = QAction(QIcon('logos and icons/Tool Icons/rotate_icon.png'), '', self)
-        geometry_manager_btn.setToolTip('''Geometry Manager Tool:
-        Key-R''')
-        geometry_manager_btn.setShortcut(QKeySequence('Ctrl+3'))
-        geometry_manager_btn.triggered.connect(self.show_geometry_manager)
-
         # Duplicate Button
         duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/duplicate_icon.png'), '', self)
         duplicate_btn.setToolTip('''Duplicate Tool:
@@ -252,6 +249,13 @@ class MPRUN(QMainWindow):
         vectorize_btn.setShortcut(QKeySequence('V'))
         vectorize_btn.triggered.connect(self.use_vectorize)
 
+        # Course Elements Launcher Button
+        course_elements_launcher_btn = QAction(QIcon('logos and icons/Tool Icons/course_elements_icon.png'), '', self)
+        course_elements_launcher_btn.setToolTip('''Course Elements Picker Tool:
+        Key-C''')
+        course_elements_launcher_btn.setShortcut(QKeySequence('C'))
+        course_elements_launcher_btn.triggered.connect(self.launch_course_elements)
+
         # Insert Button
         insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
         insert_btn.setToolTip('''Insert Tool:
@@ -266,6 +270,58 @@ class MPRUN(QMainWindow):
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
         export_btn.triggered.connect(self.export)
 
+        # ----hotbar widgets----#
+
+        # GSNAP Related widgets
+        gsnap_label = QLabel('GSNAP Enabled:', self)
+        gsnap_label.setStyleSheet("font-size: 13px;")
+        self.gsnap_check_btn = QCheckBox(self)
+
+        # Stroke fill related widgets
+        stroke_fill_label = QLabel('Stroke Fill Enabled:', self)
+        stroke_fill_label.setStyleSheet("font-size: 13px;")
+        self.stroke_fill_check_btn = QCheckBox(self)
+
+        # Labels
+        rotation_label = QLabel('Rotating:')
+        rotation_label.setStyleSheet('font-size: 10px;')
+        scale_label = QLabel('Scaling:')
+        scale_label.setStyleSheet('font-size: 10px;')
+        opacity_label = QLabel('Opacity:')
+        opacity_label.setStyleSheet('font-size: 10px;')
+
+        # Entries
+        self.rotate_slider = QSlider()
+        self.rotate_slider.setRange(0, 360)
+        self.rotate_slider.setOrientation(Qt.Horizontal)
+        self.rotate_slider.valueChanged.connect(self.use_rotate)
+
+        self.scale_slider = QSlider()
+        self.scale_slider.setRange(1, 100)
+        self.scale_slider.setOrientation(Qt.Horizontal)
+        self.scale_slider.setSliderPosition(10)
+        self.scale_slider.valueChanged.connect(self.use_scale_all)
+
+        self.opacity_slider = QSlider()
+        self.opacity_slider.setRange(1, 100)
+        self.opacity_slider.setOrientation(Qt.Horizontal)
+        self.opacity_slider.setSliderPosition(100)
+        self.opacity_slider.valueChanged.connect(self.use_change_opacity)
+
+        self.entry1 = QLineEdit()
+        self.entry1.textChanged.connect(self.use_scale_all)
+        self.entry1.setPlaceholderText("Enter overall scale factor")
+
+        self.entry2 = QLineEdit()
+        self.entry2.textChanged.connect(self.use_scale_x)
+        self.entry2.setPlaceholderText("Enter horizontal scale factor")
+
+        self.entry3 = QLineEdit()
+        self.entry3.textChanged.connect(self.use_scale_y)
+        self.entry3.setPlaceholderText("Enter vertical scale factor")
+
+        # ----add actions----#
+
         # Add toolbar actions
         self.toolbar.addAction(icon)
         self.toolbar.addSeparator()
@@ -277,9 +333,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(erase_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(add_text_btn)
-        self.toolbar.addAction(layer_set_btn)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(geometry_manager_btn)
         self.toolbar.addAction(duplicate_btn)
         self.toolbar.addAction(lock_btn)
         self.toolbar.addAction(unlock_btn)
@@ -289,18 +343,27 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(restroke_button)
         self.toolbar.addAction(vectorize_btn)
         self.toolbar.addSeparator()
+        self.toolbar.addAction(course_elements_launcher_btn)
         self.toolbar.addAction(insert_btn)
         self.toolbar.addAction(export_btn)
         self.toolbar.addSeparator()
 
         # Add action toolbar actions
+        self.action_toolbar.addWidget(properties_label)
+        self.action_toolbar.addWidget(rotation_label)
+        self.action_toolbar.addWidget(self.rotate_slider)
+        self.action_toolbar.addWidget(scale_label)
+        self.action_toolbar.addWidget(self.scale_slider)
+        self.action_toolbar.addWidget(self.entry1)
+        self.action_toolbar.addWidget(self.entry2)
+        self.action_toolbar.addWidget(self.entry3)
+        self.action_toolbar.addWidget(opacity_label)
+        self.action_toolbar.addWidget(self.opacity_slider)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(layers_label)
         self.action_toolbar.addWidget(self.layer_combo)
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(options_label)
-        self.action_toolbar.addWidget(self.gsnap_label)
-        self.action_toolbar.addWidget(self.gsnap_check_btn)
+        self.action_toolbar.addWidget(raise_layer_btn)
+        self.action_toolbar.addWidget(lower_layer_btn)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(stroke_options_label)
         self.action_toolbar.addWidget(self.stroke_size_spin)
@@ -310,12 +373,18 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(fill_options_label)
         self.action_toolbar.addWidget(fill_color_btn)
-        self.action_toolbar.addWidget(stroke_fill_label)
-        self.action_toolbar.addWidget(self.stroke_fill_check_btn)
         self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(course_elements_label)
-        self.action_toolbar.addWidget(course_elements_launcher_btn)
+        self.action_toolbar.addWidget(vector_options_label)
+        self.action_toolbar.addWidget(color_tolerance_label)
+        self.action_toolbar.addWidget(self.color_tolerance_spin)
         self.action_toolbar.addSeparator()
+
+        # Add hotbar widgets
+        self.hotbar.addWidget(gsnap_label)
+        self.hotbar.addWidget(self.gsnap_check_btn)
+        self.hotbar.addWidget(stroke_fill_label)
+        self.hotbar.addWidget(self.stroke_fill_check_btn)
+
 
     def create_canvas(self):
         # Canvas, canvas color
@@ -344,10 +413,11 @@ class MPRUN(QMainWindow):
         self.canvas_view.update_stroke_fill_color('white')
         self.setCentralWidget(self.canvas_view)
 
-        # If any stroke changes are made, update them
+        # If any stroke or layer changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
+        self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
 
         if self.path_btn.isChecked():
             self.canvas_view.update_pen(
@@ -404,9 +474,6 @@ Date:   """)
         elif event.key() == QKeySequence('X'):
             self.stroke_fill_check_btn.setChecked(False) if self.stroke_fill_check_btn.isChecked() else self.stroke_fill_check_btn.setChecked(True)
 
-        elif event.key() == QKeySequence('R'):
-            self.show_geometry_manager()
-
         elif event.key() == QKeySequence('B'):
             self.outline_color_chooser()
 
@@ -439,31 +506,36 @@ Date:   """)
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
     def outline_color_chooser(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
         self.outline_color_dialog = QColorDialog(self)
         self.outline_color.set(self.outline_color_dialog.getColor())
 
     def fill_color_chooser(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
         self.fill_color_dialog = QColorDialog(self)
         self.fill_color.set(self.fill_color_dialog.getColor())
 
     def launch_course_elements(self):
         self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
         self.course_elements = CourseElementsWin(self.canvas)
         self.course_elements.show()
-
-    def show_geometry_manager(self):
-        self.path_btn.setChecked(False)
-        self.geometry_manager = GeometryManager(self.canvas)
-        self.geometry_manager.show()
 
     def use_select(self):
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
+
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def use_pan(self):
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
+
         self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_refit_screen(self):
@@ -492,6 +564,7 @@ Date:   """)
         self.canvas.addItem(text)
 
         text.setPos(200, 200)
+        text.setZValue(0)
 
         self.create_item_attributes(text)
 
@@ -516,7 +589,13 @@ Date:   """)
 
                 pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                 item.setPen(pen)
-                item.setBrush(QColor(self.fill_color.get()))
+
+                # Check if widget is pressed
+                if self.stroke_fill_check_btn.isChecked():
+                    item.setBrush(QColor(self.fill_color.get()))
+
+                else:
+                    item.setBrush(QBrush(QColor(Qt.transparent)))
 
             elif isinstance(item, EditableTextBlock):
                 item.setDefaultTextColor(QColor(self.outline_color.get()))
@@ -529,6 +608,7 @@ Date:   """)
         item = self.canvas.selectedItems()
         for items in item:
             items.setZValue(data)
+            self.layer_height = data
 
     def use_vectorize(self):
         self.label_btn.setChecked(False)
@@ -538,19 +618,29 @@ Date:   """)
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
                 try:
-                    pixels2svg(input_path=item.return_filename(), output_path='Vector Converts/output.svg')
+                    # Set cursor loading
+                    self.setCursor(Qt.WaitCursor)
+
+                    # Create vector
+                    pixels2svg(input_path=item.return_filename(), output_path='V-C STOR/output.svg', color_tolerance=self.color_tolerance_spin.value())
+
+                    # Set cursor back
+                    self.setCursor(Qt.ArrowCursor)
 
                     # Display information
                     QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
 
                     # Add the item to the scene
-                    item = CustomSvgItem('Vector Converts/output.svg')
-                    item.store_filename('Vector Converts/output.svg')
+                    item = CustomSvgItem('V-C STOR/output.svg')
+                    item.store_filename('V-C STOR/output.svg')
                     self.canvas.addItem(item)
                     self.create_item_attributes(item)
                     item.setToolTip('Converted Vector (MPRUN Element)')
 
                 except Exception as e:
+                    # Set cursor back
+                    self.setCursor(Qt.ArrowCursor)
+
                     QMessageBox.critical(self, "Convert Error", f"Failed to convert bitmap to vector: {e}")
 
             else:
@@ -582,6 +672,116 @@ Date:   """)
             elif isinstance(item, CustomSvgItem):
                 item.duplicate()
 
+            elif isinstance(item, CustomGraphicsItemGroup):
+                item.duplicate()
+
+    def use_raise_layer(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        # Raise layer
+        self.layer_height += 1
+
+        for item in self.canvas.selectedItems():
+            if self.layer_height >= 3:
+                QMessageBox.critical(self, 'Raise Layer', "You cannot raise this Element any higher.")
+
+            else:
+                item.setZValue(self.layer_height)
+
+    def use_lower_layer(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        # Lower layer
+        self.layer_height -= 1
+
+        for item in self.canvas.selectedItems():
+            if self.layer_height <= 0:
+                QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+
+            else:
+                item.setZValue(self.layer_height)
+
+    def use_scale_all(self, value):
+        try:
+            value = float(value)
+            items = self.canvas.selectedItems()
+            for item in items:
+                # Calculate value
+                scale_factor = value / 100.0
+                scale = 0.1 + (scale_factor * 9.9)
+
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
+                # Scale item
+                item.setScale(scale)
+        except ValueError:
+            pass
+
+    def use_scale_x(self, value):
+        try:
+            value = float(value)
+            items = self.canvas.selectedItems()
+            for item in items:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
+                transform = QTransform()
+                transform.scale(value, 1.0)
+                item.setTransform(transform)
+        except ValueError:
+            pass
+
+    def use_scale_y(self, value):
+        try:
+            value = float(value)
+            items = self.canvas.selectedItems()
+            for item in items:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
+                transform = QTransform()
+                transform.scale(1.0, value)
+                item.setTransform(transform)
+        except ValueError:
+            pass
+
+    def use_rotate(self, value):
+        items = self.canvas.selectedItems()
+        for item in items:
+            # Calculate the center point of the item
+            center = item.boundingRect().center()
+
+            # Set the transformation origin to the center point
+            item.setTransformOriginPoint(center)
+
+            # Rotate the item
+            item.setRotation(value)
+
+    def use_change_opacity(self, value):
+        # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
+        opacity = value / self.opacity_slider.maximum()
+
+        # Create effect
+        effect = QGraphicsOpacityEffect()
+
+        # Set opacity value
+        effect.setOpacity(opacity)
+
+        # Apply the effect to selected items
+        for item in self.canvas.selectedItems():
+            item.setGraphicsEffect(effect)
 
     def lock_item(self):
         self.label_btn.setChecked(False)
@@ -1071,128 +1271,6 @@ class CourseElementsWin(QWidget):
             event.accept()
         else:
             event.ignore()
-
-class GeometryManager(QWidget):
-    def __init__(self, canvas):
-        super().__init__()
-        self.canvas = canvas
-
-        self.setWindowTitle('Geometry Manager')
-        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-        self.setGeometry(60, 373, 250, 50)
-        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-
-        self.layout = QVBoxLayout()
-        self.horizontal_layout = QHBoxLayout()
-
-        self.setLayout(self.layout)
-
-        self.vertical_value = 0
-
-        self.create_ui()
-
-    def create_ui(self):
-        # Labels
-        rotation_label = QLabel('Rotating:')
-        scale_label = QLabel('Scaling:')
-
-        # Entries
-        self.spinbox = QSpinBox()
-        self.spinbox.setMaximum(360)
-        self.spinbox.valueChanged.connect(self.rotate)
-
-        self.entry1 = QLineEdit()
-        self.entry1.textChanged.connect(self.scale_all)
-        self.entry1.setPlaceholderText("Enter overall scale factor")
-
-        self.entry2 = QLineEdit()
-        self.entry2.textChanged.connect(self.scale_x)
-        self.entry2.setPlaceholderText("Enter horizontal scale factor")
-
-        self.entry3 = QLineEdit()
-        self.entry3.textChanged.connect(self.scale_y)
-        self.entry3.setPlaceholderText("Enter vertical scale factor")
-
-        align_vertical_btn = QPushButton('Vertical')
-        align_vertical_btn.clicked.connect(self.use_align_vertical)
-
-        self.layout.addWidget(rotation_label)
-        self.layout.addWidget(self.spinbox)
-        self.layout.addWidget(scale_label)
-        self.layout.addWidget(self.entry1)
-        self.layout.addWidget(self.entry2)
-        self.layout.addWidget(self.entry3)
-        self.layout.addLayout(self.horizontal_layout)
-
-        self.horizontal_layout.addWidget(align_vertical_btn)
-
-    def scale_all(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                item.setScale(value)
-        except ValueError:
-            pass
-
-    def scale_x(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                transform = QTransform()
-                transform.scale(value, 1.0)
-                item.setTransform(transform)
-        except ValueError:
-            pass
-
-    def scale_y(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                transform = QTransform()
-                transform.scale(1.0, value)
-                item.setTransform(transform)
-        except ValueError:
-            pass
-
-    def rotate(self, value):
-        items = self.canvas.selectedItems()
-        for item in items:
-            # Calculate the center point of the item
-            center = item.boundingRect().center()
-
-            # Set the transformation origin to the center point
-            item.setTransformOriginPoint(center)
-
-            # Rotate the item
-            item.setRotation(value)
-
-    def use_align_vertical(self):
-        items = self.canvas.selectedItems()
-
-        for item in items:
-            # Set the position of the item
-            item.setPos(0, item.y())
 
 
 if __name__ == '__main__':
