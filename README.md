@@ -1,5 +1,4 @@
 ![MPRUN_logo_rounded_corners_version copy](https://github.com/ktechhydle/mprun_repo/assets/151480646/ebc27d9a-651a-430e-bfe4-d345d6bef3fe)
-
 # Introducing MPRUN, the ultimate snowboard and ski competion run planning software.
 
 With MPRUN, you can set up custom courses matching the competition environment, and print out these setups to achieve the best competition performance and communication between coaches and athletes[^1]
