@@ -68,21 +68,25 @@ class MPRUN(QMainWindow):
         #----action toolbar widgets----#
 
         # All labels
+        properties_label = QLabel('Element Properties:', self)
+        properties_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        properties_label.setAlignment(Qt.AlignLeft)
+
         layers_label = QLabel('Layer Options:', self)
-        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        layers_label.setAlignment(Qt.AlignCenter)
+        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        layers_label.setAlignment(Qt.AlignLeft)
 
         stroke_options_label = QLabel('Stroke Options:', self)
-        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        stroke_options_label.setAlignment(Qt.AlignCenter)
+        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        stroke_options_label.setAlignment(Qt.AlignLeft)
 
         fill_options_label = QLabel('Fill Options:', self)
-        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        fill_options_label.setAlignment(Qt.AlignCenter)
+        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        fill_options_label.setAlignment(Qt.AlignLeft)
 
         vector_options_label = QLabel('Vector Options:', self)
-        vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
-        vector_options_label.setAlignment(Qt.AlignCenter)
+        vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label.setAlignment(Qt.AlignLeft)
 
         color_tolerance_label = QLabel('Vectorize Color Tolerance:')
         color_tolerance_label.setStyleSheet('font-size: 10px;')
@@ -196,13 +200,6 @@ class MPRUN(QMainWindow):
         erase_btn.setShortcut(QKeySequence('E'))
         erase_btn.triggered.connect(self.use_erase)
 
-        # Geometry Manager Button
-        geometry_manager_btn = QAction(QIcon('logos and icons/Tool Icons/geometry_icon.png'), '', self)
-        geometry_manager_btn.setToolTip('''Element Manager Tool:
-        Key-M''')
-        geometry_manager_btn.setShortcut(QKeySequence('Ctrl+3'))
-        geometry_manager_btn.triggered.connect(self.show_element_manager)
-
         # Duplicate Button
         duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/duplicate_icon.png'), '', self)
         duplicate_btn.setToolTip('''Duplicate Tool:
@@ -285,6 +282,41 @@ class MPRUN(QMainWindow):
         stroke_fill_label.setStyleSheet("font-size: 13px;")
         self.stroke_fill_check_btn = QCheckBox(self)
 
+        # Labels
+        rotation_label = QLabel('Rotating:')
+        scale_label = QLabel('Scaling:')
+        opacity_label = QLabel('Opacity:')
+
+        # Entries
+        self.rotate_slider = QSlider()
+        self.rotate_slider.setRange(0, 360)
+        self.rotate_slider.setOrientation(Qt.Horizontal)
+        self.rotate_slider.valueChanged.connect(self.use_rotate)
+
+        self.scale_slider = QSlider()
+        self.scale_slider.setRange(1, 100)
+        self.scale_slider.setOrientation(Qt.Horizontal)
+        self.scale_slider.setSliderPosition(10)
+        self.scale_slider.valueChanged.connect(self.use_scale_all)
+
+        self.opacity_slider = QSlider()
+        self.opacity_slider.setRange(1, 100)
+        self.opacity_slider.setOrientation(Qt.Horizontal)
+        self.opacity_slider.setSliderPosition(100)
+        self.opacity_slider.valueChanged.connect(self.use_change_opacity)
+
+        self.entry1 = QLineEdit()
+        self.entry1.textChanged.connect(self.use_scale_all)
+        self.entry1.setPlaceholderText("Enter overall scale factor")
+
+        self.entry2 = QLineEdit()
+        self.entry2.textChanged.connect(self.use_scale_x)
+        self.entry2.setPlaceholderText("Enter horizontal scale factor")
+
+        self.entry3 = QLineEdit()
+        self.entry3.textChanged.connect(self.use_scale_y)
+        self.entry3.setPlaceholderText("Enter vertical scale factor")
+
         # ----add actions----#
 
         # Add toolbar actions
@@ -299,7 +331,6 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(add_text_btn)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(geometry_manager_btn)
         self.toolbar.addAction(duplicate_btn)
         self.toolbar.addAction(lock_btn)
         self.toolbar.addAction(unlock_btn)
@@ -315,6 +346,16 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
 
         # Add action toolbar actions
+        self.action_toolbar.addWidget(properties_label)
+        self.action_toolbar.addWidget(rotation_label)
+        self.action_toolbar.addWidget(self.rotate_slider)
+        self.action_toolbar.addWidget(scale_label)
+        self.action_toolbar.addWidget(self.scale_slider)
+        self.action_toolbar.addWidget(self.entry1)
+        self.action_toolbar.addWidget(self.entry2)
+        self.action_toolbar.addWidget(self.entry3)
+        self.action_toolbar.addWidget(opacity_label)
+        self.action_toolbar.addWidget(self.opacity_slider)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(layers_label)
         self.action_toolbar.addWidget(self.layer_combo)
@@ -430,9 +471,6 @@ Date:   """)
         elif event.key() == QKeySequence('X'):
             self.stroke_fill_check_btn.setChecked(False) if self.stroke_fill_check_btn.isChecked() else self.stroke_fill_check_btn.setChecked(True)
 
-        elif event.key() == QKeySequence('M'):
-            self.show_element_manager()
-
         elif event.key() == QKeySequence('B'):
             self.outline_color_chooser()
 
@@ -484,13 +522,6 @@ Date:   """)
 
         self.course_elements = CourseElementsWin(self.canvas)
         self.course_elements.show()
-
-    def show_element_manager(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
-        self.element_manager = ElementManager(self.canvas)
-        self.element_manager.show()
 
     def use_select(self):
         self.path_btn.setChecked(False)
@@ -668,6 +699,86 @@ Date:   """)
 
             else:
                 item.setZValue(self.layer_height)
+
+    def use_scale_all(self, value):
+        try:
+            value = float(value)
+            items = self.canvas.selectedItems()
+            for item in items:
+                # Calculate value
+                scale_factor = value / 100.0
+                scale = 0.1 + (scale_factor * 9.9)
+
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
+                # Scale item
+                item.setScale(scale)
+        except ValueError:
+            pass
+
+    def use_scale_x(self, value):
+        try:
+            value = float(value)
+            items = self.canvas.selectedItems()
+            for item in items:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
+                transform = QTransform()
+                transform.scale(value, 1.0)
+                item.setTransform(transform)
+        except ValueError:
+            pass
+
+    def use_scale_y(self, value):
+        try:
+            value = float(value)
+            items = self.canvas.selectedItems()
+            for item in items:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
+
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
+                transform = QTransform()
+                transform.scale(1.0, value)
+                item.setTransform(transform)
+        except ValueError:
+            pass
+
+    def use_rotate(self, value):
+        items = self.canvas.selectedItems()
+        for item in items:
+            # Calculate the center point of the item
+            center = item.boundingRect().center()
+
+            # Set the transformation origin to the center point
+            item.setTransformOriginPoint(center)
+
+            # Rotate the item
+            item.setRotation(value)
+
+    def use_change_opacity(self, value):
+        # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
+        opacity = value / self.opacity_slider.maximum()
+
+        # Create effect
+        effect = QGraphicsOpacityEffect()
+
+        # Set opacity value
+        effect.setOpacity(opacity)
+
+        # Apply the effect to selected items
+        for item in self.canvas.selectedItems():
+            item.setGraphicsEffect(effect)
 
     def lock_item(self):
         self.label_btn.setChecked(False)
@@ -1158,152 +1269,6 @@ class CourseElementsWin(QWidget):
             event.accept()
         else:
             event.ignore()
-
-class ElementManager(QWidget):
-    def __init__(self, canvas):
-        super().__init__()
-        self.canvas = canvas
-
-        self.setWindowTitle('Element Manager')
-        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-        self.setGeometry(60, 373, 250, 50)
-        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-
-        self.layout = QVBoxLayout()
-        self.horizontal_layout = QHBoxLayout()
-
-        self.setLayout(self.layout)
-
-        self.vertical_value = 0
-
-        self.create_ui()
-
-    def create_ui(self):
-        # Labels
-        rotation_label = QLabel('Rotating:')
-        scale_label = QLabel('Scaling:')
-        opacity_label = QLabel('Opacity:')
-
-        # Entries
-        rotate_slider = QSlider()
-        rotate_slider.setRange(0, 360)
-        rotate_slider.setOrientation(Qt.Horizontal)
-        rotate_slider.valueChanged.connect(self.rotate)
-
-        self.scale_slider = QSlider()
-        self.scale_slider.setRange(1, 100)
-        self.scale_slider.setOrientation(Qt.Horizontal)
-        self.scale_slider.setSliderPosition(10)
-        self.scale_slider.valueChanged.connect(self.scale_all)
-
-        self.opacity_slider = QSlider()
-        self.opacity_slider.setRange(1, 100)
-        self.opacity_slider.setOrientation(Qt.Horizontal)
-        self.opacity_slider.setSliderPosition(100)
-        self.opacity_slider.valueChanged.connect(self.change_opacity)
-
-        self.entry1 = QLineEdit()
-        self.entry1.textChanged.connect(self.scale_all)
-        self.entry1.setPlaceholderText("Enter overall scale factor")
-
-        self.entry2 = QLineEdit()
-        self.entry2.textChanged.connect(self.scale_x)
-        self.entry2.setPlaceholderText("Enter horizontal scale factor")
-
-        self.entry3 = QLineEdit()
-        self.entry3.textChanged.connect(self.scale_y)
-        self.entry3.setPlaceholderText("Enter vertical scale factor")
-
-        self.layout.addWidget(rotation_label)
-        self.layout.addWidget(rotate_slider)
-        self.layout.addWidget(scale_label)
-        self.layout.addWidget(self.scale_slider)
-        self.layout.addWidget(self.entry1)
-        self.layout.addWidget(self.entry2)
-        self.layout.addWidget(self.entry3)
-        self.layout.addWidget(opacity_label)
-        self.layout.addWidget(self.opacity_slider)
-        self.layout.addLayout(self.horizontal_layout)
-
-    def scale_all(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate value
-                scale_factor = value / 100.0
-                scale = 0.1 + (scale_factor * 9.9)
-
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                # Scale item
-                item.setScale(scale)
-        except ValueError:
-            pass
-
-    def scale_x(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                transform = QTransform()
-                transform.scale(value, 1.0)
-                item.setTransform(transform)
-        except ValueError:
-            pass
-
-    def scale_y(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                transform = QTransform()
-                transform.scale(1.0, value)
-                item.setTransform(transform)
-        except ValueError:
-            pass
-
-    def rotate(self, value):
-        items = self.canvas.selectedItems()
-        for item in items:
-            # Calculate the center point of the item
-            center = item.boundingRect().center()
-
-            # Set the transformation origin to the center point
-            item.setTransformOriginPoint(center)
-
-            # Rotate the item
-            item.setRotation(value)
-
-    def change_opacity(self, value):
-        # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
-        opacity = value / self.opacity_slider.maximum()
-
-        # Create effect
-        effect = QGraphicsOpacityEffect()
-
-        # Set opacity value
-        effect.setOpacity(opacity)
-
-        # Apply the effect to selected items
-        for item in self.canvas.selectedItems():
-            item.setGraphicsEffect(effect)
 
 
 if __name__ == '__main__':
