@@ -573,7 +573,7 @@ Date:   """)
     def use_text(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
-        text = EditableTextBlock('An Editable Text Block')
+        text = EditableTextBlock('Lorem Ipsum')
         text.setDefaultTextColor(QColor(self.outline_color.get()))
 
         self.canvas.addItem(text)
@@ -1082,9 +1082,7 @@ Date:   """)
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setFlag(QGraphicsItem.ItemIsSelectable)
 
-        index = self.layer_combo.currentIndex()
-        data = self.layer_combo.itemData(index)
-        item.setZValue(data)
+        item.setZValue(0)
 
     def set_template(self, template_choice):
         if template_choice == 1:
