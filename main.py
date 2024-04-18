@@ -154,7 +154,8 @@ class MPRUN(QMainWindow):
             self.layer_combo.addItem(layer, value)
 
         # Outline Color Button
-        self.outline_color_btn = QPushButton('Stroke Color', self)
+        self.outline_color_btn = QPushButton('', self)
+        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.outline_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
@@ -524,7 +525,8 @@ Date:   """)
     def outline_color_chooser(self):
         self.outline_color_dialog = QColorDialog(self)
         self.outline_color.set(self.outline_color_dialog.getColor())
-
+        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
+        
     def fill_color_chooser(self):
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
