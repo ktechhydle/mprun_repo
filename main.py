@@ -21,7 +21,6 @@ class MPRUN(QMainWindow):
         # Drawing undoing, redoing
         self.last_drawing = []
         self.drawing_history = []
-        self.layer_height = 0
 
         # File
         self.file_name = None
@@ -625,7 +624,6 @@ Date:   """)
         if self.canvas.selectedItems():
             for items in self.canvas.selectedItems():
                 items.setZValue(data)
-                self.layer_height = data
 
     def use_vectorize(self):
         self.label_btn.setChecked(False)
@@ -700,11 +698,8 @@ Date:   """)
         self.path_btn.setChecked(False)
 
         if self.canvas.selectedItems():
-            # Raise layer
-            self.layer_height += 1
-
             for item in self.canvas.selectedItems():
-                item.setZValue(self.layer_height)
+                item.setZValue(item.zValue() + 1)
 
         else:
             pass
@@ -714,15 +709,12 @@ Date:   """)
         self.path_btn.setChecked(False)
 
         if self.canvas.selectedItems():
-            # Lower layer
-            self.layer_height -= 1
-
             for item in self.canvas.selectedItems():
-                if self.layer_height <= 0:
+                if items.zValue() <= 0:
                     QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
 
                 else:
-                    item.setZValue(self.layer_height)
+                    item.setZValue(item.zValue() - 1)
 
         else:
             pass
