@@ -1269,8 +1269,7 @@ class CourseElementsWin(QWidget):
     def create_image_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setPos(450, 300)
-        item.setZValue(1)
+        item.setZValue(0)
 
     def closeEvent(self, event):
         # Display a confirmation dialog
