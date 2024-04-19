@@ -529,7 +529,7 @@ class CustomGraphicsView(QGraphicsView):
                 # Draw circle at the end of path
                 scene_pos = self.mapToScene(event.pos())
                 circle = CustomCircleItem(scene_pos.x() - 3, scene_pos.y() - 3, 6, 6)
-                circle.setZValue(1)
+                circle.setZValue(0)
                 circle.setPen(self.pen)
 
                 self.canvas.update()
@@ -538,6 +538,7 @@ class CustomGraphicsView(QGraphicsView):
                 path_item = CustomPathItem(self.leader_line)
                 path_item.setPen(self.pen)
                 path_item.setZValue(0)
+                path_item.stackBefore(circle)
                 path_item.setParentItem(circle)
                 self.text_box_rect.setParentItem(circle)
                 self.label_text.setParentItem(circle)
