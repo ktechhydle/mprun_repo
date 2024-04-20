@@ -168,17 +168,17 @@ class MPRUN(QMainWindow):
 
         # Layer Associated Widgets
         raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
-        raise_layer_btn.setToolTip('''Shortcut:
+        raise_layer_btn.setToolTip('''Raise Layer Tool:
         Key-1''')
         raise_layer_btn.setShortcut(QKeySequence('1'))
         raise_layer_btn.clicked.connect(self.use_raise_layer)
         lower_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/lower_layer_icon.png'), '', self)
-        lower_layer_btn.setToolTip('''Shortcut:
+        lower_layer_btn.setToolTip('''Lower Layer Tool:
         Key-2''')
         lower_layer_btn.setShortcut(QKeySequence('2'))
         lower_layer_btn.clicked.connect(self.use_lower_layer)
         bring_to_front_btn = QPushButton(QIcon('logos and icons/Tool Icons/set_always_on_top_icon.png'), '', self)
-        bring_to_front_btn.setToolTip('''Shortcut:
+        bring_to_front_btn.setToolTip('''Set Always on Top Tool:
         Key-B''')
         bring_to_front_btn.setShortcut(QKeySequence('B'))
         bring_to_front_btn.clicked.connect(self.use_bring_to_front)
@@ -277,23 +277,30 @@ class MPRUN(QMainWindow):
         # Lock Item Button
         lock_btn = QAction(QIcon('logos and icons/Tool Icons/lock_icon.png'), '', self)
         lock_btn.setToolTip('''Lock Position Tool: 
-        Command+X (MacOS) or Control+X (Windows)''')
-        lock_btn.setShortcut(QKeySequence('Ctrl+X'))
+        Command+L (MacOS) or Control+L (Windows)''')
+        lock_btn.setShortcut(QKeySequence('Ctrl+L'))
         lock_btn.triggered.connect(self.lock_item)
 
         # Unlock Item Button
         unlock_btn = QAction(QIcon('logos and icons/Tool Icons/unlock_icon.png'), '', self)
         unlock_btn.setToolTip('''Unlock Position Tool: 
-        Command+B (MacOS) or Control+B (Windows)''')
-        unlock_btn.setShortcut(QKeySequence('Ctrl+B'))
+        Command+U (MacOS) or Control+U (Windows)''')
+        unlock_btn.setShortcut(QKeySequence('Ctrl+U'))
         unlock_btn.triggered.connect(self.unlock_item)
 
         # Permanent Lock Button
         permanent_lock_btn = QAction(QIcon('logos and icons/Tool Icons/permanent_lock_icon.png'), '', self)
         permanent_lock_btn.setToolTip('''Permanent Lock Tool: 
-        Command+Shift+Q (MacOS) or Control+Shift+Q (Windows)''')
-        permanent_lock_btn.setShortcut(QKeySequence('Ctrl+Shift+Q'))
+        Command+Shift+L (MacOS) or Control+Shift+L (Windows)''')
+        permanent_lock_btn.setShortcut(QKeySequence('Ctrl+Shift+L'))
         permanent_lock_btn.triggered.connect(self.permanent_lock_item)
+
+        # Center Item Button
+        center_item_btn = QAction(QIcon('logos and icons/Tool Icons/center_item_icon.png'), '', self)
+        center_item_btn.setToolTip('''Center Item Tool:
+        Shift+C (MacOS) or Shift+C (Windows)''')
+        center_item_btn.setShortcut(QKeySequence("Shift+C"))
+        center_item_btn.triggered.connect(self.use_center_item)
 
         # Create Group Button
         group_create_btn = QAction(QIcon('logos and icons/Tool Icons/group_icon.png'), '', self)
@@ -367,6 +374,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(lock_btn)
         self.toolbar.addAction(unlock_btn)
         self.toolbar.addAction(permanent_lock_btn)
+        self.toolbar.addAction(center_item_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
         self.toolbar.addAction(restroke_button)
@@ -473,9 +481,10 @@ Date:   """)
         self.paper_text.setPos(2, 2)
         self.paper_text.setDefaultTextColor(QColor('black'))
         self.paper_text.setFont(QFont("Helvetica", 9))
-        self.paper_text.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(-1)
-        self.paper_text.setToolTip(f"Locked Text Block (This item's position is locked)")
+        self.paper_text.setToolTip(f"Editable Text Block")
         self.canvas.addItem(self.paper_text)
 
         # Create initial group (This method is used to set grid size)
@@ -749,6 +758,9 @@ Date:   """)
             pass
 
     def use_scale_all(self, value):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
         try:
             if self.scale_from_center_check_btn.isChecked():
                 value = float(value)
@@ -788,6 +800,9 @@ Date:   """)
             pass
 
     def use_scale_x(self, value):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
         try:
             value = float(value)
             items = self.canvas.selectedItems()
@@ -805,6 +820,9 @@ Date:   """)
             pass
 
     def use_scale_y(self, value):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
         try:
             value = float(value)
             items = self.canvas.selectedItems()
@@ -822,6 +840,9 @@ Date:   """)
             pass
 
     def use_rotate(self, value):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
         items = self.canvas.selectedItems()
         for item in items:
             # Calculate the center point of the item
@@ -834,6 +855,9 @@ Date:   """)
             item.setRotation(value)
 
     def use_change_opacity(self, value):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
         opacity = value / self.opacity_slider.maximum()
 
@@ -847,9 +871,21 @@ Date:   """)
         for item in self.canvas.selectedItems():
             item.setGraphicsEffect(effect)
 
+    def use_center_item(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        if self.canvas.selectedItems():
+            for item in self.canvas.selectedItems():
+                center = self.paper.boundingRect().center()
+                item_center = item.boundingRect().center()
+
+                item.setPos(center - item_center)
+
     def lock_item(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
+
         item = self.canvas.selectedItems()
 
         for items in item:
@@ -878,6 +914,8 @@ Date:   """)
         if self.canvas.selectedItems():
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox()
+            confirmation_dialog.setWindowTitle('Permanently Lock Item')
+            confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
             confirmation_dialog.setIcon(QMessageBox.Warning)
             confirmation_dialog.setText("Are you sure you want to permanently lock the selected Element? (The Element will no longer be editable!)")
             confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)

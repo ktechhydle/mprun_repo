@@ -30,10 +30,10 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setWidth(2)
+            pen.setWidth(8)
             pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.SquareCap)
-            pen.setColor(QColor("#ff0000"))
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#ff0d00"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -107,10 +107,10 @@ class CustomRectangleItem(QGraphicsRectItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setWidth(2)
+            pen.setWidth(8)
             pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.SquareCap)
-            pen.setColor(QColor("#f06013"))
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -142,10 +142,10 @@ class CustomCircleItem(QGraphicsEllipseItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setWidth(2)
+            pen.setWidth(8)
             pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.SquareCap)
-            pen.setColor(QColor("#f06013"))
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -176,10 +176,10 @@ class CustomPathItem(QGraphicsPathItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setWidth(2)
+            pen.setWidth(8)
             pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.SquareCap)
-            pen.setColor(QColor("#f06013"))
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -229,10 +229,10 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setWidth(2)
+            pen.setWidth(8)
             pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.SquareCap)
-            pen.setColor(QColor("#f06013"))
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -271,10 +271,10 @@ class CustomSvgItem(QGraphicsSvgItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setWidth(2)
+            pen.setWidth(8)
             pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.SquareCap)
-            pen.setColor(QColor("#f06013"))
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
@@ -327,10 +327,10 @@ class EditableTextBlock(QGraphicsTextItem):
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             pen = painter.pen()
-            pen.setWidth(2)
+            pen.setWidth(8)
             pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.SquareCap)
-            pen.setColor(QColor("#f06013"))
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
             painter.drawRect(self.boundingRect())
 
