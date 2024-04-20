@@ -9,6 +9,7 @@ from graphics_framework import *
 from custom_classes import *
 from custom_widgets import *
 from course_elements import *
+from canvas_creation_dialog import *
 from pixels2svg import *
 
 class MPRUN(QMainWindow):
@@ -323,6 +324,13 @@ class MPRUN(QMainWindow):
         vectorize_btn.setShortcut(QKeySequence('V'))
         vectorize_btn.triggered.connect(self.use_vectorize)
 
+        # Add Canvas Button
+        add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/vectorize_icon.png'), '', self)
+        add_canvas_btn.setToolTip('''Add Canvas Tool: 
+        Key-A''')
+        add_canvas_btn.setShortcut(QKeySequence('A'))
+        add_canvas_btn.triggered.connect(self.use_add_canvas)
+
         # Course Elements Launcher Button
         course_elements_launcher_btn = QAction(QIcon('logos and icons/Tool Icons/course_elements_icon.png'), '', self)
         course_elements_launcher_btn.setToolTip('''Course Elements Picker Tool:
@@ -342,7 +350,7 @@ class MPRUN(QMainWindow):
         export_btn.setToolTip('''Export Tool:
         Command+E (MacOS) or Control+E (Windows)''')
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
-        export_btn.triggered.connect(self.export)
+        export_btn.triggered.connect(self.choose_export)
 
         # ----hotbar widgets----#
 
@@ -379,6 +387,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(group_create_btn)
         self.toolbar.addAction(restroke_button)
         self.toolbar.addAction(vectorize_btn)
+        self.toolbar.addAction(add_canvas_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(course_elements_launcher_btn)
         self.toolbar.addAction(insert_btn)
@@ -464,12 +473,13 @@ class MPRUN(QMainWindow):
             self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Drawing paper
-        self.paper = QGraphicsRectItem(0, 0, 1000, 700)
+        self.paper = CanvasItem(0, 0, 1000, 700)
         brush = QBrush(QColor('white'))
         pen = QPen(QColor('white'), 2, Qt.SolidLine)
         self.paper.setBrush(brush)
         self.paper.setPen(pen)
         self.paper.setZValue(-1)
+        self.paper.setToolTip('Canvas 1')
         self.canvas.addItem(self.paper)
 
         # Text on paper
@@ -485,6 +495,7 @@ Date:   """)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(-1)
         self.paper_text.setToolTip(f"Editable Text Block")
+        self.paper_text.setParentItem(self.paper)
         self.canvas.addItem(self.paper_text)
 
         # Create initial group (This method is used to set grid size)
@@ -882,6 +893,13 @@ Date:   """)
 
                 item.setPos(center - item_center)
 
+    def use_add_canvas(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
+        self.window = AddCanvasDialog(self.canvas, self.paper)
+        self.window.show()
+
     def lock_item(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
@@ -977,41 +995,71 @@ Date:   """)
 
                 self.create_item_attributes(image2)
 
-    def export_canvas(self, filename):
+    def export_canvas(self, filename, selected_item):
+        # Turn tools off
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
-        # Create a QImage with the size of the QGraphicsRectItem
-        rect = self.paper.boundingRect()
+        # Create a QImage with the size of the selected item (QGraphicsRectItem)
+        rect = selected_item.boundingRect()
         image = QImage(rect.size().toSize(), QImage.Format_ARGB32)
+        print(rect.size().toSize())
 
-        # Fill the image with transparent background
-        image.fill(Qt.transparent)
+        new_x = rect.x()
+        new_y = rect.y()
+
+        print(new_x, new_y)
+
+        new_target_rect = QRectF(new_x, new_y, rect.width(), rect.height())
+        print(new_target_rect)
 
         # Render the QGraphicsRectItem onto the image
         painter = QPainter(image)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-        self.canvas.render(painter, target=QRectF(image.rect()), source=rect)
+        self.canvas.render(painter, target=new_target_rect, source=rect)
         painter.end()
 
-        # Save the image to file
-        success = image.save(filename)
+        try:
+            # Save the image to file
+            success = image.save(filename)
 
-        if success:
-            # If saving was successful, show a notification
-            QMessageBox.information(self, "Export Finished", "Export completed successfully.")
+            if success:
+                # If saving was successful, show a notification
+                QMessageBox.information(self, "Export Finished", "Export completed successfully.")
 
-            # Open the image with the default image viewer
-            QDesktopServices.openUrl(QUrl.fromLocalFile(filename))
-        else:
+                # Open the image with the default image viewer
+                QDesktopServices.openUrl(QUrl.fromLocalFile(filename))
+
+        except Exception as e:
             # If saving failed, show an error notification
-            QMessageBox.critical(self, "Export Error", "Failed to export canvas to file.")
+            QMessageBox.critical(self, "Export Error", f"Failed to export canvas to file: {e}")
 
-    def export(self):
+    def choose_export(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
+        # Create a custom dialog to with a dropdown to select which canvas to export
+        selector = CanvasItemSelector(self)
+        selector.show()
+
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                # Add the canvas items to the selector
+                selector.add_canvas_item(itemName=item.toolTip(), itemKey=item)
+
+        # Create a function to choose the selected item
+        def export():
+            index = selector.comboBox.currentIndex()
+            data = selector.comboBox.itemData(index)
+            selected_item = selector.comboBox.itemData(index)
+
+            if selected_item:
+                self.export_selected_canvas(selected_item)
+
+        selector.exportButton.clicked.connect(export)
+
+    def export_selected_canvas(self, selected_item):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
 
@@ -1041,7 +1089,7 @@ Date:   """)
             if selected_extension == '.svg':
                 try:
                     # Get the bounding rect
-                    rect = self.paper.boundingRect()
+                    rect = selected_item.boundingRect()
 
                     # Export as SVG
                     svg_generator = QSvgGenerator()
@@ -1067,7 +1115,7 @@ Date:   """)
                     painter.begin(svg_generator)
 
                     # Render the scene onto the QPainter
-                    self.canvas.render(painter, target=self.paper.boundingRect(), source=self.paper.boundingRect())
+                    self.canvas.render(painter, target=selected_item.boundingRect(), source=selected_item.boundingRect())
 
                     # End painting
                     painter.end()
@@ -1084,7 +1132,6 @@ Date:   """)
                     QMessageBox.information(self, 'Export Failed', f'Export failed: {e}',
                                             QMessageBox.Ok)
 
-
             elif selected_extension == '.pdf':
                 # Export as PDF
                 printer = QPdfWriter(file_path)
@@ -1100,7 +1147,7 @@ Date:   """)
                 painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
 
                 # Render the scene onto the QPainter
-                self.canvas.render(painter, target=self.paper.boundingRect(), source=self.paper.boundingRect())
+                self.canvas.render(painter, target=selected_item.boundingRect(), source=selected_item.boundingRect())
 
                 # End painting
                 painter.end()
@@ -1113,8 +1160,12 @@ Date:   """)
                 QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
 
             else:
-                self.canvas.clearSelection()
-                self.export_canvas(file_path)
+                try:
+                    self.canvas.clearSelection()
+                    self.export_canvas(file_path, selected_item)
+
+                except Exception as e:
+                    print(e)
 
     def create_group(self):
         self.label_btn.setChecked(False)

@@ -355,3 +355,21 @@ class EditableTextBlock(QGraphicsTextItem):
         item.setToolTip('Duplicated MPRUN Element')
 
         self.scene().addItem(item)
+
+class CanvasItem(QGraphicsRectItem):
+    def __init__(self, *coords):
+        super().__init__(*coords)
+
+    def paint(self, painter, option, widget=None):
+        # Call the parent class paint method first
+        super().paint(painter, option, widget)
+
+        # If the item is selected, draw a custom selection highlight
+        if option.state & QStyle.State_Selected:
+            pen = painter.pen()
+            pen.setWidth(8)
+            pen.setStyle(Qt.SolidLine)
+            pen.setCapStyle(Qt.FlatCap)
+            pen.setColor(QColor("#d66b00"))
+            painter.setPen(pen)
+            painter.drawRect(self.boundingRect())
