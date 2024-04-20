@@ -155,29 +155,40 @@ class MPRUN(QMainWindow):
 
         # Outline Color Button
         self.outline_color_btn = QPushButton('', self)
-        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
+        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()}; border: None')
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.outline_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
 
         # Layer Associated Widgets
         raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
-        raise_layer_btn.setShortcut(QKeySequence('Ctrl++'))
+        raise_layer_btn.setToolTip('''Shortcut:
+        Key-1''')
+        raise_layer_btn.setShortcut(QKeySequence('1'))
         raise_layer_btn.clicked.connect(self.use_raise_layer)
         lower_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/lower_layer_icon.png'), '', self)
-        lower_layer_btn.setShortcut(QKeySequence('Ctrl+-'))
+        lower_layer_btn.setToolTip('''Shortcut:
+        Key-2''')
+        lower_layer_btn.setShortcut(QKeySequence('2'))
         lower_layer_btn.clicked.connect(self.use_lower_layer)
+        bring_to_front_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
+        bring_to_front_btn.setToolTip('''Shortcut:
+        Key-B''')
+        bring_to_front_btn.setShortcut(QKeySequence('B'))
+        bring_to_front_btn.clicked.connect(self.use_bring_to_front)
         horizontal_widget_for_layer_buttons = QWidget()
         horizontal_layout_for_layer_buttons = QHBoxLayout()
         horizontal_widget_for_layer_buttons.setLayout(horizontal_layout_for_layer_buttons)
         horizontal_layout_for_layer_buttons.addWidget(raise_layer_btn)
         horizontal_layout_for_layer_buttons.addWidget(lower_layer_btn)
+        horizontal_layout_for_layer_buttons.addWidget(bring_to_front_btn)
 
         # Fill Color Button
-        fill_color_btn = QPushButton('Fill Color', self)
-        fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
-        fill_color_btn.clicked.connect(self.fill_color_chooser)
-        fill_color_btn.clicked.connect(self.update_pen)
+        self.fill_color_btn = QPushButton('', self)
+        self.fill_color_btn.setStyleSheet(f'background-color: white; border: None')
+        self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
+        self.fill_color_btn.clicked.connect(self.fill_color_chooser)
+        self.fill_color_btn.clicked.connect(self.update_pen)
 
         # Stroke Style Combobox
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine, 'Dotted Stroke': Qt.DotLine, 'Dashed Stroke': Qt.DashLine, 'Dashed Dot Stroke': Qt.DashDotLine, 'Dashed Double Dot Stroke': Qt.DashDotDotLine}
@@ -386,7 +397,7 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(self.stroke_pencap_combo)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(fill_options_label)
-        self.action_toolbar.addWidget(fill_color_btn)
+        self.action_toolbar.addWidget(self.fill_color_btn)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(vector_options_label)
         self.action_toolbar.addWidget(color_tolerance_label)
@@ -523,16 +534,20 @@ Date:   """)
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
     def outline_color_chooser(self):
-        self.outline_color_dialog = QColorDialog(self)
-        self.outline_color.set(self.outline_color_dialog.getColor())
-        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
-        
-    def fill_color_chooser(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
+        color_dialog = QColorDialog(self)
 
-        self.fill_color_dialog = QColorDialog(self)
-        self.fill_color.set(self.fill_color_dialog.getColor())
+        if color_dialog.exec_():
+            color = color_dialog.selectedColor()
+            self.outline_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
+            self.outline_color.set(color.name())
+
+    def fill_color_chooser(self):
+        color_dialog = QColorDialog(self)
+
+        if color_dialog.exec_():
+            color = color_dialog.selectedColor()
+            self.fill_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
+            self.fill_color.set(color.name())
 
     def launch_course_elements(self):
         self.path_btn.setChecked(False)
@@ -625,6 +640,15 @@ Date:   """)
             for items in self.canvas.selectedItems():
                 items.setZValue(data)
 
+    def use_bring_to_front(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        selected_items = self.canvas.selectedItems()
+        max_z_value = max(item.zValue() for item in self.canvas.items()) if self.canvas.items() else 0
+        for item in selected_items:
+            item.setZValue(max_z_value + 1)
+
     def use_vectorize(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
@@ -710,7 +734,7 @@ Date:   """)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
-                if items.zValue() <= 0:
+                if item.zValue() <= 0:
                     QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
 
                 else:
@@ -868,7 +892,7 @@ Date:   """)
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;Bitmap files (*.bmp)")
 
-        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;JPG files (*.jpg);;JPEG files (*.jpeg);;PNG files (*.png);;BMP files (*.bmp)",
+        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;BMP files (*.bmp)",
                                                    options=options)
 
         if file_path:
