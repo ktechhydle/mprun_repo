@@ -51,6 +51,7 @@ class AddCanvasDialog(QWidget):
 
             else:
                 rect_item = CanvasItem(0, 0, width, height)
+                text_item = EditableTextBlock(canvas_name)
 
                 brush = QBrush(QColor('white'))
                 pen = QPen(QColor('white'), 2, Qt.SolidLine)
@@ -65,6 +66,13 @@ class AddCanvasDialog(QWidget):
                 rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
                 rect_item.setToolTip(canvas_name)
 
+                text_item.setZValue(-2)
+                text_item.setParentItem(rect_item)
+                text_item.setDefaultTextColor(QColor('black'))
+                text_item.setScale(1.5)
+                text_item.setPos(rect_item.boundingRect().x(), rect_item.boundingRect().y() - 30)
+                text_item.set_locked()
+
                 self.close()
 
         except ValueError as e:
@@ -73,7 +81,7 @@ class AddCanvasDialog(QWidget):
 class CanvasItemSelector(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Select Canvas Item")
+        self.setWindowTitle("Select Canvas To Export")
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setFixedWidth(250)
 
@@ -85,9 +93,13 @@ class CanvasItemSelector(QDialog):
         layout.addWidget(self.exportButton)
 
     def add_canvas_item(self, itemName, itemKey):
-        values = {itemName: itemKey}
-        for name, key in values.items():
-            self.comboBox.addItem(name, key)
+        if isinstance(itemKey, CanvasItem):
+            values = {itemName: itemKey}
+            for name, key in values.items():
+                self.comboBox.addItem(name, key)
+
+        else:
+            pass
 
 
 

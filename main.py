@@ -495,6 +495,14 @@ Date:   """)
         self.paper_text.setParentItem(self.paper)
         self.canvas.addItem(self.paper_text)
 
+        text_item = EditableTextBlock('Canvas 1')
+        text_item.setZValue(-1)
+        text_item.setParentItem(self.paper)
+        text_item.setDefaultTextColor(QColor('black'))
+        text_item.setScale(1.5)
+        text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+        text_item.set_locked()
+
         # If the Path Button is checked, update!!
         if self.path_btn.isChecked():
             self.update_pen()
@@ -944,13 +952,20 @@ Date:   """)
                 for items in item:
                     items.setFlag(QGraphicsItem.ItemIsMovable, False)
                     items.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    items.setToolTip('Permanently Locked MPRUN Element')
 
                     if isinstance(items, EditableTextBlock):
                         items.set_locked()
+                        items.setToolTip('Permanently Locked MPRUN Element')
 
                     if isinstance(items, CustomGraphicsItemGroup):
                         items.set_locked()
+                        items.setToolTip('Permanently Locked MPRUN Element')
+
+                    if isinstance(items, CanvasItem):
+                        pass
+
+                    else:
+                        items.setToolTip('Permanently Locked MPRUN Element')
 
             else:
                 pass
@@ -996,23 +1011,16 @@ Date:   """)
         self.path_btn.setChecked(False)
 
         # Create a QImage with the size of the selected item (QGraphicsRectItem)
-        rect = selected_item.boundingRect()
+        rect = selected_item.sceneBoundingRect()
         image = QImage(rect.size().toSize(), QImage.Format_ARGB32)
-        print(rect.size().toSize())
 
-        new_x = rect.x()
-        new_y = rect.y()
-
-        print(new_x, new_y)
-
-        new_target_rect = QRectF(new_x, new_y, rect.width(), rect.height())
-        print(new_target_rect)
+        print(rect)
 
         # Render the QGraphicsRectItem onto the image
         painter = QPainter(image)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-        self.canvas.render(painter, target=new_target_rect, source=rect)
+        self.canvas.render(painter, target=QRectF(image.rect()), source=rect)
         painter.end()
 
         try:
@@ -1084,7 +1092,7 @@ Date:   """)
             if selected_extension == '.svg':
                 try:
                     # Get the bounding rect
-                    rect = selected_item.boundingRect()
+                    rect = selected_item.sceneBoundingRect()
 
                     # Export as SVG
                     svg_generator = QSvgGenerator()
@@ -1110,7 +1118,7 @@ Date:   """)
                     painter.begin(svg_generator)
 
                     # Render the scene onto the QPainter
-                    self.canvas.render(painter, target=selected_item.boundingRect(), source=selected_item.boundingRect())
+                    self.canvas.render(painter, target=rect, source=rect)
 
                     # End painting
                     painter.end()
@@ -1142,7 +1150,7 @@ Date:   """)
                 painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
 
                 # Render the scene onto the QPainter
-                self.canvas.render(painter, target=selected_item.boundingRect(), source=selected_item.boundingRect())
+                self.canvas.render(painter, target=selected_item.sceneBoundingRect(), source=selected_item.sceneBoundingRect())
 
                 # End painting
                 painter.end()
