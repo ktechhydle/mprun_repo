@@ -682,7 +682,7 @@ Date:   """)
 
                     # Create vector
                     pixels2svg(input_path=item.return_filename(),
-                               output_path='V-C STOR/output.svg',
+                               output_path=f'V-C STOR/output',
                                color_tolerance=self.color_tolerance_spin.value(),
                                remove_background=True if self.background_remove_check_btn.isChecked() else False)
 
