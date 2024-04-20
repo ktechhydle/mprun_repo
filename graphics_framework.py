@@ -84,7 +84,6 @@ class CustomGraphicsView(QGraphicsView):
     def mouseMoveEvent(self, event):
         # Check if the path tool is enabled
         if self.button.isChecked():
-
             # Check the buttons
             if event.buttons() == Qt.LeftButton:
                 # Move the path to the mouse cursor

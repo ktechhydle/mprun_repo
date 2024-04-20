@@ -103,7 +103,8 @@ class MPRUN(QMainWindow):
 
         # Entries
         self.rotate_slider = QSlider()
-        self.rotate_slider.setRange(0, 360)
+        self.rotate_slider.setRange(-360, 360)
+        self.rotate_slider.setSliderPosition(0)
         self.rotate_slider.setOrientation(Qt.Horizontal)
         self.rotate_slider.valueChanged.connect(self.use_rotate)
 
@@ -131,11 +132,26 @@ class MPRUN(QMainWindow):
         self.entry3.textChanged.connect(self.use_scale_y)
         self.entry3.setPlaceholderText("Vertical scale factor")
 
+        # Scale from center related widgets
         self.scale_from_center_check_btn = QCheckBox(self)
         scale_from_center_label = QLabel('Scale From Center')
         widget2 = ToolbarHorizontalLayout()
         widget2.layout.addWidget(self.scale_from_center_check_btn)
         widget2.layout.addWidget(scale_from_center_label)
+
+        # Fill Color Button
+        self.fill_color_btn = QPushButton('', self)
+        self.fill_color_btn.setStyleSheet(f'background-color: white; border: None')
+        self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
+        self.fill_color_btn.clicked.connect(self.fill_color_chooser)
+        self.fill_color_btn.clicked.connect(self.update_pen)
+
+        # Outline Color Button
+        self.outline_color_btn = QPushButton('', self)
+        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()}; border: None')
+        self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
+        self.outline_color_btn.clicked.connect(self.outline_color_chooser)
+        self.outline_color_btn.clicked.connect(self.update_pen)
 
         # Stroke size spinbox
         self.stroke_size_spin = QSpinBox()
@@ -147,25 +163,19 @@ class MPRUN(QMainWindow):
         self.color_tolerance_spin.setMinimum(128)
         self.color_tolerance_spin.setValue(256)
 
+        # Layer Combobox
+        self.layer_options = {'Layer 0 (Default)': 0, 'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2,
+                              'Layer 3 (Text/Labels)': 3}
+        self.layer_combo = QComboBox()
+        for layer, value in self.layer_options.items():
+            self.layer_combo.addItem(layer, value)
+
         # Vector convert background widgets
         widget1 = ToolbarHorizontalLayout()
         background_remove_label = QLabel('Remove Background')
         self.background_remove_check_btn = QCheckBox(self)
         widget1.layout.addWidget(self.background_remove_check_btn)
         widget1.layout.addWidget(background_remove_label)
-
-        # Layer Combobox
-        self.layer_options = {'Layer 0 (Default)': 0,'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2, 'Layer 3 (Text/Labels)': 3}
-        self.layer_combo = QComboBox()
-        for layer, value in self.layer_options.items():
-            self.layer_combo.addItem(layer, value)
-
-        # Outline Color Button
-        self.outline_color_btn = QPushButton('', self)
-        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()}; border: None')
-        self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
-        self.outline_color_btn.clicked.connect(self.outline_color_chooser)
-        self.outline_color_btn.clicked.connect(self.update_pen)
 
         # Layer Associated Widgets
         raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
@@ -179,7 +189,7 @@ class MPRUN(QMainWindow):
         lower_layer_btn.setShortcut(QKeySequence('2'))
         lower_layer_btn.clicked.connect(self.use_lower_layer)
         bring_to_front_btn = QPushButton(QIcon('logos and icons/Tool Icons/set_always_on_top_icon.png'), '', self)
-        bring_to_front_btn.setToolTip('''Set Always on Top Tool:
+        bring_to_front_btn.setToolTip('''Bring To Front Tool:
         Key-B''')
         bring_to_front_btn.setShortcut(QKeySequence('B'))
         bring_to_front_btn.clicked.connect(self.use_bring_to_front)
@@ -188,12 +198,12 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(lower_layer_btn)
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
-        # Fill Color Button
-        self.fill_color_btn = QPushButton('', self)
-        self.fill_color_btn.setStyleSheet(f'background-color: white; border: None')
-        self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
-        self.fill_color_btn.clicked.connect(self.fill_color_chooser)
-        self.fill_color_btn.clicked.connect(self.update_pen)
+        # Stroke fill related widgets
+        stroke_fill_label = QLabel('Stroke Fill Enabled', self)
+        self.stroke_fill_check_btn = QCheckBox(self)
+        horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
+        horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
+        horizontal_widget_for_stroke_fill.layout.addWidget(stroke_fill_label)
 
         # Stroke Style Combobox
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine, 'Dotted Stroke': Qt.DotLine, 'Dashed Stroke': Qt.DashLine, 'Dashed Dot Stroke': Qt.DashDotLine, 'Dashed Double Dot Stroke': Qt.DashDotDotLine}
@@ -207,6 +217,11 @@ class MPRUN(QMainWindow):
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
 
+        # If any stroke or layer changes are made, update them
+        self.stroke_size_spin.valueChanged.connect(self.update_pen)
+        self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
+        self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
+        self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
 
         #----toolbar buttons----#
 
@@ -359,11 +374,6 @@ class MPRUN(QMainWindow):
         gsnap_label.setStyleSheet("font-size: 13px;")
         self.gsnap_check_btn = QCheckBox(self)
 
-        # Stroke fill related widgets
-        stroke_fill_label = QLabel('Stroke Fill Enabled:', self)
-        stroke_fill_label.setStyleSheet("font-size: 13px;")
-        self.stroke_fill_check_btn = QCheckBox(self)
-
         # ----add actions----#
 
         # Add toolbar actions
@@ -420,6 +430,7 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(fill_options_label)
         self.action_toolbar.addWidget(self.fill_color_btn)
+        self.action_toolbar.addWidget(horizontal_widget_for_stroke_fill)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(vector_options_label)
         self.action_toolbar.addWidget(color_tolerance_label)
@@ -430,8 +441,6 @@ class MPRUN(QMainWindow):
         # Add hotbar widgets
         self.hotbar.addWidget(gsnap_label)
         self.hotbar.addWidget(self.gsnap_check_btn)
-        self.hotbar.addWidget(stroke_fill_label)
-        self.hotbar.addWidget(self.stroke_fill_check_btn)
 
 
     def create_canvas(self):
@@ -444,33 +453,21 @@ class MPRUN(QMainWindow):
         self.canvas.setBackgroundBrush(brush1)
 
         # QGraphicsView Logic, set the main widget
-        index1 = self.stroke_style_combo.currentIndex()
-        data1 = self.stroke_style_combo.itemData(index1)
-        index2 = self.stroke_pencap_combo.currentIndex()
-        data2 = self.stroke_pencap_combo.itemData(index2)
-        
-        # Set flags for view
         self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn, self.stroke_fill_check_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setScene(self.canvas)
-        self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
+        index1 = self.stroke_style_combo.currentIndex()
+        data1 = self.stroke_style_combo.itemData(index1)
+        index2 = self.stroke_pencap_combo.currentIndex()
+        data2 = self.stroke_pencap_combo.itemData(index2)
+        self.canvas_view.update_pen(
+            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
+        self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Use default tools, set central widget
         self.use_select()
-        self.canvas_view.update_stroke_fill_color('white')
         self.setCentralWidget(self.canvas_view)
-
-        # If any stroke or layer changes are made, update them
-        self.stroke_size_spin.valueChanged.connect(self.update_pen)
-        self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
-        self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
-        self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
-
-        if self.path_btn.isChecked():
-            self.canvas_view.update_pen(
-                QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
-            self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Drawing paper
         self.paper = CanvasItem(0, 0, 1000, 700)
@@ -498,6 +495,10 @@ Date:   """)
         self.paper_text.setParentItem(self.paper)
         self.canvas.addItem(self.paper_text)
 
+        # If the Path Button is checked, update!!
+        if self.path_btn.isChecked():
+            self.update_pen()
+
         # Create initial group (This method is used to set grid size)
         self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
 
@@ -521,12 +522,6 @@ Date:   """)
 
         elif event.key() == QKeySequence('Z'):
             self.gsnap_check_btn.setChecked(False) if self.gsnap_check_btn.isChecked() else self.gsnap_check_btn.setChecked(True)
-
-        elif event.key() == QKeySequence('X'):
-            self.stroke_fill_check_btn.setChecked(False) if self.stroke_fill_check_btn.isChecked() else self.stroke_fill_check_btn.setChecked(True)
-
-        elif event.key() == QKeySequence('B'):
-            self.outline_color_chooser()
 
         super().keyPressEvent(event)
 
