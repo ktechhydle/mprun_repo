@@ -340,7 +340,7 @@ class MPRUN(QMainWindow):
         vectorize_btn.triggered.connect(self.use_vectorize)
 
         # Add Canvas Button
-        add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/vectorize_icon.png'), '', self)
+        add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/add_canvas_icon.png'), '', self)
         add_canvas_btn.setToolTip('''Add Canvas Tool: 
         Key-A''')
         add_canvas_btn.setShortcut(QKeySequence('A'))
