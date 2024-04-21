@@ -1232,42 +1232,36 @@ Date:   """)
 
         elif template_choice == 3:
             self.paper.setRect(-100, -100, 1625, 1193)
-            self.paper_text.setScale(2.5)
             self.paper_text.setPos(-98, -98)
             self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
             self.use_center_item()
 
         elif template_choice == 4:
             self.paper.setRect(-100, -100, 980, 1820)
-            self.paper_text.setScale(2.5)
             self.paper_text.setPos(-98, -98)
             self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
             self.use_center_item()
 
         elif template_choice == 5:
             self.paper.setRect(-100, -100, 491, 299)
-            self.paper_text.setScale(1)
             self.paper_text.setPos(-98, -98)
             self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
             self.use_center_item()
 
         elif template_choice == 6:
             self.paper.setRect(-100, -100, 1747, 1147)
-            self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
             self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
             self.use_center_item()
 
         elif template_choice == 7:
             self.paper.setRect(-100, -100, 1266, 924)
-            self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
             self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
             self.use_center_item()
             
         elif template_choice == 8:
             self.paper.setRect(-100, -100, 1820, 980)
-            self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
             self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
             self.use_center_item()
