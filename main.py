@@ -495,13 +495,13 @@ Date:   """)
         self.paper_text.setParentItem(self.paper)
         self.canvas.addItem(self.paper_text)
 
-        text_item = EditableTextBlock('Canvas 1')
-        text_item.setZValue(-1)
-        text_item.setParentItem(self.paper)
-        text_item.setDefaultTextColor(QColor('black'))
-        text_item.setScale(1.5)
-        text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-        text_item.set_locked()
+        self.text_item = EditableTextBlock('Canvas 1')
+        self.text_item.setZValue(-1)
+        self.text_item.setParentItem(self.paper)
+        self.text_item.setDefaultTextColor(QColor('black'))
+        self.text_item.setScale(1.5)
+        self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+        self.text_item.set_locked()
 
         # If the Path Button is checked, update!!
         if self.path_btn.isChecked():
@@ -891,10 +891,13 @@ Date:   """)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
-                center = self.paper.boundingRect().center()
-                item_center = item.boundingRect().center()
+                rect = self.paper.boundingRect()
+                center = rect.center()
 
-                item.setPos(center - item_center)
+                item_rect = item.boundingRect()
+                item_center = item_rect.center()
+                new_pos = center - item_center
+                item.setPos(new_pos)
 
     def use_add_canvas(self):
         self.path_btn.setChecked(False)
@@ -1224,36 +1227,50 @@ Date:   """)
         elif template_choice == 2:
             self.paper.setRect(-100, -100, 728, 521)
             self.paper_text.setPos(-98, -98)
+            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+            self.use_center_item()
 
         elif template_choice == 3:
             self.paper.setRect(-100, -100, 1625, 1193)
             self.paper_text.setScale(2.5)
             self.paper_text.setPos(-98, -98)
+            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+            self.use_center_item()
 
         elif template_choice == 4:
             self.paper.setRect(-100, -100, 980, 1820)
             self.paper_text.setScale(2.5)
             self.paper_text.setPos(-98, -98)
+            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+            self.use_center_item()
 
         elif template_choice == 5:
             self.paper.setRect(-100, -100, 491, 299)
             self.paper_text.setScale(1)
             self.paper_text.setPos(-98, -98)
+            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+            self.use_center_item()
 
         elif template_choice == 6:
             self.paper.setRect(-100, -100, 1747, 1147)
             self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
+            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+            self.use_center_item()
 
         elif template_choice == 7:
             self.paper.setRect(-100, -100, 1266, 924)
             self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
+            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+            self.use_center_item()
             
         elif template_choice == 8:
             self.paper.setRect(-100, -100, 1820, 980)
             self.paper_text.setScale(2)
             self.paper_text.setPos(-98, -98)
+            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+            self.use_center_item()
 
         else:
             pass
@@ -1267,9 +1284,11 @@ Date:   """)
         self.paper.setRect(-100, -100, x-100, y-100)
         self.paper_text.setPlainText(default_text)
         self.paper_text.setPos(-98, -98)
+        self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
 
-        # Refit screen
+        # Refit screen, use center
         self.use_refit_screen()
+        self.use_center_item()
 
 
 if __name__ == '__main__':
