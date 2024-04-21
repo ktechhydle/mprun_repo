@@ -1174,9 +1174,11 @@ Date:   """)
                     print(e)
 
     def create_group(self):
+        # Set tools off
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
+        # Check if there is an initial group
         if self.group is not None:
             self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
             self.group.set_grid_size(self.gsnap_grid_size)
@@ -1207,8 +1209,6 @@ Date:   """)
 
                         # Set an object name
                     items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
-
-                items.stackBefore(None)
 
                 # Add items to group
                 self.group.addToGroup(items)

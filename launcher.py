@@ -7,6 +7,15 @@ from customtkinter import *
 import tkinter as tk
 import webbrowser
 import sys
+import os
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS2
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class Dialog(CTk):
     def __init__(self):
@@ -15,7 +24,7 @@ class Dialog(CTk):
         self.title('MPRUN - Main Window')
         self.geometry("1080x600+100+75")
         self.resizable(False, False)
-        self.iconbitmap('logos and icons/MPRUN_icon.ico')
+        self.iconbitmap(resource_path('logos and icons/MPRUN_icon.ico'))
 
         self.create_ui()
 
@@ -24,7 +33,7 @@ class Dialog(CTk):
         web_link_font = CTkFont(family="Arial", size=10, weight="bold", underline=True)
 
         # App image and label
-        iog = Image.open('logos and icons/MPRUN_logo_rounded_corners_version.png').resize((80, 80))
+        iog = Image.open(resource_path('logos and icons/MPRUN_logo_rounded_corners_version.png')).resize((80, 80))
         image = ImageTk.PhotoImage(iog)
         mprun_img_label = CTkLabel(self, image=image, text='')
         mprun_img_label.image = image
@@ -73,7 +82,7 @@ class Dialog(CTk):
         frame2.place(x=190, y=215)
 
         # Template select buttons
-        template_img_1 = Image.open('logos and icons/letter_size_icon.png').resize((115, 150))
+        template_img_1 = Image.open(resource_path('logos and icons/letter_size_icon.png')).resize((115, 150))
         template_img_1n = ImageTk.PhotoImage(template_img_1)
         letter_size_btn = CTkButton(frame2, text='''Letter 
 (828 x 621)''',
@@ -84,7 +93,7 @@ class Dialog(CTk):
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set('Template 2: Paper Size (828 x 621, [Low Quality])'))
 
-        template_img_3 = Image.open('logos and icons/phone_icon.png').resize((115, 150))
+        template_img_3 = Image.open(resource_path('logos and icons/phone_icon.png')).resize((115, 150))
         template_img_3n = ImageTk.PhotoImage(template_img_3)
         phone_size_btn = CTkButton(frame2, text='''Phone 
 (1080 x 1920)''',
@@ -96,7 +105,7 @@ class Dialog(CTk):
                                   command=lambda: self.template_combo.set(
                                       'Template 4: Phone Size (1080 x 1920, [High Quality])'))
 
-        template_img_4 = Image.open('logos and icons/post_card_icon.png').resize((115, 150))
+        template_img_4 = Image.open(resource_path('logos and icons/post_card_icon.png')).resize((115, 150))
         template_img_4n = ImageTk.PhotoImage(template_img_4)
         post_card_size_btn = CTkButton(frame2, text='''Post Card 
 (591 x 399)''',
@@ -108,7 +117,7 @@ class Dialog(CTk):
                                   command=lambda: self.template_combo.set(
                                       'Template 5: Postcard Size (591 x 399, [Low Quality])'))
 
-        template_img_6 = Image.open('logos and icons/ipad_icon.png').resize((115, 150))
+        template_img_6 = Image.open(resource_path('logos and icons/ipad_icon.png')).resize((115, 150))
         template_img_6n = ImageTk.PhotoImage(template_img_6)
         tablet_size_btn = CTkButton(frame2, text='''Tablet 
 (1366 x 1024)''',
@@ -120,7 +129,7 @@ class Dialog(CTk):
                                         command=lambda: self.template_combo.set(
                                             'Template 7: Tablet Size (1024 × 1366, [Medium Quality])'))
                                             
-        template_img_8 = Image.open('logos and icons/webview_icon.png').resize((115, 150))
+        template_img_8 = Image.open(resource_path('logos and icons/webview_icon.png')).resize((115, 150))
         template_img_8n = ImageTk.PhotoImage(template_img_8)
         webview_size_btn = CTkButton(frame2, text='''Webview 
 (1920 x 1080)''',
@@ -133,7 +142,7 @@ class Dialog(CTk):
                                             'Template 8: Webview size (1920 x 1080, [High Quality])'))
 
 
-        template_img_7 = Image.open('logos and icons/create_custom_icon.png').resize((115, 150))
+        template_img_7 = Image.open(resource_path('logos and icons/create_custom_icon.png')).resize((115, 150))
         template_img_7n = ImageTk.PhotoImage(template_img_7)
         custom_size_btn = CTkButton(frame2, text='''Custom Template
 (Width x Height)''',
@@ -174,7 +183,7 @@ class CreateTemplateDialog(CTk):
         super().__init__()
 
         self.title('Create Template')
-        self.iconbitmap('logos and icons/MPRUN_icon.ico')
+        self.iconbitmap(resource_path('logos and icons/MPRUN_icon.ico'))
         self.geometry('220x500+200+200')
         self.resizable(False, False)
 
