@@ -60,13 +60,13 @@ class AddCanvasDialog(QWidget):
 
                 self.canvas.addItem(rect_item)
 
-                rect_item.setZValue(-2)
+                rect_item.setZValue(-1)
                 rect_item.setPos(paper_rect.width() + 10, 0)
                 rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
                 rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
                 rect_item.setToolTip(canvas_name)
 
-                text_item.setZValue(-2)
+                text_item.setZValue(-1)
                 text_item.setParentItem(rect_item)
                 text_item.setDefaultTextColor(QColor('black'))
                 text_item.setScale(1.5)
