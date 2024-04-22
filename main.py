@@ -685,27 +685,31 @@ Date:   """)
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
                 try:
-                    # Set cursor loading
-                    self.setCursor(Qt.WaitCursor)
+                    # Get the vector name
+                    entry, ok = QInputDialog.getText(self, 'Vectorize', 'Enter a name for the output Vector:')
 
-                    # Create vector
-                    pixels2svg(input_path=item.return_filename(),
-                               output_path=f'V-C STOR/output',
-                               color_tolerance=self.color_tolerance_spin.value(),
-                               remove_background=True if self.background_remove_check_btn.isChecked() else False)
+                    if ok:
+                        # Set cursor loading
+                        self.setCursor(Qt.WaitCursor)
 
-                    # Set cursor back
-                    self.setCursor(Qt.ArrowCursor)
+                        # Create vector
+                        pixels2svg(input_path=item.return_filename(),
+                                   output_path=f'V-C STOR/{entry}.svg',
+                                   color_tolerance=self.color_tolerance_spin.value(),
+                                   remove_background=True if self.background_remove_check_btn.isChecked() else False)
 
-                    # Display information
-                    QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
+                        # Set cursor back
+                        self.setCursor(Qt.ArrowCursor)
 
-                    # Add the item to the scene
-                    item = CustomSvgItem('V-C STOR/output.svg')
-                    item.store_filename('V-C STOR/output.svg')
-                    self.canvas.addItem(item)
-                    self.create_item_attributes(item)
-                    item.setToolTip('Converted Vector (MPRUN Element)')
+                        # Display information
+                        QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
+
+                        # Add the item to the scene
+                        item = CustomSvgItem(f'V-C STOR/{entry}.svg')
+                        item.store_filename(f'V-C STOR/{entry}.svg')
+                        self.canvas.addItem(item)
+                        self.create_item_attributes(item)
+                        item.setToolTip('Converted Vector (MPRUN Element)')
 
                 except Exception as e:
                     # Set cursor back
