@@ -17,6 +17,16 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+
+def open_create_template_dialog():
+    a = CreateTemplateDialog()
+    a.mainloop()
+
+
+def open_link(url):
+    webbrowser.open_new(url)
+
+
 class Dialog(CTk):
     def __init__(self):
         super().__init__()
@@ -33,10 +43,10 @@ class Dialog(CTk):
         web_link_font = CTkFont(family="Arial", size=10, weight="bold", underline=True)
 
         # App image and label
-        iog = Image.open(resource_path('logos and icons/MPRUN_logo_rounded_corners_version.png')).resize((80, 80))
-        image = ImageTk.PhotoImage(iog)
-        mprun_img_label = CTkLabel(self, image=image, text='')
-        mprun_img_label.image = image
+        iog = CTkImage(light_image=Image.open("logos and icons/MPRUN_logo_rounded_corners_version.png"),
+                                  dark_image=Image.open("logos and icons/MPRUN_logo_rounded_corners_version.png"),
+                                  size=(80, 80))
+        mprun_img_label = CTkLabel(self, image=iog, text='')
         mprun_img_label.place(x=20, y=20)
 
         # Welcome label
@@ -50,7 +60,7 @@ class Dialog(CTk):
         # Labels with links
         link1 = CTkLabel(self, text="Read the acknowledgements", font=web_link_font, cursor="hand2")
         link1.place(x=385, y=79)
-        link1.bind("<Button-1>", lambda e: self.open_link("https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing"))
+        link1.bind("<Button-1>", lambda e: open_link("https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing"))
 
         # Frame for other widgets
         frame = CTkFrame(self, width=700, height=80)
@@ -82,22 +92,24 @@ class Dialog(CTk):
         frame2.place(x=190, y=215)
 
         # Template select buttons
-        template_img_1 = Image.open(resource_path('logos and icons/letter_size_icon.png')).resize((115, 150))
-        template_img_1n = ImageTk.PhotoImage(template_img_1)
+        template_img_1 = CTkImage(light_image=Image.open("logos and icons/letter_size_icon.png"),
+                                  dark_image=Image.open("logos and icons/letter_size_icon.png"),
+                                  size=(115, 150))
         letter_size_btn = CTkButton(frame2, text='''Letter 
 (828 x 621)''',
-                                  image=template_img_1n,
+                                  image=template_img_1,
                                   compound='top',
                                   text_color='white',
                                   fg_color='#2B2B2B',
                                   hover_color='#3d3d3d',
                                   command=lambda: self.template_combo.set('Template 2: Paper Size (828 x 621, [Low Quality])'))
 
-        template_img_3 = Image.open(resource_path('logos and icons/phone_icon.png')).resize((115, 150))
-        template_img_3n = ImageTk.PhotoImage(template_img_3)
+        template_img_3 = CTkImage(light_image=Image.open("logos and icons/phone_icon.png"),
+                                  dark_image=Image.open("logos and icons/phone_icon.png"),
+                                  size=(115, 150))
         phone_size_btn = CTkButton(frame2, text='''Phone 
 (1080 x 1920)''',
-                                  image=template_img_3n,
+                                  image=template_img_3,
                                   compound='top',
                                   text_color='white',
                                   fg_color='#2B2B2B',
@@ -105,11 +117,12 @@ class Dialog(CTk):
                                   command=lambda: self.template_combo.set(
                                       'Template 4: Phone Size (1080 x 1920, [High Quality])'))
 
-        template_img_4 = Image.open(resource_path('logos and icons/post_card_icon.png')).resize((115, 150))
-        template_img_4n = ImageTk.PhotoImage(template_img_4)
+        template_img_4 = CTkImage(light_image=Image.open("logos and icons/post_card_icon.png"),
+                                  dark_image=Image.open("logos and icons/post_card_icon.png"),
+                                  size=(115, 150))
         post_card_size_btn = CTkButton(frame2, text='''Post Card 
 (591 x 399)''',
-                                  image=template_img_4n,
+                                  image=template_img_4,
                                   compound='top',
                                   text_color='white',
                                   fg_color='#2B2B2B',
@@ -117,11 +130,12 @@ class Dialog(CTk):
                                   command=lambda: self.template_combo.set(
                                       'Template 5: Postcard Size (591 x 399, [Low Quality])'))
 
-        template_img_6 = Image.open(resource_path('logos and icons/ipad_icon.png')).resize((115, 150))
-        template_img_6n = ImageTk.PhotoImage(template_img_6)
+        template_img_6 = CTkImage(light_image=Image.open("logos and icons/ipad_icon.png"),
+                                  dark_image=Image.open("logos and icons/ipad_icon.png"),
+                                  size=(115, 150))
         tablet_size_btn = CTkButton(frame2, text='''Tablet 
 (1366 x 1024)''',
-                                        image=template_img_6n,
+                                        image=template_img_6,
                                         compound='top',
                                         text_color='white',
                                         fg_color='#2B2B2B',
@@ -129,11 +143,12 @@ class Dialog(CTk):
                                         command=lambda: self.template_combo.set(
                                             'Template 7: Tablet Size (1024 × 1366, [Medium Quality])'))
                                             
-        template_img_8 = Image.open(resource_path('logos and icons/webview_icon.png')).resize((115, 150))
-        template_img_8n = ImageTk.PhotoImage(template_img_8)
+        template_img_8 = CTkImage(light_image=Image.open("logos and icons/webview_icon.png"),
+                                  dark_image=Image.open("logos and icons/webview_icon.png"),
+                                  size=(115, 150))
         webview_size_btn = CTkButton(frame2, text='''Webview 
 (1920 x 1080)''',
-                                        image=template_img_8n,
+                                        image=template_img_8,
                                         compound='top',
                                         text_color='white',
                                         fg_color='#2B2B2B',
@@ -142,16 +157,17 @@ class Dialog(CTk):
                                             'Template 8: Webview size (1920 x 1080, [High Quality])'))
 
 
-        template_img_7 = Image.open(resource_path('logos and icons/create_custom_icon.png')).resize((115, 150))
-        template_img_7n = ImageTk.PhotoImage(template_img_7)
+        template_img_7 = CTkImage(light_image=Image.open("logos and icons/create_custom_icon.png"),
+                                  dark_image=Image.open("logos and icons/create_custom_icon.png"),
+                                  size=(115, 150))
         custom_size_btn = CTkButton(frame2, text='''Custom Template
 (Width x Height)''',
-                                    image=template_img_7n,
+                                    image=template_img_7,
                                     compound='top',
                                     text_color='white',
                                     fg_color='#2B2B2B',
                                     hover_color='#3d3d3d',
-                                    command=self.open_create_template_dialog)
+                                    command=lambda: open_create_template_dialog())
 
         # Add widgets
         custom_size_btn.pack(pady=5, side='left')
@@ -171,12 +187,6 @@ class Dialog(CTk):
         selected_value = self.values[selected_template]
         self.app.set_template(selected_value)
 
-    def open_link(self, url):
-        webbrowser.open_new(url)
-
-    def open_create_template_dialog(self):
-        a = CreateTemplateDialog()
-        a.mainloop()
 
 class CreateTemplateDialog(CTk):
     def __init__(self):
