@@ -118,11 +118,7 @@ class CustomGraphicsView(QGraphicsView):
             cp1 = (self.last_point + midpoint) / 2 + (self.last_point - midpoint) * 0.2
             cp2 = (midpoint + current_pos) / 2 + (current_pos - midpoint) * 0.2
             
-            if self.path.isEmpty():
-                self.path.moveTo(current_pos)
-            
-            else:
-                self.path.cubicTo(cp1, cp2, current_pos)
+            self.path.cubicTo(cp1, cp2, current_pos)
                 
             self.canvas.update()
             self.last_point = current_pos
