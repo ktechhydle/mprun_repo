@@ -103,7 +103,7 @@ class CustomGraphicsView(QGraphicsView):
             # Create a new path
             self.path = QPainterPath()
             self.path.moveTo(self.mapToScene(event.pos()))
-            self.last_point = event.pos()
+            self.last_point = self.mapToScene(event.pos())
 
             # Set drag mode
             self.setDragMode(QGraphicsView.NoDrag)
@@ -114,7 +114,7 @@ class CustomGraphicsView(QGraphicsView):
             # Move the path to the mouse cursor
             self.path.quadTo(self.last_point, self.mapToScene(event.pos()))
             self.canvas.update()
-            self.last_point = event.pos()
+            self.last_point = self.mapToScene(event.pos())
             
             # Remove temporary path if it exists
             if self.temp_path_item:
