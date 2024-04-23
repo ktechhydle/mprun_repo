@@ -199,7 +199,7 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
         # Stroke fill related widgets
-        stroke_fill_label = QLabel('Stroke Fill Enabled', self)
+        stroke_fill_label = QLabel('Fill Enabled', self)
         self.stroke_fill_check_btn = QCheckBox(self)
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
