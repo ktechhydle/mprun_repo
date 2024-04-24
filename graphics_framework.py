@@ -115,8 +115,7 @@ class CustomGraphicsView(QGraphicsView):
             mid_point = (self.last_point + self.mapToScene(event.pos())) / 2.0
             
             # Use the mid_point as control point for quadTo
-            self.path.quadTo(self.last_point, mid_point)self.last_point = self.mapToScene(event.pos())
-            
+            self.path.quadTo(self.last_point, mid_point)
             self.last_point = self.mapToScene(event.pos())
             
             # Remove temporary path if it exists
@@ -144,7 +143,8 @@ class CustomGraphicsView(QGraphicsView):
             mid_point = (self.last_point + self.mapToScene(event.pos())) / 2.0
             
             # Use the mid_point as control point for quadTo
-            self.path.quadTo(self.last_point, mid_point)self.last_point = self.mapToScene(event.pos())
+            self.path.quadTo(self.last_point, mid_point)
+            self.last_point = self.mapToScene(event.pos())
 
             # Check if there is a temporary path (if so, remove it now)
             if self.temp_path_item:
