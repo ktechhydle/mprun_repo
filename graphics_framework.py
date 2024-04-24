@@ -111,9 +111,12 @@ class CustomGraphicsView(QGraphicsView):
     def on_path_draw(self, event):
         # Check the buttons
         if event.buttons() == Qt.LeftButton:
-            # Move the path to the mouse cursor
-            self.path.quadTo(self.last_point, self.mapToScene(event.pos()))
-            self.canvas.update()
+            # Calculate average point for smoother curve
+            mid_point = (self.last_point + self.mapToScene(event.pos())) / 2.0
+            
+            # Use the mid_point as control point for quadTo
+            self.path.quadTo(self.last_point, mid_point)self.last_point = self.mapToScene(event.pos())
+            
             self.last_point = self.mapToScene(event.pos())
             
             # Remove temporary path if it exists
@@ -137,8 +140,11 @@ class CustomGraphicsView(QGraphicsView):
     def on_path_draw_end(self, event):
         # Check the buttons
         if event.button() == Qt.LeftButton:
-            # Move the line to mouse coords
-            self.path.quadTo(self.last_point, self.mapToScene(event.pos()))
+            # Calculate average point for smoother curve
+            mid_point = (self.last_point + self.mapToScene(event.pos())) / 2.0
+            
+            # Use the mid_point as control point for quadTo
+            self.path.quadTo(self.last_point, mid_point)self.last_point = self.mapToScene(event.pos())
 
             # Check if there is a temporary path (if so, remove it now)
             if self.temp_path_item:
