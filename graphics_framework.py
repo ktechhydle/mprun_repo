@@ -111,11 +111,13 @@ class CustomGraphicsView(QGraphicsView):
     def on_path_draw(self, event):
         # Check the buttons
         if event.buttons() == Qt.LeftButton:
-            # Calculate average point for smoother curve
-            mid_point = (self.last_point + self.mapToScene(event.pos())) / 2.0
+            # Calculate control points for smoother curve
+            tangent_vec = (self.mapToScene(event.pos()) - self.last_point) / 2.0
+            ctrl1_point = self.last_point + tangent_vec
+            ctrl2_point = self.mapToScene(event.pos()) - tangent_vec
             
-            # Use the mid_point as control point for quadTo
-            self.path.quadTo(self.last_point, mid_point)
+            # Use control points for cubicTo
+            self.path.cubicTo(ctrl1_point, ctrl2_point, self.mapToScene(event.pos()))
             self.last_point = self.mapToScene(event.pos())
             
             # Remove temporary path if it exists
