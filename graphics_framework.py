@@ -140,7 +140,7 @@ class CustomGraphicsView(QGraphicsView):
         # Check the buttons
         if event.button() == Qt.LeftButton:
             # Calculate average point for smoother curve
-            mid_point = (self.last_point + self.mapToScene(event.pos())) / 2.0
+            mid_point = (self.last_point + self.mapToScene(event.pos())) * 2.0
             
             # Use the mid_point as control point for quadTo
             self.path.quadTo(self.last_point, mid_point)
@@ -157,7 +157,7 @@ class CustomGraphicsView(QGraphicsView):
             self.canvas.update()
 
             # Load main path as QGraphicsItem
-            path_item = CustomPathItem(self.path.simplified())
+            path_item = CustomPathItem(self.path)
             path_item.setPen(self.pen)
             path_item.setZValue(0)
 
