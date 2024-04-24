@@ -157,7 +157,7 @@ class CustomGraphicsView(QGraphicsView):
             self.canvas.update()
 
             # Load main path as QGraphicsItem
-            path_item = CustomPathItem(self.path)
+            path_item = CustomPathItem(self.path.simplified())
             path_item.setPen(self.pen)
             path_item.setZValue(0)
 
