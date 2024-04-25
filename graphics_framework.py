@@ -111,6 +111,10 @@ class CustomGraphicsView(QGraphicsView):
     def on_path_draw(self, event):
         # Check the buttons
         if event.buttons() == Qt.LeftButton:
+            # Sample points at a set interval (e.g., 5 pixels)
+            if (event.pos() - self.last_point).manhattanLength() >= 5:
+                self.last_point = self.mapToScene(event.pos())
+            
             # Calculate control points for smoother curve
             tangent_vec = (self.mapToScene(event.pos()) - self.last_point) / 2.0
             ctrl1_point = self.last_point + tangent_vec
