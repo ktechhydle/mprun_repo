@@ -112,7 +112,7 @@ class CustomGraphicsView(QGraphicsView):
         # Check the buttons
         if event.buttons() == Qt.LeftButton:
             # Sample points at a set interval (e.g., 5 pixels)
-            if (event.pos() - self.last_point).manhattanLength() >= 5:
+            if (event.pos() - self.last_point).manhattanLength() >= 20:
                 self.last_point = self.mapToScene(event.pos())
             
             # Calculate control points for smoother curve
