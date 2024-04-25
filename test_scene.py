@@ -6,10 +6,16 @@ class MainWin(QMainWindow):
         
         self.setWindowTitle('MPRUN Beta Test Scene')
         
+        self.create_ui()
+        
+    def create_ui(self):
+        self.canvas = QGraphicsScene()
+        self.canvas_view = CustomGraphicsView
+        
         
         
 if __name__ == '__main__':
     win = QApplication([])
     app = MainWin()
     app.show()
-    sys.exit()
+    win.exec_()
