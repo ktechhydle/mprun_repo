@@ -10,7 +10,11 @@ class MainWin(QMainWindow):
         
     def create_ui(self):
         self.canvas = QGraphicsScene()
-        self.canvas_view = CustomGraphicsView
+        self.canvas_view = CustomGraphicsView()
+        
+        self.canvas_view.setScene(self.canvas)
+        
+        self.setCentralWidget(self.canvas_view)
         
         
         
