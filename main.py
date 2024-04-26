@@ -1128,10 +1128,9 @@ Date:   """)
 
         # File dialog, filepath
         file_dialog = QFileDialog()
-        file_dialog.setDefaultSuffix('.png')
 
         file_path, selected_filter = file_dialog.getSaveFileName(self, 'Export Canvas', '',
-                                                                 'SVG files (*.svg);;PNG files (*.png);;JPEG files (*.jpeg);;TIFF files (*.tiff);;PDF files (*.pdf)',
+                                                                 'SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;PDF files (*.pdf);;WEBP files (*.webp);;HEIC files (*.heic);;ICO files (*.ico)',
                                                                  options=options)
 
         if file_path:
@@ -1139,9 +1138,13 @@ Date:   """)
             filter_extensions = {
                 'SVG files (*.svg)': '.svg',
                 'PNG files (*.png)': '.png',
+                'JPG files (*.jpg)': '.jpg',
                 'JPEG files (*.jpeg)': '.jpeg',
                 'TIFF files (*.tiff)': '.tiff',
                 'PDF files (*.pdf)': '.pdf',
+                'WEBP files (*.webp)': '.webp',
+                'ICO files (*.ico)': '.ico',
+                'HEIC files (*.heic)': '.heic'
             }
             selected_extension = filter_extensions.get(selected_filter, '.png')
 

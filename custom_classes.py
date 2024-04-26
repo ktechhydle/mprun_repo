@@ -38,7 +38,7 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
             pen.setCapStyle(Qt.FlatCap)
             pen.setColor(QColor("#ff0d00"))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -115,7 +115,7 @@ class CustomRectangleItem(QGraphicsRectItem):
             pen.setCapStyle(Qt.FlatCap)
             pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def duplicate(self):
         rect = self.rect()
@@ -150,7 +150,7 @@ class CustomCircleItem(QGraphicsEllipseItem):
             pen.setCapStyle(Qt.FlatCap)
             pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def duplicate(self):
         rect = self.rect()
@@ -184,7 +184,7 @@ class CustomPathItem(QGraphicsPathItem):
             pen.setCapStyle(Qt.FlatCap)
             pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def duplicate(self):
         path = self.path()
@@ -242,7 +242,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
             pen.setCapStyle(Qt.FlatCap)
             pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def store_filename(self, file):
         self.filename = file
@@ -284,7 +284,7 @@ class CustomSvgItem(QGraphicsSvgItem):
             pen.setCapStyle(Qt.FlatCap)
             pen.setColor(QColor("#009ceb"))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def store_filename(self, file):
         self.filename = file
@@ -340,7 +340,7 @@ class EditableTextBlock(QGraphicsTextItem):
             self.custom_pen.setCapStyle(Qt.FlatCap)
             self.custom_pen.setColor(QColor("#009ceb"))
             painter.setPen(self.custom_pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 10, 10)
 
             if self.custom_pen.width() > 8:
                 self.custom_pen.setWidth(8)
@@ -383,4 +383,4 @@ class CanvasItem(QGraphicsRectItem):
             pen.setCapStyle(Qt.FlatCap)
             pen.setColor(QColor("#d66b00"))
             painter.setPen(pen)
-            painter.drawRect(self.boundingRect())
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
