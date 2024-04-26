@@ -33,9 +33,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Panning and zooming:
 	> Pan and zoom on the Canvas.
 - Layer management:
-	> Elements can be layered depending on the type of element (Text, Path, Course element)
-- Element management:
-	> Elements are managed according to their current state (Locked, Grouped, etc.)
+	> Elements can be raised and lowered or set to a specific layer height.
 - Elements are named:
 	> You will often see elements named `Editable Text Block` or `Free MPRUN Element` on the Canvas. ***Hover your mouse over an element to see the element name.***
 - Insert different files:
@@ -44,10 +42,12 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
 - Add text blocks:
 	> Add `Editable Text Block`'s on to the Canvas.
-- Vector conversion:
-  	> Use the `Vectorize` tool ***(beta)*** to convert raster imagery to Vector tiles.
+- Vector conversion ***(beta)***:
+  	> Use the `Vectorize` tool to convert raster imagery to Vector tiles.
 - Element position managment:
   	> Lock or unlock element positions, or even use the `Permanent Lock Tool` to lock Elements permanently.
+- Path Simplifying:
+  	> Simplify drawn paths to acheive a less hand drawn appearence.
 > [!TIP]
 > - Snap-to-grid functionality:
 > 	> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
@@ -64,6 +64,7 @@ This is important because it ensures athletes don't go into competitions without
 # Screenshots
 Halfipe run example
 ![mprun_halfpipe_run_example](https://github.com/ktechhydle/mprun_repo/assets/151480646/ce52950f-e929-4f02-a482-2adcc3d061be)
+
 Cool line design using MPRUN
 ![mprun_graphicsdesign_example](https://github.com/ktechhydle/mprun_repo/assets/151480646/35f5a602-3bc8-4837-930d-9c6a38c78107)
 
