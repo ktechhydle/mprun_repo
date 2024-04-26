@@ -2,6 +2,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
+from scipy.interpolate import splprep, splev
+from skimage.measure import *
+import numpy as np
 
 class item_stack:
     def __init__(self, initial_value=""):
@@ -199,6 +202,27 @@ class CustomPathItem(QGraphicsPathItem):
         item.setToolTip('Duplicated MPRUN Element')
 
         self.scene().addItem(item)
+
+    def smooth_path(self, path):
+        vertices = [(point.x(), point.y()) for point in path.toSubpathPolygons()[0]]
+        x, y = zip(*vertices)
+        tck, u = splprep([x, y], s=0)
+        smooth_x, smooth_y = splev(np.linspace(0, 1, len(vertices) * 2), tck)  # Reduce the granularity
+
+        smoothed_vertices = np.column_stack((smooth_x, smooth_y))
+        simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=2.0)  # Adjust the tolerance as needed
+
+        smooth_path = QPainterPath()
+        smooth_path.moveTo(simplified_vertices[0][0], simplified_vertices[0][1])
+
+        for i in range(1, len(simplified_vertices) - 2, 3):
+            smooth_path.cubicTo(
+                simplified_vertices[i][0], simplified_vertices[i][1],
+                simplified_vertices[i + 1][0], simplified_vertices[i + 1][1],
+                simplified_vertices[i + 2][0], simplified_vertices[i + 2][1]
+            )
+
+        return smooth_path
 
 class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):

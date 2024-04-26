@@ -63,6 +63,7 @@ class AddCanvasDialog(QWidget):
                 rect_item.setZValue(-1)
                 rect_item.setPos(paper_rect.width() + 10, 0)
                 rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+                rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
                 rect_item.setToolTip(canvas_name)
 
                 text_item.setZValue(-1)

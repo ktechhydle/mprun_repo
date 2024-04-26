@@ -332,12 +332,12 @@ class MPRUN(QMainWindow):
         restroke_button.setShortcut(QKeySequence('U'))
         restroke_button.triggered.connect(self.use_refill)
 
-        # Simplify Button
-        simplify_btn = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), '', self)
-        simplify_btn.setToolTip('''Simplify Path Tool: 
+        # Smooth Button
+        smooth_btn = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), '', self)
+        smooth_btn.setToolTip('''Smooth Path Tool: 
         Key-S''')
-        simplify_btn.setShortcut(QKeySequence('S'))
-        simplify_btn.triggered.connect(self.use_smooth_path)
+        smooth_btn.setShortcut(QKeySequence('S'))
+        smooth_btn.triggered.connect(self.use_smooth_path)
 
         # Vectorize Button
         vectorize_btn = QAction(QIcon('logos and icons/Tool Icons/vectorize_icon.png'), '', self)
@@ -403,7 +403,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
         self.toolbar.addAction(restroke_button)
-        self.toolbar.addAction(simplify_btn)
+        self.toolbar.addAction(smooth_btn)
         self.toolbar.addAction(vectorize_btn)
         self.toolbar.addAction(add_canvas_btn)
         self.toolbar.addSeparator()
@@ -570,10 +570,10 @@ Date:   """)
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
     def outline_color_chooser(self):
-        color_dialog = QColorDialog(self)
+        self.color_dialog = QColorDialog(self)
 
-        if color_dialog.exec_():
-            color = color_dialog.selectedColor()
+        if self.color_dialog.exec_():
+            color = self.color_dialog.selectedColor()
             self.outline_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
             self.outline_color.set(color.name())
 
@@ -619,6 +619,10 @@ Date:   """)
 
         self.canvas_view.update_pen(QPen(QColor('white'), self.stroke_size_spin.value(), data1, data2))
         self.canvas_view.update_stroke_fill_color('white')
+
+        self.outline_color_btn.setStyleSheet(f'background-color: white; border: None')
+        self.fill_color_btn.setStyleSheet('background-color: white; border: None')
+
         self.path_btn.setChecked(True)
 
     def use_text(self):
@@ -924,7 +928,7 @@ Date:   """)
 
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
-                smoothed_path = item.path()
+                smoothed_path = item.smooth_path(item.path())
 
                 p = CustomPathItem(smoothed_path)
                 p.setPen(item.pen())
