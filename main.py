@@ -1129,7 +1129,7 @@ Date:   """)
         # File dialog, filepath
         file_dialog = QFileDialog()
 
-        file_path, selected_filter = file_dialog.getSaveFileName(self, 'Export Canvas', '',
+        file_path, selected_filter = file_dialog.getSaveFileName(self, 'Export Canvas', 'C:/Users/kelle/Downloads',
                                                                  'SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;PDF files (*.pdf);;WEBP files (*.webp);;HEIC files (*.heic);;ICO files (*.ico)',
                                                                  options=options)
 
@@ -1201,7 +1201,7 @@ Date:   """)
             elif selected_extension == '.pdf':
                 # Export as PDF
                 printer = QPdfWriter(file_path)
-                printer.setPageSize(QPdfWriter.A4)
+                printer.setPageSize(QPdfWriter.Letter)
                 printer.setResolution(300)  # Set the resolution (in DPI)
 
                 # Clear selection

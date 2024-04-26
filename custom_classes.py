@@ -340,7 +340,7 @@ class EditableTextBlock(QGraphicsTextItem):
             self.custom_pen.setCapStyle(Qt.FlatCap)
             self.custom_pen.setColor(QColor("#009ceb"))
             painter.setPen(self.custom_pen)
-            painter.drawRoundedRect(self.boundingRect(), 10, 10)
+            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
             if self.custom_pen.width() > 8:
                 self.custom_pen.setWidth(8)
