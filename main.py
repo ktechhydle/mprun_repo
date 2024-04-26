@@ -932,6 +932,7 @@ Date:   """)
 
                 p = CustomPathItem(smoothed_path)
                 p.setPen(item.pen())
+                p.setToolTip('Smoothed MPRUN Path Element')
 
                 self.canvas.addItem(p)
                 self.create_item_attributes(p)
