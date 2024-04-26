@@ -20,6 +20,8 @@ class MPRUN(QMainWindow):
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
+        # Possible cursor??
+        # self.setCursor(QCursor(QPixmap('logos and icons/Tool Icons/selection_icon.png').scaled(QSize(30, 30))))
 
         # Drawing undoing, redoing
         self.last_drawing = []
@@ -311,6 +313,20 @@ class MPRUN(QMainWindow):
         permanent_lock_btn.setShortcut(QKeySequence('Ctrl+Shift+L'))
         permanent_lock_btn.triggered.connect(self.permanent_lock_item)
 
+        # Hide Button
+        hide_btn = QAction(QIcon('logos and icons/Tool Icons/permanent_lock_icon.png'), '', self)
+        hide_btn.setToolTip('''Hide Element Tool: 
+        Key-H''')
+        hide_btn.setShortcut(QKeySequence('H'))
+        hide_btn.triggered.connect(self.use_hide_item)
+
+        # Unhide Button
+        unhide_btn = QAction(QIcon('logos and icons/Tool Icons/permanent_lock_icon.png'), '', self)
+        unhide_btn.setToolTip('''Unhide All Tool: 
+        Command+H (MacOS) or Control+H (Windows)''')
+        unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
+        unhide_btn.triggered.connect(self.use_unhide_all)
+
         # Center Item Button
         center_item_btn = QAction(QIcon('logos and icons/Tool Icons/center_item_icon.png'), '', self)
         center_item_btn.setToolTip('''Center Item Tool:
@@ -399,6 +415,8 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(lock_btn)
         self.toolbar.addAction(unlock_btn)
         self.toolbar.addAction(permanent_lock_btn)
+        self.toolbar.addAction(hide_btn)
+        self.toolbar.addAction(unhide_btn)
         self.toolbar.addAction(center_item_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
@@ -608,7 +626,9 @@ Date:   """)
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
 
-        self.canvas_view.fitInView(self.paper.sceneBoundingRect(), Qt.KeepAspectRatio)
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                self.canvas_view.fitInView(item.sceneBoundingRect(), Qt.KeepAspectRatio)
 
     def use_erase(self):
         self.label_btn.setChecked(False)
@@ -633,8 +653,7 @@ Date:   """)
 
         self.canvas.addItem(text)
 
-        text.setPos(200, 200)
-        text.setZValue(0)
+        text.setPos(self.paper.boundingRect().center() - text.boundingRect().center())
 
         self.create_item_attributes(text)
 
@@ -936,6 +955,20 @@ Date:   """)
 
                 self.canvas.addItem(p)
                 self.create_item_attributes(p)
+
+    def use_hide_item(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
+        for item in self.canvas.selectedItems():
+            item.setVisible(False)
+
+    def use_unhide_all(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
+        for item in self.canvas.items():
+            item.setVisible(True)
 
     def lock_item(self):
         self.label_btn.setChecked(False)

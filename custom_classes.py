@@ -345,7 +345,6 @@ class EditableTextBlock(QGraphicsTextItem):
             if self.custom_pen.width() > 8:
                 self.custom_pen.setWidth(8)
 
-
     def focusOutEvent(self, event):
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         super().focusOutEvent(event)
