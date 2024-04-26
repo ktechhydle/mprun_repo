@@ -127,10 +127,6 @@ class CustomGraphicsView(QGraphicsView):
             self.temp_path_item.setZValue(2)
             self.canvas.addItem(self.temp_path_item)
 
-            # Create a custom tooltip for the current coords
-            scene_pos = self.mapToScene(event.pos())
-            QToolTip.showText(event.pos(), f'dx: {round(scene_pos.x(), 1)}, dy: {round(scene_pos.y(), 1)}')
-
             self.canvas.update()
 
     def on_path_draw_end(self, event):
