@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
+import time
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2, button3):
@@ -111,17 +112,7 @@ class CustomGraphicsView(QGraphicsView):
     def on_path_draw(self, event):
         # Check the buttons
         if event.buttons() == Qt.LeftButton:
-            # Sample points at a set interval (e.g., 5 pixels)
-            if (event.pos() - self.last_point).manhattanLength() >= 20:
-                self.last_point = self.mapToScene(event.pos())
-            
-            # Calculate control points for smoother curve
-            tangent_vec = (self.mapToScene(event.pos()) - self.last_point) / 2.0
-            ctrl1_point = self.last_point + tangent_vec
-            ctrl2_point = self.mapToScene(event.pos()) - tangent_vec
-            
-            # Use control points for cubicTo
-            self.path.cubicTo(ctrl1_point, ctrl2_point, self.mapToScene(event.pos()))
+            self.path.lineTo(self.mapToScene(event.pos()))
             self.last_point = self.mapToScene(event.pos())
             
             # Remove temporary path if it exists
@@ -145,11 +136,7 @@ class CustomGraphicsView(QGraphicsView):
     def on_path_draw_end(self, event):
         # Check the buttons
         if event.button() == Qt.LeftButton:
-            # Calculate average point for smoother curve
-            mid_point = (self.last_point + self.mapToScene(event.pos())) / 2.0
-            
-            # Use the mid_point as control point for quadTo
-            self.path.quadTo(self.last_point, mid_point)
+            self.path.lineTo(self.mapToScene(event.pos()))
             self.last_point = self.mapToScene(event.pos())
 
             # Check if there is a temporary path (if so, remove it now)
@@ -186,6 +173,14 @@ class CustomGraphicsView(QGraphicsView):
                 self.button.setChecked(False)
                 self.setDragMode(QGraphicsView.RubberBandDrag)
 
+    def add_curve_to_point(self, endPoint):
+        if self.lastPoint is not None:
+            # Calculate control points
+            controlPoint1 = self.last_point
+            controlPoint2 = endPoint
+            # Add curve to QPainterPath
+            self.path.quadTo(controlPoint1, (self.lastPoint + controlPoint2) / 2)
+
     def on_label_start(self, event):
         # Check the button being pressed
         if event.button() == Qt.LeftButton:
@@ -208,6 +203,9 @@ class CustomGraphicsView(QGraphicsView):
 
             # Set z values
             self.text_box_rect.stackBefore(self.label_text)
+
+            self.canvas.addItem(self.label_text)
+            self.canvas.addItem(self.text_box_rect)
 
             self.canvas.update()
 

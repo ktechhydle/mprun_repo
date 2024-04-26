@@ -332,6 +332,13 @@ class MPRUN(QMainWindow):
         restroke_button.setShortcut(QKeySequence('U'))
         restroke_button.triggered.connect(self.use_refill)
 
+        # Simplify Button
+        simplify_btn = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), '', self)
+        simplify_btn.setToolTip('''Simplify Path Tool: 
+        Key-S''')
+        simplify_btn.setShortcut(QKeySequence('S'))
+        simplify_btn.triggered.connect(self.use_smooth_path)
+
         # Vectorize Button
         vectorize_btn = QAction(QIcon('logos and icons/Tool Icons/vectorize_icon.png'), '', self)
         vectorize_btn.setToolTip('''Vectorize Tool: 
@@ -396,6 +403,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
         self.toolbar.addAction(restroke_button)
+        self.toolbar.addAction(simplify_btn)
         self.toolbar.addAction(vectorize_btn)
         self.toolbar.addAction(add_canvas_btn)
         self.toolbar.addSeparator()
@@ -600,7 +608,7 @@ Date:   """)
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
 
-        self.canvas_view.fitInView(self.paper.boundingRect(), Qt.KeepAspectRatio)
+        self.canvas_view.fitInView(self.paper.sceneBoundingRect(), Qt.KeepAspectRatio)
 
     def use_erase(self):
         self.label_btn.setChecked(False)
@@ -909,6 +917,20 @@ Date:   """)
 
         self.window = AddCanvasDialog(self.canvas, self.paper)
         self.window.show()
+
+    def use_smooth_path(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CustomPathItem):
+                smoothed_path = item.path()
+
+                p = CustomPathItem(smoothed_path)
+                p.setPen(item.pen())
+
+                self.canvas.addItem(p)
+                self.create_item_attributes(p)
 
     def lock_item(self):
         self.label_btn.setChecked(False)

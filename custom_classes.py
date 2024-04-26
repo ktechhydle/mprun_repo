@@ -200,22 +200,6 @@ class CustomPathItem(QGraphicsPathItem):
 
         self.scene().addItem(item)
 
-    def duplicate_but_better(self):
-        path = self.path()
-
-        item = CustomPathItem(path)
-        item.setPen(self.pen())
-        item.setBrush(self.brush())
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
-        item.setScale(self.scale())
-        item.setRotation(self.rotation())
-
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
-
-        self.scene().addItem(item)
-
 class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):
         super().__init__(file)
@@ -326,13 +310,17 @@ class EditableTextBlock(QGraphicsTextItem):
 
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#009ceb"))
-            painter.setPen(pen)
+            self.custom_pen = painter.pen()
+            self.custom_pen.setWidth(8)
+            self.custom_pen.setStyle(Qt.SolidLine)
+            self.custom_pen.setCapStyle(Qt.FlatCap)
+            self.custom_pen.setColor(QColor("#009ceb"))
+            painter.setPen(self.custom_pen)
             painter.drawRect(self.boundingRect())
+
+            if self.custom_pen.width() > 8:
+                self.custom_pen.setWidth(8)
+
 
     def focusOutEvent(self, event):
         self.setTextInteractionFlags(Qt.NoTextInteraction)
