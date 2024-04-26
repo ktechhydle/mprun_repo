@@ -316,14 +316,14 @@ class MPRUN(QMainWindow):
         permanent_lock_btn.triggered.connect(self.permanent_lock_item)
 
         # Hide Button
-        hide_btn = QAction(QIcon('logos and icons/Tool Icons/permanent_lock_icon.png'), '', self)
+        hide_btn = QAction(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
         hide_btn.setToolTip('''Hide Element Tool: 
         Key-H''')
         hide_btn.setShortcut(QKeySequence('H'))
         hide_btn.triggered.connect(self.use_hide_item)
 
         # Unhide Button
-        unhide_btn = QAction(QIcon('logos and icons/Tool Icons/permanent_lock_icon.png'), '', self)
+        unhide_btn = QAction(QIcon('logos and icons/Tool Icons/unhide_icon.png'), '', self)
         unhide_btn.setToolTip('''Unhide All Tool: 
         Command+H (MacOS) or Control+H (Windows)''')
         unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
@@ -351,7 +351,7 @@ class MPRUN(QMainWindow):
         restroke_button.triggered.connect(self.use_refill)
 
         # Smooth Button
-        smooth_btn = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), '', self)
+        smooth_btn = QAction(QIcon('logos and icons/Tool Icons/simplify_icon.png'), '', self)
         smooth_btn.setToolTip('''Smooth Path Tool: 
         Key-S''')
         smooth_btn.setShortcut(QKeySequence('S'))
@@ -480,7 +480,7 @@ class MPRUN(QMainWindow):
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
         self.canvas_view.update_pen(
-            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
+            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Use default tools, set central widget
@@ -576,7 +576,7 @@ Date:   """)
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
         self.canvas_view.update_pen(
-            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
+            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
     def outline_color_chooser(self):

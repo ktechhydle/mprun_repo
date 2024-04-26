@@ -210,7 +210,7 @@ class CustomPathItem(QGraphicsPathItem):
         smooth_x, smooth_y = splev(np.linspace(0, 1, len(vertices) * 2), tck)  # Reduce the granularity
 
         smoothed_vertices = np.column_stack((smooth_x, smooth_y))
-        simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=2.0)  # Adjust the tolerance as needed
+        simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=2.5)  # Adjust the tolerance as needed
 
         smooth_path = QPainterPath()
         smooth_path.moveTo(simplified_vertices[0][0], simplified_vertices[0][1])
