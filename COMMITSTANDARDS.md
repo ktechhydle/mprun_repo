@@ -25,4 +25,8 @@ As this is optional (sometimes there aren't issues) but if there are issues, def
 
 `{F#257} (Fixed error on export) [I: Export doesn't work for PDF files]`
 
+# Final format (copy and paste)
+
+`{#1} () [I: ]`
+
 # We will add to this constantly, but for now this defines a basic structure for commit messages.
