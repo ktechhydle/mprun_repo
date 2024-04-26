@@ -41,13 +41,14 @@ class MPRUN(QMainWindow):
         self.screen_rotate_size = 0
 
         # Create GUI
-        self.create_menu()
+        self.create_status_bar()
         self.create_toolbars()
         self.create_canvas()
 
 
-    def create_menu(self):
-        pass
+    def create_status_bar(self):
+        self.status_bar = self.statusBar()
+        self.status_bar.showMessage(f'App loaded, running {sys.platform.capitalize()}', 5000)
 
     def create_toolbars(self):
         # Toolbar
@@ -62,12 +63,6 @@ class MPRUN(QMainWindow):
         self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
         self.action_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
-
-        # Hotbar Toolbar
-        self.hotbar = QToolBar('MPRUN Hotbar')
-        self.hotbar.setStyleSheet('QToolBar{spacing: 10px;}')
-        self.hotbar.setMovable(False)
-        self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.hotbar)
 
         #----action toolbar widgets----#
 
@@ -140,6 +135,13 @@ class MPRUN(QMainWindow):
         widget2 = ToolbarHorizontalLayout()
         widget2.layout.addWidget(self.scale_from_center_check_btn)
         widget2.layout.addWidget(scale_from_center_label)
+
+        # GSNAP Related widgets
+        gsnap_label = QLabel('GSNAP Enabled', self)
+        self.gsnap_check_btn = QCheckBox(self)
+        widget3 = ToolbarHorizontalLayout()
+        widget3.layout.addWidget(self.gsnap_check_btn)
+        widget3.layout.addWidget(gsnap_label)
 
         # Fill Color Button
         self.fill_color_btn = QPushButton('', self)
@@ -227,7 +229,7 @@ class MPRUN(QMainWindow):
 
         #----toolbar buttons----#
 
-        #Image
+        # Rotate Screen Button
         icon = QAction(QIcon('logos and icons/Tool Icons/rotate_screen_icon.png'), '', self)
         icon.setToolTip('''Rotate View:
         Command+R (MacOS) or Control+R (Windows)''')
@@ -390,13 +392,6 @@ class MPRUN(QMainWindow):
         export_btn.setShortcut(QKeySequence('Ctrl+E'))
         export_btn.triggered.connect(self.choose_export)
 
-        # ----hotbar widgets----#
-
-        # GSNAP Related widgets
-        gsnap_label = QLabel('GSNAP Enabled:', self)
-        gsnap_label.setStyleSheet("font-size: 13px;")
-        self.gsnap_check_btn = QCheckBox(self)
-
         # ----add actions----#
 
         # Add toolbar actions
@@ -443,6 +438,7 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(widget2)
         self.action_toolbar.addWidget(opacity_label)
         self.action_toolbar.addWidget(self.opacity_slider)
+        self.action_toolbar.addWidget(widget3)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(layers_label)
         self.action_toolbar.addWidget(self.layer_combo)
@@ -463,10 +459,6 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(self.color_tolerance_spin)
         self.action_toolbar.addWidget(widget1)
         self.action_toolbar.addSeparator()
-
-        # Add hotbar widgets
-        self.hotbar.addWidget(gsnap_label)
-        self.hotbar.addWidget(self.gsnap_check_btn)
 
 
     def create_canvas(self):
@@ -720,7 +712,7 @@ Date:   """)
                     entry, ok = QInputDialog.getText(self, 'Vectorize', 'Enter a name for the output Vector:')
 
                     if ok:
-                        # Set cursor loading
+                        # Set app loading
                         self.setCursor(Qt.WaitCursor)
 
                         # Create vector
@@ -978,6 +970,7 @@ Date:   """)
 
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable, False)
+            items.setFlag(QGraphicsItem.GraphicsItemFlag.ItemStackingOrder, True)
             items.setToolTip('Locked MPRUN Element')
 
             if isinstance(items, CustomGraphicsItemGroup):
