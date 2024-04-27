@@ -47,7 +47,11 @@ class AddCanvasDialog(QWidget):
             height = float(self.height_input.text())
             canvas_name = self.name_input.text()
             if width <= 0 or height <= 0:
-                QMessageBox.critical(self, 'Incorrect Value', 'Please enter positive number values for width and height.')
+                QMessageBox.critical(self, 'Size Error', 'Please enter positive number values for width and height.')
+
+            elif width > 5000 or height > 5000:
+                QMessageBox.critical(self, 'Size Error',
+                                     'Please enter a width or height no larger than 5000px.')
 
             else:
                 rect_item = CanvasItem(0, 0, width, height)

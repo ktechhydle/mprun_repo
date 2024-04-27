@@ -112,33 +112,37 @@ class CustomGraphicsView(QGraphicsView):
             self.setDragMode(QGraphicsView.NoDrag)
 
         elif event.button() == Qt.MouseButton.RightButton:
-            self.points.append(self.mapToScene(event.pos()))
-
-            if len(self.points) > 1:
+            if self.button.isChecked():
+                self.points.append(self.mapToScene(event.pos()))
                 path = QPainterPath()
-
                 path.moveTo(self.points[0])
 
-                for point in self.points[1:]:
-                    path.lineTo(point)  # Add line segment to existing path
+                if len(self.points) > 1:
+                    path = QPainterPath()
 
-                # Create and configure CustomPathItem only once (outside loop)
-                if not hasattr(self, "path_item"):
-                    self.path_item = CustomPathItem(path)
-                    self.path_item.setPen(self.pen)
-                    if self.button3.isChecked():
-                        self.path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
-                    self.path_item.setZValue(0)
-                    self.path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-                    self.path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-                    self.canvas.addItem(self.path_item)
+                    path.moveTo(self.points[0])
 
-                # Update path of existing item within the loop
-                self.path_item.setPath(path)
+                    for point in self.points[1:]:
+                        path.lineTo(point)  # Add line segment to existing path
 
-                if not self.button.isChecked():
-                    self.points.clear()
-                    self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
+                    # Create and configure path item only once (outside loop)
+                    if not hasattr(self, "path_item"):
+                        self.path_item = CustomPathItem(path)
+                        self.path_item.setPen(self.pen)
+                        self.path_item.setZValue(0)
+                        self.path_item.setFlag(
+                            QGraphicsItem.ItemIsSelectable
+                        )
+                        self.path_item.setFlag(
+                            QGraphicsItem.ItemIsMovable
+                        )
+                        self.canvas.addItem(self.path_item)
+
+                    # Update path of existing item within the loop
+                    self.path_item.setPath(path)
+
+            else:
+                self.points.clear()
 
             super().mousePressEvent(event)
 
