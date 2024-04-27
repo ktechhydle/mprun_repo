@@ -117,11 +117,7 @@ class CustomGraphicsView(QGraphicsView):
                 path = QPainterPath()
                 path.moveTo(self.points[0])
 
-                if len(self.points) > 1:
-                    path = QPainterPath()
-
-                    path.moveTo(self.points[0])
-
+                if len(self.points) >= 1:
                     for point in self.points[1:]:
                         path.lineTo(point)  # Add line segment to existing path
 
