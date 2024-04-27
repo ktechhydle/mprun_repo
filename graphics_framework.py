@@ -56,6 +56,14 @@ class CustomGraphicsView(QGraphicsView):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
+        # Create a tooltip for whenever we move the mouse
+        point = event.pos()
+        p = self.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+        QToolTip.showText(p, f'''x: {int(p.x())} 
+y: {int(p.y())}''')
+
         # Check if the path tool is enabled
         if self.button.isChecked():
 
@@ -111,36 +119,7 @@ class CustomGraphicsView(QGraphicsView):
             # Set drag mode
             self.setDragMode(QGraphicsView.NoDrag)
 
-        elif event.button() == Qt.MouseButton.RightButton:
-            if self.button.isChecked():
-                self.points.append(self.mapToScene(event.pos()))
-                path = QPainterPath()
-                path.moveTo(self.points[0])
-
-                if len(self.points) >= 1:
-                    for point in self.points[1:]:
-                        path.lineTo(point)  # Add line segment to existing path
-
-                    # Create and configure path item only once (outside loop)
-                    if not hasattr(self, "path_item"):
-                        self.path_item = CustomPathItem(path)
-                        self.path_item.setPen(self.pen)
-                        self.path_item.setZValue(0)
-                        self.path_item.setFlag(
-                            QGraphicsItem.ItemIsSelectable
-                        )
-                        self.path_item.setFlag(
-                            QGraphicsItem.ItemIsMovable
-                        )
-                        self.canvas.addItem(self.path_item)
-
-                    # Update path of existing item within the loop
-                    self.path_item.setPath(path)
-
-            else:
-                self.points.clear()
-
-            super().mousePressEvent(event)
+        super().mousePressEvent(event)
 
     def on_path_draw(self, event):
         # Check the buttons
@@ -161,9 +140,6 @@ class CustomGraphicsView(QGraphicsView):
             self.canvas.addItem(self.temp_path_item)
 
             self.canvas.update()
-
-        elif event.button() == Qt.MouseButton.NoButton:
-            pass
 
     def on_path_draw_end(self, event):
         # Check the buttons
