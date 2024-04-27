@@ -43,34 +43,23 @@ class GraphicsView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     def mousePressEvent(self, event):
-        self.points.append(QPointF(50, 50))
+        self.path = QPainterPath()
+        self.points.append(self.mapToScene(event.pos()))
 
-        self.path.moveTo(self.points[0])
+        if len(self.points) > 1:
+            self.path = QPainterPath()
+            self.path.moveTo(self.points[0])
+            for point in self.points[1:]:
+                self.path.lineTo(point)
 
-        self.path.quadTo(QPointF(100, 100), QPointF(200, 200))
-        self.path.quadTo(QPointF(300, 300), QPointF(400, 400))
+            self.scene().addItem(QGraphicsPathItem(self.path))
 
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
 
-            self.points.append(self.mapToScene(event.pos()))
 
-            if len(self.path) > 2:
-                x = [p.x() for p in self.path]
-                y = [p.y() for p in self.path]
-                f = interp1d(x, y, kind='cubic')
-                smooth_x = np.linspace(min(x), max(x), 1000)
-                smooth_y = f(smooth_x)
-                for i in range(len(smooth_x) - 1):
-                    line = QGraphicsLineItem(QPoint(int(smooth_x[i]), int(smooth_y[i])), QPoint(int(smooth_x[i + 1]), int(smooth_y[i + 1])))
-
-                    self.scene().addItem(line)
-
-            self.scene().addItem(QGraphicsPathItem(self.path))
-
-            super().mouseMoveEvent(event)
+        super().mouseMoveEvent(event)
         
 if __name__ == '__main__':
     win = QApplication([])

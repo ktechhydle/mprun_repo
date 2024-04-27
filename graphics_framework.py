@@ -8,6 +8,8 @@ import time
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, button, button2, button3):
         super().__init__()
+        self.points = []
+
         # Set flags
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setMouseTracking(True)
@@ -109,6 +111,37 @@ class CustomGraphicsView(QGraphicsView):
             # Set drag mode
             self.setDragMode(QGraphicsView.NoDrag)
 
+        elif event.button() == Qt.MouseButton.RightButton:
+            self.points.append(self.mapToScene(event.pos()))
+
+            if len(self.points) > 1:
+                path = QPainterPath()
+
+                path.moveTo(self.points[0])
+
+                for point in self.points[1:]:
+                    path.lineTo(point)  # Add line segment to existing path
+
+                # Create and configure CustomPathItem only once (outside loop)
+                if not hasattr(self, "path_item"):
+                    self.path_item = CustomPathItem(path)
+                    self.path_item.setPen(self.pen)
+                    if self.button3.isChecked():
+                        self.path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
+                    self.path_item.setZValue(0)
+                    self.path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+                    self.path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+                    self.canvas.addItem(self.path_item)
+
+                # Update path of existing item within the loop
+                self.path_item.setPath(path)
+
+                if not self.button.isChecked():
+                    self.points.clear()
+                    self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
+
+            super().mousePressEvent(event)
+
     def on_path_draw(self, event):
         # Check the buttons
         if event.buttons() == Qt.LeftButton:
@@ -124,10 +157,13 @@ class CustomGraphicsView(QGraphicsView):
             self.temp_path_item.setPen(self.pen)
             if self.button3.isChecked():
                 self.temp_path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
-            self.temp_path_item.setZValue(2)
+            self.temp_path_item.setZValue(0)
             self.canvas.addItem(self.temp_path_item)
 
             self.canvas.update()
+
+        elif event.button() == Qt.MouseButton.NoButton:
+            pass
 
     def on_path_draw_end(self, event):
         # Check the buttons
