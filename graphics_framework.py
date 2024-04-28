@@ -25,6 +25,7 @@ class CustomGraphicsView(QGraphicsView):
         self.temp_path_item = None
         self.pen = None
         self.stroke_fill_color = None
+        self.font = None
         self.layer_height = None
 
         # Add methods for zooming
@@ -39,6 +40,9 @@ class CustomGraphicsView(QGraphicsView):
 
     def update_stroke_fill_color(self, color):
         self.stroke_fill_color = color
+
+    def update_font(self, font):
+        self.font = font
 
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
@@ -199,6 +203,7 @@ y: {int(p.y())}''')
 
             # Create the label text
             self.label_text = EditableTextBlock('An Editable Text Block')
+            self.label_text.setFont(self.font)
             self.label_text.setPos(self.mapToScene(event.pos()))
             self.label_text.setDefaultTextColor(QColor('black'))
             self.label_text.setToolTip(

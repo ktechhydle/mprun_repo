@@ -35,6 +35,8 @@ class MPRUN(QMainWindow):
         self.fill_color = item_stack()
         self.outline_color.set('black')
         self.fill_color.set('white')
+        self.font_color = item_stack()
+        self.font_color.set('black')
 
         # Grid Size and rotating screens
         self.gsnap_grid_size = 10
@@ -83,6 +85,10 @@ class MPRUN(QMainWindow):
         fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         fill_options_label.setAlignment(Qt.AlignLeft)
 
+        text_options_label = QLabel('Text Options:', self)
+        text_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        text_options_label.setAlignment(Qt.AlignLeft)
+
         vector_options_label = QLabel('Vector Options:', self)
         vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         vector_options_label.setAlignment(Qt.AlignLeft)
@@ -129,13 +135,6 @@ class MPRUN(QMainWindow):
         self.entry3.textChanged.connect(self.use_scale_y)
         self.entry3.setPlaceholderText("Vertical scale factor")
 
-        # Scale from center related widgets
-        self.scale_from_center_check_btn = QCheckBox(self)
-        scale_from_center_label = QLabel('Scale From Center')
-        widget2 = ToolbarHorizontalLayout()
-        widget2.layout.addWidget(self.scale_from_center_check_btn)
-        widget2.layout.addWidget(scale_from_center_label)
-
         # GSNAP Related widgets
         gsnap_label = QLabel('GSNAP Enabled', self)
         self.gsnap_check_btn = QCheckBox(self)
@@ -149,17 +148,6 @@ class MPRUN(QMainWindow):
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
-
-        # Outline Color Button
-        self.outline_color_btn = QPushButton('', self)
-        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()}; border: None')
-        self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
-        self.outline_color_btn.clicked.connect(self.outline_color_chooser)
-        self.outline_color_btn.clicked.connect(self.update_pen)
-
-        # Stroke size spinbox
-        self.stroke_size_spin = QSpinBox()
-        self.stroke_size_spin.setValue(3)
 
         # Vector convert tolerence spinbox
         self.color_tolerance_spin = QSpinBox()
@@ -208,23 +196,54 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
         horizontal_widget_for_stroke_fill.layout.addWidget(stroke_fill_label)
-
-        # Stroke Style Combobox
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine, 'Dotted Stroke': Qt.DotLine, 'Dashed Stroke': Qt.DashLine, 'Dashed Dot Stroke': Qt.DashDotLine, 'Dashed Double Dot Stroke': Qt.DashDotDotLine}
         self.stroke_style_combo = QComboBox()
         for style, value in self.stroke_style_options.items():
             self.stroke_style_combo.addItem(style, value)
-
-        # Pen Cap Style Combobox
         self.stroke_pencap_options = {'Square Cap': Qt.SquareCap, 'Flat Cap': Qt.FlatCap, 'Round Cap': Qt.RoundCap}
         self.stroke_pencap_combo = QComboBox()
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
+        self.outline_color_btn = QPushButton('', self)
+        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()}; border: None')
+        self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
+        self.outline_color_btn.clicked.connect(self.outline_color_chooser)
+        self.outline_color_btn.clicked.connect(self.update_pen)
+        self.stroke_size_spin = QSpinBox()
+        self.stroke_size_spin.setValue(3)
+        stroke_size_label = QLabel('Stroke Size:', self)
+        stroke_attributes_label = QLabel('Stroke Attributes:', self)
 
-        # If any stroke or layer changes are made, update them
+        # Font related widgets
+        self.font_choice_combo = QFontComboBox(self)
+        self.font_size_spin = QSpinBox()
+        self.font_size_spin.setValue(10)
+        self.font_color_btn = QPushButton('', self)
+        self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
+        self.font_color_btn.clicked.connect(self.font_color_chooser)
+        self.font_color_btn.clicked.connect(self.update_font)
+        self.bold_btn = QPushButton('Bold', self)
+        self.italic_btn = QPushButton('Italic', self)
+        self.underline_btn = QPushButton('Underline', self)
+        self.bold_btn.setCheckable(True)
+        self.italic_btn.setCheckable(True)
+        self.underline_btn.setCheckable(True)
+        self.bold_btn.clicked.connect(self.update_font)
+        self.italic_btn.clicked.connect(self.update_font)
+        self.underline_btn.clicked.connect(self.update_font)
+        widget4 = ToolbarHorizontalLayout()
+        widget4.layout.addWidget(self.bold_btn)
+        widget4.layout.addWidget(self.italic_btn)
+        widget4.layout.addWidget(self.underline_btn)
+        font_choice_label = QLabel('Font:', self)
+        font_size_label = QLabel('Font Size:', self)
+
+        # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
+        self.font_size_spin.valueChanged.connect(self.update_font)
+        self.font_choice_combo.currentFontChanged.connect(self.update_font)
         self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
 
         #----toolbar buttons----#
@@ -435,7 +454,6 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(self.entry1)
         self.action_toolbar.addWidget(self.entry2)
         self.action_toolbar.addWidget(self.entry3)
-        self.action_toolbar.addWidget(widget2)
         self.action_toolbar.addWidget(opacity_label)
         self.action_toolbar.addWidget(self.opacity_slider)
         self.action_toolbar.addWidget(widget3)
@@ -445,7 +463,9 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(horizontal_widget_for_layer_buttons)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(stroke_options_label)
+        self.action_toolbar.addWidget(stroke_size_label)
         self.action_toolbar.addWidget(self.stroke_size_spin)
+        self.action_toolbar.addWidget(stroke_attributes_label)
         self.action_toolbar.addWidget(self.outline_color_btn)
         self.action_toolbar.addWidget(self.stroke_style_combo)
         self.action_toolbar.addWidget(self.stroke_pencap_combo)
@@ -453,6 +473,14 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(fill_options_label)
         self.action_toolbar.addWidget(self.fill_color_btn)
         self.action_toolbar.addWidget(horizontal_widget_for_stroke_fill)
+        self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(text_options_label)
+        self.action_toolbar.addWidget(font_choice_label)
+        self.action_toolbar.addWidget(self.font_choice_combo)
+        self.action_toolbar.addWidget(font_size_label)
+        self.action_toolbar.addWidget(self.font_size_spin)
+        self.action_toolbar.addWidget(self.font_color_btn)
+        self.action_toolbar.addWidget(widget4)
         self.action_toolbar.addSeparator()
         self.action_toolbar.addWidget(vector_options_label)
         self.action_toolbar.addWidget(color_tolerance_label)
@@ -479,8 +507,15 @@ class MPRUN(QMainWindow):
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
+        font = QFont()
+        font.setFamily(self.font_choice_combo.currentText())
+        font.setPixelSize(self.font_size_spin.value())
+        font.setBold(True if self.bold_btn.isChecked() else False)
+        font.setItalic(True if self.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.underline_btn.isChecked() else False)
         self.canvas_view.update_pen(
             QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
+        self.canvas_view.update_font(font)
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Use default tools, set central widget
@@ -524,6 +559,9 @@ Date:   """)
         # If the Path Button is checked, update!!
         if self.path_btn.isChecked():
             self.update_pen()
+
+        if self.label_btn.isChecked():
+            self.update_font()
 
         # Create initial group (This method is used to set grid size)
         self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
@@ -579,6 +617,16 @@ Date:   """)
             QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
+    def update_font(self):
+        font = QFont()
+        font.setFamily(self.font_choice_combo.currentText())
+        font.setPixelSize(self.font_size_spin.value())
+        font.setBold(True if self.bold_btn.isChecked() else False)
+        font.setItalic(True if self.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.underline_btn.isChecked() else False)
+
+        self.canvas_view.update_font(font)
+
     def outline_color_chooser(self):
         self.color_dialog = QColorDialog(self)
 
@@ -594,6 +642,14 @@ Date:   """)
             color = color_dialog.selectedColor()
             self.fill_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
             self.fill_color.set(color.name())
+
+    def font_color_chooser(self):
+        color_dialog = QColorDialog(self)
+
+        if color_dialog.exec_():
+            color = color_dialog.selectedColor()
+            self.font_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
+            self.font_color.set(color.name())
 
     def launch_course_elements(self):
         self.path_btn.setChecked(False)
@@ -640,8 +696,17 @@ Date:   """)
     def use_text(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
+
+        font = QFont()
+        font.setFamily(self.font_choice_combo.currentText())
+        font.setPixelSize(self.font_size_spin.value())
+        font.setBold(True if self.bold_btn.isChecked() else False)
+        font.setItalic(True if self.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.underline_btn.isChecked() else False)
+
         text = EditableTextBlock('Lorem Ipsum')
-        text.setDefaultTextColor(QColor(self.outline_color.get()))
+        text.setFont(font)
+        text.setDefaultTextColor(QColor(self.font_color.get()))
 
         self.canvas.addItem(text)
 
@@ -679,7 +744,15 @@ Date:   """)
                     item.setBrush(QBrush(QColor(Qt.transparent)))
 
             elif isinstance(item, EditableTextBlock):
-                item.setDefaultTextColor(QColor(self.outline_color.get()))
+                font = QFont()
+                font.setFamily(self.font_choice_combo.currentText())
+                font.setPixelSize(self.font_size_spin.value())
+                font.setBold(True if self.bold_btn.isChecked() else False)
+                font.setItalic(True if self.italic_btn.isChecked() else False)
+                font.setUnderline(True if self.underline_btn.isChecked() else False)
+
+                item.setFont(font)
+                item.setDefaultTextColor(QColor(self.font_color.get()))
 
     def use_set_layer(self):
         self.label_btn.setChecked(False)
@@ -803,39 +876,21 @@ Date:   """)
         self.path_btn.setChecked(False)
 
         try:
-            if self.scale_from_center_check_btn.isChecked():
-                value = float(value)
-                items = self.canvas.selectedItems()
-                for item in items:
-                    # Calculate value
-                    scale_factor = value / 100.0
-                    scale = 0.1 + (scale_factor * 9.9)
+            value = float(value)
+            items = self.canvas.selectedItems()
+            for item in items:
+                # Calculate value
+                scale_factor = value / 100.0
+                scale = 0.1 + (scale_factor * 9.9)
 
-                    # Calculate the center point of the item
-                    center = item.boundingRect().center()
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
 
-                    # Set the transformation origin to the center point
-                    item.setTransformOriginPoint(center)
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
 
-                    # Scale item
-                    item.setScale(scale)
-
-            else:
-                value = float(value)
-                items = self.canvas.selectedItems()
-                for item in items:
-                    # Calculate value
-                    scale_factor = value / 100.0
-                    scale = 0.1 + (scale_factor * 9.9)
-
-                    # Calculate the point of the item
-                    point_x, point_y = item.boundingRect().x(), item.boundingRect().y()
-
-                    # Set the transformation origin to the point
-                    item.setTransformOriginPoint(point_x, point_y)
-
-                    # Scale item
-                    item.setScale(scale)
+                # Scale item
+                item.setScale(scale)
 
         except ValueError:
             pass
