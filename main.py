@@ -217,7 +217,7 @@ class MPRUN(QMainWindow):
         # Font related widgets
         self.font_choice_combo = QFontComboBox(self)
         self.font_size_spin = QSpinBox()
-        self.font_size_spin.setValue(10)
+        self.font_size_spin.setValue(20)
         self.font_color_btn = QPushButton('', self)
         self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
