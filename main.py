@@ -1299,6 +1299,7 @@ Date:   """)
             self.group.set_grid_size(self.gsnap_grid_size)
 
             item = self.canvas.selectedItems()
+            sorted_items = sorted(item, key=lambda i: i.zValue())
 
             # Set flags for group
             self.group.setFlag(QGraphicsItem.ItemIsMovable)
@@ -1308,7 +1309,7 @@ Date:   """)
             self.canvas.addItem(self.group)
             self.canvas.update()
 
-            for items in item:
+            for items in sorted_items:
                 # Set flag
                 items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
