@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
+
 class AddCanvasDialog(QWidget):
     def __init__(self, canvas, og_rect):
         super().__init__()

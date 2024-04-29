@@ -63,7 +63,6 @@ class MPRUN(QMainWindow):
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
         self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
-        self.action_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
 
         #----action toolbar widgets----#
@@ -1002,13 +1001,8 @@ Date:   """)
             if isinstance(item, CustomPathItem):
                 smoothed_path = item.smooth_path(item.path())
 
-                p = CustomPathItem(smoothed_path)
-                p.setPen(item.pen())
-                p.setToolTip('Smoothed MPRUN Path Element')
-                p.setPos(item.pos())
-
-                self.canvas.addItem(p)
-                self.create_item_attributes(p)
+                item.setPath(smoothed_path)
+                item.setToolTip('Smoothed MPRUN Path Element')
 
     def use_hide_item(self):
         self.path_btn.setChecked(False)
@@ -1023,6 +1017,15 @@ Date:   """)
 
         for item in self.canvas.items():
             item.setVisible(True)
+
+    def use_insert(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
+        for item in self.canvas.selectedItems():
+            if isinstance(item, EditableTextBlock):
+                if item.flags() == Qt.TextInteractionFlag.TextEditorInteraction:
+                    pass
 
     def lock_item(self):
         self.label_btn.setChecked(False)
@@ -1101,9 +1104,9 @@ Date:   """)
 
         # File Dialog, file path
         file_dialog = QFileDialog()
-        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;Bitmap files (*.bmp)")
+        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)")
 
-        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;BMP files (*.bmp)",
+        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)",
                                                    options=options)
 
         if file_path:
