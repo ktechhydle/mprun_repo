@@ -207,7 +207,7 @@ class MPRUN(QMainWindow):
         self.outline_color_btn = QPushButton('', self)
         self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()}; border: None')
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
-        self.outline_color_btn.clicked.connect(self.outline_color_chooser)
+        self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
         self.stroke_size_spin = QSpinBox()
         self.stroke_size_spin.setValue(3)
@@ -630,16 +630,18 @@ Date:   """)
 
         self.canvas_view.update_font(font)
 
-    def outline_color_chooser(self):
-        self.color_dialog = QColorDialog(self)
+    def stroke_color_chooser(self):
+        color_dialog = QColorDialog(self)
+        color_dialog.setWindowTitle('Stroke Color')
 
-        if self.color_dialog.exec_():
-            color = self.color_dialog.selectedColor()
+        if color_dialog.exec_():
+            color = color_dialog.selectedColor()
             self.outline_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
             self.outline_color.set(color.name())
 
     def fill_color_chooser(self):
         color_dialog = QColorDialog(self)
+        color_dialog.setWindowTitle('Fill Color')
 
         if color_dialog.exec_():
             color = color_dialog.selectedColor()
@@ -648,6 +650,7 @@ Date:   """)
 
     def font_color_chooser(self):
         color_dialog = QColorDialog(self)
+        color_dialog.setWindowTitle('Font Color')
 
         if color_dialog.exec_():
             color = color_dialog.selectedColor()

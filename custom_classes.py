@@ -86,18 +86,21 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         self.stored_items = items
 
     def duplicate(self):
-        item = CustomGraphicsItemGroup(self.widget)
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
-        item.setScale(self.scale())
-        item.setRotation(self.rotation())
+        # Create a new instance of CustomGraphicsItemGroup
+        items = CustomGraphicsItemGroup(self.widget)
 
-        self.scene().addItem(item)
+        # Set position, scale, and rotation
+        items.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        items.setScale(self.scale())
+        items.setRotation(self.rotation())
 
-        item.addToGroup(self.parentItem()) # I need help here)
+        # Add the new item to the scene
+        self.scene().addItem(items)
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
+        # Set flags and tooltip
+        items.setFlag(QGraphicsItem.ItemIsSelectable)
+        items.setFlag(QGraphicsItem.ItemIsMovable)
+        items.setToolTip('Duplicated MPRUN Element')
 
 class CustomRectangleItem(QGraphicsRectItem):
     def __init__(self, *coords):
@@ -346,6 +349,9 @@ class EditableTextBlock(QGraphicsTextItem):
                 self.custom_pen.setWidth(8)
 
     def focusOutEvent(self, event):
+        cursor = self.textCursor()
+        cursor.clearSelection()
+        self.setTextCursor(cursor)
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         super().focusOutEvent(event)
 
@@ -354,6 +360,7 @@ class EditableTextBlock(QGraphicsTextItem):
 
     def duplicate(self):
         item = EditableTextBlock()
+        item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
         item.setPlainText(self.toPlainText())
         item.setPos(self.pos().x() + 10, self.pos().y() + 10)
