@@ -29,6 +29,7 @@ class MPRUN(QMainWindow):
 
         # File
         self.file_name = None
+        self.last_paper = None
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -50,7 +51,7 @@ class MPRUN(QMainWindow):
 
     def create_status_bar(self):
         self.status_bar = self.statusBar()
-        self.status_bar.showMessage(f'App loaded, running {sys.platform.capitalize()}', 5000)
+        self.status_bar.showMessage(f'App loaded, running {sys.platform.capitalize()}', 10000)
 
     def create_toolbars(self):
         # Toolbar
@@ -533,6 +534,7 @@ class MPRUN(QMainWindow):
         self.paper.setZValue(-1)
         self.paper.setToolTip('Canvas 1')
         self.canvas.addItem(self.paper)
+        self.last_paper = self.paper
 
         # Text on paper
         self.paper_text = EditableTextBlock("""Run #:   
@@ -1056,7 +1058,7 @@ Date:   """)
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
 
-        self.window = AddCanvasDialog(self.canvas, self.paper)
+        self.window = AddCanvasDialog(self.canvas, self.last_paper)
         self.window.show()
 
     def use_smooth_path(self):
