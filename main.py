@@ -54,6 +54,14 @@ class MPRUN(QMainWindow):
         self.status_bar.showMessage(f'App loaded, running {sys.platform.capitalize()}', 10000)
 
     def create_toolbars(self):
+        # Canvas, canvas color
+        self.canvas = QGraphicsScene()
+        width = 64000
+        height = 64000
+        self.canvas.setSceneRect(-width // 2, -height // 2, width, height)
+        brush1 = QBrush(QColor('#545454'))
+        self.canvas.setBackgroundBrush(brush1)
+
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
@@ -64,16 +72,46 @@ class MPRUN(QMainWindow):
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
         self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
+        self.action_toolbar.setFixedWidth(300)
         self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
 
         #----action toolbar widgets----#
 
+        # Tabview
+        self.tab_view = QTabWidget()
+
+        # Properties Tab
+        self.properties_tab = QWidget()
+        self.properties_tab_layout = QVBoxLayout()
+        self.properties_tab.setLayout(self.properties_tab_layout)
+        self.tab_view.addTab(self.properties_tab, 'Properties')
+
+        # Elements Tab
+        self.elements_tab = QWidget()
+        self.elements_tab_layout = QVBoxLayout()
+        self.elements_tab.setLayout(self.elements_tab_layout)
+        self.tab_view.addTab(self.elements_tab, 'Elements')
+
+        # Libraries Tab
+        self.libraries_tab = QWidget()
+        self.libraries_tab_layout = QVBoxLayout()
+        self.libraries_tab.setLayout(self.libraries_tab_layout)
+        self.tab_view.addTab(self.libraries_tab, 'Libraries')
+
         # All labels
-        properties_label = QLabel('Element Properties:', self)
+        properties_label = QLabel('Transform', self)
         properties_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
         properties_label.setAlignment(Qt.AlignLeft)
 
-        layers_label = QLabel('Layer Options:', self)
+        appearence_label = QLabel('Appearance', self)
+        appearence_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        appearence_label.setAlignment(Qt.AlignLeft)
+
+        quick_actions_label = QLabel('Quick Actions', self)
+        quick_actions_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        quick_actions_label.setAlignment(Qt.AlignLeft)
+
+        layers_label = QLabel('Layers', self)
         layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         layers_label.setAlignment(Qt.AlignLeft)
 
@@ -85,11 +123,11 @@ class MPRUN(QMainWindow):
         fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         fill_options_label.setAlignment(Qt.AlignLeft)
 
-        text_options_label = QLabel('Text Options:', self)
+        text_options_label = QLabel('Text', self)
         text_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         text_options_label.setAlignment(Qt.AlignLeft)
 
-        vector_options_label = QLabel('Vector Options:', self)
+        vector_options_label = QLabel('Vector', self)
         vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         vector_options_label.setAlignment(Qt.AlignLeft)
 
@@ -134,13 +172,6 @@ class MPRUN(QMainWindow):
         self.entry3 = QLineEdit()
         self.entry3.textChanged.connect(self.use_scale_y)
         self.entry3.setPlaceholderText("Vertical scale factor")
-
-        # GSNAP Related widgets
-        gsnap_label = QLabel('GSNAP Enabled', self)
-        self.gsnap_check_btn = QCheckBox(self)
-        widget3 = ToolbarHorizontalLayout()
-        widget3.layout.addWidget(self.gsnap_check_btn)
-        widget3.layout.addWidget(gsnap_label)
 
         # Fill Color Button
         self.fill_color_btn = QPushButton('', self)
@@ -191,11 +222,6 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
         # Stroke fill related widgets
-        stroke_fill_label = QLabel('Fill Enabled', self)
-        self.stroke_fill_check_btn = QCheckBox(self)
-        horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
-        horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
-        horizontal_widget_for_stroke_fill.layout.addWidget(stroke_fill_label)
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine, 'Dotted Stroke': Qt.DotLine, 'Dashed Stroke': Qt.DashLine, 'Dashed Dot Stroke': Qt.DashDotLine, 'Dashed Double Dot Stroke': Qt.DashDotDotLine}
         self.stroke_style_combo = QComboBox()
         for style, value in self.stroke_style_options.items():
@@ -241,6 +267,17 @@ class MPRUN(QMainWindow):
         font_choice_label = QLabel('Font:', self)
         font_size_label = QLabel('Font Size:', self)
 
+        # Quick action related widgets
+        stroke_fill_label = QLabel('Fill Enabled', self)
+        self.stroke_fill_check_btn = QCheckBox(self)
+        gsnap_label = QLabel('GSNAP Enabled', self)
+        self.gsnap_check_btn = QCheckBox(self)
+        horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
+        horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
+        horizontal_widget_for_stroke_fill.layout.addWidget(gsnap_label)
+        horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
+        horizontal_widget_for_stroke_fill.layout.addWidget(stroke_fill_label)
+
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
@@ -285,7 +322,7 @@ class MPRUN(QMainWindow):
         self.path_btn.setToolTip('''Path Draw Tool:
         Key-L''')
         self.path_btn.setShortcut(QKeySequence('L'))
-        self.path_btn.triggered.connect(self.path_btn.setChecked)  # Connect to method to toggle path drawing
+        self.path_btn.triggered.connect(self.use_path)  # Connect to method to toggle path drawing
 
         # Label draw button
         self.label_btn = QAction(QIcon('logos and icons/Tool Icons/line_and_label_icon.png'), "", self)
@@ -293,14 +330,15 @@ class MPRUN(QMainWindow):
         self.label_btn.setToolTip('''Line and Label Tool:
         Key-T''')
         self.label_btn.setShortcut(QKeySequence('T'))
-        self.label_btn.triggered.connect(self.label_btn.setChecked)  # Connect to method to toggle path drawing
+        self.label_btn.triggered.connect(self.use_label)  # Connect to method to toggle path drawing
 
         # Add Text Button
-        add_text_btn = QAction(QIcon('logos and icons/Tool Icons/text_icon.png'), '', self)
-        add_text_btn.setToolTip('''Text Tool:
+        self.add_text_btn = QAction(QIcon('logos and icons/Tool Icons/text_icon.png'), '', self)
+        self.add_text_btn.setToolTip('''Text Tool:
         Command+T (MacOS) or Control+T (Windows)''')
-        add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
-        add_text_btn.triggered.connect(self.use_text)
+        self.add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
+        self.add_text_btn.setCheckable(True)
+        self.add_text_btn.triggered.connect(self.use_text)
 
         # Erase Button
         erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
@@ -426,7 +464,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.path_btn)
         self.toolbar.addAction(erase_btn)
         self.toolbar.addAction(self.label_btn)
-        self.toolbar.addAction(add_text_btn)
+        self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(duplicate_btn)
         self.toolbar.addAction(lock_btn)
@@ -448,61 +486,64 @@ class MPRUN(QMainWindow):
         self.toolbar.addSeparator()
 
         # Add action toolbar actions
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(properties_label)
-        self.action_toolbar.addWidget(rotation_label)
-        self.action_toolbar.addWidget(self.rotate_slider)
-        self.action_toolbar.addWidget(scale_label)
-        self.action_toolbar.addWidget(self.scale_slider)
-        self.action_toolbar.addWidget(self.entry1)
-        self.action_toolbar.addWidget(self.entry2)
-        self.action_toolbar.addWidget(self.entry3)
-        self.action_toolbar.addWidget(opacity_label)
-        self.action_toolbar.addWidget(self.opacity_slider)
-        self.action_toolbar.addWidget(widget3)
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(layers_label)
-        self.action_toolbar.addWidget(self.layer_combo)
-        self.action_toolbar.addWidget(horizontal_widget_for_layer_buttons)
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(stroke_options_label)
-        self.action_toolbar.addWidget(stroke_size_label)
-        self.action_toolbar.addWidget(self.stroke_size_spin)
-        self.action_toolbar.addWidget(stroke_attributes_label)
-        self.action_toolbar.addWidget(self.outline_color_btn)
-        self.action_toolbar.addWidget(self.stroke_style_combo)
-        self.action_toolbar.addWidget(self.stroke_pencap_combo)
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(fill_options_label)
-        self.action_toolbar.addWidget(self.fill_color_btn)
-        self.action_toolbar.addWidget(horizontal_widget_for_stroke_fill)
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(text_options_label)
-        self.action_toolbar.addWidget(font_choice_label)
-        self.action_toolbar.addWidget(self.font_choice_combo)
-        self.action_toolbar.addWidget(font_size_label)
-        self.action_toolbar.addWidget(self.font_size_spin)
-        self.action_toolbar.addWidget(self.font_color_btn)
-        self.action_toolbar.addWidget(widget4)
-        self.action_toolbar.addSeparator()
-        self.action_toolbar.addWidget(vector_options_label)
-        self.action_toolbar.addWidget(color_tolerance_label)
-        self.action_toolbar.addWidget(self.color_tolerance_spin)
-        self.action_toolbar.addWidget(widget1)
-        self.action_toolbar.addSeparator()
+        self.action_toolbar.addWidget(self.tab_view)
+
+        # Properties Tab Widgets
+        self.properties_tab_layout.addWidget(properties_label)
+        self.properties_tab_layout.addWidget(rotation_label)
+        self.properties_tab_layout.addWidget(self.rotate_slider)
+        self.properties_tab_layout.addWidget(scale_label)
+        self.properties_tab_layout.addWidget(self.scale_slider)
+        self.properties_tab_layout.addWidget(self.entry1)
+        self.properties_tab_layout.addWidget(self.entry2)
+        self.properties_tab_layout.addWidget(self.entry3)
+        self.properties_tab_layout.addWidget(opacity_label)
+        self.properties_tab_layout.addWidget(self.opacity_slider)
+        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.properties_tab_layout.addWidget(appearence_label)
+        self.properties_tab_layout.addWidget(stroke_size_label)
+        self.properties_tab_layout.addWidget(self.stroke_size_spin)
+        self.properties_tab_layout.addWidget(stroke_attributes_label)
+        self.properties_tab_layout.addWidget(self.outline_color_btn)
+        self.properties_tab_layout.addWidget(self.stroke_style_combo)
+        self.properties_tab_layout.addWidget(self.stroke_pencap_combo)
+        self.properties_tab_layout.addWidget(self.fill_color_btn)
+        self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
+        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.properties_tab_layout.addWidget(quick_actions_label)
+        self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
+        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
+
+        # Elements Tab Widgets
+        self.elements_tab_layout.addWidget(layers_label)
+        self.elements_tab_layout.addWidget(self.layer_combo)
+        self.elements_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.elements_tab_layout.addWidget(text_options_label)
+        self.elements_tab_layout.addWidget(font_choice_label)
+        self.elements_tab_layout.addWidget(self.font_choice_combo)
+        self.elements_tab_layout.addWidget(font_size_label)
+        self.elements_tab_layout.addWidget(self.font_size_spin)
+        self.elements_tab_layout.addWidget(self.font_color_btn)
+        self.elements_tab_layout.addWidget(widget4)
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.elements_tab_layout.addWidget(vector_options_label)
+        self.elements_tab_layout.addWidget(color_tolerance_label)
+        self.elements_tab_layout.addWidget(self.color_tolerance_spin)
+        self.elements_tab_layout.addWidget(widget1)
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 220))
+
+        # Libraries Tab Widgets
+        self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
 
 
     def create_canvas(self):
-        # Canvas, canvas color
-        self.canvas = QGraphicsScene()
-        width = 64000
-        height = 64000
-        self.canvas.setSceneRect(-width//2, -height//2, width, height)
-        brush1 = QBrush(QColor('#545454'))
-        self.canvas.setBackgroundBrush(brush1)
-
         # QGraphicsView Logic, set the main widget
-        self.canvas_view = CustomGraphicsView(self.canvas, self.path_btn, self.label_btn, self.stroke_fill_check_btn)
+        self.canvas_view = CustomGraphicsView(self.canvas,
+                                              self.path_btn,
+                                              self.label_btn,
+                                              self.stroke_fill_check_btn,
+                                              self.add_text_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setScene(self.canvas)
@@ -518,7 +559,7 @@ class MPRUN(QMainWindow):
         font.setUnderline(True if self.underline_btn.isChecked() else False)
         self.canvas_view.update_pen(
             QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
-        self.canvas_view.update_font(font)
+        self.canvas_view.update_font(font, QColor(self.font_color.get()))
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Use default tools, set central widget
@@ -586,6 +627,9 @@ Date:   """)
             elif self.label_btn.isChecked():
                 self.label_btn.setChecked(False)
 
+            elif self.add_text_btn.isChecked():
+                self.add_text_btn.setChecked(False)
+
             self.use_select()
 
         elif event.key() == QKeySequence('Z'):
@@ -629,7 +673,7 @@ Date:   """)
         font.setItalic(True if self.italic_btn.isChecked() else False)
         font.setUnderline(True if self.underline_btn.isChecked() else False)
 
-        self.canvas_view.update_font(font)
+        self.canvas_view.update_font(font, QColor(self.font_color.get()))
 
     def stroke_color_chooser(self):
         color_dialog = QColorDialog(self)
@@ -685,8 +729,14 @@ Date:   """)
             if isinstance(item, CanvasItem):
                 self.canvas_view.fitInView(item.sceneBoundingRect(), Qt.KeepAspectRatio)
 
+    def use_path(self):
+        self.label_btn.setChecked(False)
+        self.add_text_btn.setChecked(False)
+
     def use_erase(self):
         self.label_btn.setChecked(False)
+        self.add_text_btn.setChecked(False)
+
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
@@ -700,26 +750,13 @@ Date:   """)
 
         self.path_btn.setChecked(True)
 
+    def use_label(self):
+        self.path_btn.setChecked(False)
+        self.add_text_btn.setChecked(False)
+
     def use_text(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
-
-        font = QFont()
-        font.setFamily(self.font_choice_combo.currentText())
-        font.setPixelSize(self.font_size_spin.value())
-        font.setBold(True if self.bold_btn.isChecked() else False)
-        font.setItalic(True if self.italic_btn.isChecked() else False)
-        font.setUnderline(True if self.underline_btn.isChecked() else False)
-
-        text = EditableTextBlock('Lorem Ipsum')
-        text.setFont(font)
-        text.setDefaultTextColor(QColor(self.font_color.get()))
-
-        self.canvas.addItem(text)
-
-        text.setPos(self.paper.boundingRect().center() - text.boundingRect().center())
-
-        self.create_item_attributes(text)
 
     def use_rotate_screen(self):
         self.label_btn.setChecked(False)

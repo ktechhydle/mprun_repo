@@ -6,7 +6,7 @@ from custom_classes import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, button3):
+    def __init__(self, canvas, button, button2, button3, button4):
         super().__init__()
         self.points = []
 
@@ -21,10 +21,12 @@ class CustomGraphicsView(QGraphicsView):
         self.button = button
         self.button2 = button2
         self.button3 = button3
+        self.text_btn = button4
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
         self.stroke_fill_color = None
+        self.font = None
         self.font = None
         self.layer_height = None
 
@@ -41,8 +43,9 @@ class CustomGraphicsView(QGraphicsView):
     def update_stroke_fill_color(self, color):
         self.stroke_fill_color = color
 
-    def update_font(self, font):
+    def update_font(self, font, color):
         self.font = font
+        self.font_color = color
 
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
@@ -53,6 +56,9 @@ class CustomGraphicsView(QGraphicsView):
         # Check if the Line and Label tool is turned on
         elif self.button2.isChecked():
             self.on_label_start(event)
+
+        elif self.text_btn.isChecked():
+            self.on_add_text(event)
 
         super().mousePressEvent(event)
 
@@ -265,3 +271,18 @@ y: {int(p.y())}''')
             if self.canvas.selectedItems():
                 self.button2.setChecked(False)
                 self.setDragMode(QGraphicsView.RubberBandDrag)
+
+    def on_add_text(self, event):
+        pos = self.mapToScene(event.pos())
+
+        text = EditableTextBlock('Lorem Ipsum')
+        text.setFont(self.font)
+        text.setDefaultTextColor(self.font_color)
+
+        self.canvas.addItem(text)
+
+        text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        text.setZValue(0)
+        text.setPos(pos)
+
+        text = None

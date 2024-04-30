@@ -41,8 +41,6 @@ class AddCanvasDialog(QWidget):
         self.setLayout(layout)
 
     def create_canvas(self):
-        paper_rect = self.paper.boundingRect()
-
         try:
             width = float(self.width_input.text())
             height = float(self.height_input.text())
@@ -55,27 +53,27 @@ class AddCanvasDialog(QWidget):
                                      'Please enter a width or height no larger than 5000px.')
 
             else:
-                rect_item = CanvasItem(0, 0, width, height)
+                self.rect_item = CanvasItem(0, 0, width, height)
                 text_item = EditableTextBlock(canvas_name)
 
                 brush = QBrush(QColor('white'))
                 pen = QPen(QColor('white'), 2, Qt.SolidLine)
-                rect_item.setBrush(brush)
-                rect_item.setPen(pen)
+                self.rect_item.setBrush(brush)
+                self.rect_item.setPen(pen)
 
-                self.canvas.addItem(rect_item)
+                self.canvas.addItem(self.rect_item)
 
-                rect_item.setZValue(-1)
-                rect_item.setPos(paper_rect.width() + 10, 0)
-                rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-                rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-                rect_item.setToolTip(canvas_name)
+                self.rect_item.setZValue(-1)
+                self.rect_item.setPos(self.paper.sceneBoundingRect().width() + 10, 0)
+                self.rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+                self.rect_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+                self.rect_item.setToolTip(canvas_name)
 
                 text_item.setZValue(-1)
-                text_item.setParentItem(rect_item)
+                text_item.setParentItem(self.rect_item)
                 text_item.setDefaultTextColor(QColor('black'))
                 text_item.setScale(1.5)
-                text_item.setPos(rect_item.boundingRect().x(), rect_item.boundingRect().y() - 30)
+                text_item.setPos(self.rect_item.boundingRect().x(), self.rect_item.boundingRect().y() - 30)
                 text_item.set_locked()
 
                 self.close()
