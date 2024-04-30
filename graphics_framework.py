@@ -47,14 +47,11 @@ class CustomGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
         if self.button.isChecked():
-            self.button2.setChecked(False)
 
             self.on_path_draw_start(event)
 
         # Check if the Line and Label tool is turned on
         elif self.button2.isChecked():
-            self.button.setChecked(False)
-
             self.on_label_start(event)
 
         super().mousePressEvent(event)
@@ -70,12 +67,10 @@ y: {int(p.y())}''')
 
         # Check if the path tool is enabled
         if self.button.isChecked():
-
             self.on_path_draw(event)
 
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
-
             self.on_label(event)
 
         super().mouseMoveEvent(event)
@@ -87,7 +82,6 @@ y: {int(p.y())}''')
 
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
-
             self.on_label_end(event)
 
         super().mouseReleaseEvent(event)
