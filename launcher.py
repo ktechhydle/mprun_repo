@@ -240,10 +240,12 @@ class CreateTemplateDialog(CTk):
         self.grid_size_entry.insert('end', '10')
 
     def create_project(self):
+        win = QApplication([])
         self.app = MPRUN()
         self.app.show()
         self.set_attr()
         self.destroy()
+        sys.exit(win.exec_())
 
     def set_attr(self):
         if self.check1.get() == 1:
@@ -254,7 +256,5 @@ class CreateTemplateDialog(CTk):
 
 
 if __name__ == '__main__':
-    win = QApplication([])
     app = Dialog()
     app.mainloop()
-    sys.exit(win.exec_())
