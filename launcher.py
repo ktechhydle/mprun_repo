@@ -58,8 +58,8 @@ class Dialog(CTk):
         copyright_label.place(x=110, y=80)
 
         # Labels with links
-        link1 = CTkLabel(self, text="Read the acknowledgements", font=web_link_font, cursor="hand2")
-        link1.place(x=385, y=79)
+        link1 = CTkLabel(self, text="Read the credits", font=web_link_font, cursor="hand2")
+        link1.place(x=368, y=79)
         link1.bind("<Button-1>", lambda e: open_link("https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing"))
 
         # Frame for other widgets

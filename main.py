@@ -222,7 +222,11 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
         # Stroke fill related widgets
-        self.stroke_style_options = {'Solid Stroke': Qt.SolidLine, 'Dotted Stroke': Qt.DotLine, 'Dashed Stroke': Qt.DashLine, 'Dashed Dot Stroke': Qt.DashDotLine, 'Dashed Double Dot Stroke': Qt.DashDotDotLine}
+        self.stroke_style_options = {'Solid Stroke': Qt.SolidLine,
+                                     'Dotted Stroke': Qt.DotLine,
+                                     'Dashed Stroke': Qt.DashLine,
+                                     'Dashed Dot Stroke': Qt.DashDotLine,
+                                     'Dashed Double Dot Stroke': Qt.DashDotDotLine}
         self.stroke_style_combo = QComboBox()
         for style, value in self.stroke_style_options.items():
             self.stroke_style_combo.addItem(style, value)
@@ -268,15 +272,16 @@ class MPRUN(QMainWindow):
         font_size_label = QLabel('Font Size:', self)
 
         # Quick action related widgets
-        stroke_fill_label = QLabel('Fill Enabled', self)
         self.stroke_fill_check_btn = QCheckBox(self)
-        gsnap_label = QLabel('GSNAP Enabled', self)
+        self.stroke_fill_check_btn.setText('Fill Enabled')
         self.gsnap_check_btn = QCheckBox(self)
+        self.gsnap_check_btn.setText('GSNAP Enabled')
+        self.gsnap_grid_spin = QSpinBox()
+        grid_size_label = QLabel('GSNAP Grid Size:', self)
+        self.gsnap_grid_spin.setValue(10)
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
-        horizontal_widget_for_stroke_fill.layout.addWidget(gsnap_label)
         horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
-        horizontal_widget_for_stroke_fill.layout.addWidget(stroke_fill_label)
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
@@ -285,6 +290,7 @@ class MPRUN(QMainWindow):
         self.font_size_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
         self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
+        self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
 
         #----toolbar buttons----#
 
@@ -431,13 +437,6 @@ class MPRUN(QMainWindow):
         add_canvas_btn.setShortcut(QKeySequence('A'))
         add_canvas_btn.triggered.connect(self.use_add_canvas)
 
-        # Course Elements Launcher Button
-        course_elements_launcher_btn = QAction(QIcon('logos and icons/Tool Icons/course_elements_icon.png'), '', self)
-        course_elements_launcher_btn.setToolTip('''Course Elements Picker Tool:
-        Key-C''')
-        course_elements_launcher_btn.setShortcut(QKeySequence('C'))
-        course_elements_launcher_btn.triggered.connect(self.launch_course_elements)
-
         # Insert Button
         insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
         insert_btn.setToolTip('''Insert Tool:
@@ -480,7 +479,6 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(vectorize_btn)
         self.toolbar.addAction(add_canvas_btn)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(course_elements_launcher_btn)
         self.toolbar.addAction(insert_btn)
         self.toolbar.addAction(export_btn)
         self.toolbar.addSeparator()
@@ -512,6 +510,8 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
         self.properties_tab_layout.addWidget(quick_actions_label)
         self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
+        self.properties_tab_layout.addWidget(grid_size_label)
+        self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
 
         # Elements Tab Widgets
@@ -535,6 +535,7 @@ class MPRUN(QMainWindow):
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
+        self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 300))
 
 
     def create_canvas(self):
@@ -675,6 +676,10 @@ Date:   """)
 
         self.canvas_view.update_font(font, QColor(self.font_color.get()))
 
+    def update_grid_size(self, value):
+        self.group.set_grid_size(value)
+        self.gsnap_grid_size = value
+
     def stroke_color_chooser(self):
         color_dialog = QColorDialog(self)
         color_dialog.setWindowTitle('Stroke Color')
@@ -701,13 +706,6 @@ Date:   """)
             color = color_dialog.selectedColor()
             self.font_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
             self.font_color.set(color.name())
-
-    def launch_course_elements(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
-        self.course_elements = CourseElementsWin(self.canvas)
-        self.course_elements.show()
 
     def use_select(self):
         self.path_btn.setChecked(False)
@@ -1022,6 +1020,7 @@ Date:   """)
                 transform = QTransform()
                 transform.scale(value, 1.0)
                 item.setTransform(transform)
+
         except ValueError:
             pass
 
@@ -1504,6 +1503,7 @@ Date:   """)
 
     def custom_template(self, x, y, default_text, grid_size):
         self.group.set_grid_size(grid_size)
+        self.gsnap_grid_spin.setValue(grid_size)
         self.gsnap_grid_size = grid_size
         self.paper.setRect(-100, -100, x-100, y-100)
         self.paper_text.setPlainText(default_text)
