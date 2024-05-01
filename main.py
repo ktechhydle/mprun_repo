@@ -118,9 +118,11 @@ class MPRUN(QMainWindow):
         duplicate_action.triggered.connect(self.use_duplicate)
 
         group_action = QAction('Group Selected', self)
+        group_action.setShortcut(QKeySequence('G'))
         group_action.triggered.connect(self.create_group)
 
         ungroup_action = QAction('Ungroup Selected', self)
+        ungroup_action.setShortcut(QKeySequence('Ctrl+G'))
         ungroup_action.triggered.connect(self.ungroup_group)
 
         vectorize_action = QAction('Vectorize', self)
