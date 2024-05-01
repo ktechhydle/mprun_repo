@@ -1,6 +1,8 @@
 import sys
 import math
 import time
+
+import qdarkstyle
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -44,14 +46,25 @@ class MPRUN(QMainWindow):
         self.screen_rotate_size = 0
 
         # Create GUI
+        self.create_initial_canvas()
         self.create_menu()
-        self.create_toolbars()
+        self.create_toolbar1()
+        self.create_toolbar2()
+        self.create_toolbar3()
         self.create_canvas()
 
+    def create_initial_canvas(self):
+        # Canvas, canvas color
+        self.canvas = QGraphicsScene()
+        width = 64000
+        height = 64000
+        self.canvas.setSceneRect(-width // 2, -height // 2, width, height)
+        brush1 = QBrush(QColor('#545454'))
+        self.canvas.setBackgroundBrush(brush1)
 
     def create_menu(self):
         # Create menus
-        self.menu_bar = QMenuBar()
+        self.menu_bar = QMenuBar(self)
         self.setMenuBar(self.menu_bar)
         self.file_menu = self.menu_bar.addMenu('&File')
         self.tool_menu = self.menu_bar.addMenu('&Tools')
@@ -69,15 +82,7 @@ class MPRUN(QMainWindow):
         # Add actions
         self.file_menu.addAction(export_action)
 
-    def create_toolbars(self):
-        # Canvas, canvas color
-        self.canvas = QGraphicsScene()
-        width = 64000
-        height = 64000
-        self.canvas.setSceneRect(-width // 2, -height // 2, width, height)
-        brush1 = QBrush(QColor('#545454'))
-        self.canvas.setBackgroundBrush(brush1)
-
+    def create_toolbar1(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
@@ -95,7 +100,7 @@ class MPRUN(QMainWindow):
         #----action toolbar widgets----#
 
         # Tabview
-        self.tab_view = QTabWidget()
+        self.tab_view = QTabWidget(self)
         self.tab_view.setTabPosition(QTabWidget.TabPosition.West)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
 
@@ -140,13 +145,7 @@ class MPRUN(QMainWindow):
         layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         layers_label.setAlignment(Qt.AlignLeft)
 
-        stroke_options_label = QLabel('Stroke Options:', self)
-        stroke_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
-        stroke_options_label.setAlignment(Qt.AlignLeft)
 
-        fill_options_label = QLabel('Fill Options:', self)
-        fill_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
-        fill_options_label.setAlignment(Qt.AlignLeft)
 
         text_options_label = QLabel('Text', self)
         text_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
@@ -202,11 +201,12 @@ class MPRUN(QMainWindow):
         self.fill_color_btn = QPushButton('', self)
         self.fill_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
+        self.fill_color.set('black')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
 
-        # Vector convert tolerence spinbox
-        self.color_tolerance_spin = QSpinBox()
+        # Vector convert tolerance spinbox
+        self.color_tolerance_spin = QSpinBox(self)
         self.color_tolerance_spin.setMaximum(1028)
         self.color_tolerance_spin.setMinimum(128)
         self.color_tolerance_spin.setValue(256)
@@ -214,7 +214,7 @@ class MPRUN(QMainWindow):
         # Layer Combobox
         self.layer_options = {'Layer 0 (Default)': 0, 'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2,
                               'Layer 3 (Text/Labels)': 3}
-        self.layer_combo = QComboBox()
+        self.layer_combo = QComboBox(self)
         for layer, value in self.layer_options.items():
             self.layer_combo.addItem(layer, value)
 
@@ -249,11 +249,11 @@ class MPRUN(QMainWindow):
                                      'Dashed Stroke': Qt.DashLine,
                                      'Dashed Dot Stroke': Qt.DashDotLine,
                                      'Dashed Double Dot Stroke': Qt.DashDotDotLine}
-        self.stroke_style_combo = QComboBox()
+        self.stroke_style_combo = QComboBox(self)
         for style, value in self.stroke_style_options.items():
             self.stroke_style_combo.addItem(style, value)
         self.stroke_pencap_options = {'Square Cap': Qt.SquareCap, 'Flat Cap': Qt.FlatCap, 'Round Cap': Qt.RoundCap}
-        self.stroke_pencap_combo = QComboBox()
+        self.stroke_pencap_combo = QComboBox(self)
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
         self.outline_color_btn = QPushButton('', self)
@@ -261,16 +261,20 @@ class MPRUN(QMainWindow):
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
-        self.stroke_size_spin = QSpinBox()
+        self.stroke_size_spin = QSpinBox(self)
         self.stroke_size_spin.setValue(3)
+        self.stroke_size_spin.setMaximum(1000)
+        self.stroke_size_spin.setMinimum(1)
         stroke_size_label = QLabel('Stroke Size:', self)
         stroke_attributes_label = QLabel('Stroke Attributes:', self)
         fill_attributes_label = QLabel('Fill Attributes:', self)
 
         # Font related widgets
         self.font_choice_combo = QFontComboBox(self)
-        self.font_size_spin = QSpinBox()
+        self.font_size_spin = QSpinBox(self)
         self.font_size_spin.setValue(20)
+        self.font_size_spin.setMaximum(1000)
+        self.font_size_spin.setMinimum(1)
         self.font_color_btn = QPushButton('', self)
         self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
@@ -299,9 +303,11 @@ class MPRUN(QMainWindow):
         self.stroke_fill_check_btn.setText('Fill Enabled')
         self.gsnap_check_btn = QCheckBox(self)
         self.gsnap_check_btn.setText('GSNAP Enabled')
-        self.gsnap_grid_spin = QSpinBox()
+        self.gsnap_grid_spin = QSpinBox(self)
         grid_size_label = QLabel('GSNAP Grid Size:', self)
         self.gsnap_grid_spin.setValue(10)
+        self.gsnap_grid_spin.setMinimum(1)
+        self.gsnap_grid_spin.setMaximum(1000)
         self.drop_shadow_check_btn = QCheckBox(self)
         self.drop_shadow_check_btn.setText('Drop Shadow')
         self.drop_shadow_check_btn.clicked.connect(self.use_drop_shadow)
@@ -321,6 +327,64 @@ class MPRUN(QMainWindow):
         self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
 
+        # Add action toolbar actions
+        self.action_toolbar.addWidget(self.tab_view)
+
+        # Properties Tab Widgets
+        self.properties_tab_layout.addWidget(properties_label)
+        self.properties_tab_layout.addWidget(rotation_label)
+        self.properties_tab_layout.addWidget(self.rotate_slider)
+        self.properties_tab_layout.addWidget(scale_label)
+        self.properties_tab_layout.addWidget(self.scale_slider)
+        self.properties_tab_layout.addWidget(self.entry1)
+        self.properties_tab_layout.addWidget(self.entry2)
+        self.properties_tab_layout.addWidget(self.entry3)
+        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.properties_tab_layout.addWidget(appearence_label)
+        self.properties_tab_layout.addWidget(stroke_size_label)
+        self.properties_tab_layout.addWidget(self.stroke_size_spin)
+        self.properties_tab_layout.addWidget(stroke_attributes_label)
+        self.properties_tab_layout.addWidget(self.outline_color_btn)
+        self.properties_tab_layout.addWidget(self.stroke_style_combo)
+        self.properties_tab_layout.addWidget(self.stroke_pencap_combo)
+        self.properties_tab_layout.addWidget(fill_attributes_label)
+        self.properties_tab_layout.addWidget(self.fill_color_btn)
+        self.properties_tab_layout.addWidget(opacity_label)
+        self.properties_tab_layout.addWidget(self.opacity_slider)
+        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.properties_tab_layout.addWidget(quick_actions_label)
+        self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
+        self.properties_tab_layout.addWidget(widget3)
+        self.properties_tab_layout.addWidget(grid_size_label)
+        self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
+        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
+
+        # Elements Tab Widgets
+        self.elements_tab_layout.addWidget(layers_label)
+        self.elements_tab_layout.addWidget(self.layer_combo)
+        self.elements_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.elements_tab_layout.addWidget(text_options_label)
+        self.elements_tab_layout.addWidget(font_choice_label)
+        self.elements_tab_layout.addWidget(self.font_choice_combo)
+        self.elements_tab_layout.addWidget(font_size_label)
+        self.elements_tab_layout.addWidget(self.font_size_spin)
+        self.elements_tab_layout.addWidget(self.font_color_btn)
+        self.elements_tab_layout.addWidget(widget4)
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 500))
+
+        # Vectorize Tab Widgets
+        self.vectorize_tab_layout.addWidget(vector_options_label)
+        self.vectorize_tab_layout.addWidget(color_tolerance_label)
+        self.vectorize_tab_layout.addWidget(self.color_tolerance_spin)
+        self.vectorize_tab_layout.addWidget(self.background_remove_check_btn)
+        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 700))
+
+        # Libraries Tab Widgets
+        self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
+        self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 200))
+
+    def create_toolbar2(self):
         #----toolbar buttons----#
 
         # Rotate Screen Button
@@ -504,63 +568,8 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(export_btn)
         self.toolbar.addSeparator()
 
-        # Add action toolbar actions
-        self.action_toolbar.addWidget(self.tab_view)
-
-        # Properties Tab Widgets
-        self.properties_tab_layout.addWidget(properties_label)
-        self.properties_tab_layout.addWidget(rotation_label)
-        self.properties_tab_layout.addWidget(self.rotate_slider)
-        self.properties_tab_layout.addWidget(scale_label)
-        self.properties_tab_layout.addWidget(self.scale_slider)
-        self.properties_tab_layout.addWidget(self.entry1)
-        self.properties_tab_layout.addWidget(self.entry2)
-        self.properties_tab_layout.addWidget(self.entry3)
-        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
-        self.properties_tab_layout.addWidget(appearence_label)
-        self.properties_tab_layout.addWidget(stroke_size_label)
-        self.properties_tab_layout.addWidget(self.stroke_size_spin)
-        self.properties_tab_layout.addWidget(stroke_attributes_label)
-        self.properties_tab_layout.addWidget(self.outline_color_btn)
-        self.properties_tab_layout.addWidget(self.stroke_style_combo)
-        self.properties_tab_layout.addWidget(self.stroke_pencap_combo)
-        self.properties_tab_layout.addWidget(fill_attributes_label)
-        self.properties_tab_layout.addWidget(self.fill_color_btn)
-        self.properties_tab_layout.addWidget(opacity_label)
-        self.properties_tab_layout.addWidget(self.opacity_slider)
-        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
-        self.properties_tab_layout.addWidget(quick_actions_label)
-        self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
-        self.properties_tab_layout.addWidget(widget3)
-        self.properties_tab_layout.addWidget(grid_size_label)
-        self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
-        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
-
-        # Elements Tab Widgets
-        self.elements_tab_layout.addWidget(layers_label)
-        self.elements_tab_layout.addWidget(self.layer_combo)
-        self.elements_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 15))
-        self.elements_tab_layout.addWidget(text_options_label)
-        self.elements_tab_layout.addWidget(font_choice_label)
-        self.elements_tab_layout.addWidget(self.font_choice_combo)
-        self.elements_tab_layout.addWidget(font_size_label)
-        self.elements_tab_layout.addWidget(self.font_size_spin)
-        self.elements_tab_layout.addWidget(self.font_color_btn)
-        self.elements_tab_layout.addWidget(widget4)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 500))
-
-        # Vectorize Tab Widgets
-        self.vectorize_tab_layout.addWidget(vector_options_label)
-        self.vectorize_tab_layout.addWidget(color_tolerance_label)
-        self.vectorize_tab_layout.addWidget(self.color_tolerance_spin)
-        self.vectorize_tab_layout.addWidget(self.background_remove_check_btn)
-        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 700))
-
-        # Libraries Tab Widgets
-        self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
-        self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 200))
-
+    def create_toolbar3(self):
+        pass
 
     def create_canvas(self):
         # QGraphicsView Logic, set the main widget
@@ -804,8 +813,14 @@ Date:   """)
                     item.setDefaultTextColor(QColor(self.font_color.get()))
 
     def update_grid_size(self, value):
-        self.group.set_grid_size(value)
-        self.gsnap_grid_size = value
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CustomGraphicsItemGroup):
+                item.set_grid_size(value)
+                self.gsnap_grid_size = value
+
+            else:
+                self.group.set_grid_size(value)
+                self.gsnap_grid_size = value
 
     def stroke_color_chooser(self):
         color_dialog = QColorDialog(self)
@@ -1082,14 +1097,18 @@ Date:   """)
 
         items = self.canvas.selectedItems()
         for item in items:
-            # Calculate the center point of the item
-            center = item.boundingRect().center()
+            if isinstance(item, CanvasItem):
+                pass
 
-            # Set the transformation origin to the center point
-            item.setTransformOriginPoint(center)
+            else:
+                # Calculate the center point of the item
+                center = item.boundingRect().center()
 
-            # Rotate the item
-            item.setRotation(value)
+                # Set the transformation origin to the center point
+                item.setTransformOriginPoint(center)
+
+                # Rotate the item
+                item.setRotation(value)
 
     def use_change_opacity(self, value):
         self.label_btn.setChecked(False)
@@ -1106,7 +1125,11 @@ Date:   """)
 
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
-            item.setGraphicsEffect(effect)
+            if isinstance(item, CanvasItem):
+                pass
+
+            else:
+                item.setGraphicsEffect(effect)
 
     def use_drop_shadow(self):
         self.label_btn.setChecked(False)
@@ -1118,12 +1141,16 @@ Date:   """)
 
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
-            if self.drop_shadow_check_btn.isChecked():
-                item.setGraphicsEffect(effect)
+            if isinstance(item, CanvasItem):
+                pass
 
             else:
-                if item.graphicsEffect() and QGraphicsDropShadowEffect():
-                    item.setGraphicsEffect(None)
+                if self.drop_shadow_check_btn.isChecked():
+                    item.setGraphicsEffect(effect)
+
+                else:
+                    if item.graphicsEffect() and QGraphicsDropShadowEffect():
+                        item.setGraphicsEffect(None)
 
     def use_center_item(self):
         self.label_btn.setChecked(False)
@@ -1462,40 +1489,49 @@ Date:   """)
 
         # Check if there is an initial group
         if self.group is not None:
-            self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
-            self.group.set_grid_size(self.gsnap_grid_size)
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CanvasItem):
+                    if item.childItems():
+                        pass
 
-            item = self.canvas.selectedItems()
-            sorted_items = sorted(item, key=lambda i: i.zValue())
+                    else:
+                        pass
 
-            # Set flags for group
-            self.group.setFlag(QGraphicsItem.ItemIsMovable)
-            self.group.setFlag(QGraphicsItem.ItemIsSelectable)
+                else:
+                    self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
+                    self.group.set_grid_size(self.gsnap_grid_size)
 
-            # Add group
-            self.canvas.addItem(self.group)
-            self.canvas.update()
+                    item = self.canvas.selectedItems()
+                    sorted_items = sorted(item, key=lambda i: i.zValue())
 
-            for items in sorted_items:
-                # Set flag
-                items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    # Set flags for group
+                    self.group.setFlag(QGraphicsItem.ItemIsMovable)
+                    self.group.setFlag(QGraphicsItem.ItemIsSelectable)
 
-                # Check if the item is an instance
-                if isinstance(items, QGraphicsTextItem):
-                    items.setTextInteractionFlags(Qt.NoTextInteraction)
+                    # Add group
+                    self.canvas.addItem(self.group)
+                    self.canvas.update()
 
-                    # Set an object name
-                    items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+                    for items in sorted_items:
+                        # Set flag
+                        items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
-                elif isinstance(items, EditableTextBlock):
-                    items.setTextInteractionFlags(Qt.NoTextInteraction)
+                        # Check if the item is an instance
+                        if isinstance(items, QGraphicsTextItem):
+                            items.setTextInteractionFlags(Qt.NoTextInteraction)
 
-                        # Set an object name
-                    items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+                            # Set an object name
+                            items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
 
-                # Add items to group
-                self.group.addToGroup(items)
-                self.group.setToolTip('Grouped Object (Free MPRUN Element)')
+                        elif isinstance(items, EditableTextBlock):
+                            items.setTextInteractionFlags(Qt.NoTextInteraction)
+
+                                # Set an object name
+                            items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+
+                        # Add items to group
+                        self.group.addToGroup(items)
+                        self.group.setToolTip('Grouped Object (Free MPRUN Element)')
 
     def create_item_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
