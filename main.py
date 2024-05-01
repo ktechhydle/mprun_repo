@@ -67,6 +67,7 @@ class MPRUN(QMainWindow):
         self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setOrientation(Qt.Vertical)
+        self.toolbar.setAllowedAreas(Qt.ToolBarArea.LeftToolBarArea)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
@@ -853,6 +854,8 @@ Date:   """)
 
         self.outline_color_btn.setStyleSheet(f'background-color: white; border: None')
         self.fill_color_btn.setStyleSheet('background-color: white; border: None')
+        self.fill_color.set('white')
+        self.outline_color.set('white')
 
         self.path_btn.setChecked(True)
 
@@ -1219,9 +1222,9 @@ Date:   """)
 
         # File Dialog, file path
         file_dialog = QFileDialog()
-        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)")
+        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico);;(Beta) Python files (*.py)")
 
-        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)",
+        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico);;(Beta) Python files (*.py)",
                                                    options=options)
 
         if file_path:
@@ -1233,6 +1236,11 @@ Date:   """)
                 svg_item.setToolTip('Imported SVG Item (Not an MPRUN Element)')
 
                 self.create_item_attributes(svg_item)
+
+            elif file_path.endswith('.py'):
+                with open(file_path, 'r') as f:
+                    contents = f.read()
+                    exec(contents)
 
             else:
                 image1 = QPixmap(file_path)
