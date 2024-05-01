@@ -44,14 +44,30 @@ class MPRUN(QMainWindow):
         self.screen_rotate_size = 0
 
         # Create GUI
-        self.create_status_bar()
+        self.create_menu()
         self.create_toolbars()
         self.create_canvas()
 
 
-    def create_status_bar(self):
-        self.status_bar = self.statusBar()
-        self.status_bar.showMessage(f'App loaded, running {sys.platform.capitalize()}', 10000)
+    def create_menu(self):
+        # Create menus
+        self.menu_bar = QMenuBar()
+        self.setMenuBar(self.menu_bar)
+        self.file_menu = self.menu_bar.addMenu('&File')
+        self.tool_menu = self.menu_bar.addMenu('&Tools')
+        self.edit_menu = self.menu_bar.addMenu('&Edit')
+        self.item_menu = self.menu_bar.addMenu('&Item')
+
+        # Create file actions
+        export_action = QAction('Export', self)
+        export_action.triggered.connect(self.choose_export)
+
+        # Create tools actions
+
+        # Create edit actions
+
+        # Add actions
+        self.file_menu.addAction(export_action)
 
     def create_toolbars(self):
         # Canvas, canvas color
@@ -66,13 +82,12 @@ class MPRUN(QMainWindow):
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
         self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setOrientation(Qt.Vertical)
-        self.toolbar.setAllowedAreas(Qt.ToolBarArea.LeftToolBarArea)
+        self.toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
-        self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
+        self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 1px;}')
         self.action_toolbar.setFixedWidth(300)
         self.action_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
@@ -83,7 +98,6 @@ class MPRUN(QMainWindow):
         self.tab_view = QTabWidget()
         self.tab_view.setTabPosition(QTabWidget.TabPosition.West)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
-
 
         # Properties Tab
         self.properties_tab = QWidget()
