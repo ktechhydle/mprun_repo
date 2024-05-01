@@ -13,7 +13,6 @@ from custom_widgets import *
 from course_elements import *
 from canvas_creation_dialog import *
 from version_dialog import *
-from pixels2svg import *
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -312,12 +311,6 @@ class MPRUN(QMainWindow):
         self.fill_color.set('black')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
-
-        # Vector convert tolerance spinbox
-        self.color_tolerance_spin = QSpinBox(self)
-        self.color_tolerance_spin.setMaximum(1028)
-        self.color_tolerance_spin.setMinimum(128)
-        self.color_tolerance_spin.setValue(256)
 
         # Layer Combobox
         self.layer_options = {'Layer 0 (Default)': 0, 'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2,
@@ -642,13 +635,6 @@ class MPRUN(QMainWindow):
         smooth_btn.setShortcut(QKeySequence('S'))
         smooth_btn.triggered.connect(self.use_smooth_path)
 
-        # Vectorize Button
-        vectorize_btn = QAction(QIcon('logos and icons/Tool Icons/vectorize_icon.png'), '', self)
-        vectorize_btn.setToolTip('''Vectorize Tool: 
-        Key-V''')
-        vectorize_btn.setShortcut(QKeySequence('V'))
-        vectorize_btn.triggered.connect(self.use_vectorize)
-
         # Add Canvas Button
         add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/add_canvas_icon.png'), '', self)
         add_canvas_btn.setToolTip('''Add Canvas Tool: 
@@ -690,7 +676,6 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(center_item_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(smooth_btn)
-        self.toolbar.addAction(vectorize_btn)
         self.toolbar.addAction(add_canvas_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(insert_btn)
