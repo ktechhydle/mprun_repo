@@ -72,15 +72,104 @@ class MPRUN(QMainWindow):
         self.item_menu = self.menu_bar.addMenu('&Item')
 
         # Create file actions
+        insert_action = QAction('Insert', self)
+        insert_action.triggered.connect(self.insert_image)
+
+        add_canvas_action = QAction('Add Canvas', self)
+        add_canvas_action.triggered.connect(self.use_add_canvas)
+
         export_action = QAction('Export', self)
         export_action.triggered.connect(self.choose_export)
 
         # Create tools actions
+        path_action = QAction('Path', self)
+        path_action.triggered.connect(self.use_path)
+        path_action.triggered.connect(self.update_pen)
+
+        erase_action = QAction('Erase', self)
+        erase_action.triggered.connect(self.use_erase)
+        erase_action.triggered.connect(self.update_pen)
+
+        linelabel_action = QAction('Line and Label', self)
+        linelabel_action.triggered.connect(self.use_label)
+        linelabel_action.triggered.connect(self.update_pen)
+
+        text_action = QAction('Text', self)
+        text_action.triggered.connect(self.use_text)
+        text_action.triggered.connect(self.update_font)
+
+        smooth_action = QAction('Smooth Path', self)
+        smooth_action.triggered.connect(self.use_smooth_path)
 
         # Create edit actions
+        duplicate_action = QAction('Duplicate', self)
+        duplicate_action.triggered.connect(self.use_duplicate)
+
+        group_action = QAction('Group Selected', self)
+        group_action.triggered.connect(self.create_group)
+
+        vectorize_action = QAction('Vectorize', self)
+        vectorize_action.triggered.connect(self.use_vectorize)
+
+        # Create item actions
+        raise_layer_action = QAction('Raise Layer', self)
+        raise_layer_action.triggered.connect(self.use_raise_layer)
+
+        lower_layer_action = QAction('Lower Layer', self)
+        lower_layer_action.triggered.connect(self.use_lower_layer)
+
+        bring_to_front_action = QAction('Bring to Front', self)
+        bring_to_front_action.triggered.connect(self.use_bring_to_front)
+
+        lock_action = QAction('Lock Position', self)
+        lock_action.triggered.connect(self.lock_item)
+
+        unlock_action = QAction('Unlock Position', self)
+        unlock_action.triggered.connect(self.unlock_item)
+
+        permanent_lock_action = QAction('Permanent Lock Position', self)
+        permanent_lock_action.triggered.connect(self.permanent_lock_item)
+
+        center_action = QAction('Center', self)
+        center_action.triggered.connect(self.use_center_item)
+
+        hide_action = QAction('Hide Selected', self)
+        hide_action.triggered.connect(self.use_hide_item)
+
+        unhide_action = QAction('Unhide All', self)
+        unhide_action.triggered.connect(self.use_unhide_all)
 
         # Add actions
+        self.file_menu.addAction(insert_action)
+        self.file_menu.addAction(add_canvas_action)
+        self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
+
+        self.tool_menu.addAction(path_action)
+        self.tool_menu.addAction(erase_action)
+        self.tool_menu.addSeparator()
+        self.tool_menu.addAction(linelabel_action)
+        self.tool_menu.addAction(text_action)
+        self.tool_menu.addSeparator()
+        self.tool_menu.addAction(smooth_action)
+
+        self.edit_menu.addAction(duplicate_action)
+        self.edit_menu.addAction(group_action)
+        self.edit_menu.addAction(vectorize_action)
+
+        self.item_menu.addAction(raise_layer_action)
+        self.item_menu.addAction(lower_layer_action)
+        self.item_menu.addAction(bring_to_front_action)
+        self.item_menu.addSeparator()
+        self.item_menu.addAction(lock_action)
+        self.item_menu.addAction(unlock_action)
+        self.item_menu.addAction(permanent_lock_action)
+        self.item_menu.addSeparator()
+        self.item_menu.addAction(center_action)
+        self.item_menu.addSeparator()
+        self.item_menu.addAction(hide_action)
+        self.item_menu.addAction(unhide_action)
+
 
     def create_toolbar1(self):
         # Toolbar
@@ -490,7 +579,7 @@ class MPRUN(QMainWindow):
 
         # Center Item Button
         center_item_btn = QAction(QIcon('logos and icons/Tool Icons/center_item_icon.png'), '', self)
-        center_item_btn.setToolTip('''Center Item Tool:
+        center_item_btn.setToolTip('''Center Element Tool:
         Shift+C (MacOS) or Shift+C (Windows)''')
         center_item_btn.setShortcut(QKeySequence("Shift+C"))
         center_item_btn.triggered.connect(self.use_center_item)
@@ -873,6 +962,8 @@ Date:   """)
         self.label_btn.setChecked(False)
         self.add_text_btn.setChecked(False)
 
+        self.path_btn.setChecked(True)
+
     def use_erase(self):
         self.label_btn.setChecked(False)
         self.add_text_btn.setChecked(False)
@@ -896,9 +987,13 @@ Date:   """)
         self.path_btn.setChecked(False)
         self.add_text_btn.setChecked(False)
 
+        self.label_btn.setChecked(True)
+
     def use_text(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
+
+        self.add_text_btn.setChecked(True)
 
     def use_rotate_screen(self):
         self.label_btn.setChecked(False)
@@ -924,7 +1019,7 @@ Date:   """)
         self.path_btn.setChecked(False)
 
         selected_items = self.canvas.selectedItems()
-        max_z_value = max(item.zValue() for item in self.canvas.items()) if self.canvas.items() else 0
+        max_z_value = max(item.zValue() for item in self.canvas.items())
         for item in selected_items:
             item.setZValue(max_z_value + 1)
 
@@ -1004,27 +1099,19 @@ Date:   """)
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
-                item.setZValue(item.zValue() + 1)
-
-        else:
-            pass
+        for item in self.canvas.selectedItems():
+            item.setZValue(item.zValue() + 1.0)
 
     def use_lower_layer(self):
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
-                if item.zValue() <= 0:
-                    QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+        for item in self.canvas.selectedItems():
+            if item.zValue() <= 0:
+                QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
 
-                else:
-                    item.setZValue(item.zValue() - 1)
-
-        else:
-            pass
+            else:
+                item.setZValue(item.zValue() - 1.0)
 
     def use_scale_all(self, value):
         self.label_btn.setChecked(False)
