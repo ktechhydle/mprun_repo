@@ -1,7 +1,7 @@
 import sys
 import math
 import time
-
+import webbrowser
 import qdarkstyle
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -12,6 +12,7 @@ from custom_classes import *
 from custom_widgets import *
 from course_elements import *
 from canvas_creation_dialog import *
+from version_dialog import *
 from pixels2svg import *
 
 class MPRUN(QMainWindow):
@@ -60,17 +61,25 @@ class MPRUN(QMainWindow):
         width = 64000
         height = 64000
         self.canvas.setSceneRect(-width // 2, -height // 2, width, height)
-        brush1 = QBrush(QColor('#545454'))
+        brush1 = QBrush(QColor('#606060'))
         self.canvas.setBackgroundBrush(brush1)
 
     def create_menu(self):
         # Create menus
         self.menu_bar = QMenuBar(self)
         self.setMenuBar(self.menu_bar)
+        self.mprun_menu = self.menu_bar.addMenu('&MPRUN')
         self.file_menu = self.menu_bar.addMenu('&File')
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.item_menu = self.menu_bar.addMenu('&Item')
+
+        # Create MPRUN actions
+        about_action = QAction('About', self)
+        about_action.triggered.connect(lambda: webbrowser.open('www.example.com'))
+
+        show_version_action = QAction('Version', self)
+        show_version_action.triggered.connect(self.show_version)
 
         # Create file actions
         insert_action = QAction('Insert', self)
@@ -147,6 +156,9 @@ class MPRUN(QMainWindow):
         unhide_action.triggered.connect(self.use_unhide_all)
 
         # Add actions
+        self.mprun_menu.addAction(about_action)
+        self.mprun_menu.addAction(show_version_action)
+
         self.file_menu.addAction(insert_action)
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addSeparator()
@@ -1688,9 +1700,18 @@ Date:   """)
                 self.gsnap_grid_spin.setValue(grid_size)
                 self.gsnap_grid_size = grid_size
 
+    def show_version(self):
+        app = VersionWin()
+        app.mainloop()
+
 
 if __name__ == '__main__':
     app = QApplication([])
+
+    sshFile = "Styles/main_style.css"
+    with open(sshFile, "r") as fh:
+        app.setStyleSheet(fh.read())
+
     window = MPRUN()
     window.show()
     app.exec_()
