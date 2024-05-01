@@ -73,12 +73,16 @@ class MPRUN(QMainWindow):
         self.action_toolbar = QToolBar('MPRUN Action Bar')
         self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 5px;}')
         self.action_toolbar.setFixedWidth(300)
+        self.action_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
 
         #----action toolbar widgets----#
 
         # Tabview
         self.tab_view = QTabWidget()
+        self.tab_view.setTabPosition(QTabWidget.TabPosition.West)
+        self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
+
 
         # Properties Tab
         self.properties_tab = QWidget()
@@ -91,6 +95,12 @@ class MPRUN(QMainWindow):
         self.elements_tab_layout = QVBoxLayout()
         self.elements_tab.setLayout(self.elements_tab_layout)
         self.tab_view.addTab(self.elements_tab, 'Elements')
+
+        # Vectorize Tab
+        self.vectorize_tab = QWidget()
+        self.vectorize_tab_layout = QVBoxLayout()
+        self.vectorize_tab.setLayout(self.vectorize_tab_layout)
+        self.tab_view.addTab(self.vectorize_tab, 'Vectorizing')
 
         # Libraries Tab
         self.libraries_tab = QWidget()
@@ -127,7 +137,7 @@ class MPRUN(QMainWindow):
         text_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         text_options_label.setAlignment(Qt.AlignLeft)
 
-        vector_options_label = QLabel('Vector', self)
+        vector_options_label = QLabel('Vectorize', self)
         vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         vector_options_label.setAlignment(Qt.AlignLeft)
 
@@ -287,6 +297,7 @@ class MPRUN(QMainWindow):
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
+        self.stroke_fill_check_btn.clicked.connect(self.update_pen)
         self.font_size_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
         self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
@@ -409,13 +420,6 @@ class MPRUN(QMainWindow):
         group_create_btn.setShortcut(QKeySequence('G'))
         group_create_btn.triggered.connect(self.create_group)
 
-        # Restroke Button
-        restroke_button = QAction(QIcon('logos and icons/Tool Icons/restroke_icon.png'), '', self)
-        restroke_button.setToolTip('''Restroke Tool: 
-        Key-U''')
-        restroke_button.setShortcut(QKeySequence('U'))
-        restroke_button.triggered.connect(self.use_refill)
-
         # Smooth Button
         smooth_btn = QAction(QIcon('logos and icons/Tool Icons/simplify_icon.png'), '', self)
         smooth_btn.setToolTip('''Smooth Path Tool: 
@@ -474,7 +478,6 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(center_item_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(group_create_btn)
-        self.toolbar.addAction(restroke_button)
         self.toolbar.addAction(smooth_btn)
         self.toolbar.addAction(vectorize_btn)
         self.toolbar.addAction(add_canvas_btn)
@@ -526,16 +529,18 @@ class MPRUN(QMainWindow):
         self.elements_tab_layout.addWidget(self.font_size_spin)
         self.elements_tab_layout.addWidget(self.font_color_btn)
         self.elements_tab_layout.addWidget(widget4)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 15))
-        self.elements_tab_layout.addWidget(vector_options_label)
-        self.elements_tab_layout.addWidget(color_tolerance_label)
-        self.elements_tab_layout.addWidget(self.color_tolerance_spin)
-        self.elements_tab_layout.addWidget(widget1)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 220))
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 400))
+
+        # Vectorize Tab Widgets
+        self.vectorize_tab_layout.addWidget(vector_options_label)
+        self.vectorize_tab_layout.addWidget(color_tolerance_label)
+        self.vectorize_tab_layout.addWidget(self.color_tolerance_spin)
+        self.vectorize_tab_layout.addWidget(widget1)
+        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 620))
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
-        self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 300))
+        self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 200))
 
 
     def create_canvas(self):
@@ -666,6 +671,103 @@ Date:   """)
             QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
         self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
+        if self.canvas.selectedItems():
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CustomPathItem):
+                    index1 = self.stroke_style_combo.currentIndex()
+                    data1 = self.stroke_style_combo.itemData(index1)
+                    index2 = self.stroke_pencap_combo.currentIndex()
+                    data2 = self.stroke_pencap_combo.itemData(index2)
+
+                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
+                    item.setPen(pen)
+
+                    # Check if widget is pressed
+                    if self.stroke_fill_check_btn.isChecked():
+                        item.setBrush(QColor(self.fill_color.get()))
+
+                    else:
+                        item.setBrush(QBrush(QColor(Qt.transparent)))
+
+                elif isinstance(item, EditableTextBlock):
+                    font = QFont()
+                    font.setFamily(self.font_choice_combo.currentText())
+                    font.setPixelSize(self.font_size_spin.value())
+                    font.setBold(True if self.bold_btn.isChecked() else False)
+                    font.setItalic(True if self.italic_btn.isChecked() else False)
+                    font.setUnderline(True if self.underline_btn.isChecked() else False)
+
+                    item.setFont(font)
+                    item.setDefaultTextColor(QColor(self.font_color.get()))
+
+                elif isinstance(item, CustomCircleItem):
+                    index1 = self.stroke_style_combo.currentIndex()
+                    data1 = self.stroke_style_combo.itemData(index1)
+                    index2 = self.stroke_pencap_combo.currentIndex()
+                    data2 = self.stroke_pencap_combo.itemData(index2)
+
+                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
+                    item.setPen(pen)
+
+                    # Check if widget is pressed
+                    if self.stroke_fill_check_btn.isChecked():
+                        item.setBrush(QColor(self.fill_color.get()))
+
+                    else:
+                        item.setBrush(QBrush(QColor(Qt.transparent)))
+
+                    if item.childItems():
+                        for child in item.childItems():
+                            if isinstance(child, CustomPathItem):
+                                index1 = self.stroke_style_combo.currentIndex()
+                                data1 = self.stroke_style_combo.itemData(index1)
+                                index2 = self.stroke_pencap_combo.currentIndex()
+                                data2 = self.stroke_pencap_combo.itemData(index2)
+
+                                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
+                                           data2)
+                                child.setPen(pen)
+
+                                # Check if widget is pressed
+                                if self.stroke_fill_check_btn.isChecked():
+                                    child.setBrush(QColor(self.fill_color.get()))
+
+                                else:
+                                    child.setBrush(QBrush(QColor(Qt.transparent)))
+
+                            elif isinstance(child, CustomRectangleItem):
+                                index1 = self.stroke_style_combo.currentIndex()
+                                data1 = self.stroke_style_combo.itemData(index1)
+                                index2 = self.stroke_pencap_combo.currentIndex()
+                                data2 = self.stroke_pencap_combo.itemData(index2)
+
+                                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
+                                           data2)
+                                child.setPen(pen)
+
+                                # Check if widget is pressed
+                                if self.stroke_fill_check_btn.isChecked():
+                                    child.setBrush(QColor(self.fill_color.get()))
+
+                                else:
+                                    child.setBrush(QBrush(QColor(Qt.transparent)))
+
+                elif isinstance(item, CustomRectangleItem):
+                    index1 = self.stroke_style_combo.currentIndex()
+                    data1 = self.stroke_style_combo.itemData(index1)
+                    index2 = self.stroke_pencap_combo.currentIndex()
+                    data2 = self.stroke_pencap_combo.itemData(index2)
+
+                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
+                    item.setPen(pen)
+
+                    # Check if widget is pressed
+                    if self.stroke_fill_check_btn.isChecked():
+                        item.setBrush(QColor(self.fill_color.get()))
+
+                    else:
+                        item.setBrush(QBrush(QColor(Qt.transparent)))
+
     def update_font(self):
         font = QFont()
         font.setFamily(self.font_choice_combo.currentText())
@@ -675,6 +777,12 @@ Date:   """)
         font.setUnderline(True if self.underline_btn.isChecked() else False)
 
         self.canvas_view.update_font(font, QColor(self.font_color.get()))
+
+        if self.canvas.selectedItems():
+            for item in self.canvas.selectedItems():
+                if isinstance(item, EditableTextBlock):
+                    item.setFont(font)
+                    item.setDefaultTextColor(QColor(self.font_color.get()))
 
     def update_grid_size(self, value):
         self.group.set_grid_size(value)
@@ -764,103 +872,6 @@ Date:   """)
         transform.rotate(self.screen_rotate_size)
 
         self.canvas_view.setTransform(transform)
-
-    def use_refill(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CustomPathItem):
-                index1 = self.stroke_style_combo.currentIndex()
-                data1 = self.stroke_style_combo.itemData(index1)
-                index2 = self.stroke_pencap_combo.currentIndex()
-                data2 = self.stroke_pencap_combo.itemData(index2)
-
-                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
-                item.setPen(pen)
-
-                # Check if widget is pressed
-                if self.stroke_fill_check_btn.isChecked():
-                    item.setBrush(QColor(self.fill_color.get()))
-
-                else:
-                    item.setBrush(QBrush(QColor(Qt.transparent)))
-
-            elif isinstance(item, EditableTextBlock):
-                font = QFont()
-                font.setFamily(self.font_choice_combo.currentText())
-                font.setPixelSize(self.font_size_spin.value())
-                font.setBold(True if self.bold_btn.isChecked() else False)
-                font.setItalic(True if self.italic_btn.isChecked() else False)
-                font.setUnderline(True if self.underline_btn.isChecked() else False)
-
-                item.setFont(font)
-                item.setDefaultTextColor(QColor(self.font_color.get()))
-
-            elif isinstance(item, CustomCircleItem):
-                index1 = self.stroke_style_combo.currentIndex()
-                data1 = self.stroke_style_combo.itemData(index1)
-                index2 = self.stroke_pencap_combo.currentIndex()
-                data2 = self.stroke_pencap_combo.itemData(index2)
-
-                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
-                item.setPen(pen)
-
-                # Check if widget is pressed
-                if self.stroke_fill_check_btn.isChecked():
-                    item.setBrush(QColor(self.fill_color.get()))
-
-                else:
-                    item.setBrush(QBrush(QColor(Qt.transparent)))
-
-                if item.childItems():
-                    for child in item.childItems():
-                        if isinstance(child, CustomPathItem):
-                            index1 = self.stroke_style_combo.currentIndex()
-                            data1 = self.stroke_style_combo.itemData(index1)
-                            index2 = self.stroke_pencap_combo.currentIndex()
-                            data2 = self.stroke_pencap_combo.itemData(index2)
-
-                            pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
-                            child.setPen(pen)
-
-                            # Check if widget is pressed
-                            if self.stroke_fill_check_btn.isChecked():
-                                child.setBrush(QColor(self.fill_color.get()))
-
-                            else:
-                                child.setBrush(QBrush(QColor(Qt.transparent)))
-
-                        elif isinstance(child, CustomRectangleItem):
-                            index1 = self.stroke_style_combo.currentIndex()
-                            data1 = self.stroke_style_combo.itemData(index1)
-                            index2 = self.stroke_pencap_combo.currentIndex()
-                            data2 = self.stroke_pencap_combo.itemData(index2)
-
-                            pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
-                            child.setPen(pen)
-
-                            # Check if widget is pressed
-                            if self.stroke_fill_check_btn.isChecked():
-                                child.setBrush(QColor(self.fill_color.get()))
-
-                            else:
-                                child.setBrush(QBrush(QColor(Qt.transparent)))
-
-            elif isinstance(item, CustomRectangleItem):
-                index1 = self.stroke_style_combo.currentIndex()
-                data1 = self.stroke_style_combo.itemData(index1)
-                index2 = self.stroke_pencap_combo.currentIndex()
-                data2 = self.stroke_pencap_combo.itemData(index2)
-
-                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
-                item.setPen(pen)
-
-                # Check if widget is pressed
-                if self.stroke_fill_check_btn.isChecked():
-                    item.setBrush(QColor(self.fill_color.get()))
-
-                else:
-                    item.setBrush(QBrush(QColor(Qt.transparent)))
 
     def use_set_layer(self):
         self.label_btn.setChecked(False)

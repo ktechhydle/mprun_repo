@@ -178,9 +178,11 @@ class Dialog(CTk):
         webview_size_btn.pack(pady=5, side='left')
         
     def launch_project(self):
+        win = QApplication([])
         self.app = MPRUN()
         self.app.show()
         self.set_attr()
+        sys.exit(win.exec_())
 
     def set_attr(self):
         selected_template = self.template_combo.get()
