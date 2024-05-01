@@ -163,8 +163,10 @@ class MPRUN(QMainWindow):
         self.tool_menu.addAction(smooth_action)
 
         self.edit_menu.addAction(duplicate_action)
+        self.edit_menu.addSeparator()
         self.edit_menu.addAction(group_action)
         self.edit_menu.addAction(ungroup_action)
+        self.edit_menu.addSeparator()
         self.edit_menu.addAction(vectorize_action)
 
         self.item_menu.addAction(raise_layer_action)
@@ -552,27 +554,6 @@ class MPRUN(QMainWindow):
         duplicate_btn.setShortcut(QKeySequence("D"))
         duplicate_btn.triggered.connect(self.use_duplicate)
 
-        # Lock Item Button
-        lock_btn = QAction(QIcon('logos and icons/Tool Icons/lock_icon.png'), '', self)
-        lock_btn.setToolTip('''Lock Position Tool: 
-        Command+L (MacOS) or Control+L (Windows)''')
-        lock_btn.setShortcut(QKeySequence('Ctrl+L'))
-        lock_btn.triggered.connect(self.lock_item)
-
-        # Unlock Item Button
-        unlock_btn = QAction(QIcon('logos and icons/Tool Icons/unlock_icon.png'), '', self)
-        unlock_btn.setToolTip('''Unlock Position Tool: 
-        Command+U (MacOS) or Control+U (Windows)''')
-        unlock_btn.setShortcut(QKeySequence('Ctrl+U'))
-        unlock_btn.triggered.connect(self.unlock_item)
-
-        # Permanent Lock Button
-        permanent_lock_btn = QAction(QIcon('logos and icons/Tool Icons/permanent_lock_icon.png'), '', self)
-        permanent_lock_btn.setToolTip('''Permanent Lock Tool: 
-        Command+Shift+L (MacOS) or Control+Shift+L (Windows)''')
-        permanent_lock_btn.setShortcut(QKeySequence('Ctrl+Shift+L'))
-        permanent_lock_btn.triggered.connect(self.permanent_lock_item)
-
         # Hide Button
         hide_btn = QAction(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
         hide_btn.setToolTip('''Hide Element Tool: 
@@ -590,16 +571,9 @@ class MPRUN(QMainWindow):
         # Center Item Button
         center_item_btn = QAction(QIcon('logos and icons/Tool Icons/center_item_icon.png'), '', self)
         center_item_btn.setToolTip('''Center Element Tool:
-        Shift+C (MacOS) or Shift+C (Windows)''')
-        center_item_btn.setShortcut(QKeySequence("Shift+C"))
+        Key-C''')
+        center_item_btn.setShortcut(QKeySequence("C"))
         center_item_btn.triggered.connect(self.use_center_item)
-
-        # Create Group Button
-        group_create_btn = QAction(QIcon('logos and icons/Tool Icons/group_icon.png'), '', self)
-        group_create_btn.setToolTip('''Group Create Tool: 
-        Key-G''')
-        group_create_btn.setShortcut(QKeySequence('G'))
-        group_create_btn.triggered.connect(self.create_group)
 
         # Smooth Button
         smooth_btn = QAction(QIcon('logos and icons/Tool Icons/simplify_icon.png'), '', self)
@@ -651,14 +625,10 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(duplicate_btn)
-        self.toolbar.addAction(lock_btn)
-        self.toolbar.addAction(unlock_btn)
-        self.toolbar.addAction(permanent_lock_btn)
         self.toolbar.addAction(hide_btn)
         self.toolbar.addAction(unhide_btn)
         self.toolbar.addAction(center_item_btn)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(group_create_btn)
         self.toolbar.addAction(smooth_btn)
         self.toolbar.addAction(vectorize_btn)
         self.toolbar.addAction(add_canvas_btn)
