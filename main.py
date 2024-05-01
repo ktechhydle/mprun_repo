@@ -261,9 +261,17 @@ class MPRUN(QMainWindow):
         text_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         text_options_label.setAlignment(Qt.AlignLeft)
 
-        vector_options_label = QLabel('Vectorize', self)
+        vector_options_label = QLabel('Precision', self)
         vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         vector_options_label.setAlignment(Qt.AlignLeft)
+
+        vector_options_label2 = QLabel('Color', self)
+        vector_options_label2.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label2.setAlignment(Qt.AlignLeft)
+
+        vector_options_label3 = QLabel('Threshold', self)
+        vector_options_label3.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label3.setAlignment(Qt.AlignLeft)
 
         # Labels
         rotation_label = QLabel('Rotating:')
@@ -452,11 +460,11 @@ class MPRUN(QMainWindow):
         self.splice_threshold_spin.setMaximum(100)
         self.splice_threshold_spin.setMinimum(1)
         self.splice_threshold_spin.setValue(45)
-        self.path_precision_spin = QSpinBox(self)
+        self.path_precision_spin = QSlider(self)
+        self.path_precision_spin.setOrientation(Qt.Horizontal)
         self.path_precision_spin.setMaximum(100)
         self.path_precision_spin.setMinimum(1)
-        self.path_precision_spin.setValue(3)
-
+        self.path_precision_spin.setSliderPosition(3)
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
@@ -512,27 +520,31 @@ class MPRUN(QMainWindow):
         self.elements_tab_layout.addWidget(self.font_size_spin)
         self.elements_tab_layout.addWidget(self.font_color_btn)
         self.elements_tab_layout.addWidget(widget4)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 500))
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 600))
 
         # Vectorize Tab Widgets
         self.vectorize_tab_layout.addWidget(vector_options_label)
-        self.vectorize_tab_layout.addWidget(filter_speckle_label)
-        self.vectorize_tab_layout.addWidget(self.filter_speckle_spin)
+        self.vectorize_tab_layout.addWidget(path_precision_label)
+        self.vectorize_tab_layout.addWidget(self.path_precision_spin)
         self.vectorize_tab_layout.addWidget(color_precision_label)
         self.vectorize_tab_layout.addWidget(self.color_precision_spin)
+        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.vectorize_tab_layout.addWidget(vector_options_label2)
         self.vectorize_tab_layout.addWidget(layer_difference_label)
         self.vectorize_tab_layout.addWidget(self.layer_difference_spin)
+        self.vectorize_tab_layout.addWidget(filter_speckle_label)
+        self.vectorize_tab_layout.addWidget(self.filter_speckle_spin)
+        self.vectorize_tab_layout.addWidget(max_iterations_label)
+        self.vectorize_tab_layout.addWidget(self.max_iterations_spin)
+        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.vectorize_tab_layout.addWidget(vector_options_label3)
         self.vectorize_tab_layout.addWidget(corner_threshold_label)
         self.vectorize_tab_layout.addWidget(self.corner_threshold_spin)
         self.vectorize_tab_layout.addWidget(length_threshhold_label)
         self.vectorize_tab_layout.addWidget(self.length_threshold_spin)
-        self.vectorize_tab_layout.addWidget(max_iterations_label)
-        self.vectorize_tab_layout.addWidget(self.max_iterations_spin)
         self.vectorize_tab_layout.addWidget(splice_threshold_label)
         self.vectorize_tab_layout.addWidget(self.splice_threshold_spin)
-        self.vectorize_tab_layout.addWidget(path_precision_label)
-        self.vectorize_tab_layout.addWidget(self.path_precision_spin)
-        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 400))
+        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 380))
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
@@ -1655,6 +1667,7 @@ Date:   """)
                     # Add items to group
                     group.addToGroup(items)
                     group.setToolTip('Grouped Object')
+                    group.setSelected(True)
 
     def ungroup_group(self):
         # Set tools off
@@ -1667,6 +1680,7 @@ Date:   """)
                     for child in group.childItems():
                         child.setFlag(QGraphicsItem.ItemIsSelectable)
                         child.setToolTip('Free MPRUN Element')
+                        child.setParentItem(child)
 
                 self.canvas.destroyItemGroup(group)
 
