@@ -186,7 +186,7 @@ class MPRUN(QMainWindow):
 
         # Fill Color Button
         self.fill_color_btn = QPushButton('', self)
-        self.fill_color_btn.setStyleSheet(f'background-color: white; border: None')
+        self.fill_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
@@ -205,11 +205,8 @@ class MPRUN(QMainWindow):
             self.layer_combo.addItem(layer, value)
 
         # Vector convert background widgets
-        widget1 = ToolbarHorizontalLayout()
-        background_remove_label = QLabel('Remove Background')
         self.background_remove_check_btn = QCheckBox(self)
-        widget1.layout.addWidget(self.background_remove_check_btn)
-        widget1.layout.addWidget(background_remove_label)
+        self.background_remove_check_btn.setText('Remove Background')
 
         # Layer Associated Widgets
         raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
@@ -254,6 +251,7 @@ class MPRUN(QMainWindow):
         self.stroke_size_spin.setValue(3)
         stroke_size_label = QLabel('Stroke Size:', self)
         stroke_attributes_label = QLabel('Stroke Attributes:', self)
+        fill_attributes_label = QLabel('Fill Attributes:', self)
 
         # Font related widgets
         self.font_choice_combo = QFontComboBox(self)
@@ -290,9 +288,14 @@ class MPRUN(QMainWindow):
         self.gsnap_grid_spin = QSpinBox()
         grid_size_label = QLabel('GSNAP Grid Size:', self)
         self.gsnap_grid_spin.setValue(10)
+        self.drop_shadow_check_btn = QCheckBox(self)
+        self.drop_shadow_check_btn.setText('Drop Shadow')
+        self.drop_shadow_check_btn.clicked.connect(self.use_drop_shadow)
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
         horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
+        widget3 = ToolbarHorizontalLayout()
+        widget3.layout.addWidget(self.drop_shadow_check_btn)
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
@@ -499,8 +502,6 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(self.entry1)
         self.properties_tab_layout.addWidget(self.entry2)
         self.properties_tab_layout.addWidget(self.entry3)
-        self.properties_tab_layout.addWidget(opacity_label)
-        self.properties_tab_layout.addWidget(self.opacity_slider)
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
         self.properties_tab_layout.addWidget(appearence_label)
         self.properties_tab_layout.addWidget(stroke_size_label)
@@ -509,11 +510,14 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(self.outline_color_btn)
         self.properties_tab_layout.addWidget(self.stroke_style_combo)
         self.properties_tab_layout.addWidget(self.stroke_pencap_combo)
+        self.properties_tab_layout.addWidget(fill_attributes_label)
         self.properties_tab_layout.addWidget(self.fill_color_btn)
-        self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
+        self.properties_tab_layout.addWidget(opacity_label)
+        self.properties_tab_layout.addWidget(self.opacity_slider)
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
         self.properties_tab_layout.addWidget(quick_actions_label)
         self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
+        self.properties_tab_layout.addWidget(widget3)
         self.properties_tab_layout.addWidget(grid_size_label)
         self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
@@ -530,14 +534,14 @@ class MPRUN(QMainWindow):
         self.elements_tab_layout.addWidget(self.font_size_spin)
         self.elements_tab_layout.addWidget(self.font_color_btn)
         self.elements_tab_layout.addWidget(widget4)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 400))
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 500))
 
         # Vectorize Tab Widgets
         self.vectorize_tab_layout.addWidget(vector_options_label)
         self.vectorize_tab_layout.addWidget(color_tolerance_label)
         self.vectorize_tab_layout.addWidget(self.color_tolerance_spin)
-        self.vectorize_tab_layout.addWidget(widget1)
-        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 620))
+        self.vectorize_tab_layout.addWidget(self.background_remove_check_btn)
+        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 700))
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
@@ -1089,6 +1093,23 @@ Date:   """)
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
             item.setGraphicsEffect(effect)
+
+    def use_drop_shadow(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        # Create effect
+        effect = QGraphicsDropShadowEffect()
+        effect.setBlurRadius(10)
+
+        # Apply the effect to selected items
+        for item in self.canvas.selectedItems():
+            if self.drop_shadow_check_btn.isChecked():
+                item.setGraphicsEffect(effect)
+
+            else:
+                if item.graphicsEffect() and QGraphicsDropShadowEffect():
+                    item.setGraphicsEffect(None)
 
     def use_center_item(self):
         self.label_btn.setChecked(False)
