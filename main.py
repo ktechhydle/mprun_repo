@@ -48,6 +48,7 @@ class MPRUN(QMainWindow):
         # Create GUI
         self.create_initial_canvas()
         self.create_menu()
+        self.init_toolbars()
         self.create_toolbar1()
         self.create_toolbar2()
         self.create_toolbar3()
@@ -111,6 +112,9 @@ class MPRUN(QMainWindow):
         group_action = QAction('Group Selected', self)
         group_action.triggered.connect(self.create_group)
 
+        ungroup_action = QAction('Ungroup Selected', self)
+        ungroup_action.triggered.connect(self.ungroup_group)
+
         vectorize_action = QAction('Vectorize', self)
         vectorize_action.triggered.connect(self.use_vectorize)
 
@@ -160,6 +164,7 @@ class MPRUN(QMainWindow):
 
         self.edit_menu.addAction(duplicate_action)
         self.edit_menu.addAction(group_action)
+        self.edit_menu.addAction(ungroup_action)
         self.edit_menu.addAction(vectorize_action)
 
         self.item_menu.addAction(raise_layer_action)
@@ -175,8 +180,7 @@ class MPRUN(QMainWindow):
         self.item_menu.addAction(hide_action)
         self.item_menu.addAction(unhide_action)
 
-
-    def create_toolbar1(self):
+    def init_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
@@ -191,6 +195,7 @@ class MPRUN(QMainWindow):
         self.action_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
 
+    def create_toolbar1(self):
         #----action toolbar widgets----#
 
         # Tabview
@@ -736,9 +741,6 @@ Date:   """)
         if self.label_btn.isChecked():
             self.update_font()
 
-        # Create initial group (This method is used to set grid size)
-        self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
-
         # Refit view after everything
         self.use_refit_screen()
 
@@ -911,13 +913,12 @@ Date:   """)
                     item.setDefaultTextColor(QColor(self.font_color.get()))
 
     def update_grid_size(self, value):
-        for item in self.canvas.selectedItems():
+        for item in self.canvas.items():
             if isinstance(item, CustomGraphicsItemGroup):
                 item.set_grid_size(value)
                 self.gsnap_grid_size = value
 
             else:
-                self.group.set_grid_size(value)
                 self.gsnap_grid_size = value
 
     def stroke_color_chooser(self):
@@ -1583,51 +1584,66 @@ Date:   """)
         self.label_btn.setChecked(False)
         self.path_btn.setChecked(False)
 
-        # Check if there is an initial group
-        if self.group is not None:
-            for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    if item.childItems():
-                        pass
-
-                    else:
-                        pass
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CanvasItem):
+                if item.childItems():
+                    pass
 
                 else:
-                    self.group = CustomGraphicsItemGroup(self.gsnap_check_btn)
-                    self.group.set_grid_size(self.gsnap_grid_size)
+                    pass
 
-                    item = self.canvas.selectedItems()
-                    sorted_items = sorted(item, key=lambda i: i.zValue())
+            else:
+                group = CustomGraphicsItemGroup(self.gsnap_check_btn)
+                group.set_grid_size(self.gsnap_grid_size)
 
-                    # Set flags for group
-                    self.group.setFlag(QGraphicsItem.ItemIsMovable)
-                    self.group.setFlag(QGraphicsItem.ItemIsSelectable)
+                item = self.canvas.selectedItems()
 
-                    # Add group
-                    self.canvas.addItem(self.group)
-                    self.canvas.update()
+                # Set flags for group
+                group.setFlag(QGraphicsItem.ItemIsMovable)
+                group.setFlag(QGraphicsItem.ItemIsSelectable)
 
-                    for items in sorted_items:
-                        # Set flag
-                        items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                # Add group
+                self.canvas.addItem(group)
+                self.canvas.update()
 
-                        # Check if the item is an instance
-                        if isinstance(items, QGraphicsTextItem):
-                            items.setTextInteractionFlags(Qt.NoTextInteraction)
+                for items in item:
+                    # Set flag
+                    items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
-                            # Set an object name
-                            items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+                    # Check if the item is an instance
+                    if isinstance(items, QGraphicsTextItem):
+                        items.setTextInteractionFlags(Qt.NoTextInteraction)
 
-                        elif isinstance(items, EditableTextBlock):
-                            items.setTextInteractionFlags(Qt.NoTextInteraction)
+                        # Set an object name
+                        items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
 
-                                # Set an object name
-                            items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+                    elif isinstance(items, EditableTextBlock):
+                        items.setTextInteractionFlags(Qt.NoTextInteraction)
 
-                        # Add items to group
-                        self.group.addToGroup(items)
-                        self.group.setToolTip('Grouped Object (Free MPRUN Element)')
+                        # Set an object name
+                        items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
+
+                    elif isinstance(items, CustomPathItem):
+                        # Set an object name
+                        items.setToolTip(f"Grouped Path")
+
+                    # Add items to group
+                    group.addToGroup(items)
+                    group.setToolTip('Grouped Object')
+
+    def ungroup_group(self):
+        # Set tools off
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+
+        for group in self.canvas.selectedItems():
+            if isinstance(group, CustomGraphicsItemGroup):
+                if group.childItems():
+                    for child in group.childItems():
+                        child.setFlag(QGraphicsItem.ItemIsSelectable)
+                        child.setToolTip('Free MPRUN Element')
+
+                self.canvas.destroyItemGroup(group)
 
     def create_item_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -1688,17 +1704,19 @@ Date:   """)
         self.use_refit_screen()
 
     def custom_template(self, x, y, default_text, grid_size):
-        self.group.set_grid_size(grid_size)
-        self.gsnap_grid_spin.setValue(grid_size)
-        self.gsnap_grid_size = grid_size
         self.paper.setRect(-100, -100, x-100, y-100)
         self.paper_text.setPlainText(default_text)
         self.paper_text.setPos(-98, -98)
         self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
 
-        # Refit screen, use center
+        # Refit screen
         self.use_refit_screen()
-        self.use_center_item()
+
+        for item in self.canvas.items():
+            if isinstance(item, CustomGraphicsItemGroup):
+                item.set_grid_size(grid_size)
+                self.gsnap_grid_spin.setValue(grid_size)
+                self.gsnap_grid_size = grid_size
 
 
 if __name__ == '__main__':
