@@ -2,7 +2,7 @@ import sys
 import math
 import time
 import webbrowser
-import qdarkstyle
+import vtracer
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -258,8 +258,6 @@ class MPRUN(QMainWindow):
         layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         layers_label.setAlignment(Qt.AlignLeft)
 
-
-
         text_options_label = QLabel('Text', self)
         text_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         text_options_label.setAlignment(Qt.AlignLeft)
@@ -267,9 +265,6 @@ class MPRUN(QMainWindow):
         vector_options_label = QLabel('Vectorize', self)
         vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
         vector_options_label.setAlignment(Qt.AlignLeft)
-
-        color_tolerance_label = QLabel('Vectorize Color Tolerance:')
-        color_tolerance_label.setStyleSheet('font-size: 10px;')
 
         # Labels
         rotation_label = QLabel('Rotating:')
@@ -330,10 +325,6 @@ class MPRUN(QMainWindow):
         self.layer_combo = QComboBox(self)
         for layer, value in self.layer_options.items():
             self.layer_combo.addItem(layer, value)
-
-        # Vector convert background widgets
-        self.background_remove_check_btn = QCheckBox(self)
-        self.background_remove_check_btn.setText('Remove Background')
 
         # Layer Associated Widgets
         raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
@@ -430,6 +421,50 @@ class MPRUN(QMainWindow):
         widget3 = ToolbarHorizontalLayout()
         widget3.layout.addWidget(self.drop_shadow_check_btn)
 
+        # Vectorize widgets
+        filter_speckle_label = QLabel('Filter Speckle:', self)
+        color_precision_label = QLabel('Color Precision:', self)
+        layer_difference_label = QLabel('Layer Difference:', self)
+        corner_threshold_label = QLabel('Corner Threshold:', self)
+        length_threshhold_label = QLabel('Length Threshold:', self)
+        max_iterations_label = QLabel('Max Iterations:', self)
+        splice_threshold_label = QLabel('Splice Threshold:', self)
+        path_precision_label = QLabel('Path Precision:', self)
+
+        self.filter_speckle_spin = QSpinBox(self)
+        self.filter_speckle_spin.setMaximum(100)
+        self.filter_speckle_spin.setMinimum(1)
+        self.filter_speckle_spin.setValue(4)
+        self.color_precision_spin = QSpinBox(self)
+        self.color_precision_spin.setMaximum(100)
+        self.color_precision_spin.setMinimum(1)
+        self.color_precision_spin.setValue(6)
+        self.layer_difference_spin = QSpinBox(self)
+        self.layer_difference_spin.setMaximum(100)
+        self.layer_difference_spin.setMinimum(1)
+        self.layer_difference_spin.setValue(16)
+        self.corner_threshold_spin = QSpinBox(self)
+        self.corner_threshold_spin.setMaximum(100)
+        self.corner_threshold_spin.setMinimum(1)
+        self.corner_threshold_spin.setValue(60)
+        self.length_threshold_spin = QSpinBox(self)
+        self.length_threshold_spin.setMaximum(100)
+        self.length_threshold_spin.setMinimum(3)
+        self.length_threshold_spin.setValue(4)
+        self.max_iterations_spin = QSpinBox(self)
+        self.max_iterations_spin.setMaximum(100)
+        self.max_iterations_spin.setMinimum(1)
+        self.max_iterations_spin.setValue(10)
+        self.splice_threshold_spin = QSpinBox(self)
+        self.splice_threshold_spin.setMaximum(100)
+        self.splice_threshold_spin.setMinimum(1)
+        self.splice_threshold_spin.setValue(45)
+        self.path_precision_spin = QSpinBox(self)
+        self.path_precision_spin.setMaximum(100)
+        self.path_precision_spin.setMinimum(1)
+        self.path_precision_spin.setValue(3)
+
+
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
@@ -488,10 +523,23 @@ class MPRUN(QMainWindow):
 
         # Vectorize Tab Widgets
         self.vectorize_tab_layout.addWidget(vector_options_label)
-        self.vectorize_tab_layout.addWidget(color_tolerance_label)
-        self.vectorize_tab_layout.addWidget(self.color_tolerance_spin)
-        self.vectorize_tab_layout.addWidget(self.background_remove_check_btn)
-        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 700))
+        self.vectorize_tab_layout.addWidget(filter_speckle_label)
+        self.vectorize_tab_layout.addWidget(self.filter_speckle_spin)
+        self.vectorize_tab_layout.addWidget(color_precision_label)
+        self.vectorize_tab_layout.addWidget(self.color_precision_spin)
+        self.vectorize_tab_layout.addWidget(layer_difference_label)
+        self.vectorize_tab_layout.addWidget(self.layer_difference_spin)
+        self.vectorize_tab_layout.addWidget(corner_threshold_label)
+        self.vectorize_tab_layout.addWidget(self.corner_threshold_spin)
+        self.vectorize_tab_layout.addWidget(length_threshhold_label)
+        self.vectorize_tab_layout.addWidget(self.length_threshold_spin)
+        self.vectorize_tab_layout.addWidget(max_iterations_label)
+        self.vectorize_tab_layout.addWidget(self.max_iterations_spin)
+        self.vectorize_tab_layout.addWidget(splice_threshold_label)
+        self.vectorize_tab_layout.addWidget(self.splice_threshold_spin)
+        self.vectorize_tab_layout.addWidget(path_precision_label)
+        self.vectorize_tab_layout.addWidget(self.path_precision_spin)
+        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 400))
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
@@ -1031,10 +1079,20 @@ Date:   """)
                         self.setCursor(Qt.WaitCursor)
 
                         # Create vector
-                        pixels2svg(input_path=item.return_filename(),
-                                   output_path=f'V-C STOR/{entry}.svg',
-                                   color_tolerance=self.color_tolerance_spin.value(),
-                                   remove_background=True if self.background_remove_check_btn.isChecked() else False)
+                        vtracer.convert_image_to_svg_py(item.return_filename(),
+                                                        f'V-C STOR/{entry}.svg',
+                                                        colormode='color',  # ["color"] or "binary"
+                                                        hierarchical='cutout',  # ["stacked"] or "cutout"
+                                                        mode='spline',  # ["spline"] "polygon", or "none"
+                                                        filter_speckle=self.filter_speckle_spin.value(),  # default: 4
+                                                        color_precision=self.color_precision_spin.value(),  # default: 6
+                                                        layer_difference=self.layer_difference_spin.value(),  # default: 16
+                                                        corner_threshold=self.corner_threshold_spin.value(),  # default: 60
+                                                        length_threshold=float(self.length_threshold_spin.value()),  # in [3.5, 10] default: 4.0
+                                                        max_iterations=self.max_iterations_spin.value(),  # default: 10
+                                                        splice_threshold=self.splice_threshold_spin.value(),  # default: 45
+                                                        path_precision=self.path_precision_spin.value()
+                                                        )
 
                         # Set cursor back
                         self.setCursor(Qt.ArrowCursor)
