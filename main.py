@@ -1315,10 +1315,14 @@ Date:   """)
 
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
-                smoothed_path = item.smooth_path(item.path())
+                try:
+                    smoothed_path = item.smooth_path(item.path())
 
-                item.setPath(smoothed_path)
-                item.setToolTip('Smoothed MPRUN Path Element')
+                    item.setPath(smoothed_path)
+                    item.setToolTip('Smoothed MPRUN Path Element')
+
+                except Exception as e:
+                    QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
 
     def use_hide_item(self):
         self.path_btn.setChecked(False)

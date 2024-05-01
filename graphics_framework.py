@@ -185,14 +185,6 @@ y: {int(p.y())}''')
                 self.button.setChecked(False)
                 self.setDragMode(QGraphicsView.RubberBandDrag)
 
-    def add_curve_to_point(self, endPoint):
-        if self.lastPoint is not None:
-            # Calculate control points
-            controlPoint1 = self.last_point
-            controlPoint2 = endPoint
-            # Add curve to QPainterPath
-            self.path.quadTo(controlPoint1, (self.lastPoint + controlPoint2) / 2)
-
     def on_label_start(self, event):
         # Check the button being pressed
         if event.button() == Qt.LeftButton:
