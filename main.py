@@ -139,9 +139,11 @@ class MPRUN(QMainWindow):
         bring_to_front_action.triggered.connect(self.use_bring_to_front)
 
         lock_action = QAction('Lock Position', self)
+        lock_action.setShortcut(QKeySequence('L'))
         lock_action.triggered.connect(self.lock_item)
 
         unlock_action = QAction('Unlock Position', self)
+        unlock_action.setShortcut(QKeySequence('U'))
         unlock_action.triggered.connect(self.unlock_item)
 
         permanent_lock_action = QAction('Permanent Lock Position', self)
