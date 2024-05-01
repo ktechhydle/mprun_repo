@@ -81,6 +81,9 @@ class MPRUN(QMainWindow):
         export_action = QAction('Export', self)
         export_action.triggered.connect(self.choose_export)
 
+        close_action = QAction('Close', self)
+        close_action.triggered.connect(lambda: self.close())
+
         # Create tools actions
         path_action = QAction('Path', self)
         path_action.triggered.connect(self.use_path)
@@ -144,6 +147,8 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
+        self.file_menu.addSeparator()
+        self.file_menu.addAction(close_action)
 
         self.tool_menu.addAction(path_action)
         self.tool_menu.addAction(erase_action)
@@ -761,23 +766,27 @@ Date:   """)
         super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        # Display a confirmation dialog
-        confirmation_dialog = QMessageBox()
-        confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-        confirmation_dialog.setWindowTitle('Close Project')
-        confirmation_dialog.setIcon(QMessageBox.Warning)
-        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
-        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        confirmation_dialog.setDefaultButton(QMessageBox.No)
+        if len(self.canvas.items()) > 3:
+            # Display a confirmation dialog
+            confirmation_dialog = QMessageBox()
+            confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
+            confirmation_dialog.setWindowTitle('Close Project')
+            confirmation_dialog.setIcon(QMessageBox.Warning)
+            confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
+            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            confirmation_dialog.setDefaultButton(QMessageBox.No)
 
-        # Get the result of the confirmation dialog
-        result = confirmation_dialog.exec_()
+            # Get the result of the confirmation dialog
+            result = confirmation_dialog.exec_()
 
-        # If the user clicked Yes, close the window
-        if result == QMessageBox.Yes:
-            event.accept()
+            # If the user clicked Yes, close the window
+            if result == QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()
+
         else:
-            event.ignore()
+            event.accept()
 
     def update_pen(self):
         index1 = self.stroke_style_combo.currentIndex()
