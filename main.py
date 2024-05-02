@@ -754,11 +754,11 @@ class MPRUN(QMainWindow):
         self.last_paper = self.paper
 
         # Text on paper
-        self.paper_text = EditableTextBlock("""Run #:   
-Page #:   
-Competition:    
-Athlete:    
-Date:   """)
+        self.paper_text = EditableTextBlock("""Run #:
+Page #:
+Competition:
+Athlete:
+Date:""")
         self.paper_text.setPos(2, 2)
         self.paper_text.setDefaultTextColor(QColor('black'))
         self.paper_text.setFont(QFont("Helvetica", 9))
