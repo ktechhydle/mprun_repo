@@ -167,6 +167,9 @@ class MPRUN(QMainWindow):
         element_center_action = QAction('Set Default Center', self)
         element_center_action.triggered.connect(self.use_set_center)
 
+        display_center_action = QAction('Display Current Center', self)
+        display_center_action.triggered.connect(self.use_display_center)
+
         hide_action = QAction('Hide Selected', self)
         hide_action.triggered.connect(self.use_hide_item)
 
@@ -219,6 +222,7 @@ class MPRUN(QMainWindow):
         self.item_menu.addSeparator()
         self.item_menu.addAction(center_action)
         self.item_menu.addAction(element_center_action)
+        self.item_menu.addAction(display_center_action)
         self.item_menu.addSeparator()
         self.item_menu.addAction(hide_action)
         self.item_menu.addAction(unhide_action)
@@ -831,6 +835,8 @@ Date:""")
         permanent_lock_action.triggered.connect(self.permanent_lock_item)
         center_action = QAction('Center', self)
         center_action.triggered.connect(self.use_center_item)
+        element_center_action = QAction('Set Default Center', self)
+        element_center_action.triggered.connect(self.use_set_center)
         hide_action = QAction('Hide Selected', self)
         hide_action.triggered.connect(self.use_hide_item)
         unhide_action = QAction('Unhide All', self)
@@ -857,6 +863,7 @@ Date:""")
         self.canvas_view.addAction(lock_action)
         self.canvas_view.addAction(unlock_action)
         self.canvas_view.addAction(center_action)
+        self.canvas_view.addAction(element_center_action)
         self.canvas_view.addAction(sep4)
         self.canvas_view.addAction(hide_action)
         self.canvas_view.addAction(unhide_action)
@@ -1407,6 +1414,30 @@ Date:""")
 
         else:
             self.stored_center_item = self.canvas.selectedItemsBoundingRect()
+
+    def use_display_center(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+        self.add_text_btn.setChecked(False)
+
+        # Create the ellipse item
+        ellipse_item = CustomCircleItem(0, 0, 30, 30)  # 10x10 ellipse
+        ellipse_item.setBrush(Qt.blue)  # Set brush color to blue
+        ellipse_item.setToolTip('Current Center Point')
+
+        # Calculate the center of the stored item
+        center = self.stored_center_item.center()
+
+        # Position the ellipse at the calculated center
+        ellipse_item.setPos(center.x() - 15, center.y() - 15)  # Adjust for ellipse size
+
+        # Make the ellipse selectable and set its Z-value
+        ellipse_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        ellipse_item.setZValue(10000)
+
+        # Add the ellipse to the scene
+        command = AddItemCommand(self.canvas, ellipse_item)
+        self.canvas.addCommand(command)
 
     def use_add_canvas(self):
         self.path_btn.setChecked(False)
