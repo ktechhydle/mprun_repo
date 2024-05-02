@@ -328,6 +328,12 @@ class CustomGraphicsScene(QGraphicsScene):
     def addCommand(self, command):
         self.undo_stack.push(command)
 
+    def selectedItemsBoundingRect(self):
+        bounding_rect = QRectF()
+        for item in self.selectedItems():
+            bounding_rect = bounding_rect.united(item.sceneBoundingRect())
+        return bounding_rect
+
 class AddItemCommand(QUndoCommand):
     def __init__(self, scene, item):
         super().__init__()

@@ -31,6 +31,23 @@ class EditTextCommand(QUndoCommand):
     def undo(self):
         self.item.setPlainText(self.old_text)
 
+class RemoveItemCommand(QUndoCommand):
+    def __init__(self, scene, item):
+        super().__init__()
+        self.scene = scene
+        self.item = item
+        self.removed = False
+
+    def redo(self):
+        if not self.removed:
+            self.scene.removeItem(self.item)
+            self.removed = True
+
+    def undo(self):
+        if self.removed:
+            self.scene.addItem(self.item)
+            self.removed = False
+
 class item_stack:
     def __init__(self, initial_value=""):
         self._value = initial_value

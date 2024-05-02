@@ -61,7 +61,8 @@ class AddCanvasDialog(QWidget):
                 self.rect_item.setBrush(brush)
                 self.rect_item.setPen(pen)
 
-                self.canvas.addItem(self.rect_item)
+                command = AddItemCommand(self.canvas, self.rect_item)
+                self.canvas.addCommand(command)
 
                 self.rect_item.setZValue(-1)
                 self.rect_item.setPos(self.paper.sceneBoundingRect().width() + 10, 0)

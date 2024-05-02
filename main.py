@@ -28,6 +28,7 @@ class MPRUN(QMainWindow):
         # File
         self.file_name = None
         self.last_paper = None
+        self.stored_center_item = None
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -43,6 +44,7 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
+        self.undo_stack.setUndoLimit(10)
 
         # Create GUI
         self.create_initial_canvas()
@@ -162,6 +164,9 @@ class MPRUN(QMainWindow):
         center_action = QAction('Center', self)
         center_action.triggered.connect(self.use_center_item)
 
+        element_center_action = QAction('Set Default Center', self)
+        element_center_action.triggered.connect(self.use_set_center)
+
         hide_action = QAction('Hide Selected', self)
         hide_action.triggered.connect(self.use_hide_item)
 
@@ -207,10 +212,13 @@ class MPRUN(QMainWindow):
         self.item_menu.addAction(raise_layer_action)
         self.item_menu.addAction(lower_layer_action)
         self.item_menu.addAction(bring_to_front_action)
+        self.item_menu.addSeparator()
         self.item_menu.addAction(lock_action)
         self.item_menu.addAction(unlock_action)
         self.item_menu.addAction(permanent_lock_action)
+        self.item_menu.addSeparator()
         self.item_menu.addAction(center_action)
+        self.item_menu.addAction(element_center_action)
         self.item_menu.addSeparator()
         self.item_menu.addAction(hide_action)
         self.item_menu.addAction(unhide_action)
@@ -762,6 +770,7 @@ class MPRUN(QMainWindow):
         self.paper.setToolTip('Canvas 1')
         self.canvas.addItem(self.paper)
         self.last_paper = self.paper
+        self.stored_center_item = self.paper.boundingRect()
 
         # Text on paper
         self.paper_text = EditableTextBlock("""Run #:
@@ -842,15 +851,11 @@ Date:""")
         self.canvas_view.addAction(duplicate_action)
         self.canvas_view.addAction(group_action)
         self.canvas_view.addAction(ungroup_action)
-        self.canvas_view.addAction(sep2)
-        self.canvas_view.addAction(vectorize_action)
         self.canvas_view.addAction(sep3)
         self.canvas_view.addAction(raise_layer_action)
         self.canvas_view.addAction(lower_layer_action)
-        self.canvas_view.addAction(bring_to_front_action)
         self.canvas_view.addAction(lock_action)
         self.canvas_view.addAction(unlock_action)
-        self.canvas_view.addAction(permanent_lock_action)
         self.canvas_view.addAction(center_action)
         self.canvas_view.addAction(sep4)
         self.canvas_view.addAction(hide_action)
@@ -860,7 +865,8 @@ Date:""")
     def keyPressEvent(self, event):
         if event.key() == QKeySequence('Backspace'):
             for item in self.canvas.selectedItems():
-                self.canvas.removeItem(item)
+                command = RemoveItemCommand(self.canvas, item)
+                self.canvas.addCommand(command)
 
         elif event.key() == QKeySequence('Escape'):
             self.canvas.clearSelection()
@@ -1383,13 +1389,24 @@ Date:""")
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
-                rect = self.paper.boundingRect()
+                rect = self.stored_center_item
                 center = rect.center()
 
                 item_rect = item.boundingRect()
                 item_center = item_rect.center()
                 new_pos = center - item_center
                 item.setPos(new_pos)
+
+    def use_set_center(self):
+        self.label_btn.setChecked(False)
+        self.path_btn.setChecked(False)
+        self.add_text_btn.setChecked(False)
+
+        if not self.canvas.selectedItems():
+            QMessageBox.information(self, 'Set Default Center', 'Select an item to set the default center to.')
+
+        else:
+            self.stored_center_item = self.canvas.selectedItemsBoundingRect()
 
     def use_add_canvas(self):
         self.path_btn.setChecked(False)
