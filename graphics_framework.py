@@ -363,6 +363,111 @@ class EditTextCommand(QUndoCommand):
     def undo(self):
         self.item.setText(self.old_text)
 
+class ScaleCommand(QUndoCommand):
+    def __init__(self, item, old_scale, new_scale):
+        super().__init__()
+        self.item = item
+        self.old_scale = old_scale
+        self.new_scale = new_scale
+
+    def redo(self):
+        self.item.setScale(self.new_scale)
+
+    def undo(self):
+        self.item.setScale(self.old_scale)
+
+class TransformXScaleCommand(QUndoCommand):
+    def __init__(self, item, old_scale, new_scale):
+        super().__init__()
+        self.item = item
+        self.old_scale = old_scale
+        self.new_scale = new_scale
+
+    def redo(self):
+        transform = QTransform()
+        transform.scale(self.new_scale, 1.0)
+        self.item.setTransform(transform)
+
+    def undo(self):
+        transform = QTransform()
+        transform.scale(self.old_scale, 1.0)
+        self.item.setTransform(transform)
+
+class TransformYScaleCommand(QUndoCommand):
+    def __init__(self, item, old_scale, new_scale):
+        super().__init__()
+        self.item = item
+        self.old_scale = old_scale
+        self.new_scale = new_scale
+
+    def redo(self):
+        transform = QTransform()
+        transform.scale(1.0, self.new_scale)
+        self.item.setTransform(transform)
+
+    def undo(self):
+        transform = QTransform()
+        transform.scale(1.0, self.old_scale)
+        self.item.setTransform(transform)
+
+class RotateCommand(QUndoCommand):
+    def __init__(self, item, old_rotation, new_rotation):
+        super().__init__()
+        self.item = item
+        self.old_value = old_rotation
+        self.new_value = new_rotation
+
+    def redo(self):
+        self.item.setRotation(self.new_value)
+
+    def undo(self):
+        self.item.setRotation(self.old_value)
+
+class OpacityCommand(QUndoCommand):
+    def __init__(self, item, old_opacity, new_opacity):
+        super().__init__()
+        self.item = item
+        self.old_value = old_opacity
+        self.new_value = new_opacity
+
+    def redo(self):
+        effect = QGraphicsOpacityEffect()
+        effect.setOpacity(self.new_value)
+        self.item.setGraphicsEffect(effect)
+
+    def undo(self):
+        effect = QGraphicsOpacityEffect()
+        effect.setOpacity(self.old_value)
+        self.item.setGraphicsEffect(effect)
+
+class HideCommand(QUndoCommand):
+    def __init__(self, item, old_visible, new_visible):
+        super().__init__()
+        self.item = item
+        self.old_value = old_visible
+        self.new_value = new_visible
+
+    def redo(self):
+        self.item.setVisible(self.new_value)
+
+    def undo(self):
+        self.item.setVisible(self.old_value)
+
+class NameCommand(QUndoCommand):
+    def __init__(self, item, old_name, new_name):
+        super().__init__()
+        self.item = item
+        self.old_value = old_name
+        self.new_value = new_name
+
+    def redo(self):
+        self.item.setToolTip(self.new_value)
+
+    def undo(self):
+        self.item.setToolTip(self.old_value)
+
+
+
 
 
 

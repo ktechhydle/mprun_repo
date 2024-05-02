@@ -99,7 +99,8 @@ class CourseElementsWin(QWidget):
     def create_img(self, svg_file):
         svg_item = CustomSvgItem(svg_file)
         svg_item.store_filename(svg_file)
-        self.canvas.addItem(svg_item)
+        command = AddItemCommand(self.canvas, svg_item)
+        self.canvas.addCommand(command)
         svg_item.setPos(450, 300)
         svg_item.setToolTip('MPRUN Course Element')
 
@@ -128,7 +129,8 @@ class CourseElementsWin(QWidget):
                 self.layout.addWidget(btn)
 
     def create_item(self, item):
-        self.canvas.addItem(item)
+        command = AddItemCommand(self.canvas, item)
+        self.canvas.addCommand(command)
         item.setToolTip('Imported SVG Item (Not an MPRUN Element)')
         self.create_image_attributes(item)
 

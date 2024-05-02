@@ -242,6 +242,7 @@ class MPRUN(QMainWindow):
 
         # Tabview
         self.tab_view = QTabWidget(self)
+        self.tab_view.setMovable(True)
         self.tab_view.setTabPosition(QTabWidget.TabPosition.West)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
 
@@ -1278,7 +1279,8 @@ Date:""")
                 item.setTransformOriginPoint(center)
 
                 # Scale item
-                item.setScale(scale)
+                command = ScaleCommand(item, item.scale(), scale)
+                self.canvas.addCommand(command)
 
         except ValueError:
             pass
@@ -1297,9 +1299,8 @@ Date:""")
                 # Set the transformation origin to the center point
                 item.setTransformOriginPoint(center)
 
-                transform = QTransform()
-                transform.scale(value, 1.0)
-                item.setTransform(transform)
+                command = TransformXScaleCommand(item, item.scale(), value)
+                self.canvas.addCommand(command)
 
         except ValueError:
             pass
@@ -1318,9 +1319,9 @@ Date:""")
                 # Set the transformation origin to the center point
                 item.setTransformOriginPoint(center)
 
-                transform = QTransform()
-                transform.scale(1.0, value)
-                item.setTransform(transform)
+                command = TransformYScaleCommand(item, item.scale(), value)
+                self.canvas.addCommand(command)
+
         except ValueError:
             pass
 
@@ -1341,7 +1342,8 @@ Date:""")
                 item.setTransformOriginPoint(center)
 
                 # Rotate the item
-                item.setRotation(value)
+                command = RotateCommand(item, item.rotation(), value)
+                self.canvas.addCommand(command)
 
     def use_change_opacity(self, value):
         self.label_btn.setChecked(False)
@@ -1350,19 +1352,14 @@ Date:""")
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
         opacity = value / self.opacity_slider.maximum()
 
-        # Create effect
-        effect = QGraphicsOpacityEffect()
-
-        # Set opacity value
-        effect.setOpacity(opacity)
-
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
                 pass
 
             else:
-                item.setGraphicsEffect(effect)
+                command = OpacityCommand(item, item.opacity(), opacity)
+                self.canvas.addCommand(command)
 
     def use_drop_shadow(self):
         self.label_btn.setChecked(False)
@@ -1428,23 +1425,20 @@ Date:""")
         self.label_btn.setChecked(False)
 
         for item in self.canvas.selectedItems():
-            item.setVisible(False)
+            command = HideCommand(item, True, False)
+            self.canvas.addCommand(command)
 
     def use_unhide_all(self):
         self.path_btn.setChecked(False)
         self.label_btn.setChecked(False)
 
         for item in self.canvas.items():
-            item.setVisible(True)
+            if not item.isVisible():
+                command = HideCommand(item, False, True)
+                self.canvas.addCommand(command)
 
-    def use_insert(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
-        for item in self.canvas.selectedItems():
-            if isinstance(item, EditableTextBlock):
-                if item.flags() == Qt.TextInteractionFlag.TextEditorInteraction:
-                    pass
+            else:
+                pass
 
     def use_trick_table(self):
         self.path_btn.setChecked(False)
@@ -1475,7 +1469,8 @@ Date:""")
                 entry, ok = QInputDialog.getText(self, 'Name Element', 'Enter a name for the selected elements:')
 
                 if ok:
-                    item.setToolTip(entry)
+                    command = NameCommand(item, item.toolTip(), entry)
+                    self.canvas.addCommand(command)
 
     def lock_item(self):
         self.label_btn.setChecked(False)
@@ -1778,8 +1773,7 @@ Date:""")
                 group.setFlag(QGraphicsItem.ItemIsSelectable)
 
                 # Add group
-                add_command = AddItemCommand(self.canvas, group)
-                self.canvas.addCommand(add_command)
+                self.canvas.addItem(group)
                 self.canvas.update()
 
                 for items in item:
