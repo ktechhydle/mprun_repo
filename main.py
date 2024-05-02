@@ -75,7 +75,7 @@ class MPRUN(QMainWindow):
 
         # Create MPRUN actions
         about_action = QAction('About', self)
-        about_action.triggered.connect(lambda: webbrowser.open('www.example.com'))
+        about_action.triggered.connect(lambda: webbrowser.open('https://github.com/ktechhydle/mprun_repo/blob/main/README.md#introducing-mprun-the-ultimate-snowboard-and-ski-competion-run-planning-software'))
 
         show_version_action = QAction('Version', self)
         show_version_action.triggered.connect(self.show_version)
@@ -158,6 +158,10 @@ class MPRUN(QMainWindow):
         unhide_action = QAction('Unhide All', self)
         unhide_action.triggered.connect(self.use_unhide_all)
 
+        select_all_action = QAction('Select All', self)
+        select_all_action.setShortcut(QKeySequence('Ctrl+A'))
+        select_all_action.triggered.connect(self.use_select_all)
+
         # Add actions
         self.mprun_menu.addAction(about_action)
         self.mprun_menu.addAction(show_version_action)
@@ -183,6 +187,7 @@ class MPRUN(QMainWindow):
         self.edit_menu.addAction(ungroup_action)
         self.edit_menu.addSeparator()
         self.edit_menu.addAction(vectorize_action)
+        self.edit_menu.addSeparator()
 
         self.item_menu.addAction(raise_layer_action)
         self.item_menu.addAction(lower_layer_action)
@@ -196,6 +201,8 @@ class MPRUN(QMainWindow):
         self.item_menu.addSeparator()
         self.item_menu.addAction(hide_action)
         self.item_menu.addAction(unhide_action)
+        self.item_menu.addSeparator()
+        self.item_menu.addAction(select_all_action)
 
     def init_toolbars(self):
         # Toolbar
@@ -984,6 +991,14 @@ Date:   """)
         self.label_btn.setChecked(False)
 
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+
+    def use_select_all(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+
+        for item in self.canvas.items():
+            if item.flags() & QGraphicsItem.ItemIsSelectable:
+                item.setSelected(True)
 
     def use_pan(self):
         self.path_btn.setChecked(False)
