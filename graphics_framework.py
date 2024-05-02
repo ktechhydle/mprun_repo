@@ -133,7 +133,8 @@ y: {int(p.y())}''')
             item.setZValue(0)
 
             # Add item
-            self.canvas.addItem(item)
+            add_command = AddItemCommand(self.canvas, item)
+            self.canvas.addCommand(add_command)
             self.canvas.update()
 
     def on_path_draw_start(self, event):
@@ -195,7 +196,8 @@ y: {int(p.y())}''')
                 path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
 
             # Add item
-            self.canvas.addItem(path_item)
+            add_command = AddItemCommand(self.canvas, path_item)
+            self.canvas.addCommand(add_command)
 
             # Set Flags
             path_item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -233,8 +235,10 @@ y: {int(p.y())}''')
             # Set z values
             self.text_box_rect.stackBefore(self.label_text)
 
-            self.canvas.addItem(self.label_text)
-            self.canvas.addItem(self.text_box_rect)
+            add_command = AddItemCommand(self.canvas, self.text_box_rect)
+            self.canvas.addCommand(add_command)
+            add_command2 = AddItemCommand(self.canvas, self.label_text)
+            self.canvas.addCommand(add_command2)
 
             self.canvas.update()
 
@@ -272,7 +276,8 @@ y: {int(p.y())}''')
             self.label_text.setParentItem(circle)
 
             # Add items (no need to add rect, circle, and label because parent is path_item)
-            self.canvas.addItem(circle)
+            add_command = AddItemCommand(self.canvas, circle)
+            self.canvas.addCommand(add_command)
 
             # Set flags
             circle.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
@@ -296,7 +301,8 @@ y: {int(p.y())}''')
         text.setFont(self.font)
         text.setDefaultTextColor(self.font_color)
 
-        self.canvas.addItem(text)
+        add_command = AddItemCommand(self.canvas, text)
+        self.canvas.addCommand(add_command)
 
         text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         text.setZValue(0)
@@ -306,13 +312,45 @@ y: {int(p.y())}''')
 
 
 class CustomGraphicsScene(QGraphicsScene):
-    def __init__(self):
+    def __init__(self, undoStack):
         super().__init__()
+        self.undo_stack = undoStack
 
-    def contextMenuEvent(self, event):
-        menu = QMenu()
-        action = QAction('Click me!', self)
+    def undo(self):
+        self.undo_stack.undo()
 
-        menu.addAction(action)
-        
-        super().contextMenuEvent(event)
+    def redo(self):
+        self.undo_stack.redo()
+
+    def addCommand(self, command):
+        self.undo_stack.push(command)
+
+class AddItemCommand(QUndoCommand):
+    def __init__(self, scene, item):
+        super().__init__()
+        self.scene = scene
+        self.item = item
+
+    def redo(self):
+        self.scene.addItem(self.item)
+
+    def undo(self):
+        self.scene.removeItem(self.item)
+
+class SmoothPathCommand(QUndoCommand):
+    def __init__(self, scene, item, new_path, old_path):
+        super().__init__()
+        self.scene = scene
+        self.item = item
+        self.new_path = new_path
+        self.old_path = old_path
+
+    def redo(self):
+        self.item.setPath(self.new_path)
+
+    def undo(self):
+        self.item.setPath(self.old_path)
+
+
+
+

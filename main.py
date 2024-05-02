@@ -25,10 +25,6 @@ class MPRUN(QMainWindow):
         # Possible cursor??
         # self.setCursor(QCursor(QPixmap('logos and icons/Tool Icons/selection_icon.png').scaled(QSize(30, 30))))
 
-        # Drawing undoing, redoing
-        self.last_drawing = []
-        self.drawing_history = []
-
         # File
         self.file_name = None
         self.last_paper = None
@@ -45,6 +41,9 @@ class MPRUN(QMainWindow):
         self.gsnap_grid_size = 10
         self.screen_rotate_size = 0
 
+        # Undo, redo
+        self.undo_stack = QUndoStack()
+
         # Create GUI
         self.create_initial_canvas()
         self.create_menu()
@@ -56,7 +55,7 @@ class MPRUN(QMainWindow):
 
     def create_initial_canvas(self):
         # Canvas, canvas color
-        self.canvas = CustomGraphicsScene()
+        self.canvas = CustomGraphicsScene(self.undo_stack)
         width = 64000
         height = 64000
         self.canvas.setSceneRect(-width // 2, -height // 2, width, height)
@@ -118,6 +117,14 @@ class MPRUN(QMainWindow):
         smooth_action.triggered.connect(self.use_smooth_path)
 
         # Create edit actions
+        undo_action = QAction('Undo', self)
+        undo_action.setShortcut(QKeySequence('Ctrl+Z'))
+        undo_action.triggered.connect(self.canvas.undo)
+
+        redo_action = QAction('Redo', self)
+        redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
+        redo_action.triggered.connect(self.canvas.redo)
+
         name_action = QAction('Name', self)
         name_action.setShortcut(QKeySequence('N'))
         name_action.triggered.connect(self.use_name_item)
@@ -190,6 +197,9 @@ class MPRUN(QMainWindow):
         self.tool_menu.addSeparator()
         self.tool_menu.addAction(smooth_action)
 
+        self.edit_menu.addAction(undo_action)
+        self.edit_menu.addAction(redo_action)
+        self.edit_menu.addSeparator()
         self.edit_menu.addAction(name_action)
         self.edit_menu.addSeparator()
         self.edit_menu.addAction(duplicate_action)
@@ -446,7 +456,7 @@ class MPRUN(QMainWindow):
 
         # Vectorize widgets
         filter_speckle_label = QLabel('Filter Speckle (Cleaner):', self)
-        color_precision_label = QLabel('Color Precision (More Accurate:', self)
+        color_precision_label = QLabel('Color Precision (More Accurate):', self)
         layer_difference_label = QLabel('Layer Difference (Less Layers):', self)
         corner_threshold_label = QLabel('Corner Threshold (Smoother):', self)
         length_threshhold_label = QLabel('Length Threshold (More Coarse):', self)
@@ -866,7 +876,7 @@ Date:""")
         super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        if len(self.canvas.items()) == 3:
+        if len(self.canvas.items()) > 3:
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox()
             confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
@@ -1179,7 +1189,8 @@ Date:""")
                         # Add the item to the scene
                         item = CustomSvgItem(f'V-C STOR/{entry}.svg')
                         item.store_filename(f'V-C STOR/{entry}.svg')
-                        self.canvas.addItem(item)
+                        add_command = AddItemCommand(self.canvas, item)
+                        self.canvas.addCommand(add_command)
                         self.create_item_attributes(item)
                         item.setToolTip('Converted Vector (MPRUN Element)')
 
@@ -1395,11 +1406,13 @@ Date:""")
                 try:
                     smoothed_path = item.smooth_path(item.path())
 
-                    item.setPath(smoothed_path)
+                    add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
+                    self.canvas.addCommand(add_command)
                     item.setToolTip('Smoothed MPRUN Path Element')
 
                 except Exception as e:
                     QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
+                    self.canvas.undo()
 
     def use_hide_item(self):
         self.path_btn.setChecked(False)
@@ -1542,7 +1555,8 @@ Date:""")
                 svg_item = CustomSvgItem(file_path)
                 svg_item.store_filename(file_path)
 
-                self.canvas.addItem(svg_item)
+                add_command = AddItemCommand(self.canvas, svg_item)
+                self.canvas.addCommand(add_command)
                 svg_item.setToolTip('Imported SVG Item (Not an MPRUN Element)')
 
                 self.create_item_attributes(svg_item)
@@ -1557,7 +1571,8 @@ Date:""")
                 image2 = CustomPixmapItem(image1)
                 image2.store_filename(file_path)
 
-                self.canvas.addItem(image2)
+                add_command = AddItemCommand(self.canvas, image2)
+                self.canvas.addCommand(add_command)
                 image2.setToolTip('Imported Bitmap Item (Not an MPRUN Element)')
 
                 self.create_item_attributes(image2)
@@ -1754,7 +1769,8 @@ Date:""")
                 group.setFlag(QGraphicsItem.ItemIsSelectable)
 
                 # Add group
-                self.canvas.addItem(group)
+                add_command = AddItemCommand(self.canvas, group)
+                self.canvas.addCommand(add_command)
                 self.canvas.update()
 
                 for items in item:

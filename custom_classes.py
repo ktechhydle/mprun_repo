@@ -6,6 +6,18 @@ from scipy.interpolate import splprep, splev
 from skimage.measure import *
 import numpy as np
 
+class AddItemCommand(QUndoCommand):
+    def __init__(self, scene, item):
+        super().__init__()
+        self.scene = scene
+        self.item = item
+
+    def redo(self):
+        self.scene.addItem(self.item)
+
+    def undo(self):
+        self.scene.removeItem(self.item)
+
 class item_stack:
     def __init__(self, initial_value=""):
         self._value = initial_value
@@ -94,13 +106,14 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         items.setScale(self.scale())
         items.setRotation(self.rotation())
 
-        # Add the new item to the scene
-        self.scene().addItem(items)
-
         # Set flags and tooltip
         items.setFlag(QGraphicsItem.ItemIsSelectable)
         items.setFlag(QGraphicsItem.ItemIsMovable)
         items.setToolTip('Duplicated MPRUN Element')
+
+        # Add the new item to the scene
+        add_command = AddItemCommand(self.scene(), items)
+        self.scene().addCommand(add_command)
 
 class CustomRectangleItem(QGraphicsRectItem):
     def __init__(self, *coords):
@@ -134,8 +147,8 @@ class CustomRectangleItem(QGraphicsRectItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Duplicated MPRUN Element')
 
-
-        self.scene().addItem(item)
+        add_command = AddItemCommand(self.scene(), item)
+        self.scene().addCommand(add_command)
 
 class CustomCircleItem(QGraphicsEllipseItem):
     def __init__(self, *coords):
@@ -169,7 +182,8 @@ class CustomCircleItem(QGraphicsEllipseItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Duplicated MPRUN Element')
 
-        self.scene().addItem(item)
+        add_command = AddItemCommand(self.scene(), item)
+        self.scene().addCommand(add_command)
 
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
@@ -204,7 +218,8 @@ class CustomPathItem(QGraphicsPathItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Duplicated MPRUN Element')
 
-        self.scene().addItem(item)
+        add_command = AddItemCommand(self.scene(), item)
+        self.scene().addCommand(add_command)
 
     def smooth_path(self, path):
         vertices = [(point.x(), point.y()) for point in path.toSubpathPolygons()[0]]
@@ -267,7 +282,8 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Duplicated MPRUN Element')
 
-        self.scene().addItem(item)
+        add_command = AddItemCommand(self.scene(), item)
+        self.scene().addCommand(add_command)
 
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, file):
@@ -309,7 +325,8 @@ class CustomSvgItem(QGraphicsSvgItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Duplicated MPRUN Element')
 
-        self.scene().addItem(item)
+        add_command = AddItemCommand(self.scene(), item)
+        self.scene().addCommand(add_command)
 
 class EditableTextBlock(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
@@ -372,7 +389,8 @@ class EditableTextBlock(QGraphicsTextItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Duplicated MPRUN Element')
 
-        self.scene().addItem(item)
+        add_command = AddItemCommand(self.scene(), item)
+        self.scene().addCommand(add_command)
 
     def insert_table(self, rows, cols):
         cursor = self.textCursor()
