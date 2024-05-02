@@ -52,11 +52,11 @@ class MPRUN(QMainWindow):
         self.create_toolbar1()
         self.create_toolbar2()
         self.create_toolbar3()
-        self.create_canvas()
+        self.create_view()
 
     def create_initial_canvas(self):
         # Canvas, canvas color
-        self.canvas = QGraphicsScene()
+        self.canvas = CustomGraphicsScene()
         width = 64000
         height = 64000
         self.canvas.setSceneRect(-width // 2, -height // 2, width, height)
@@ -719,8 +719,8 @@ class MPRUN(QMainWindow):
     def create_toolbar3(self):
         pass
 
-    def create_canvas(self):
-        # QGraphicsView Logic, set the main widget
+    def create_view(self):
+        # QGraphicsView Logic (messy but whatever)
         self.canvas_view = CustomGraphicsView(self.canvas,
                                               self.path_btn,
                                               self.label_btn,
@@ -728,6 +728,7 @@ class MPRUN(QMainWindow):
                                               self.add_text_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
+        self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.canvas_view.setScene(self.canvas)
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
@@ -792,6 +793,54 @@ Date:""")
 
         # Refit view after everything
         self.use_refit_screen()
+
+        # Context menu for view
+        name_action = QAction('Name', self)
+        name_action.triggered.connect(self.use_name_item)
+        duplicate_action = QAction('Duplicate', self)
+        duplicate_action.triggered.connect(self.use_duplicate)
+        group_action = QAction('Group Selected', self)
+        group_action.triggered.connect(self.create_group)
+        ungroup_action = QAction('Ungroup Selected', self)
+        ungroup_action.triggered.connect(self.ungroup_group)
+        vectorize_action = QAction('Vectorize', self)
+        vectorize_action.triggered.connect(self.use_vectorize)
+        raise_layer_action = QAction('Raise Layer', self)
+        raise_layer_action.triggered.connect(self.use_raise_layer)
+        lower_layer_action = QAction('Lower Layer', self)
+        lower_layer_action.triggered.connect(self.use_lower_layer)
+        bring_to_front_action = QAction('Bring to Front', self)
+        bring_to_front_action.triggered.connect(self.use_bring_to_front)
+        lock_action = QAction('Lock Position', self)
+        lock_action.triggered.connect(self.lock_item)
+        unlock_action = QAction('Unlock Position', self)
+        unlock_action.triggered.connect(self.unlock_item)
+        permanent_lock_action = QAction('Permanent Lock Position', self)
+        permanent_lock_action.triggered.connect(self.permanent_lock_item)
+        center_action = QAction('Center', self)
+        center_action.triggered.connect(self.use_center_item)
+        hide_action = QAction('Hide Selected', self)
+        hide_action.triggered.connect(self.use_hide_item)
+        unhide_action = QAction('Unhide All', self)
+        unhide_action.triggered.connect(self.use_unhide_all)
+        select_all_action = QAction('Select All', self)
+        select_all_action.triggered.connect(self.use_select_all)
+
+        self.canvas_view.addAction(name_action)
+        self.canvas_view.addAction(duplicate_action)
+        self.canvas_view.addAction(group_action)
+        self.canvas_view.addAction(ungroup_action)
+        self.canvas_view.addAction(vectorize_action)
+        self.canvas_view.addAction(raise_layer_action)
+        self.canvas_view.addAction(lower_layer_action)
+        self.canvas_view.addAction(bring_to_front_action)
+        self.canvas_view.addAction(lock_action)
+        self.canvas_view.addAction(unlock_action)
+        self.canvas_view.addAction(permanent_lock_action)
+        self.canvas_view.addAction(center_action)
+        self.canvas_view.addAction(hide_action)
+        self.canvas_view.addAction(unhide_action)
+        self.canvas_view.addAction(select_all_action)
 
     def keyPressEvent(self, event):
         if event.key() == QKeySequence('Backspace'):
