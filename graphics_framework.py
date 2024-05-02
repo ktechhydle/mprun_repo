@@ -315,6 +315,11 @@ class CustomGraphicsScene(QGraphicsScene):
         super().__init__()
         self.undo_stack = undoStack
 
+        width = 64000
+        height = 64000
+        self.setSceneRect(-width // 2, -height // 2, width, height)
+        self.setBackgroundBrush(QBrush(QColor('#606060')))
+
     def undo(self):
         self.undo_stack.undo()
 

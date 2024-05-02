@@ -56,11 +56,6 @@ class MPRUN(QMainWindow):
     def create_initial_canvas(self):
         # Canvas, canvas color
         self.canvas = CustomGraphicsScene(self.undo_stack)
-        width = 64000
-        height = 64000
-        self.canvas.setSceneRect(-width // 2, -height // 2, width, height)
-        brush1 = QBrush(QColor('#606060'))
-        self.canvas.setBackgroundBrush(brush1)
 
     def create_menu(self):
         # Create menus
@@ -1774,7 +1769,6 @@ Date:""")
 
                 # Add group
                 self.canvas.addItem(group)
-                self.canvas.update()
 
                 for items in item:
                     # Set flag
