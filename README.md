@@ -23,7 +23,11 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Use the `Line and Label` tool to create Leader lines along your Path.
 - Edit these labels to include your tricks along each part of the Path.
 - Lock Element positions to prevent further editing.
-### 4. And it's that simple. 
+### 4. (Optional) Create a trick table:
+- Use the `Trick Table` tool to create a table displaying all of the important run information in your file.
+- Edit these tables as need.
+- Lock Element positions to prevent further editing.
+### 5. And it's that simple. 
 > [!IMPORTANT]
 > MPRUN can be a simple software, and a powerful software when necessary.
 
@@ -42,12 +46,12 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
 - Add text blocks:
 	> Add `Editable Text Block`'s on to the Canvas.
-- Vector conversion ***(beta)***:
-  	> Use the `Vectorize` tool to convert raster imagery to Vector tiles.
-- Element position managment:
+- Vector conversion:
+  	> Use the `Vectorize` tool to convert raster imagery to vector formats.
+- Element position management:
   	> Lock or unlock element positions, or even use the `Permanent Lock Tool` to lock Elements permanently.
 - Path Simplifying:
-  	> Simplify drawn paths to acheive a less hand drawn appearence.
+  	> Simplify drawn paths to achieve a less hand drawn appearance.
 > [!TIP]
 > - Snap-to-grid functionality:
 > 	> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.

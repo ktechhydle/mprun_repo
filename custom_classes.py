@@ -374,6 +374,32 @@ class EditableTextBlock(QGraphicsTextItem):
 
         self.scene().addItem(item)
 
+    def insert_table(self, rows, cols):
+        cursor = self.textCursor()
+
+        # Set the format for the table
+        tableFormat = QTextTableFormat()
+        tableFormat.setAlignment(Qt.AlignCenter)  # Set alignment of the table
+        tableFormat.setBorderStyle(QTextTableFormat.BorderStyle_Solid)  # Set border style
+        tableFormat.setBorderBrush(Qt.gray)  # Set border color
+        tableFormat.setWidth(275)  # Set width of the table
+
+        # Apply the table format to the current cursor position
+        cursor.insertTable(rows, cols, tableFormat)
+
+        # Move cursor to the beginning of the table
+        cursor.movePosition(QTextCursor.Start, QTextCursor.MoveAnchor)
+        cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor)
+
+        # Insert header
+        cursor.insertText("Trick Name")
+        cursor.movePosition(QTextCursor.NextCell)
+        cursor.insertText("Feature")
+        cursor.movePosition(QTextCursor.NextCell)
+        cursor.insertText("Score")
+
+        self.setTextCursor(cursor)
+
 class CanvasItem(QGraphicsRectItem):
     def __init__(self, *coords):
         super().__init__(*coords)
