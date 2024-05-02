@@ -13,6 +13,7 @@ class CustomGraphicsView(QGraphicsView):
         # Set flags
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setMouseTracking(True)
+        self.setAcceptDrops(True)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)

@@ -817,7 +817,7 @@ Date:""")
         super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        if len(self.canvas.items()) > 3:
+        if len(self.canvas.items()) == 3:
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox()
             confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
