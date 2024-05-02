@@ -18,6 +18,19 @@ class AddItemCommand(QUndoCommand):
     def undo(self):
         self.scene.removeItem(self.item)
 
+class EditTextCommand(QUndoCommand):
+    def __init__(self, item, old_text, new_text):
+        super().__init__()
+        self.item = item
+        self.old_text = old_text
+        self.new_text = new_text
+
+    def redo(self):
+        self.item.setPlainText(self.new_text)
+
+    def undo(self):
+        self.item.setPlainText(self.old_text)
+
 class item_stack:
     def __init__(self, initial_value=""):
         self._value = initial_value
@@ -335,6 +348,7 @@ class EditableTextBlock(QGraphicsTextItem):
         self.setToolTip('Editable Text Block')
 
         self.locked = False
+        self.old_text = self.toPlainText()
 
     def mouseDoubleClickEvent(self, event):
         if self.locked == False:
@@ -366,6 +380,12 @@ class EditableTextBlock(QGraphicsTextItem):
                 self.custom_pen.setWidth(8)
 
     def focusOutEvent(self, event):
+        new_text = self.toPlainText()
+        if self.old_text != new_text:
+            edit_command = EditTextCommand(self, self.old_text, new_text)
+            self.scene().addCommand(edit_command)
+            self.old_text = new_text
+
         cursor = self.textCursor()
         cursor.clearSelection()
         self.setTextCursor(cursor)
