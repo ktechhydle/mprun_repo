@@ -122,6 +122,9 @@ y: {int(p.y())}''')
                 item = CustomSvgItem(url.toLocalFile())
                 item.store_filename(url.toLocalFile())
 
+            elif url.toLocalFile().endswith('.mp4'):
+                pass
+
             else:
                 pixmap = QPixmap(url.toLocalFile())
                 item = CustomPixmapItem(pixmap)
