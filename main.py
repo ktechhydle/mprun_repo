@@ -118,6 +118,10 @@ class MPRUN(QMainWindow):
         smooth_action.triggered.connect(self.use_smooth_path)
 
         # Create edit actions
+        name_action = QAction('Name', self)
+        name_action.setShortcut(QKeySequence('N'))
+        name_action.triggered.connect(self.use_name_item)
+
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.triggered.connect(self.use_duplicate)
 
@@ -186,6 +190,8 @@ class MPRUN(QMainWindow):
         self.tool_menu.addSeparator()
         self.tool_menu.addAction(smooth_action)
 
+        self.edit_menu.addAction(name_action)
+        self.edit_menu.addSeparator()
         self.edit_menu.addAction(duplicate_action)
         self.edit_menu.addSeparator()
         self.edit_menu.addAction(group_action)
@@ -439,46 +445,46 @@ class MPRUN(QMainWindow):
         widget3.layout.addWidget(self.drop_shadow_check_btn)
 
         # Vectorize widgets
-        filter_speckle_label = QLabel('Filter Speckle:', self)
-        color_precision_label = QLabel('Color Precision:', self)
-        layer_difference_label = QLabel('Layer Difference:', self)
-        corner_threshold_label = QLabel('Corner Threshold:', self)
-        length_threshhold_label = QLabel('Length Threshold:', self)
-        max_iterations_label = QLabel('Max Iterations:', self)
-        splice_threshold_label = QLabel('Splice Threshold:', self)
-        path_precision_label = QLabel('Path Precision:', self)
+        filter_speckle_label = QLabel('Filter Speckle (Cleaner):', self)
+        color_precision_label = QLabel('Color Precision (More Accurate:', self)
+        layer_difference_label = QLabel('Layer Difference (Less Layers):', self)
+        corner_threshold_label = QLabel('Corner Threshold (Smoother):', self)
+        length_threshhold_label = QLabel('Length Threshold (More Coarse):', self)
+        max_iterations_label = QLabel('Max Iterations (Number of Times Processed):', self)
+        splice_threshold_label = QLabel('Splice Threshold (Less Accurate):', self)
+        path_precision_label = QLabel('Path Precision (More Accurate):', self)
 
         self.filter_speckle_spin = QSpinBox(self)
-        self.filter_speckle_spin.setMaximum(100)
+        self.filter_speckle_spin.setMaximum(128)
         self.filter_speckle_spin.setMinimum(1)
         self.filter_speckle_spin.setValue(4)
         self.color_precision_spin = QSpinBox(self)
-        self.color_precision_spin.setMaximum(100)
+        self.color_precision_spin.setMaximum(8)
         self.color_precision_spin.setMinimum(1)
         self.color_precision_spin.setValue(6)
         self.layer_difference_spin = QSpinBox(self)
-        self.layer_difference_spin.setMaximum(100)
+        self.layer_difference_spin.setMaximum(128)
         self.layer_difference_spin.setMinimum(1)
         self.layer_difference_spin.setValue(16)
         self.corner_threshold_spin = QSpinBox(self)
-        self.corner_threshold_spin.setMaximum(100)
+        self.corner_threshold_spin.setMaximum(180)
         self.corner_threshold_spin.setMinimum(1)
         self.corner_threshold_spin.setValue(60)
         self.length_threshold_spin = QSpinBox(self)
-        self.length_threshold_spin.setMaximum(100)
-        self.length_threshold_spin.setMinimum(3)
+        self.length_threshold_spin.setMaximum(10)
+        self.length_threshold_spin.setMinimum(4)
         self.length_threshold_spin.setValue(4)
         self.max_iterations_spin = QSpinBox(self)
         self.max_iterations_spin.setMaximum(100)
         self.max_iterations_spin.setMinimum(1)
         self.max_iterations_spin.setValue(10)
         self.splice_threshold_spin = QSpinBox(self)
-        self.splice_threshold_spin.setMaximum(100)
+        self.splice_threshold_spin.setMaximum(180)
         self.splice_threshold_spin.setMinimum(1)
         self.splice_threshold_spin.setValue(45)
         self.path_precision_spin = QSlider(self)
         self.path_precision_spin.setOrientation(Qt.Horizontal)
-        self.path_precision_spin.setMaximum(100)
+        self.path_precision_spin.setMaximum(10)
         self.path_precision_spin.setMinimum(1)
         self.path_precision_spin.setSliderPosition(3)
 
@@ -1380,6 +1386,25 @@ Date:""")
 
         self.canvas.addItem(item)
         self.create_item_attributes(item)
+
+    def use_name_item(self):
+        self.path_btn.setChecked(False)
+        self.label_btn.setChecked(False)
+        self.add_text_btn.setChecked(False)
+
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CanvasItem):
+                if item.childItems():
+                    pass
+
+                else:
+                    pass
+
+            else:
+                entry, ok = QInputDialog.getText(self, 'Name Element', 'Enter a name for the selected elements:')
+
+                if ok:
+                    item.setToolTip(entry)
 
     def lock_item(self):
         self.label_btn.setChecked(False)

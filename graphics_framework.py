@@ -112,6 +112,29 @@ y: {int(p.y())}''')
         if not clamped or self.zoomClamp is False:
             self.scale(zoomFactor, zoomFactor)
 
+    def dragMoveEvent(self, event):
+        item = event.source()
+
+    def dropEvent(self, event):
+        for url in event.mimeData().urls():
+            if url.toLocalFile().endswith('.svg'):
+                item = CustomSvgItem(url.toLocalFile())
+                item.store_filename(url.toLocalFile())
+
+            else:
+                pixmap = QPixmap(url.toLocalFile())
+                item = CustomPixmapItem(pixmap)
+                item.store_filename(url.toLocalFile())
+
+            # Set default attributes
+            item.setPos(self.mapToScene(event.pos()))
+            item.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+            item.setZValue(0)
+
+            # Add item
+            self.canvas.addItem(item)
+            self.canvas.update()
+
     def on_path_draw_start(self, event):
         # Check the button being pressed
         if event.button() == Qt.LeftButton:
