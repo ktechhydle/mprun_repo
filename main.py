@@ -351,7 +351,7 @@ class MPRUN(QMainWindow):
 
         # Fill Color Button
         self.fill_color_btn = QPushButton('', self)
-        self.fill_color_btn.setStyleSheet(f'background-color: #00ff00; border: None')
+        self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         self.fill_color.set('#00ff00')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
@@ -399,7 +399,7 @@ class MPRUN(QMainWindow):
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
         self.outline_color_btn = QPushButton('', self)
-        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()}; border: None')
+        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
