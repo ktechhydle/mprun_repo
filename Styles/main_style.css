@@ -139,8 +139,12 @@ QPushButton {
       background-color: #0070e0; }
 
 QDialogButtonBox QPushButton {
-    min-width: 100px; /* Set minimum width for buttons in QDialogButtonBox */
-}
+    border: 2px solid white;
+    border-radius: 12px;
+    min-width: 100px; }
+    QDialogButtonBox QPushButton:hover {
+      background-color: #0d66d0;
+    }
 
 
 

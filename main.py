@@ -588,6 +588,8 @@ class MPRUN(QMainWindow):
         self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 200))
 
     def create_toolbar2(self):
+        self.action_group = QActionGroup(self)
+
         #----toolbar buttons----#
 
         # Rotate Screen Button
@@ -601,6 +603,7 @@ class MPRUN(QMainWindow):
         select_btn = QAction(QIcon('logos and icons/Tool Icons/selection_icon.png'), '', self)
         select_btn.setToolTip('''Select Tool:
         Key-Spacebar''')
+        select_btn.setCheckable(True)
         select_btn.setShortcut(QKeySequence(Qt.Key_Space))
         select_btn.triggered.connect(self.use_select)
 
@@ -608,6 +611,7 @@ class MPRUN(QMainWindow):
         pan_btn = QAction(QIcon('logos and icons/Tool Icons/pan_icon.png'), '', self)
         pan_btn.setToolTip('''Pan Tool:
         Key-P''')
+        pan_btn.setCheckable(True)
         pan_btn.setShortcut(QKeySequence("P"))
         pan_btn.triggered.connect(self.use_pan)
 
@@ -643,11 +647,12 @@ class MPRUN(QMainWindow):
         self.add_text_btn.triggered.connect(self.use_text)
 
         # Erase Button
-        erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
-        erase_btn.setToolTip('''Erase Tool:
+        self.erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
+        self.erase_btn.setToolTip('''Erase Tool:
         Key-E''')
-        erase_btn.setShortcut(QKeySequence('E'))
-        erase_btn.triggered.connect(self.use_erase)
+        self.erase_btn.setCheckable(True)
+        self.erase_btn.setShortcut(QKeySequence('E'))
+        self.erase_btn.triggered.connect(self.use_erase)
 
         # Duplicate Button
         duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/duplicate_icon.png'), '', self)
@@ -715,7 +720,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(refit_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(self.path_btn)
-        self.toolbar.addAction(erase_btn)
+        self.toolbar.addAction(self.erase_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addSeparator()
@@ -731,6 +736,24 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(export_btn)
         self.toolbar.addSeparator()
 
+        # Action Group
+        self.action_group.addAction(icon)
+        self.action_group.addAction(select_btn)
+        self.action_group.addAction(pan_btn)
+        self.action_group.addAction(refit_btn)
+        self.action_group.addAction(self.path_btn)
+        self.action_group.addAction(self.erase_btn)
+        self.action_group.addAction(self.label_btn)
+        self.action_group.addAction(self.add_text_btn)
+        self.action_group.addAction(duplicate_btn)
+        self.action_group.addAction(hide_btn)
+        self.action_group.addAction(unhide_btn)
+        self.action_group.addAction(center_item_btn)
+        self.action_group.addAction(smooth_btn)
+        self.action_group.addAction(add_canvas_btn)
+        self.action_group.addAction(insert_btn)
+        self.action_group.addAction(export_btn)
+
     def create_toolbar3(self):
         pass
 
@@ -740,7 +763,8 @@ class MPRUN(QMainWindow):
                                               self.path_btn,
                                               self.label_btn,
                                               self.stroke_fill_check_btn,
-                                              self.add_text_btn)
+                                              self.add_text_btn,
+                                              self.erase_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -1075,43 +1099,25 @@ Date:""")
             self.font_color.set(color.name())
 
     def use_select(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def use_select_all(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         for item in self.canvas.items():
             if item.flags() & QGraphicsItem.ItemIsSelectable:
                 item.setSelected(True)
 
     def use_pan(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_refit_screen(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
                 self.canvas_view.fitInView(item.sceneBoundingRect(), Qt.KeepAspectRatio)
 
     def use_path(self):
-        self.label_btn.setChecked(False)
-        self.add_text_btn.setChecked(False)
-
         self.path_btn.setChecked(True)
 
     def use_erase(self):
-        self.label_btn.setChecked(False)
-        self.add_text_btn.setChecked(False)
-
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
@@ -1125,23 +1131,13 @@ Date:""")
         self.fill_color.set('white')
         self.outline_color.set('white')
 
-        self.path_btn.setChecked(True)
-
     def use_label(self):
-        self.path_btn.setChecked(False)
-        self.add_text_btn.setChecked(False)
-
         self.label_btn.setChecked(True)
 
     def use_text(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         self.add_text_btn.setChecked(True)
 
     def use_rotate_screen(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
         self.screen_rotate_size += 90
         transform = QTransform()
         transform.rotate(self.screen_rotate_size)
@@ -1149,8 +1145,6 @@ Date:""")
         self.canvas_view.setTransform(transform)
 
     def use_set_layer(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
         index = self.layer_combo.currentIndex()
         data = self.layer_combo.itemData(index)
 
@@ -1159,18 +1153,12 @@ Date:""")
                 items.setZValue(data)
 
     def use_bring_to_front(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         selected_items = self.canvas.selectedItems()
         max_z_value = max(item.zValue() for item in self.canvas.items())
         for item in selected_items:
             item.setZValue(max_z_value + 1)
 
     def use_vectorize(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
@@ -1222,9 +1210,6 @@ Date:""")
                 pass
 
     def use_duplicate(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         # Get selected items and create a copy
         selected_items = self.canvas.selectedItems()
 
@@ -1251,16 +1236,10 @@ Date:""")
                 item.duplicate()
 
     def use_raise_layer(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         for item in self.canvas.selectedItems():
             item.setZValue(item.zValue() + 1.0)
 
     def use_lower_layer(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         for item in self.canvas.selectedItems():
             if item.zValue() <= 0:
                 QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
@@ -1269,9 +1248,6 @@ Date:""")
                 item.setZValue(item.zValue() - 1.0)
 
     def use_scale_all(self, value):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         try:
             value = float(value)
             items = self.canvas.selectedItems()
@@ -1294,9 +1270,6 @@ Date:""")
             pass
 
     def use_scale_x(self, value):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         try:
             value = float(value)
             items = self.canvas.selectedItems()
@@ -1314,9 +1287,6 @@ Date:""")
             pass
 
     def use_scale_y(self, value):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         try:
             value = float(value)
             items = self.canvas.selectedItems()
@@ -1334,9 +1304,6 @@ Date:""")
             pass
 
     def use_rotate(self, value):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         items = self.canvas.selectedItems()
         for item in items:
             if isinstance(item, CanvasItem):
@@ -1354,9 +1321,6 @@ Date:""")
                 self.canvas.addCommand(command)
 
     def use_change_opacity(self, value):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
         opacity = value / self.opacity_slider.maximum()
 
@@ -1370,9 +1334,6 @@ Date:""")
                 self.canvas.addCommand(command)
 
     def use_drop_shadow(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         # Create effect
         effect = QGraphicsDropShadowEffect()
         effect.setBlurRadius(10)
@@ -1391,9 +1352,6 @@ Date:""")
                         item.setGraphicsEffect(None)
 
     def use_center_item(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 rect = self.stored_center_item
@@ -1405,10 +1363,6 @@ Date:""")
                 item.setPos(new_pos)
 
     def use_set_center(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-        self.add_text_btn.setChecked(False)
-
         if not self.canvas.selectedItems():
             QMessageBox.information(self, 'Set Default Center', 'Select an item to set the default center to.')
 
@@ -1416,10 +1370,6 @@ Date:""")
             self.stored_center_item = self.canvas.selectedItemsBoundingRect()
 
     def use_display_center(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-        self.add_text_btn.setChecked(False)
-
         # Create the ellipse item
         ellipse_item = CustomCircleItem(0, 0, 30, 30)  # 10x10 ellipse
         ellipse_item.setBrush(Qt.blue)  # Set brush color to blue
@@ -1440,16 +1390,10 @@ Date:""")
         self.canvas.addCommand(command)
 
     def use_add_canvas(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         self.window = AddCanvasDialog(self.canvas, self.last_paper)
         self.window.show()
 
     def use_smooth_path(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
                 try:
@@ -1464,17 +1408,11 @@ Date:""")
                     self.canvas.undo()
 
     def use_hide_item(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         for item in self.canvas.selectedItems():
             command = HideCommand(item, True, False)
             self.canvas.addCommand(command)
 
     def use_unhide_all(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-
         for item in self.canvas.items():
             if not item.isVisible():
                 command = HideCommand(item, False, True)
@@ -1484,10 +1422,6 @@ Date:""")
                 pass
 
     def use_trick_table(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-        self.add_text_btn.setChecked(False)
-
         item = EditableTextBlock(' ')
         item.insert_table(11, 3)
         item.setToolTip('Trick Table (MPRUN Element)')
@@ -1496,10 +1430,6 @@ Date:""")
         self.create_item_attributes(item)
 
     def use_name_item(self):
-        self.path_btn.setChecked(False)
-        self.label_btn.setChecked(False)
-        self.add_text_btn.setChecked(False)
-
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
                 if item.childItems():
@@ -1516,9 +1446,6 @@ Date:""")
                     self.canvas.addCommand(command)
 
     def lock_item(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         item = self.canvas.selectedItems()
 
         for items in item:
@@ -1529,8 +1456,6 @@ Date:""")
                 items.set_locked()
 
     def unlock_item(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
         item = self.canvas.selectedItems()
 
         for items in item:
@@ -1541,9 +1466,6 @@ Date:""")
                 items.set_unlocked()
 
     def permanent_lock_item(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         if self.canvas.selectedItems():
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox()
@@ -1583,9 +1505,6 @@ Date:""")
                 pass
 
     def insert_image(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         # Create Options
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -1625,10 +1544,6 @@ Date:""")
                 self.create_item_attributes(image2)
 
     def export_canvas(self, filename, selected_item):
-        # Turn tools off
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         # Create a QImage with the size of the selected item (QGraphicsRectItem)
         rect = selected_item.sceneBoundingRect()
         image = QImage(rect.size().toSize(), QImage.Format_ARGB32)
@@ -1658,9 +1573,6 @@ Date:""")
             QMessageBox.critical(self, "Export Error", f"Failed to export canvas to file: {e}")
 
     def choose_export(self):
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         # Create a custom dialog to with a dropdown to select which canvas to export
         selector = CanvasItemSelector(self)
         selector.show()
@@ -1793,10 +1705,6 @@ Date:""")
                     print(e)
 
     def create_group(self):
-        # Set tools off
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
                 if item.childItems():
@@ -1845,10 +1753,6 @@ Date:""")
                     group.setSelected(True)
 
     def ungroup_group(self):
-        # Set tools off
-        self.label_btn.setChecked(False)
-        self.path_btn.setChecked(False)
-
         for group in self.canvas.selectedItems():
             if isinstance(group, CustomGraphicsItemGroup):
                 if group.childItems():

@@ -6,7 +6,7 @@ from custom_classes import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, button3, button4):
+    def __init__(self, canvas, button, button2, button3, button4, erase_btn):
         super().__init__()
         self.points = []
 
@@ -23,6 +23,7 @@ class CustomGraphicsView(QGraphicsView):
         self.button2 = button2
         self.button3 = button3
         self.text_btn = button4
+        self.erase_btn = erase_btn
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
@@ -50,7 +51,7 @@ class CustomGraphicsView(QGraphicsView):
 
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
-        if self.button.isChecked():
+        if self.button.isChecked() or self.erase_btn.isChecked():
 
             self.on_path_draw_start(event)
 
@@ -73,7 +74,7 @@ class CustomGraphicsView(QGraphicsView):
 y: {int(p.y())}''')
 
         # Check if the path tool is enabled
-        if self.button.isChecked():
+        if self.button.isChecked() or self.erase_btn.isChecked():
             self.on_path_draw(event)
 
         # Check if the line and label tool is enabled
@@ -84,7 +85,7 @@ y: {int(p.y())}''')
 
     def mouseReleaseEvent(self, event):
         # Check if path tool is enabled
-        if self.button.isChecked():
+        if self.button.isChecked() or self.erase_btn.isChecked():
             self.on_path_draw_end(event)
 
         # Check if the line and label tool is enabled
