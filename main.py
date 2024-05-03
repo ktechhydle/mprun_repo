@@ -33,7 +33,7 @@ class MPRUN(QMainWindow):
         # Drawing stroke methods
         self.outline_color = item_stack()
         self.fill_color = item_stack()
-        self.outline_color.set('black')
+        self.outline_color.set('red')
         self.fill_color.set('white')
         self.font_color = item_stack()
         self.font_color.set('black')
@@ -234,6 +234,7 @@ class MPRUN(QMainWindow):
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea)
+        self.toolbar.setFloatable(True)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
@@ -249,7 +250,7 @@ class MPRUN(QMainWindow):
         # Tabview
         self.tab_view = QTabWidget(self)
         self.tab_view.setMovable(True)
-        self.tab_view.setTabPosition(QTabWidget.TabPosition.West)
+        self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
 
         # Properties Tab
@@ -350,9 +351,9 @@ class MPRUN(QMainWindow):
 
         # Fill Color Button
         self.fill_color_btn = QPushButton('', self)
-        self.fill_color_btn.setStyleSheet(f'background-color: black; border: None')
+        self.fill_color_btn.setStyleSheet(f'background-color: #00ff00; border: None')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
-        self.fill_color.set('black')
+        self.fill_color.set('#00ff00')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
 
