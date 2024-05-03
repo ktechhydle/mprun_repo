@@ -232,9 +232,8 @@ class MPRUN(QMainWindow):
     def init_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
-        self.toolbar.setStyleSheet('QToolBar{spacing: 5px;}')
         self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setMovable(False)
+        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Action toolbar
@@ -279,35 +278,35 @@ class MPRUN(QMainWindow):
 
         # All labels
         properties_label = QLabel('Transform', self)
-        properties_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        properties_label.setStyleSheet("QLabel { font-size: 20px; alignment: center; }")
         properties_label.setAlignment(Qt.AlignLeft)
 
         appearence_label = QLabel('Appearance', self)
-        appearence_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        appearence_label.setStyleSheet("QLabel { font-size: 20px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
 
         quick_actions_label = QLabel('Quick Actions', self)
-        quick_actions_label.setStyleSheet("QLabel { color: gray; font-size: 20px; alignment: center; }")
+        quick_actions_label.setStyleSheet("QLabel {font-size: 20px; alignment: center; }")
         quick_actions_label.setAlignment(Qt.AlignLeft)
 
         layers_label = QLabel('Layers', self)
-        layers_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        layers_label.setStyleSheet("QLabel { font-size: 20px;}")
         layers_label.setAlignment(Qt.AlignLeft)
 
         text_options_label = QLabel('Text', self)
-        text_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        text_options_label.setStyleSheet("QLabel { font-size: 20px;}")
         text_options_label.setAlignment(Qt.AlignLeft)
 
         vector_options_label = QLabel('Precision', self)
-        vector_options_label.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label.setStyleSheet("QLabel { font-size: 20px;}")
         vector_options_label.setAlignment(Qt.AlignLeft)
 
         vector_options_label2 = QLabel('Color', self)
-        vector_options_label2.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label2.setStyleSheet("QLabel { font-size: 20px;}")
         vector_options_label2.setAlignment(Qt.AlignLeft)
 
         vector_options_label3 = QLabel('Threshold', self)
-        vector_options_label3.setStyleSheet("QLabel { color: gray; font-size: 20px;}")
+        vector_options_label3.setStyleSheet("QLabel { font-size: 20px;}")
         vector_options_label3.setAlignment(Qt.AlignLeft)
 
         # Labels
