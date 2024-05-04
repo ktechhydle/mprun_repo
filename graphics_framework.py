@@ -314,6 +314,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, undoStack):
         super().__init__()
         self.undo_stack = undoStack
+        self.itemMoved = False
 
         width = 64000
         height = 64000
@@ -346,6 +347,19 @@ class AddItemCommand(QUndoCommand):
 
     def undo(self):
         self.scene.removeItem(self.item)
+
+class MoveItemCommand(QUndoCommand):
+    def __init__(self, item, oldPos, newPos):
+        super().__init__()
+        self.item = item
+        self.oldPos = oldPos
+        self.newPos = newPos
+
+    def undo(self):
+        self.item.setPos(self.oldPos)
+
+    def redo(self):
+        self.item.setPos(self.newPos)
 
 class SmoothPathCommand(QUndoCommand):
     def __init__(self, scene, item, new_path, old_path):

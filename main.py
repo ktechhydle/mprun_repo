@@ -942,16 +942,9 @@ Date:""")
 
         elif event.key() == QKeySequence('Escape'):
             self.canvas.clearSelection()
-            if self.path_btn.isChecked():
-                self.path_btn.setChecked(False)
-
-            elif self.label_btn.isChecked():
-                self.label_btn.setChecked(False)
-
-            elif self.add_text_btn.isChecked():
-                self.add_text_btn.setChecked(False)
-
-            self.use_select()
+            for action in self.action_group.actions():
+                action.setChecked(False)
+                self.canvas_view.setDragMode(QGraphicsView.NoDrag)
 
         elif event.key() == QKeySequence('Z'):
             self.gsnap_check_btn.setChecked(False) if self.gsnap_check_btn.isChecked() else self.gsnap_check_btn.setChecked(True)
@@ -1771,27 +1764,11 @@ Date:""")
                     # Set flag
                     items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
-                    # Check if the item is an instance
-                    if isinstance(items, QGraphicsTextItem):
-                        items.setTextInteractionFlags(Qt.NoTextInteraction)
-
-                        # Set an object name
-                        items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
-
-                    elif isinstance(items, EditableTextBlock):
-                        items.setTextInteractionFlags(Qt.NoTextInteraction)
-
-                        # Set an object name
-                        items.setToolTip(f"Grouped Text Block (This item's text is not editable)")
-
-                    elif isinstance(items, CustomPathItem):
-                        # Set an object name
-                        items.setToolTip(f"Grouped Path")
+                    group.setToolTip('Group')
 
                     # Add items to group
                     group.addToGroup(items)
-                    group.setToolTip('Grouped Object')
-                    group.setSelected(True)
+                    group.setToolTip('Group')
 
     def ungroup_group(self):
         for group in self.canvas.selectedItems():
@@ -1880,8 +1857,6 @@ Date:""")
     def show_version(self):
         app = VersionWin()
         app.mainloop()
-
-        self.populate_tree_view()
 
     def close_tab(self, i):
         if self.tab_view.count() < 2:
