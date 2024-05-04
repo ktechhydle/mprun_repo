@@ -68,6 +68,7 @@ class MPRUN(QMainWindow):
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.item_menu = self.menu_bar.addMenu('&Item')
+        self.window_menu = self.menu_bar.addMenu('&Window')
 
         # Create MPRUN actions
         about_action = QAction('About', self)
@@ -180,6 +181,22 @@ class MPRUN(QMainWindow):
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
 
+        # Create window menu actions
+        properties_action = QAction('Properties', self)
+        properties_action.triggered.connect(lambda: self.display_choosen_tab('Properties'))
+
+        layers_action = QAction('Layers', self)
+        layers_action.triggered.connect(lambda: self.display_choosen_tab('Layers'))
+
+        libraries_action = QAction('Libraries', self)
+        libraries_action.triggered.connect(lambda: self.display_choosen_tab('Libraries'))
+
+        elements_action = QAction('Elements', self)
+        elements_action.triggered.connect(lambda: self.display_choosen_tab('Elements'))
+
+        vectorizing_action = QAction('Vectorizing', self)
+        vectorizing_action.triggered.connect(lambda: self.display_choosen_tab('Vectorizing'))
+
         # Add actions
         self.mprun_menu.addAction(about_action)
         self.mprun_menu.addAction(show_version_action)
@@ -229,6 +246,12 @@ class MPRUN(QMainWindow):
         self.item_menu.addSeparator()
         self.item_menu.addAction(select_all_action)
 
+        self.window_menu.addAction(properties_action)
+        self.window_menu.addAction(layers_action)
+        self.window_menu.addAction(libraries_action)
+        self.window_menu.addAction(elements_action)
+        self.window_menu.addAction(vectorizing_action)
+
     def init_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
@@ -250,8 +273,10 @@ class MPRUN(QMainWindow):
         # Tabview
         self.tab_view = QTabWidget(self)
         self.tab_view.setMovable(True)
+        self.tab_view.setTabsClosable(True)
         self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
+        self.tab_view.tabCloseRequested.connect(self.close_tab)
 
         # Properties Tab
         self.properties_tab = QWidget()
@@ -259,17 +284,21 @@ class MPRUN(QMainWindow):
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
 
+        # Layers Tab
+        self.layers_tab = QWidget()
+        self.layers_tab_layout = QVBoxLayout()
+        self.layers_tab.setLayout(self.layers_tab_layout)
+        self.tab_view.addTab(self.layers_tab, 'Layers')
+
         # Elements Tab
         self.elements_tab = QWidget()
         self.elements_tab_layout = QVBoxLayout()
         self.elements_tab.setLayout(self.elements_tab_layout)
-        self.tab_view.addTab(self.elements_tab, 'Elements')
 
         # Vectorize Tab
         self.vectorize_tab = QWidget()
         self.vectorize_tab_layout = QVBoxLayout()
         self.vectorize_tab.setLayout(self.vectorize_tab_layout)
-        self.tab_view.addTab(self.vectorize_tab, 'Vectorizing')
 
         # Libraries Tab
         self.libraries_tab = QWidget()
@@ -546,9 +575,6 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
 
         # Elements Tab Widgets
-        self.elements_tab_layout.addWidget(layers_label)
-        self.elements_tab_layout.addWidget(self.layer_combo)
-        self.elements_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
         self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 15))
         self.elements_tab_layout.addWidget(text_options_label)
         self.elements_tab_layout.addWidget(font_choice_label)
@@ -557,7 +583,13 @@ class MPRUN(QMainWindow):
         self.elements_tab_layout.addWidget(self.font_size_spin)
         self.elements_tab_layout.addWidget(self.font_color_btn)
         self.elements_tab_layout.addWidget(widget4)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 600))
+        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 700))
+
+        # Layers Tab Widgets
+        self.layers_tab_layout.addWidget(layers_label)
+        self.layers_tab_layout.addWidget(self.layer_combo)
+        self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
+        self.layers_tab_layout.addSpacerItem(QSpacerItem(10, 800))
 
         # Vectorize Tab Widgets
         self.vectorize_tab_layout.addWidget(vector_options_label)
@@ -604,6 +636,7 @@ class MPRUN(QMainWindow):
         select_btn.setToolTip('''Select Tool:
         Key-Spacebar''')
         select_btn.setCheckable(True)
+        select_btn.setChecked(True)
         select_btn.setShortcut(QKeySequence(Qt.Key_Space))
         select_btn.triggered.connect(self.use_select)
 
@@ -1839,6 +1872,34 @@ Date:""")
     def show_version(self):
         app = VersionWin()
         app.mainloop()
+
+    def close_tab(self, i):
+        if self.tab_view.count() < 2:
+            return
+
+        self.tab_view.removeTab(i)
+
+    def display_choosen_tab(self, tab_name):
+        for i in range(self.tab_view.count()):
+            if self.tab_view.tabText(i) == tab_name:
+                break
+
+            else:
+                if tab_name == 'Properties':
+                    self.tab_view.addTab(self.properties_tab, tab_name)
+
+                elif tab_name == 'Layers':
+                    self.tab_view.addTab(self.layers_tab, tab_name)
+
+                elif tab_name == 'Libraries':
+                    self.tab_view.addTab(self.libraries_tab, tab_name)
+
+                elif tab_name == 'Elements':
+                    self.tab_view.addTab(self.elements_tab, tab_name)
+
+                elif tab_name == 'Vectorizing':
+                    self.tab_view.addTab(self.vectorize_tab, tab_name)
+
 
 
 if __name__ == '__main__':
