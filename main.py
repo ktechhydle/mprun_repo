@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
+from PyQt5.Qt import *
 from graphics_framework import *
 from custom_classes import *
 from custom_widgets import *
@@ -532,6 +533,12 @@ class MPRUN(QMainWindow):
         self.path_precision_spin.setMinimum(1)
         self.path_precision_spin.setSliderPosition(3)
 
+        # Tree view logic
+        self.layer_tree_view = QTreeView(self)
+        self.layer_tree_view.setHeaderHidden(True)
+        self.layer_tree_model = QStandardItemModel()
+        self.layer_tree_root = self.layer_tree_model.invisibleRootItem()
+
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
@@ -586,6 +593,7 @@ class MPRUN(QMainWindow):
         self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 700))
 
         # Layers Tab Widgets
+        self.layers_tab_layout.addWidget(self.layer_tree_view)
         self.layers_tab_layout.addWidget(layers_label)
         self.layers_tab_layout.addWidget(self.layer_combo)
         self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
@@ -1873,6 +1881,8 @@ Date:""")
         app = VersionWin()
         app.mainloop()
 
+        self.populate_tree_view()
+
     def close_tab(self, i):
         if self.tab_view.count() < 2:
             return
@@ -1899,6 +1909,15 @@ Date:""")
 
                 elif tab_name == 'Vectorizing':
                     self.tab_view.addTab(self.vectorize_tab, tab_name)
+
+    def populate_tree_view(self):
+        # Assuming self.graphics_items is a list of your QGraphicsItems
+        for item in self.canvas.items():
+            z_value = item.zValue()  # Assuming you can retrieve the Z-value
+
+            item_standard_item = StandardItem(f"Layer <{z_value}>")
+
+            self.layer_tree_root.appendRow(item_standard_item)
 
 
 

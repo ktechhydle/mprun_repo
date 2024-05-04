@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
+from PyQt5.Qt import *
 from scipy.interpolate import splprep, splev
 from skimage.measure import *
 import numpy as np
@@ -47,6 +48,12 @@ class RemoveItemCommand(QUndoCommand):
         if self.removed:
             self.scene.addItem(self.item)
             self.removed = False
+
+class StandardItem(QStandardItem):
+    def __init__(self, text):
+        super().__init__()
+
+        self.setText(text)
 
 class item_stack:
     def __init__(self, initial_value=""):

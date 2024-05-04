@@ -146,8 +146,6 @@ QDialogButtonBox QPushButton {
       background-color: #0d66d0;
     }
 
-
-
 QSlider {
   border: None; }
   QSlider:horizontal {
