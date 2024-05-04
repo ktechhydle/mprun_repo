@@ -460,18 +460,12 @@ class MPRUN(QMainWindow):
         self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
         self.font_color_btn.clicked.connect(self.update_font)
-        self.align_left_btn = QPushButton(self)
-        self.align_left_btn.setCheckable(True)
-        self.align_center_btn = QPushButton(self)
-        self.align_center_btn.setCheckable(True)
-        self.align_right_btn = QPushButton(self)
-        self.align_right_btn.setCheckable(True)
-        self.bold_btn = QPushButton('', self)
-        self.bold_btn.setIcon(QIcon('logos and icons/Tool Icons/bold_icon.png'))
-        self.italic_btn = QPushButton('', self)
-        self.italic_btn.setIcon(QIcon('logos and icons/Tool Icons/italic_icon.png'))
-        self.underline_btn = QPushButton('', self)
-        self.underline_btn.setIcon(QIcon('logos and icons/Tool Icons/underline_icon.png'))
+        self.bold_btn = QPushButton('B', self)
+        self.bold_btn.setStyleSheet('font-weight: bold; font-size: 15px;')
+        self.italic_btn = QPushButton('I', self)
+        self.italic_btn.setStyleSheet('font-style: italic; font-size: 15px;')
+        self.underline_btn = QPushButton('U', self)
+        self.underline_btn.setStyleSheet('text-decoration: underline; font-size: 15px;')
         self.bold_btn.setCheckable(True)
         self.italic_btn.setCheckable(True)
         self.underline_btn.setCheckable(True)
@@ -479,12 +473,13 @@ class MPRUN(QMainWindow):
         self.italic_btn.clicked.connect(self.update_font)
         self.underline_btn.clicked.connect(self.update_font)
         widget4 = ToolbarHorizontalLayout()
+        widget4.layout.addWidget(self.font_size_spin)
         widget4.layout.addWidget(self.bold_btn)
         widget4.layout.addWidget(self.italic_btn)
         widget4.layout.addWidget(self.underline_btn)
         font_choice_label = QLabel('Font:', self)
         font_size_label = QLabel('Font Size:', self)
-        font_alignment_label = QLabel('Font Alignment:', self)
+        font_color_label = QLabel('Font Color:')
 
         # Quick action related widgets
         self.stroke_fill_check_btn = QCheckBox(self)
@@ -601,13 +596,9 @@ class MPRUN(QMainWindow):
         self.characters_tab_layout.addWidget(text_options_label)
         self.characters_tab_layout.addWidget(font_choice_label)
         self.characters_tab_layout.addWidget(self.font_choice_combo)
-        self.characters_tab_layout.addWidget(font_size_label)
-        self.characters_tab_layout.addWidget(self.font_size_spin)
+        self.characters_tab_layout.addWidget(font_color_label)
         self.characters_tab_layout.addWidget(self.font_color_btn)
-        self.characters_tab_layout.addWidget(font_alignment_label)
-        self.characters_tab_layout.addWidget(self.align_left_btn)
-        self.characters_tab_layout.addWidget(self.align_center_btn)
-        self.characters_tab_layout.addWidget(self.align_right_btn)
+        self.characters_tab_layout.addWidget(font_size_label)
         self.characters_tab_layout.addWidget(widget4)
         self.characters_tab_layout.addSpacerItem(QSpacerItem(10, 700))
 
@@ -750,11 +741,12 @@ class MPRUN(QMainWindow):
         smooth_btn.triggered.connect(self.use_smooth_path)
 
         # Add Canvas Button
-        add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/add_canvas_icon.png'), '', self)
-        add_canvas_btn.setToolTip('''Add Canvas Tool: 
+        self.add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/add_canvas_icon.png'), '', self)
+        self.add_canvas_btn.setToolTip('''Add Canvas Tool: 
         Key-A''')
-        add_canvas_btn.setShortcut(QKeySequence('A'))
-        add_canvas_btn.triggered.connect(self.use_add_canvas)
+        self.add_canvas_btn.setCheckable(True)
+        self.add_canvas_btn.setShortcut(QKeySequence('A'))
+        self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
         # Insert Button
         insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
@@ -790,7 +782,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(center_item_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(smooth_btn)
-        self.toolbar.addAction(add_canvas_btn)
+        self.toolbar.addAction(self.add_canvas_btn)
         self.toolbar.addSeparator()
         self.toolbar.addAction(insert_btn)
         self.toolbar.addAction(export_btn)
@@ -810,7 +802,7 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(unhide_btn)
         self.action_group.addAction(center_item_btn)
         self.action_group.addAction(smooth_btn)
-        self.action_group.addAction(add_canvas_btn)
+        self.action_group.addAction(self.add_canvas_btn)
         self.action_group.addAction(insert_btn)
         self.action_group.addAction(export_btn)
 
@@ -1447,6 +1439,18 @@ Date:""")
     def use_add_canvas(self):
         self.window = AddCanvasDialog(self.canvas, self.last_paper)
         self.window.show()
+
+        if self.add_canvas_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    for items in item.childItems():
+                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+
+        else:
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    for items in item.childItems():
+                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
 
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():
