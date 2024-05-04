@@ -192,6 +192,9 @@ class MPRUN(QMainWindow):
         libraries_action = QAction('Libraries', self)
         libraries_action.triggered.connect(lambda: self.display_choosen_tab('Libraries'))
 
+        characters_action = QAction('Characters', self)
+        characters_action.triggered.connect(lambda: self.display_choosen_tab('Characters'))
+
         elements_action = QAction('Elements', self)
         elements_action.triggered.connect(lambda: self.display_choosen_tab('Elements'))
 
@@ -250,6 +253,7 @@ class MPRUN(QMainWindow):
         self.window_menu.addAction(properties_action)
         self.window_menu.addAction(layers_action)
         self.window_menu.addAction(libraries_action)
+        self.window_menu.addAction(characters_action)
         self.window_menu.addAction(elements_action)
         self.window_menu.addAction(vectorizing_action)
 
@@ -291,6 +295,11 @@ class MPRUN(QMainWindow):
         self.layers_tab.setLayout(self.layers_tab_layout)
         self.tab_view.addTab(self.layers_tab, 'Layers')
 
+        # Characters Tab
+        self.characters_tab = QWidget()
+        self.characters_tab_layout = QVBoxLayout()
+        self.characters_tab.setLayout(self.characters_tab_layout)
+
         # Elements Tab
         self.elements_tab = QWidget()
         self.elements_tab_layout = QVBoxLayout()
@@ -324,7 +333,7 @@ class MPRUN(QMainWindow):
         layers_label.setStyleSheet("QLabel { font-size: 20px;}")
         layers_label.setAlignment(Qt.AlignLeft)
 
-        text_options_label = QLabel('Text', self)
+        text_options_label = QLabel('Characters', self)
         text_options_label.setStyleSheet("QLabel { font-size: 20px;}")
         text_options_label.setAlignment(Qt.AlignLeft)
 
@@ -451,6 +460,12 @@ class MPRUN(QMainWindow):
         self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
         self.font_color_btn.clicked.connect(self.update_font)
+        self.align_left_btn = QPushButton(self)
+        self.align_left_btn.setCheckable(True)
+        self.align_center_btn = QPushButton(self)
+        self.align_center_btn.setCheckable(True)
+        self.align_right_btn = QPushButton(self)
+        self.align_right_btn.setCheckable(True)
         self.bold_btn = QPushButton('', self)
         self.bold_btn.setIcon(QIcon('logos and icons/Tool Icons/bold_icon.png'))
         self.italic_btn = QPushButton('', self)
@@ -469,6 +484,7 @@ class MPRUN(QMainWindow):
         widget4.layout.addWidget(self.underline_btn)
         font_choice_label = QLabel('Font:', self)
         font_size_label = QLabel('Font Size:', self)
+        font_alignment_label = QLabel('Font Alignment:', self)
 
         # Quick action related widgets
         self.stroke_fill_check_btn = QCheckBox(self)
@@ -582,15 +598,18 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
 
         # Elements Tab Widgets
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 15))
-        self.elements_tab_layout.addWidget(text_options_label)
-        self.elements_tab_layout.addWidget(font_choice_label)
-        self.elements_tab_layout.addWidget(self.font_choice_combo)
-        self.elements_tab_layout.addWidget(font_size_label)
-        self.elements_tab_layout.addWidget(self.font_size_spin)
-        self.elements_tab_layout.addWidget(self.font_color_btn)
-        self.elements_tab_layout.addWidget(widget4)
-        self.elements_tab_layout.addSpacerItem(QSpacerItem(10, 700))
+        self.characters_tab_layout.addWidget(text_options_label)
+        self.characters_tab_layout.addWidget(font_choice_label)
+        self.characters_tab_layout.addWidget(self.font_choice_combo)
+        self.characters_tab_layout.addWidget(font_size_label)
+        self.characters_tab_layout.addWidget(self.font_size_spin)
+        self.characters_tab_layout.addWidget(self.font_color_btn)
+        self.characters_tab_layout.addWidget(font_alignment_label)
+        self.characters_tab_layout.addWidget(self.align_left_btn)
+        self.characters_tab_layout.addWidget(self.align_center_btn)
+        self.characters_tab_layout.addWidget(self.align_right_btn)
+        self.characters_tab_layout.addWidget(widget4)
+        self.characters_tab_layout.addSpacerItem(QSpacerItem(10, 700))
 
         # Layers Tab Widgets
         self.layers_tab_layout.addWidget(self.layer_tree_view)
@@ -1880,6 +1899,9 @@ Date:""")
 
                 elif tab_name == 'Libraries':
                     self.tab_view.addTab(self.libraries_tab, tab_name)
+
+                elif tab_name == 'Characters':
+                    self.tab_view.addTab(self.characters_tab, tab_name)
 
                 elif tab_name == 'Elements':
                     self.tab_view.addTab(self.elements_tab, tab_name)
