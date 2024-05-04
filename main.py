@@ -1165,6 +1165,8 @@ Date:""")
         self.fill_color.set('white')
         self.outline_color.set('white')
 
+        self.erase_btn.setChecked(True)
+
     def use_label(self):
         self.label_btn.setChecked(True)
 
