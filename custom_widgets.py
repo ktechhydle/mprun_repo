@@ -9,3 +9,9 @@ class ToolbarHorizontalLayout(QWidget):
 
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
+
+class CustomColorPicker(QColorDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.setOption(QColorDialog.ShowAlphaChannel, True)

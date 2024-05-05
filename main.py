@@ -55,10 +55,12 @@ class MPRUN(QMainWindow):
         self.create_toolbar2()
         self.create_toolbar3()
         self.create_view()
+        self.create_default_objects()
 
     def create_initial_canvas(self):
         # Canvas, canvas color
         self.canvas = CustomGraphicsScene(self.undo_stack)
+        self.canvas.selectionChanged.connect(self.update_appearance_ui)
 
     def create_menu(self):
         # Create menus
@@ -195,9 +197,6 @@ class MPRUN(QMainWindow):
         characters_action = QAction('Characters', self)
         characters_action.triggered.connect(lambda: self.display_choosen_tab('Characters'))
 
-        elements_action = QAction('Elements', self)
-        elements_action.triggered.connect(lambda: self.display_choosen_tab('Elements'))
-
         vectorizing_action = QAction('Vectorizing', self)
         vectorizing_action.triggered.connect(lambda: self.display_choosen_tab('Vectorizing'))
 
@@ -254,7 +253,6 @@ class MPRUN(QMainWindow):
         self.window_menu.addAction(layers_action)
         self.window_menu.addAction(libraries_action)
         self.window_menu.addAction(characters_action)
-        self.window_menu.addAction(elements_action)
         self.window_menu.addAction(vectorizing_action)
 
     def init_toolbars(self):
@@ -299,11 +297,6 @@ class MPRUN(QMainWindow):
         self.characters_tab = QWidget()
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
-
-        # Elements Tab
-        self.elements_tab = QWidget()
-        self.elements_tab_layout = QVBoxLayout()
-        self.elements_tab.setLayout(self.elements_tab_layout)
 
         # Vectorize Tab
         self.vectorize_tab = QWidget()
@@ -456,6 +449,10 @@ class MPRUN(QMainWindow):
         self.font_size_spin.setValue(20)
         self.font_size_spin.setMaximum(1000)
         self.font_size_spin.setMinimum(1)
+        self.font_letter_spacing_spin = QSpinBox(self)
+        self.font_letter_spacing_spin.setValue(1)
+        self.font_letter_spacing_spin.setMaximum(1000)
+        self.font_letter_spacing_spin.setMinimum(1)
         self.font_color_btn = QPushButton('', self)
         self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
@@ -479,6 +476,7 @@ class MPRUN(QMainWindow):
         widget4.layout.addWidget(self.underline_btn)
         font_choice_label = QLabel('Font:', self)
         font_size_label = QLabel('Font Size:', self)
+        font_spacing_label = QLabel('Font Spacing:', self)
         font_color_label = QLabel('Font Color:')
 
         # Quick action related widgets
@@ -544,18 +542,13 @@ class MPRUN(QMainWindow):
         self.path_precision_spin.setMinimum(1)
         self.path_precision_spin.setSliderPosition(3)
 
-        # Tree view logic
-        self.layer_tree_view = QTreeView(self)
-        self.layer_tree_view.setHeaderHidden(True)
-        self.layer_tree_model = QStandardItemModel()
-        self.layer_tree_root = self.layer_tree_model.invisibleRootItem()
-
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_fill_check_btn.clicked.connect(self.update_pen)
         self.font_size_spin.valueChanged.connect(self.update_font)
+        self.font_letter_spacing_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
         self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
@@ -600,10 +593,11 @@ class MPRUN(QMainWindow):
         self.characters_tab_layout.addWidget(self.font_color_btn)
         self.characters_tab_layout.addWidget(font_size_label)
         self.characters_tab_layout.addWidget(widget4)
+        self.characters_tab_layout.addWidget(font_spacing_label)
+        self.characters_tab_layout.addWidget(self.font_letter_spacing_spin)
         self.characters_tab_layout.addSpacerItem(QSpacerItem(10, 700))
 
         # Layers Tab Widgets
-        self.layers_tab_layout.addWidget(self.layer_tree_view)
         self.layers_tab_layout.addWidget(layers_label)
         self.layers_tab_layout.addWidget(self.layer_combo)
         self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
@@ -679,7 +673,8 @@ class MPRUN(QMainWindow):
         self.path_btn.setToolTip('''Path Draw Tool:
         Key-L''')
         self.path_btn.setShortcut(QKeySequence('L'))
-        self.path_btn.triggered.connect(self.use_path)  # Connect to method to toggle path drawing
+        self.path_btn.triggered.connect(self.update_pen)
+        self.path_btn.triggered.connect(self.use_path)
 
         # Label draw button
         self.label_btn = QAction(QIcon('logos and icons/Tool Icons/line_and_label_icon.png'), "", self)
@@ -687,6 +682,7 @@ class MPRUN(QMainWindow):
         self.label_btn.setToolTip('''Line and Label Tool:
         Key-T''')
         self.label_btn.setShortcut(QKeySequence('T'))
+        self.label_btn.triggered.connect(self.update_font)
         self.label_btn.triggered.connect(self.use_label)  # Connect to method to toggle path drawing
 
         # Add Text Button
@@ -695,6 +691,7 @@ class MPRUN(QMainWindow):
         Command+T (MacOS) or Control+T (Windows)''')
         self.add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
         self.add_text_btn.setCheckable(True)
+        self.add_text_btn.triggered.connect(self.update_font)
         self.add_text_btn.triggered.connect(self.use_text)
 
         # Erase Button
@@ -703,6 +700,7 @@ class MPRUN(QMainWindow):
         Key-E''')
         self.erase_btn.setCheckable(True)
         self.erase_btn.setShortcut(QKeySequence('E'))
+        self.erase_btn.triggered.connect(self.update_pen)
         self.erase_btn.triggered.connect(self.use_erase)
 
         # Duplicate Button
@@ -829,6 +827,7 @@ class MPRUN(QMainWindow):
         font = QFont()
         font.setFamily(self.font_choice_combo.currentText())
         font.setPixelSize(self.font_size_spin.value())
+        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
         font.setBold(True if self.bold_btn.isChecked() else False)
         font.setItalic(True if self.italic_btn.isChecked() else False)
         font.setUnderline(True if self.underline_btn.isChecked() else False)
@@ -840,52 +839,6 @@ class MPRUN(QMainWindow):
         # Use default tools, set central widget
         self.use_select()
         self.setCentralWidget(self.canvas_view)
-
-        # Drawing paper
-        self.paper = CanvasItem(0, 0, 1000, 700)
-        brush = QBrush(QColor('white'))
-        pen = QPen(QColor('white'), 2, Qt.SolidLine)
-        self.paper.setBrush(brush)
-        self.paper.setPen(pen)
-        self.paper.setZValue(-1)
-        self.paper.setToolTip('Canvas 1')
-        self.canvas.addItem(self.paper)
-        self.last_paper = self.paper
-        self.stored_center_item = self.paper.boundingRect()
-
-        # Text on paper
-        self.paper_text = EditableTextBlock("""Run #:
-Page #:
-Competition:
-Athlete:
-Date:""")
-        self.paper_text.setPos(2, 2)
-        self.paper_text.setDefaultTextColor(QColor('black'))
-        self.paper_text.setFont(QFont("Helvetica", 9))
-        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-        self.paper_text.setZValue(-1)
-        self.paper_text.setToolTip(f"Editable Text Block")
-        self.paper_text.setParentItem(self.paper)
-        self.canvas.addItem(self.paper_text)
-
-        self.text_item = EditableTextBlock('Canvas 1')
-        self.text_item.setZValue(-1)
-        self.text_item.setParentItem(self.paper)
-        self.text_item.setDefaultTextColor(QColor('black'))
-        self.text_item.setScale(1.5)
-        self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-        self.text_item.set_locked()
-
-        # If the Path Button is checked, update!!
-        if self.path_btn.isChecked():
-            self.update_pen()
-
-        if self.label_btn.isChecked():
-            self.update_font()
-
-        # Refit view after everything
-        self.use_refit_screen()
 
         # Context menu for view
         name_action = QAction('Name', self)
@@ -945,6 +898,53 @@ Date:""")
         self.canvas_view.addAction(hide_action)
         self.canvas_view.addAction(unhide_action)
         self.canvas_view.addAction(select_all_action)
+
+    def create_default_objects(self):
+        font = QFont()
+        font.setFamily(self.font_choice_combo.currentText())
+        font.setPixelSize(self.font_size_spin.value())
+        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
+        font.setBold(True if self.bold_btn.isChecked() else False)
+        font.setItalic(True if self.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.underline_btn.isChecked() else False)
+
+        # Drawing paper
+        self.paper = CanvasItem(0, 0, 1000, 700)
+        brush = QBrush(QColor('white'))
+        pen = QPen(QColor('white'), 2, Qt.SolidLine)
+        self.paper.setBrush(brush)
+        self.paper.setPen(pen)
+        self.paper.setZValue(-1)
+        self.paper.setToolTip('Canvas 1')
+        self.canvas.addItem(self.paper)
+        self.last_paper = self.paper
+        self.stored_center_item = self.paper.boundingRect()
+
+        # Text on paper
+        self.paper_text = EditableTextBlock("""Run #:
+Page #:
+Competition:
+Athlete:
+Date:""")
+        self.paper_text.setPos(2, 2)
+        self.paper_text.setDefaultTextColor(QColor('black'))
+        self.paper_text.setFont(font)
+        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.paper_text.setZValue(-1)
+        self.paper_text.setToolTip(f"Editable Text Block")
+        self.paper_text.setParentItem(self.paper)
+        self.canvas.addItem(self.paper_text)
+
+        self.text_item = EditableTextBlock('Canvas 1')
+        self.text_item.setZValue(-1)
+        self.text_item.setParentItem(self.paper)
+        self.text_item.setDefaultTextColor(QColor('black'))
+        self.text_item.setScale(1.5)
+        self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
+        self.text_item.set_locked()
+
+        self.use_refit_screen()
 
     def keyPressEvent(self, event):
         if event.key() == QKeySequence('Backspace'):
@@ -1015,17 +1015,6 @@ Date:""")
 
                     else:
                         item.setBrush(QBrush(QColor(Qt.transparent)))
-
-                elif isinstance(item, EditableTextBlock):
-                    font = QFont()
-                    font.setFamily(self.font_choice_combo.currentText())
-                    font.setPixelSize(self.font_size_spin.value())
-                    font.setBold(True if self.bold_btn.isChecked() else False)
-                    font.setItalic(True if self.italic_btn.isChecked() else False)
-                    font.setUnderline(True if self.underline_btn.isChecked() else False)
-
-                    item.setFont(font)
-                    item.setDefaultTextColor(QColor(self.font_color.get()))
 
                 elif isinstance(item, CustomCircleItem):
                     index1 = self.stroke_style_combo.currentIndex()
@@ -1099,6 +1088,7 @@ Date:""")
         font = QFont()
         font.setFamily(self.font_choice_combo.currentText())
         font.setPixelSize(self.font_size_spin.value())
+        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
         font.setBold(True if self.bold_btn.isChecked() else False)
         font.setItalic(True if self.italic_btn.isChecked() else False)
         font.setUnderline(True if self.underline_btn.isChecked() else False)
@@ -1120,8 +1110,102 @@ Date:""")
             else:
                 self.gsnap_grid_size = value
 
+    def update_appearance_ui(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CustomPathItem):
+                pen = item.pen()
+                brush = item.brush()
+                index1 = self.stroke_style_combo.currentIndex()
+                data1 = self.stroke_style_combo.itemData(index1)
+                index2 = self.stroke_pencap_combo.currentIndex()
+                data2 = self.stroke_pencap_combo.itemData(index2)
+
+                # Set Colors
+                self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                self.outline_color.set(pen.color().name())
+                self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                self.fill_color.set(brush.color().name())
+
+                # Set Values
+                self.stroke_size_spin.setValue(pen.width())
+
+                for index, (style, value) in enumerate(self.stroke_style_options.items()):
+                    if pen.style() == value:
+                        self.stroke_style_combo.setCurrentIndex(index)
+
+                for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
+                    if pen.capStyle() == v:
+                        self.stroke_pencap_combo.setCurrentIndex(i)
+
+            elif isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, CustomCircleItem):
+                if item.childItems():
+                    for child in item.childItems():
+                        pen = item.pen()
+                        brush = item.brush()
+                        index1 = self.stroke_style_combo.currentIndex()
+                        data1 = self.stroke_style_combo.itemData(index1)
+                        index2 = self.stroke_pencap_combo.currentIndex()
+                        data2 = self.stroke_pencap_combo.itemData(index2)
+
+                        # Set Colors
+                        self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                        self.outline_color.set(pen.color().name())
+                        self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                        self.fill_color.set(brush.color().name())
+
+                        # Set Values
+                        self.stroke_size_spin.setValue(pen.width())
+
+                        for index, (style, value) in enumerate(self.stroke_style_options.items()):
+                            if pen.style() == value:
+                                self.stroke_style_combo.setCurrentIndex(index)
+
+                        for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
+                            if pen.capStyle() == v:
+                                self.stroke_pencap_combo.setCurrentIndex(i)
+
+                else:
+                    pen = item.pen()
+                    brush = item.brush()
+                    index1 = self.stroke_style_combo.currentIndex()
+                    data1 = self.stroke_style_combo.itemData(index1)
+                    index2 = self.stroke_pencap_combo.currentIndex()
+                    data2 = self.stroke_pencap_combo.itemData(index2)
+
+                    # Set Colors
+                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.outline_color.set(pen.color().name())
+                    self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                    self.fill_color.set(brush.color().name())
+
+                    # Set Values
+                    self.stroke_size_spin.setValue(pen.width())
+
+                    for index, (style, value) in enumerate(self.stroke_style_options.items()):
+                        if pen.style() == value:
+                            self.stroke_style_combo.setCurrentIndex(index)
+
+                    for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
+                        if pen.capStyle() == v:
+                            self.stroke_pencap_combo.setCurrentIndex(i)
+
+            elif isinstance(item, EditableTextBlock):
+                font = item.font()
+                color = item.defaultTextColor().name()
+
+                self.font_color_btn.setStyleSheet(f'background-color: {color};')
+                self.font_choice_combo.setCurrentText(font.family())
+                self.font_size_spin.setValue(font.pixelSize())
+                self.font_letter_spacing_spin.setValue(int(font.letterSpacing()))
+                self.bold_btn.setChecked(True if font.bold() else False)
+                self.italic_btn.setChecked(True if font.italic() else False)
+                self.underline_btn.setChecked(True if font.underline() else False)
+
     def stroke_color_chooser(self):
-        color_dialog = QColorDialog(self)
+        color_dialog = CustomColorPicker()
         color_dialog.setWindowTitle('Stroke Color')
 
         if color_dialog.exec_():
@@ -1905,20 +1989,8 @@ Date:""")
                 elif tab_name == 'Characters':
                     self.tab_view.addTab(self.characters_tab, tab_name)
 
-                elif tab_name == 'Elements':
-                    self.tab_view.addTab(self.elements_tab, tab_name)
-
                 elif tab_name == 'Vectorizing':
                     self.tab_view.addTab(self.vectorize_tab, tab_name)
-
-    def populate_tree_view(self):
-        # Assuming self.graphics_items is a list of your QGraphicsItems
-        for item in self.canvas.items():
-            z_value = item.zValue()  # Assuming you can retrieve the Z-value
-
-            item_standard_item = StandardItem(f"Layer <{z_value}>")
-
-            self.layer_tree_root.appendRow(item_standard_item)
 
 
 
