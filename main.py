@@ -959,6 +959,7 @@ Date:""")
                 action.setChecked(False)
 
             self.select_btn.setChecked(True)
+            self.use_select()
 
         elif event.key() == QKeySequence('Z'):
             self.gsnap_check_btn.setChecked(False) if self.gsnap_check_btn.isChecked() else self.gsnap_check_btn.setChecked(True)
@@ -1447,6 +1448,7 @@ Date:""")
             if isinstance(item, CanvasItem):
                 for items in item.childItems():
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():

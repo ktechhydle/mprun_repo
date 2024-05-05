@@ -319,6 +319,7 @@ y: {int(p.y())}''')
                 if isinstance(item, CanvasItem):
                     for items in item.childItems():
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
         elif not self.add_canvas_btn.isChecked():
             for item in self.canvas.items():
@@ -326,6 +327,7 @@ y: {int(p.y())}''')
                     for items in item.childItems():
                         items.parentItem().setSelected(False)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
+                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
 class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, undoStack):
