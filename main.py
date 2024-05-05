@@ -1115,10 +1115,6 @@ Date:""")
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
                 brush = item.brush()
-                index1 = self.stroke_style_combo.currentIndex()
-                data1 = self.stroke_style_combo.itemData(index1)
-                index2 = self.stroke_pencap_combo.currentIndex()
-                data2 = self.stroke_pencap_combo.itemData(index2)
 
                 # Set Colors
                 self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
@@ -1145,10 +1141,6 @@ Date:""")
                     for child in item.childItems():
                         pen = item.pen()
                         brush = item.brush()
-                        index1 = self.stroke_style_combo.currentIndex()
-                        data1 = self.stroke_style_combo.itemData(index1)
-                        index2 = self.stroke_pencap_combo.currentIndex()
-                        data2 = self.stroke_pencap_combo.itemData(index2)
 
                         # Set Colors
                         self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
@@ -1170,10 +1162,6 @@ Date:""")
                 else:
                     pen = item.pen()
                     brush = item.brush()
-                    index1 = self.stroke_style_combo.currentIndex()
-                    data1 = self.stroke_style_combo.itemData(index1)
-                    index2 = self.stroke_pencap_combo.currentIndex()
-                    data2 = self.stroke_pencap_combo.itemData(index2)
 
                     # Set Colors
                     self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
