@@ -650,13 +650,13 @@ class MPRUN(QMainWindow):
         icon.triggered.connect(self.use_rotate_screen)
 
         # Select Button
-        select_btn = QAction(QIcon('logos and icons/Tool Icons/selection_icon.png'), '', self)
-        select_btn.setToolTip('''Select Tool:
+        self.select_btn = QAction(QIcon('logos and icons/Tool Icons/selection_icon.png'), '', self)
+        self.select_btn.setToolTip('''Select Tool:
         Key-Spacebar''')
-        select_btn.setCheckable(True)
-        select_btn.setChecked(True)
-        select_btn.setShortcut(QKeySequence(Qt.Key_Space))
-        select_btn.triggered.connect(self.use_select)
+        self.select_btn.setCheckable(True)
+        self.select_btn.setChecked(True)
+        self.select_btn.setShortcut(QKeySequence(Qt.Key_Space))
+        self.select_btn.triggered.connect(self.use_select)
 
         # Pan Button
         pan_btn = QAction(QIcon('logos and icons/Tool Icons/pan_icon.png'), '', self)
@@ -767,7 +767,7 @@ class MPRUN(QMainWindow):
         # Add toolbar actions
         self.toolbar.addAction(icon)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(select_btn)
+        self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(pan_btn)
         self.toolbar.addAction(refit_btn)
         self.toolbar.addSeparator()
@@ -790,7 +790,7 @@ class MPRUN(QMainWindow):
 
         # Action Group
         self.action_group.addAction(icon)
-        self.action_group.addAction(select_btn)
+        self.action_group.addAction(self.select_btn)
         self.action_group.addAction(pan_btn)
         self.action_group.addAction(refit_btn)
         self.action_group.addAction(self.path_btn)
@@ -816,7 +816,8 @@ class MPRUN(QMainWindow):
                                               self.label_btn,
                                               self.stroke_fill_check_btn,
                                               self.add_text_btn,
-                                              self.erase_btn)
+                                              self.erase_btn,
+                                              self.add_canvas_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -953,9 +954,11 @@ Date:""")
 
         elif event.key() == QKeySequence('Escape'):
             self.canvas.clearSelection()
+
             for action in self.action_group.actions():
                 action.setChecked(False)
-                self.canvas_view.setDragMode(QGraphicsView.NoDrag)
+
+            self.select_btn.setChecked(True)
 
         elif event.key() == QKeySequence('Z'):
             self.gsnap_check_btn.setChecked(False) if self.gsnap_check_btn.isChecked() else self.gsnap_check_btn.setChecked(True)
@@ -1440,17 +1443,10 @@ Date:""")
         self.window = AddCanvasDialog(self.canvas, self.last_paper)
         self.window.show()
 
-        if self.add_canvas_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    for items in item.childItems():
-                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-
-        else:
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    for items in item.childItems():
-                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                for items in item.childItems():
+                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():

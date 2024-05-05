@@ -6,7 +6,7 @@ from custom_classes import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, button3, button4, erase_btn):
+    def __init__(self, canvas, button, button2, button3, button4, erase_btn, add_canvas_btn):
         super().__init__()
         self.points = []
 
@@ -24,6 +24,7 @@ class CustomGraphicsView(QGraphicsView):
         self.button3 = button3
         self.text_btn = button4
         self.erase_btn = erase_btn
+        self.add_canvas_btn = add_canvas_btn
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
@@ -61,6 +62,8 @@ class CustomGraphicsView(QGraphicsView):
 
         elif self.text_btn.isChecked():
             self.on_add_text(event)
+
+        self.on_add_canvas(event)
 
         super().mousePressEvent(event)
 
@@ -309,6 +312,20 @@ y: {int(p.y())}''')
         text.setPos(pos)
 
         text = None
+
+    def on_add_canvas(self, event):
+        if self.add_canvas_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    for items in item.childItems():
+                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+
+        elif not self.add_canvas_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    for items in item.childItems():
+                        items.parentItem().setSelected(False)
+                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
 
 class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, undoStack):

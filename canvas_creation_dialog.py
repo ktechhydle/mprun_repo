@@ -8,6 +8,8 @@ class AddCanvasDialog(QWidget):
     def __init__(self, canvas, og_rect):
         super().__init__()
 
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+
         self.canvas = canvas
         self.paper = og_rect
 
