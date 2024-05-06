@@ -28,7 +28,7 @@ class CustomGraphicsView(QGraphicsView):
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
-        self.stroke_fill_color = None
+        self.stroke_fill = None
         self.font = None
         self.font = None
         self.layer_height = None
@@ -43,8 +43,8 @@ class CustomGraphicsView(QGraphicsView):
     def update_pen(self, pen):
         self.pen = pen
 
-    def update_stroke_fill_color(self, color):
-        self.stroke_fill_color = color
+    def update_stroke_fill_color(self, brush):
+        self.stroke_fill = brush
 
     def update_font(self, font, color):
         self.font = font
@@ -168,7 +168,7 @@ y: {int(p.y())}''')
             self.temp_path_item = CustomPathItem(self.path)
             self.temp_path_item.setPen(self.pen)
             if self.button3.isChecked():
-                self.temp_path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
+                self.temp_path_item.setBrush(self.stroke_fill)
             self.temp_path_item.setZValue(0)
             self.canvas.addItem(self.temp_path_item)
 
@@ -197,7 +197,7 @@ y: {int(p.y())}''')
 
             # If stroke fill button is checked, set the brush
             if self.button3.isChecked():
-                path_item.setBrush(QBrush(QColor(self.stroke_fill_color)))
+                path_item.setBrush(self.stroke_fill)
 
             # Add item
             add_command = AddItemCommand(self.canvas, path_item)

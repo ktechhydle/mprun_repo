@@ -82,12 +82,14 @@ class MPRUN(QMainWindow):
 
         # Create file actions
         insert_action = QAction('Insert', self)
+        insert_action.setShortcut(QKeySequence('I'))
         insert_action.triggered.connect(self.insert_image)
 
         add_canvas_action = QAction('Add Canvas', self)
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
         export_action = QAction('Export', self)
+        export_action.setShortcut(QKeySequence('Ctrl+E'))
         export_action.triggered.connect(self.choose_export)
 
         close_action = QAction('Close', self)
@@ -131,6 +133,7 @@ class MPRUN(QMainWindow):
         name_action.triggered.connect(self.use_name_item)
 
         duplicate_action = QAction('Duplicate', self)
+        duplicate_action.setShortcut(QKeySequence("D"))
         duplicate_action.triggered.connect(self.use_duplicate)
 
         group_action = QAction('Group Selected', self)
@@ -166,6 +169,7 @@ class MPRUN(QMainWindow):
         permanent_lock_action.triggered.connect(self.permanent_lock_item)
 
         center_action = QAction('Center', self)
+        center_action.setShortcut(QKeySequence("C"))
         center_action.triggered.connect(self.use_center_item)
 
         element_center_action = QAction('Set Default Center', self)
@@ -259,7 +263,7 @@ class MPRUN(QMainWindow):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea)
+        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.TopToolBarArea)
         self.toolbar.setFloatable(True)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
@@ -269,6 +273,13 @@ class MPRUN(QMainWindow):
         self.action_toolbar.setFixedWidth(300)
         self.action_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
+
+        # View Toolbar
+        self.view_toolbar = QToolBar('MPRUN View Toolbar')
+        self.view_toolbar.setMovable(False)
+        self.view_toolbar.setFixedHeight(40)
+        self.view_toolbar.setStyleSheet('padding: 1px;')
+        self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.view_toolbar)
 
     def create_toolbar1(self):
         #----action toolbar widgets----#
@@ -381,13 +392,18 @@ class MPRUN(QMainWindow):
         self.entry3.textChanged.connect(self.use_scale_y)
         self.entry3.setPlaceholderText("Vertical scale factor")
 
-        # Fill Color Button
+        # Fill Widgets
         self.fill_color_btn = QPushButton('', self)
         self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         self.fill_color.set('#00ff00')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
+        self.fill_transparent_btn = QPushButton('Fill Transparent', self)
+        self.fill_transparent_btn.clicked.connect(self.use_fill_transparent)
+        widget5 = ToolbarHorizontalLayout()
+        widget5.layout.addWidget(self.fill_color_btn)
+        widget5.layout.addWidget(self.fill_transparent_btn)
 
         # Layer Combobox
         self.layer_options = {'Layer 0 (Default)': 0, 'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2,
@@ -439,6 +455,9 @@ class MPRUN(QMainWindow):
         self.stroke_size_spin.setValue(3)
         self.stroke_size_spin.setMaximum(1000)
         self.stroke_size_spin.setMinimum(1)
+        widget6 = ToolbarHorizontalLayout()
+        widget6.layout.addWidget(self.outline_color_btn)
+        widget6.layout.addWidget(self.stroke_size_spin)
         stroke_size_label = QLabel('Stroke Size:', self)
         stroke_attributes_label = QLabel('Stroke Attributes:', self)
         fill_attributes_label = QLabel('Fill Attributes:', self)
@@ -568,13 +587,12 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
         self.properties_tab_layout.addWidget(appearence_label)
         self.properties_tab_layout.addWidget(stroke_size_label)
-        self.properties_tab_layout.addWidget(self.stroke_size_spin)
+        self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(stroke_attributes_label)
-        self.properties_tab_layout.addWidget(self.outline_color_btn)
         self.properties_tab_layout.addWidget(self.stroke_style_combo)
         self.properties_tab_layout.addWidget(self.stroke_pencap_combo)
         self.properties_tab_layout.addWidget(fill_attributes_label)
-        self.properties_tab_layout.addWidget(self.fill_color_btn)
+        self.properties_tab_layout.addWidget(widget5)
         self.properties_tab_layout.addWidget(opacity_label)
         self.properties_tab_layout.addWidget(self.opacity_slider)
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
@@ -636,13 +654,6 @@ class MPRUN(QMainWindow):
 
         #----toolbar buttons----#
 
-        # Rotate Screen Button
-        icon = QAction(QIcon('logos and icons/Tool Icons/rotate_screen_icon.png'), '', self)
-        icon.setToolTip('''Rotate View:
-        Command+R (MacOS) or Control+R (Windows)''')
-        icon.setShortcut(QKeySequence('Ctrl+R'))
-        icon.triggered.connect(self.use_rotate_screen)
-
         # Select Button
         self.select_btn = QAction(QIcon('logos and icons/Tool Icons/selection_icon.png'), '', self)
         self.select_btn.setToolTip('''Select Tool:
@@ -660,15 +671,8 @@ class MPRUN(QMainWindow):
         pan_btn.setShortcut(QKeySequence("P"))
         pan_btn.triggered.connect(self.use_pan)
 
-        # Refit Button
-        refit_btn = QAction(QIcon('logos and icons/Tool Icons/refit_view_icon.png'), '', self)
-        refit_btn.setToolTip('''Refit View Tool:
-        Key-W''')
-        refit_btn.setShortcut(QKeySequence("W"))
-        refit_btn.triggered.connect(self.use_refit_screen)
-
         # Path draw button
-        self.path_btn = QAction(QIcon('logos and icons/Tool Icons/path_draw_icon.png'), '', self)
+        self.path_btn = QAction(QIcon('logos and icons/Tool Icons/pen_tool_icon.png'), '', self)
         self.path_btn.setCheckable(True)
         self.path_btn.setToolTip('''Path Draw Tool:
         Key-L''')
@@ -677,7 +681,7 @@ class MPRUN(QMainWindow):
         self.path_btn.triggered.connect(self.use_path)
 
         # Label draw button
-        self.label_btn = QAction(QIcon('logos and icons/Tool Icons/line_and_label_icon.png'), "", self)
+        self.label_btn = QAction(QIcon('logos and icons/Tool Icons/label_icon.png'), "", self)
         self.label_btn.setCheckable(True)
         self.label_btn.setToolTip('''Line and Label Tool:
         Key-T''')
@@ -703,13 +707,6 @@ class MPRUN(QMainWindow):
         self.erase_btn.triggered.connect(self.update_pen)
         self.erase_btn.triggered.connect(self.use_erase)
 
-        # Duplicate Button
-        duplicate_btn = QAction(QIcon('logos and icons/Tool Icons/duplicate_icon.png'), '', self)
-        duplicate_btn.setToolTip('''Duplicate Tool:
-        Key-D''')
-        duplicate_btn.setShortcut(QKeySequence("D"))
-        duplicate_btn.triggered.connect(self.use_duplicate)
-
         # Hide Button
         hide_btn = QAction(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
         hide_btn.setToolTip('''Hide Element Tool: 
@@ -724,15 +721,8 @@ class MPRUN(QMainWindow):
         unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
         unhide_btn.triggered.connect(self.use_unhide_all)
 
-        # Center Item Button
-        center_item_btn = QAction(QIcon('logos and icons/Tool Icons/center_item_icon.png'), '', self)
-        center_item_btn.setToolTip('''Center Element Tool:
-        Key-C''')
-        center_item_btn.setShortcut(QKeySequence("C"))
-        center_item_btn.triggered.connect(self.use_center_item)
-
         # Smooth Button
-        smooth_btn = QAction(QIcon('logos and icons/Tool Icons/simplify_icon.png'), '', self)
+        smooth_btn = QAction(QIcon('logos and icons/Tool Icons/smooth_path_icon.png'), '', self)
         smooth_btn.setToolTip('''Smooth Path Tool: 
         Key-S''')
         smooth_btn.setShortcut(QKeySequence('S'))
@@ -746,66 +736,57 @@ class MPRUN(QMainWindow):
         self.add_canvas_btn.setShortcut(QKeySequence('A'))
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
-        # Insert Button
-        insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_icon.png'), '', self)
-        insert_btn.setToolTip('''Insert Tool:
-        Key-I''')
-        insert_btn.setShortcut(QKeySequence('I'))
-        insert_btn.triggered.connect(self.insert_image)
-
-        # Export Button
-        export_btn = QAction(QIcon('logos and icons/Tool Icons/export_icon.png'), '', self)
-        export_btn.setToolTip('''Export Tool:
-        Command+E (MacOS) or Control+E (Windows)''')
-        export_btn.setShortcut(QKeySequence('Ctrl+E'))
-        export_btn.triggered.connect(self.choose_export)
-
         # ----add actions----#
 
         # Add toolbar actions
-        self.toolbar.addAction(icon)
-        self.toolbar.addSeparator()
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(pan_btn)
-        self.toolbar.addAction(refit_btn)
-        self.toolbar.addSeparator()
         self.toolbar.addAction(self.path_btn)
         self.toolbar.addAction(self.erase_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
-        self.toolbar.addSeparator()
-        self.toolbar.addAction(duplicate_btn)
         self.toolbar.addAction(hide_btn)
         self.toolbar.addAction(unhide_btn)
-        self.toolbar.addAction(center_item_btn)
-        self.toolbar.addSeparator()
         self.toolbar.addAction(smooth_btn)
         self.toolbar.addAction(self.add_canvas_btn)
-        self.toolbar.addSeparator()
-        self.toolbar.addAction(insert_btn)
-        self.toolbar.addAction(export_btn)
-        self.toolbar.addSeparator()
 
         # Action Group
-        self.action_group.addAction(icon)
         self.action_group.addAction(self.select_btn)
         self.action_group.addAction(pan_btn)
-        self.action_group.addAction(refit_btn)
         self.action_group.addAction(self.path_btn)
         self.action_group.addAction(self.erase_btn)
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
-        self.action_group.addAction(duplicate_btn)
         self.action_group.addAction(hide_btn)
         self.action_group.addAction(unhide_btn)
-        self.action_group.addAction(center_item_btn)
         self.action_group.addAction(smooth_btn)
         self.action_group.addAction(self.add_canvas_btn)
-        self.action_group.addAction(insert_btn)
-        self.action_group.addAction(export_btn)
 
     def create_toolbar3(self):
-        pass
+        #----toolbar widgets----#
+        self.zoom_amounts = {'25%': 0.25,
+                             '50%': 0.50,
+                             '75%': 0.75,
+                             '100%': 1.00,
+                             '125%': 1.25,
+                             '150%': 1.50,
+                             '175%': 1.75,
+                             '200%': 2.00,
+                             '500%': 5.00,
+                             'Fit On Screen': 'fit'}
+        self.view_zoom_combo = QComboBox(self)
+        for zoom, actual in self.zoom_amounts.items():
+            self.view_zoom_combo.addItem(zoom, actual)
+        self.view_zoom_combo.currentIndexChanged.connect(self.use_zoom_view)
+
+        self.rotate_sceen_spin = QSpinBox(self)
+        self.rotate_sceen_spin.setMinimum(-10000)
+        self.rotate_sceen_spin.setMaximum(10000)
+        self.rotate_sceen_spin.valueChanged.connect(self.use_rotate_screen)
+
+        # Add widgets
+        self.view_toolbar.addWidget(self.view_zoom_combo)
+        self.view_toolbar.addWidget(self.rotate_sceen_spin)
 
     def create_view(self):
         # QGraphicsView Logic (messy but whatever)
@@ -996,7 +977,7 @@ Date:""")
         data2 = self.stroke_pencap_combo.itemData(index2)
         self.canvas_view.update_pen(
             QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
-        self.canvas_view.update_stroke_fill_color(self.fill_color.get())
+        self.canvas_view.update_stroke_fill_color(QBrush(QColor(self.fill_color.get())))
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
@@ -1230,11 +1211,6 @@ Date:""")
     def use_pan(self):
         self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
-    def use_refit_screen(self):
-        for item in self.canvas.items():
-            if isinstance(item, CanvasItem):
-                self.canvas_view.fitInView(item.sceneBoundingRect(), Qt.KeepAspectRatio)
-
     def use_path(self):
         self.path_btn.setChecked(True)
 
@@ -1260,10 +1236,27 @@ Date:""")
     def use_text(self):
         self.add_text_btn.setChecked(True)
 
-    def use_rotate_screen(self):
-        self.screen_rotate_size += 90
+    def use_refit_screen(self):
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                self.canvas_view.fitInView(item.sceneBoundingRect(), Qt.KeepAspectRatio)
+
+    def use_zoom_view(self):
+        index = self.view_zoom_combo.currentIndex()
+        zoom = self.view_zoom_combo.itemData(index)
+
+        if zoom == 'fit':
+            self.use_refit_screen()
+
+        else:
+            self.canvas_view.resetTransform()
+            self.canvas_view.scale(zoom, zoom)
+
+    def use_rotate_screen(self, value):
+        self.canvas_view.resetTransform()
+
         transform = QTransform()
-        transform.rotate(self.screen_rotate_size)
+        transform.rotate(value)
 
         self.canvas_view.setTransform(transform)
 
@@ -1535,6 +1528,26 @@ Date:""")
                 except Exception as e:
                     QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
                     self.canvas.undo()
+
+    def use_fill_transparent(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, EditableTextBlock):
+                pass
+
+            elif isinstance(item, CustomPixmapItem):
+                pass
+
+            elif isinstance(item, CustomSvgItem):
+                pass
+
+            elif isinstance(item, CustomGraphicsItemGroup):
+                pass
+
+            elif isinstance(item, CanvasItem):
+                pass
+
+            else:
+                item.setBrush(QBrush(QColor(Qt.transparent)))
 
     def use_hide_item(self):
         for item in self.canvas.selectedItems():
