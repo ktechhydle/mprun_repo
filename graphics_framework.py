@@ -53,7 +53,6 @@ class CustomGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
         if self.button.isChecked() or self.erase_btn.isChecked():
-
             self.on_path_draw_start(event)
 
         # Check if the Line and Label tool is turned on

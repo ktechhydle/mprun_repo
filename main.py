@@ -1211,13 +1211,14 @@ Date:""")
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
 
-        self.canvas_view.update_pen(QPen(QColor('white'), self.stroke_size_spin.value(), data1, data2))
-        self.canvas_view.update_stroke_fill_color('white')
-
-        self.outline_color_btn.setStyleSheet(f'background-color: white; border: None')
-        self.fill_color_btn.setStyleSheet('background-color: white; border: None')
-        self.fill_color.set('white')
+        self.fill_color.set(Qt.transparent)
         self.outline_color.set('white')
+
+        self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
+        self.canvas_view.update_stroke_fill_color(QBrush(QColor(self.fill_color.get())))
+
+        self.outline_color_btn.setStyleSheet(f'background-color: white;')
+        self.fill_color_btn.setStyleSheet('background-color: transparent;')
 
         self.erase_btn.setChecked(True)
 
