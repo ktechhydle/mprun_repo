@@ -204,6 +204,9 @@ class MPRUN(QMainWindow):
         vectorizing_action = QAction('Vectorizing', self)
         vectorizing_action.triggered.connect(lambda: self.display_choosen_tab('Vectorizing'))
 
+        canvas_action = QAction('Canvas', self)
+        canvas_action.triggered.connect(lambda: self.display_choosen_tab('Canvas'))
+
         # Add actions
         self.mprun_menu.addAction(about_action)
         self.mprun_menu.addAction(show_version_action)
@@ -258,6 +261,7 @@ class MPRUN(QMainWindow):
         self.window_menu.addAction(libraries_action)
         self.window_menu.addAction(characters_action)
         self.window_menu.addAction(vectorizing_action)
+        self.window_menu.addAction(canvas_action)
 
     def init_toolbars(self):
         # Toolbar
@@ -321,9 +325,7 @@ class MPRUN(QMainWindow):
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
 
         # Canvas Tab
-        self.canvas_tab = QWidget()
-        self.canvas_tab_layout = QVBoxLayout()
-        self.canvas_tab.setLayout(self.canvas_tab_layout)
+        self.canvas_tab = CanvasEditorPanel(self.canvas)
 
         # All labels
         properties_label = QLabel('Transform', self)
@@ -599,8 +601,6 @@ class MPRUN(QMainWindow):
         self.width_scale_spin.valueChanged.connect(self.use_scale_x)
         self.height_scale_spin.valueChanged.connect(self.use_scale_y)
         self.rotate_item_spin.valueChanged.connect(self.use_rotate)
-
-        # Canvas tab related widgets
 
         # Add action toolbar actions
         self.action_toolbar.addWidget(self.tab_view)
@@ -1972,6 +1972,9 @@ Date:""")
 
                 elif tab_name == 'Vectorizing':
                     self.tab_view.addTab(self.vectorize_tab, tab_name)
+
+                elif tab_name == 'Canvas':
+                    self.tab_view.addTab(self.canvas_tab, tab_name)
 
 
 
