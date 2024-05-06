@@ -327,6 +327,7 @@ class CustomSvgItem(QGraphicsSvgItem):
         super().__init__(file)
 
         self.filename = None
+        self.render = QSvgRenderer(file)
 
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first
@@ -364,6 +365,9 @@ class CustomSvgItem(QGraphicsSvgItem):
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+    def mouseDoubleClickEvent(self, event):
+        print('Logic not implemented')
 
 class EditableTextBlock(QGraphicsTextItem):
     def __init__(self, text="", parent=None):

@@ -1078,7 +1078,6 @@ Date:""")
             for item in self.canvas.selectedItems():
                 if isinstance(item, EditableTextBlock):
                     item.setFont(font)
-                    item.setDefaultTextColor(QColor(self.font_color.get()))
 
     def update_grid_size(self, value):
         for item in self.canvas.items():
