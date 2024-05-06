@@ -320,6 +320,11 @@ class MPRUN(QMainWindow):
         self.libraries_tab.setLayout(self.libraries_tab_layout)
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
 
+        # Canvas Tab
+        self.canvas_tab = QWidget()
+        self.canvas_tab_layout = QVBoxLayout()
+        self.canvas_tab.setLayout(self.canvas_tab_layout)
+
         # All labels
         properties_label = QLabel('Transform', self)
         properties_label.setStyleSheet("QLabel { font-size: 20px; alignment: center; }")
@@ -594,6 +599,8 @@ class MPRUN(QMainWindow):
         self.width_scale_spin.valueChanged.connect(self.use_scale_x)
         self.height_scale_spin.valueChanged.connect(self.use_scale_y)
         self.rotate_item_spin.valueChanged.connect(self.use_rotate)
+
+        # Canvas tab related widgets
 
         # Add action toolbar actions
         self.action_toolbar.addWidget(self.tab_view)
@@ -1458,8 +1465,8 @@ Date:""")
 
     def use_display_center(self):
         # Create the ellipse item
-        ellipse_item = CustomCircleItem(0, 0, 30, 30)  # 10x10 ellipse
-        ellipse_item.setBrush(Qt.blue)  # Set brush color to blue
+        ellipse_item = CenterPointItem(0, 0, 30, 30)
+        ellipse_item.setBrush(QBrush(QColor(Qt.blue)))  # Set brush color to blue
         ellipse_item.setToolTip('Current Center Point')
 
         # Calculate the center of the stored item
@@ -1468,8 +1475,7 @@ Date:""")
         # Position the ellipse at the calculated center
         ellipse_item.setPos(center.x() - 15, center.y() - 15)  # Adjust for ellipse size
 
-        # Make the ellipse selectable and set its Z-value
-        ellipse_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+        # Set Z-value
         ellipse_item.setZValue(10000)
 
         # Add the ellipse to the scene

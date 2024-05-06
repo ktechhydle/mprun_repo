@@ -479,3 +479,12 @@ class CanvasItem(QGraphicsRectItem):
             pen.setColor(QColor("#d66b00"))
             painter.setPen(pen)
             painter.drawRoundedRect(self.boundingRect(), 5, 5)
+
+class CenterPointItem(QGraphicsEllipseItem):
+    def __init__(self, *coords):
+        super().__init__(*coords)
+
+    def mousePressEvent(self, event):
+        self.scene().removeItem(self)
+
+

@@ -23,10 +23,10 @@ class AddCanvasDialog(QWidget):
 
         button_layout = QVBoxLayout()
         self.width_input = QLineEdit()
-        self.width_input.setPlaceholderText("Width")
+        self.width_input.setPlaceholderText("Width (in px)")
 
         self.height_input = QLineEdit()
-        self.height_input.setPlaceholderText("Height")
+        self.height_input.setPlaceholderText("Height (in px)")
 
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Canvas Name")
@@ -53,6 +53,10 @@ class AddCanvasDialog(QWidget):
             elif width > 5000 or height > 5000:
                 QMessageBox.critical(self, 'Size Error',
                                      'Please enter a width or height no larger than 5000px.')
+
+            if canvas_name == '':
+                QMessageBox.critical(self, 'Name Error',
+                                     'Please enter a name for the canvas.')
 
             else:
                 self.rect_item = CanvasItem(0, 0, width, height)
@@ -82,7 +86,7 @@ class AddCanvasDialog(QWidget):
                 self.close()
 
         except ValueError as e:
-            QMessageBox.critical(self, 'Incorrect Value', f'Please enter a correct value: {e}')
+            QMessageBox.critical(self, 'Incorrect Value', 'Please enter a correct value in width and height entries.')
 
 class CanvasItemSelector(QDialog):
     def __init__(self, parent=None):
