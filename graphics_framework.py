@@ -6,7 +6,7 @@ from custom_classes import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, button3, button4, erase_btn, add_canvas_btn):
+    def __init__(self, canvas, button, button2, option_btn, button4, erase_btn, add_canvas_btn):
         super().__init__()
         self.points = []
 
@@ -21,7 +21,7 @@ class CustomGraphicsView(QGraphicsView):
         # Set widgets
         self.button = button
         self.button2 = button2
-        self.button3 = button3
+        self.button3 = option_btn
         self.text_btn = button4
         self.erase_btn = erase_btn
         self.add_canvas_btn = add_canvas_btn
@@ -167,8 +167,7 @@ y: {int(p.y())}''')
             # Load temporary path as QGraphicsItem to view it while drawing
             self.temp_path_item = CustomPathItem(self.path)
             self.temp_path_item.setPen(self.pen)
-            if self.button3.isChecked():
-                self.temp_path_item.setBrush(self.stroke_fill)
+            self.temp_path_item.setBrush(self.stroke_fill)
             self.temp_path_item.setZValue(0)
             self.canvas.addItem(self.temp_path_item)
 
@@ -194,10 +193,7 @@ y: {int(p.y())}''')
             path_item = CustomPathItem(self.path)
             path_item.setPen(self.pen)
             path_item.setZValue(0)
-
-            # If stroke fill button is checked, set the brush
-            if self.button3.isChecked():
-                path_item.setBrush(self.stroke_fill)
+            path_item.setBrush(self.stroke_fill)
 
             # Add item
             add_command = AddItemCommand(self.canvas, path_item)
@@ -333,7 +329,6 @@ class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, undoStack):
         super().__init__()
         self.undo_stack = undoStack
-        self.itemMoved = False
 
         width = 64000
         height = 64000
@@ -420,38 +415,23 @@ class ScaleCommand(QUndoCommand):
     def undo(self):
         self.item.setScale(self.old_scale)
 
-class TransformXScaleCommand(QUndoCommand):
-    def __init__(self, item, old_scale, new_scale):
+class TransformScaleCommand(QUndoCommand):
+    def __init__(self, item, x, y, old_scalex, old_scaley):
         super().__init__()
         self.item = item
-        self.old_scale = old_scale
-        self.new_scale = new_scale
+        self.old_scalex = old_scalex
+        self.old_scaley = old_scaley
+        self.x = x
+        self.y = y
 
     def redo(self):
         transform = QTransform()
-        transform.scale(self.new_scale, 1.0)
+        transform.scale(self.x, self.y)
         self.item.setTransform(transform)
 
     def undo(self):
         transform = QTransform()
-        transform.scale(self.old_scale, 1.0)
-        self.item.setTransform(transform)
-
-class TransformYScaleCommand(QUndoCommand):
-    def __init__(self, item, old_scale, new_scale):
-        super().__init__()
-        self.item = item
-        self.old_scale = old_scale
-        self.new_scale = new_scale
-
-    def redo(self):
-        transform = QTransform()
-        transform.scale(1.0, self.new_scale)
-        self.item.setTransform(transform)
-
-    def undo(self):
-        transform = QTransform()
-        transform.scale(1.0, self.old_scale)
+        transform.scale(self.old_scaley, self.old_scalex)
         self.item.setTransform(transform)
 
 class RotateCommand(QUndoCommand):

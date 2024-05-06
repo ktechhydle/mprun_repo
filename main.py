@@ -360,37 +360,11 @@ class MPRUN(QMainWindow):
         scale_label.setStyleSheet('font-size: 10px;')
         opacity_label = QLabel('Opacity:')
         opacity_label.setStyleSheet('font-size: 10px;')
-
-        # Entries
-        self.rotate_slider = QSlider()
-        self.rotate_slider.setRange(-360, 360)
-        self.rotate_slider.setSliderPosition(0)
-        self.rotate_slider.setOrientation(Qt.Horizontal)
-        self.rotate_slider.valueChanged.connect(self.use_rotate)
-
-        self.scale_slider = QSlider()
-        self.scale_slider.setRange(1, 100)
-        self.scale_slider.setOrientation(Qt.Horizontal)
-        self.scale_slider.setSliderPosition(10)
-        self.scale_slider.valueChanged.connect(self.use_scale_all)
-
         self.opacity_slider = QSlider()
         self.opacity_slider.setRange(1, 100)
         self.opacity_slider.setOrientation(Qt.Horizontal)
         self.opacity_slider.setSliderPosition(100)
         self.opacity_slider.valueChanged.connect(self.use_change_opacity)
-
-        self.entry1 = QLineEdit()
-        self.entry1.textChanged.connect(self.use_scale_all)
-        self.entry1.setPlaceholderText("Overall scale factor")
-
-        self.entry2 = QLineEdit()
-        self.entry2.textChanged.connect(self.use_scale_x)
-        self.entry2.setPlaceholderText("Horizontal scale factor")
-
-        self.entry3 = QLineEdit()
-        self.entry3.textChanged.connect(self.use_scale_y)
-        self.entry3.setPlaceholderText("Vertical scale factor")
 
         # Fill Widgets
         self.fill_color_btn = QPushButton('', self)
@@ -499,8 +473,6 @@ class MPRUN(QMainWindow):
         font_color_label = QLabel('Font Color:')
 
         # Quick action related widgets
-        self.stroke_fill_check_btn = QCheckBox(self)
-        self.stroke_fill_check_btn.setText('Fill Enabled')
         self.gsnap_check_btn = QCheckBox(self)
         self.gsnap_check_btn.setText('GSNAP Enabled')
         self.gsnap_grid_spin = QSpinBox(self)
@@ -511,11 +483,14 @@ class MPRUN(QMainWindow):
         self.drop_shadow_check_btn = QCheckBox(self)
         self.drop_shadow_check_btn.setText('Drop Shadow')
         self.drop_shadow_check_btn.clicked.connect(self.use_drop_shadow)
+        self.close_subpath_check_btn = QCheckBox(self)
+        self.close_subpath_check_btn.setText('Close Path')
+        self.close_subpath_check_btn.clicked.connect(self.update_pen)
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
-        horizontal_widget_for_stroke_fill.layout.addWidget(self.stroke_fill_check_btn)
+        horizontal_widget_for_stroke_fill.layout.addWidget(self.drop_shadow_check_btn)
         widget3 = ToolbarHorizontalLayout()
-        widget3.layout.addWidget(self.drop_shadow_check_btn)
+        widget3.layout.addWidget(self.close_subpath_check_btn)
 
         # Vectorize widgets
         filter_speckle_label = QLabel('Filter Speckle (Cleaner):', self)
@@ -561,29 +536,73 @@ class MPRUN(QMainWindow):
         self.path_precision_spin.setMinimum(1)
         self.path_precision_spin.setSliderPosition(3)
 
+        # Item position related widgets
+        x_pos_label = QLabel('X:')
+        y_pos_label = QLabel('Y:')
+        width_transform_label = QLabel('W:')
+        height_transform_label = QLabel('H:')
+        self.x_pos_spin = QSpinBox(self)
+        self.x_pos_spin.setMaximum(10000)
+        self.x_pos_spin.setMinimum(-10000)
+        self.y_pos_spin = QSpinBox(self)
+        self.y_pos_spin.setMaximum(10000)
+        self.y_pos_spin.setMinimum(-10000)
+        self.width_scale_spin = QSpinBox(self)
+        self.width_scale_spin.setValue(1)
+        self.width_scale_spin.setMaximum(10000)
+        self.width_scale_spin.setMinimum(-10000)
+        self.height_scale_spin = QSpinBox(self)
+        self.height_scale_spin.setValue(1)
+        self.height_scale_spin.setMaximum(10000)
+        self.height_scale_spin.setMinimum(-10000)
+        self.rotate_item_spin = QSpinBox(self)
+        self.rotate_item_spin.setMaximum(10000)
+        self.rotate_item_spin.setMinimum(-10000)
+        flip_horizontal_btn = QPushButton('Flip Horizontal')
+        flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
+        flip_vertical_btn = QPushButton('Flip Vertical')
+        flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
+
+        # Create transform widgets
+        widget7 = ToolbarHorizontalLayout()
+        widget7.layout.addWidget(x_pos_label)
+        widget7.layout.addWidget(self.x_pos_spin)
+        widget7.layout.addWidget(width_transform_label)
+        widget7.layout.addWidget(self.width_scale_spin)
+        widget7.layout.addWidget(flip_horizontal_btn)
+        widget8 = ToolbarHorizontalLayout()
+        widget8.layout.addWidget(y_pos_label)
+        widget8.layout.addWidget(self.y_pos_spin)
+        widget8.layout.addWidget(height_transform_label)
+        widget8.layout.addWidget(self.height_scale_spin)
+        widget8.layout.addWidget(flip_vertical_btn)
+        widget9 = ToolbarHorizontalLayout()
+        widget9.layout.addWidget(rotation_label)
+        widget9.layout.addWidget(self.rotate_item_spin)
+
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
-        self.stroke_fill_check_btn.clicked.connect(self.update_pen)
         self.font_size_spin.valueChanged.connect(self.update_font)
         self.font_letter_spacing_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
         self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
+        self.x_pos_spin.valueChanged.connect(self.use_set_item_x)
+        self.y_pos_spin.valueChanged.connect(self.use_set_item_y)
+        self.width_scale_spin.valueChanged.connect(self.use_scale_x)
+        self.height_scale_spin.valueChanged.connect(self.use_scale_y)
+        self.rotate_item_spin.valueChanged.connect(self.use_rotate)
 
         # Add action toolbar actions
         self.action_toolbar.addWidget(self.tab_view)
 
         # Properties Tab Widgets
         self.properties_tab_layout.addWidget(properties_label)
-        self.properties_tab_layout.addWidget(rotation_label)
-        self.properties_tab_layout.addWidget(self.rotate_slider)
-        self.properties_tab_layout.addWidget(scale_label)
-        self.properties_tab_layout.addWidget(self.scale_slider)
-        self.properties_tab_layout.addWidget(self.entry1)
-        self.properties_tab_layout.addWidget(self.entry2)
-        self.properties_tab_layout.addWidget(self.entry3)
+        self.properties_tab_layout.addWidget(widget7)
+        self.properties_tab_layout.addWidget(widget8)
+        self.properties_tab_layout.addWidget(widget9)
         self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
         self.properties_tab_layout.addWidget(appearence_label)
         self.properties_tab_layout.addWidget(stroke_size_label)
@@ -793,7 +812,7 @@ class MPRUN(QMainWindow):
         self.canvas_view = CustomGraphicsView(self.canvas,
                                               self.path_btn,
                                               self.label_btn,
-                                              self.stroke_fill_check_btn,
+                                              self.close_subpath_check_btn,
                                               self.add_text_btn,
                                               self.erase_btn,
                                               self.add_canvas_btn)
@@ -914,7 +933,6 @@ Date:""")
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(-1)
         self.paper_text.setToolTip(f"Editable Text Block")
-        self.paper_text.setParentItem(self.paper)
         self.canvas.addItem(self.paper_text)
 
         self.text_item = EditableTextBlock('Canvas 1')
@@ -987,15 +1005,13 @@ Date:""")
                     index2 = self.stroke_pencap_combo.currentIndex()
                     data2 = self.stroke_pencap_combo.itemData(index2)
 
-                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
+                    if self.close_subpath_check_btn.isChecked():
+                        item.path().closeSubpath()
+
+                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
+                               data2)
                     item.setPen(pen)
-
-                    # Check if widget is pressed
-                    if self.stroke_fill_check_btn.isChecked():
-                        item.setBrush(QColor(self.fill_color.get()))
-
-                    else:
-                        item.setBrush(QBrush(QColor(Qt.transparent)))
+                    item.setBrush(QColor(self.fill_color.get()))
 
                 elif isinstance(item, CustomCircleItem):
                     index1 = self.stroke_style_combo.currentIndex()
@@ -1005,13 +1021,6 @@ Date:""")
 
                     pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                     item.setPen(pen)
-
-                    # Check if widget is pressed
-                    if self.stroke_fill_check_btn.isChecked():
-                        item.setBrush(QColor(self.fill_color.get()))
-
-                    else:
-                        item.setBrush(QBrush(QColor(Qt.transparent)))
 
                     if item.childItems():
                         for child in item.childItems():
@@ -1024,13 +1033,7 @@ Date:""")
                                 pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
                                            data2)
                                 child.setPen(pen)
-
-                                # Check if widget is pressed
-                                if self.stroke_fill_check_btn.isChecked():
-                                    child.setBrush(QColor(self.fill_color.get()))
-
-                                else:
-                                    child.setBrush(QBrush(QColor(Qt.transparent)))
+                                child.setBrush(QColor(self.fill_color.get()))
 
                             elif isinstance(child, CustomRectangleItem):
                                 index1 = self.stroke_style_combo.currentIndex()
@@ -1041,13 +1044,7 @@ Date:""")
                                 pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
                                            data2)
                                 child.setPen(pen)
-
-                                # Check if widget is pressed
-                                if self.stroke_fill_check_btn.isChecked():
-                                    child.setBrush(QColor(self.fill_color.get()))
-
-                                else:
-                                    child.setBrush(QBrush(QColor(Qt.transparent)))
+                                child.setBrush(QColor(self.fill_color.get()))
 
                 elif isinstance(item, CustomRectangleItem):
                     index1 = self.stroke_style_combo.currentIndex()
@@ -1057,13 +1054,7 @@ Date:""")
 
                     pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                     item.setPen(pen)
-
-                    # Check if widget is pressed
-                    if self.stroke_fill_check_btn.isChecked():
-                        item.setBrush(QColor(self.fill_color.get()))
-
-                    else:
-                        item.setBrush(QBrush(QColor(Qt.transparent)))
+                    item.setBrush(QColor(self.fill_color.get()))
 
     def update_font(self):
         font = QFont()
@@ -1100,7 +1091,7 @@ Date:""")
                 # Set Colors
                 self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                 self.outline_color.set(pen.color().name())
-                self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
                 self.fill_color.set(brush.color().name())
 
                 # Set Values
@@ -1251,14 +1242,19 @@ Date:""")
         else:
             self.canvas_view.resetTransform()
             self.canvas_view.scale(zoom, zoom)
+            self.canvas_view.rotate(self.rotate_sceen_spin.value())
 
     def use_rotate_screen(self, value):
-        self.canvas_view.resetTransform()
+        index = self.view_zoom_combo.currentIndex()
+        zoom = self.view_zoom_combo.itemData(index)
 
-        transform = QTransform()
-        transform.rotate(value)
+        if zoom == 'fit':
+            self.use_refit_screen()
 
-        self.canvas_view.setTransform(transform)
+        else:
+            self.canvas_view.resetTransform()
+            self.canvas_view.scale(zoom, zoom)
+            self.canvas_view.rotate(self.rotate_sceen_spin.value())
 
     def use_set_layer(self):
         index = self.layer_combo.currentIndex()
@@ -1363,60 +1359,34 @@ Date:""")
             else:
                 item.setZValue(item.zValue() - 1.0)
 
-    def use_scale_all(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate value
-                scale_factor = value / 100.0
-                scale = 0.1 + (scale_factor * 9.9)
+    def use_set_item_x(self, value):
+        for item in self.canvas.selectedItems():
+            item.setPos(value, item.y())
 
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                # Scale item
-                command = ScaleCommand(item, item.scale(), scale)
-                self.canvas.addCommand(command)
-
-        except ValueError:
-            pass
+    def use_set_item_y(self, value):
+        for item in self.canvas.selectedItems():
+            item.setPos(item.x(), value)
 
     def use_scale_x(self, value):
-        try:
-            value = float(value)
-            items = self.canvas.selectedItems()
-            for item in items:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
-
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
-
-                command = TransformXScaleCommand(item, item.scale(), value)
-                self.canvas.addCommand(command)
-
-        except ValueError:
-            pass
+        self.use_scale(self.width_scale_spin.value(), self.height_scale_spin.value())
 
     def use_scale_y(self, value):
+        self.use_scale(self.width_scale_spin.value(), self.height_scale_spin.value())
+
+    def use_scale(self, x_value, y_value):
         try:
-            value = float(value)
+            x_value = float(x_value)
+            y_value = float(y_value)
             items = self.canvas.selectedItems()
             for item in items:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
+                if isinstance(item, CanvasItem):
+                    pass
 
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
+                else:
+                    command = TransformScaleCommand(item, x_value, y_value, item.transform().m11(), item.transform().m22())
+                    self.canvas.addCommand(command)
 
-                command = TransformYScaleCommand(item, item.scale(), value)
-                self.canvas.addCommand(command)
-
-        except ValueError:
+        except Exception as e:
             pass
 
     def use_rotate(self, value):
@@ -1530,6 +1500,9 @@ Date:""")
                     self.canvas.undo()
 
     def use_fill_transparent(self):
+        self.fill_color_btn.setStyleSheet('background-color: transparent')
+        self.fill_color.set(Qt.transparent)
+
         for item in self.canvas.selectedItems():
             if isinstance(item, EditableTextBlock):
                 pass
