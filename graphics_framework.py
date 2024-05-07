@@ -203,7 +203,7 @@ y: {int(p.y())}''')
             path_item.setFlag(QGraphicsItem.ItemIsMovable)
 
             # Set Tooltop
-            path_item.setToolTip('MPRUN Path Element')
+            path_item.setToolTip('Path')
 
             # Check if item is selected or moved so we can turn tool off
             if self.canvas.selectedItems():
@@ -223,8 +223,7 @@ y: {int(p.y())}''')
             self.label_text.setFont(self.font)
             self.label_text.setPos(self.mapToScene(event.pos()))
             self.label_text.setDefaultTextColor(QColor('black'))
-            self.label_text.setToolTip(
-                "Partially locked text block (This item's position is determined by the position of another element)")
+            self.label_text.setToolTip("Text")
 
             # Create the bounding rectangle around the text (for style)
             self.text_box_rect = CustomRectangleItem(self.label_text.boundingRect())
@@ -284,8 +283,8 @@ y: {int(p.y())}''')
             self.label_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
             # Set Tooltips for elements
-            path_item.setToolTip('Leader Line Element')
-            circle.setToolTip('Leader Line End Element')
+            path_item.setToolTip('Leader Line')
+            circle.setToolTip('Leader Line Arrow')
 
             # Check if item is selected or moved so we can turn tool off
             if self.canvas.selectedItems():
@@ -488,6 +487,22 @@ class NameCommand(QUndoCommand):
 
     def undo(self):
         self.item.setToolTip(self.old_value)
+
+class CloseSubpathCommand(QUndoCommand):
+    def __init__(self, item, scene):
+        super().__init__()
+        self.item = item
+        self.scene = scene
+        self.oldPath = self.item.path()
+        self.newPath = QPainterPath(self.oldPath)
+
+    def redo(self):
+        if self.newPath.elementCount() > 0:
+            self.newPath.closeSubpath()
+            self.item.setPath(self.newPath)
+
+    def undo(self):
+        self.item.setPath(self.oldPath)
 
 
 

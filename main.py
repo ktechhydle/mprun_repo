@@ -82,7 +82,6 @@ class MPRUN(QMainWindow):
 
         # Create file actions
         insert_action = QAction('Insert', self)
-        insert_action.setShortcut(QKeySequence('I'))
         insert_action.triggered.connect(self.insert_image)
 
         add_canvas_action = QAction('Add Canvas', self)
@@ -211,7 +210,6 @@ class MPRUN(QMainWindow):
         self.mprun_menu.addAction(about_action)
         self.mprun_menu.addAction(show_version_action)
 
-        self.file_menu.addAction(insert_action)
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
@@ -762,6 +760,13 @@ class MPRUN(QMainWindow):
         self.add_canvas_btn.setShortcut(QKeySequence('A'))
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
+        # Insert Image Button
+        insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_image_icon2.png'), '', self)
+        insert_btn.setToolTip('''Smooth Path Tool: 
+        Key-I''')
+        insert_btn.setShortcut(QKeySequence('I'))
+        insert_btn.triggered.connect(self.insert_image)
+
         # ----add actions----#
 
         # Add toolbar actions
@@ -775,6 +780,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(unhide_btn)
         self.toolbar.addAction(smooth_btn)
         self.toolbar.addAction(self.add_canvas_btn)
+        self.toolbar.addAction(insert_btn)
 
         # Action Group
         self.action_group.addAction(self.select_btn)
@@ -1013,7 +1019,10 @@ Date:""")
                     data2 = self.stroke_pencap_combo.itemData(index2)
 
                     if self.close_subpath_check_btn.isChecked():
-                        item.path().closeSubpath()
+                        path = item.path()
+                        if path.elementCount() > 0:
+                            command = CloseSubpathCommand(item, self.canvas)
+                            self.canvas.addCommand(command)
 
                     pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
                                data2)
