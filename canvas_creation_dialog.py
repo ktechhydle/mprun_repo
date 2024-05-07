@@ -22,6 +22,26 @@ class AddCanvasDialog(QWidget):
         layout = QVBoxLayout()
 
         button_layout = QVBoxLayout()
+
+        self.canvas_preset_dropdown = QComboBox(self)
+        self.canvas_preset_dropdown.setFixedWidth(200)
+        self.canvas_presets = {
+            'MPRUN Standard (1000 x 700)': 1,
+            'Web (1920 x 1080)': 2,
+            'Letter (797 x 612)': 3,
+            'Legal (1008 x 612)': 4,
+            'A4 (595 x 842)': 5,
+            'A6 (828 x 1169)': 6,
+            'Phone (1080 x 1920)': 7,
+            'Custom': 'c',
+
+        }
+        for canvas, key in self.canvas_presets.items():
+            self.canvas_preset_dropdown.addItem(canvas, key)
+        self.canvas_preset_dropdown.setCurrentText('Custom')
+        self.canvas_preset_dropdown.setFixedWidth(275)
+        self.canvas_preset_dropdown.currentIndexChanged.connect(self.choose_canvas)
+
         self.width_input = QLineEdit()
         self.width_input.setPlaceholderText("Width (in px)")
 
@@ -35,12 +55,47 @@ class AddCanvasDialog(QWidget):
         self.create_button.clicked.connect(self.create_canvas)
 
         # Add widgets, set layout
+        button_layout.addWidget(self.canvas_preset_dropdown)
         button_layout.addWidget(self.width_input)
         button_layout.addWidget(self.height_input)
         button_layout.addWidget(self.name_input)
         button_layout.addWidget(self.create_button)
         layout.addLayout(button_layout)
         self.setLayout(layout)
+
+    def choose_canvas(self):
+        choice = self.canvas_preset_dropdown.itemData(self.canvas_preset_dropdown.currentIndex())
+
+        if choice == 'c':
+            pass
+
+        elif choice == 1:
+            self.width_input.setText('1000')
+            self.height_input.setText('700')
+
+        elif choice == 2:
+            self.width_input.setText('1920')
+            self.height_input.setText('1080')
+
+        elif choice == 3:
+            self.width_input.setText('792')
+            self.height_input.setText('612')
+
+        elif choice == 4:
+            self.width_input.setText('1008')
+            self.height_input.setText('792')
+
+        elif choice == 5:
+            self.width_input.setText('595')
+            self.height_input.setText('842')
+
+        elif choice == 6:
+            self.width_input.setText('828')
+            self.height_input.setText('1169')
+
+        elif choice == 7:
+            self.width_input.setText('1080')
+            self.height_input.setText('1920')
 
     def create_canvas(self):
         try:

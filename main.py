@@ -211,6 +211,7 @@ class MPRUN(QMainWindow):
         self.mprun_menu.addAction(show_version_action)
 
         self.file_menu.addAction(add_canvas_action)
+        self.file_menu.addAction(insert_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
         self.file_menu.addSeparator()
