@@ -19,12 +19,10 @@ class MPRUN(QMainWindow):
     def __init__(self):
         super().__init__()
         # Creating the main window
-        self.setWindowTitle('MPRUN - Vectorspace')
+        self.setWindowTitle('MPRUN - Workspace')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
-        # Possible cursor??
-        # self.setCursor(QCursor(QPixmap('logos and icons/Tool Icons/selection_icon.png').scaled(QSize(30, 30))))
 
         # File
         self.file_name = None
@@ -291,34 +289,40 @@ class MPRUN(QMainWindow):
         self.tab_view = QTabWidget(self)
         self.tab_view.setMovable(True)
         self.tab_view.setTabsClosable(True)
+        self.tab_view.setDocumentMode(True)
         self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
         self.tab_view.tabCloseRequested.connect(self.close_tab)
 
         # Properties Tab
         self.properties_tab = QWidget()
+        self.properties_tab.setMaximumHeight(800)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
 
         # Layers Tab
         self.layers_tab = QWidget()
+        self.layers_tab.setMaximumHeight(200)
         self.layers_tab_layout = QVBoxLayout()
         self.layers_tab.setLayout(self.layers_tab_layout)
         self.tab_view.addTab(self.layers_tab, 'Layers')
 
         # Characters Tab
         self.characters_tab = QWidget()
+        self.characters_tab.setMaximumHeight(400)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
         # Vectorize Tab
         self.vectorize_tab = QWidget()
+        self.vectorize_tab.setMaximumHeight(600)
         self.vectorize_tab_layout = QVBoxLayout()
         self.vectorize_tab.setLayout(self.vectorize_tab_layout)
 
         # Libraries Tab
         self.libraries_tab = QWidget()
+        self.libraries_tab.setMaximumHeight(600)
         self.libraries_tab_layout = QVBoxLayout()
         self.libraries_tab.setLayout(self.libraries_tab_layout)
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
@@ -358,6 +362,9 @@ class MPRUN(QMainWindow):
         vector_options_label3 = QLabel('Threshold', self)
         vector_options_label3.setStyleSheet("QLabel { font-size: 20px;}")
         vector_options_label3.setAlignment(Qt.AlignLeft)
+
+        course_elements_label = QLabel('Course Elements', self)
+        course_elements_label.setStyleSheet('font-size: 20px;')
 
         # Labels
         rotation_label = QLabel('Rotating:')
@@ -624,9 +631,9 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(quick_actions_label)
         self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
         self.properties_tab_layout.addWidget(widget3)
+        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 10))
         self.properties_tab_layout.addWidget(grid_size_label)
         self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
-        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 130))
 
         # Elements Tab Widgets
         self.characters_tab_layout.addWidget(text_options_label)
@@ -644,7 +651,6 @@ class MPRUN(QMainWindow):
         self.layers_tab_layout.addWidget(layers_label)
         self.layers_tab_layout.addWidget(self.layer_combo)
         self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
-        self.layers_tab_layout.addSpacerItem(QSpacerItem(10, 800))
 
         # Vectorize Tab Widgets
         self.vectorize_tab_layout.addWidget(vector_options_label)
@@ -671,6 +677,7 @@ class MPRUN(QMainWindow):
         self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 380))
 
         # Libraries Tab Widgets
+        self.libraries_tab_layout.addWidget(course_elements_label)
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
         self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 200))
 
@@ -810,6 +817,7 @@ class MPRUN(QMainWindow):
         self.view_zoom_combo = QComboBox(self)
         for zoom, actual in self.zoom_amounts.items():
             self.view_zoom_combo.addItem(zoom, actual)
+        self.view_zoom_combo.setCurrentIndex(3)
         self.view_zoom_combo.currentIndexChanged.connect(self.use_zoom_view)
 
         self.rotate_sceen_spin = QSpinBox(self)
@@ -829,7 +837,8 @@ class MPRUN(QMainWindow):
                                               self.close_subpath_check_btn,
                                               self.add_text_btn,
                                               self.erase_btn,
-                                              self.add_canvas_btn)
+                                              self.add_canvas_btn,
+                                              self.select_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -1108,7 +1117,7 @@ Date:""")
                 self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                 self.outline_color.set(pen.color().name())
                 self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                self.fill_color.set(brush.color().name())
+                self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
 
                 # Set Values
                 self.stroke_size_spin.setValue(pen.width())
@@ -1133,8 +1142,9 @@ Date:""")
                         # Set Colors
                         self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                         self.outline_color.set(pen.color().name())
-                        self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
-                        self.fill_color.set(brush.color().name())
+                        self.fill_color_btn.setStyleSheet(
+                            f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                        self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
 
                         # Set Values
                         self.stroke_size_spin.setValue(pen.width())

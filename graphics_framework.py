@@ -6,7 +6,7 @@ from custom_classes import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, option_btn, button4, erase_btn, add_canvas_btn):
+    def __init__(self, canvas, button, button2, option_btn, button4, erase_btn, add_canvas_btn, select_btn):
         super().__init__()
         self.points = []
 
@@ -25,6 +25,7 @@ class CustomGraphicsView(QGraphicsView):
         self.text_btn = button4
         self.erase_btn = erase_btn
         self.add_canvas_btn = add_canvas_btn
+        self.select_btn = select_btn
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
@@ -209,6 +210,7 @@ y: {int(p.y())}''')
             if self.canvas.selectedItems():
                 self.button.setChecked(False)
                 self.setDragMode(QGraphicsView.RubberBandDrag)
+                self.select_btn.setChecked(True)
 
     def on_label_start(self, event):
         # Check the button being pressed
@@ -288,8 +290,8 @@ y: {int(p.y())}''')
 
             # Check if item is selected or moved so we can turn tool off
             if self.canvas.selectedItems():
-                self.button2.setChecked(False)
                 self.setDragMode(QGraphicsView.RubberBandDrag)
+                self.select_btn.setChecked(True)
 
     def on_add_text(self, event):
         pos = self.mapToScene(event.pos())
