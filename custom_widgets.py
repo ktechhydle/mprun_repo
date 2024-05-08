@@ -21,6 +21,8 @@ class CanvasEditorPanel(QWidget):
     def __init__(self, canvas):
         super().__init__()
 
+        self.setMaximumHeight(600)
+
         self.canvas = canvas
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -129,7 +131,7 @@ class CanvasEditorPanel(QWidget):
                 item.setToolTip(self.canvas_name_entry.text())
 
                 try:
-                    item.setRect(item.x(), item.y(), self.canvas_x_entry.value(), self.canvas_y_entry.value())
+                    item.setRect(item.boundingRect().x(), item.boundingRect().y(), self.canvas_x_entry.value(), self.canvas_y_entry.value())
 
                 except Exception:
                     pass

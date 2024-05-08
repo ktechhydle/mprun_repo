@@ -295,7 +295,7 @@ class MPRUN(QMainWindow):
         self.tab_view.tabCloseRequested.connect(self.close_tab)
 
         # Properties Tab
-        self.properties_tab = QWidget()
+        self.properties_tab = QWidget(self)
         self.properties_tab.setMaximumHeight(800)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
@@ -1108,7 +1108,24 @@ Date:""")
                 self.gsnap_grid_size = value
 
     def update_appearance_ui(self):
+        self.x_pos_spin.blockSignals(True)
+        self.y_pos_spin.blockSignals(True)
+        self.rotate_item_spin.blockSignals(True)
+        self.canvas_tab.canvas_x_entry.blockSignals(True)
+        self.canvas_tab.canvas_y_entry.blockSignals(True)
+        self.canvas_tab.canvas_name_entry.blockSignals(True)
+        self.canvas_tab.canvas_preset_dropdown.blockSignals(True)
+        self.stroke_size_spin.blockSignals(True)
+        self.stroke_style_combo.blockSignals(True)
+        self.stroke_pencap_combo.blockSignals(True)
+        self.fill_color_btn.blockSignals(True)
+        self.outline_color_btn.blockSignals(True)
+
         for item in self.canvas.selectedItems():
+            self.x_pos_spin.setValue(int(item.x()))
+            self.y_pos_spin.setValue(int(item.y()))
+            self.rotate_item_spin.setValue(int(item.rotation()))
+
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
                 brush = item.brush()
@@ -1131,7 +1148,12 @@ Date:""")
                         self.stroke_pencap_combo.setCurrentIndex(i)
 
             elif isinstance(item, CanvasItem):
-                pass
+                self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
+                self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
+
+                for child in item.childItems():
+                    if isinstance(child, EditableTextBlock):
+                        self.canvas_tab.canvas_name_entry.setText(child.toPlainText())
 
             elif isinstance(item, CustomCircleItem):
                 if item.childItems():
@@ -1164,8 +1186,9 @@ Date:""")
                     # Set Colors
                     self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                     self.outline_color.set(pen.color().name())
-                    self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
-                    self.fill_color.set(brush.color().name())
+                    self.fill_color_btn.setStyleSheet(
+                        f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                    self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
 
                     # Set Values
                     self.stroke_size_spin.setValue(pen.width())
@@ -1189,6 +1212,19 @@ Date:""")
                 self.bold_btn.setChecked(True if font.bold() else False)
                 self.italic_btn.setChecked(True if font.italic() else False)
                 self.underline_btn.setChecked(True if font.underline() else False)
+
+        self.x_pos_spin.blockSignals(False)
+        self.y_pos_spin.blockSignals(False)
+        self.rotate_item_spin.blockSignals(False)
+        self.canvas_tab.canvas_x_entry.blockSignals(False)
+        self.canvas_tab.canvas_y_entry.blockSignals(False)
+        self.canvas_tab.canvas_name_entry.blockSignals(False)
+        self.canvas_tab.canvas_preset_dropdown.blockSignals(False)
+        self.stroke_size_spin.blockSignals(False)
+        self.stroke_style_combo.blockSignals(False)
+        self.stroke_pencap_combo.blockSignals(False)
+        self.fill_color_btn.blockSignals(False)
+        self.outline_color_btn.blockSignals(False)
 
     def stroke_color_chooser(self):
         color_dialog = CustomColorPicker()
