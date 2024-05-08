@@ -124,14 +124,15 @@ class CanvasEditorPanel(QWidget):
 
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
-                for child in item.childItems():
-                    if isinstance(child, EditableTextBlock):
-                        child.setPlainText(self.canvas_name_entry.text())
+                for self.child in item.childItems():
+                    if isinstance(self.child, EditableTextBlock):
+                        self.child.setPlainText(self.canvas_name_entry.text())
 
                 item.setToolTip(self.canvas_name_entry.text())
 
                 try:
                     item.setRect(item.boundingRect().x(), item.boundingRect().y(), self.canvas_x_entry.value(), self.canvas_y_entry.value())
+                    self.child.setPos(item.boundingRect().x(), item.boundingRect().y() - 30)
 
                 except Exception:
                     pass
