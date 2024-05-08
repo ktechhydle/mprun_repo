@@ -1097,6 +1097,7 @@ Date:""")
             for item in self.canvas.selectedItems():
                 if isinstance(item, EditableTextBlock):
                     item.setFont(font)
+                    item.setDefaultTextColor(QColor(self.font_color.get()))
 
     def update_grid_size(self, value):
         for item in self.canvas.items():
@@ -2058,7 +2059,7 @@ Date:""")
 if __name__ == '__main__':
     app = QApplication([])
 
-    sshFile = "Styles/main_style.css"
+    sshFile = "main_style.css"
     with open(sshFile, "r") as fh:
         app.setStyleSheet(fh.read())
 
