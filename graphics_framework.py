@@ -336,6 +336,8 @@ y: {int(p.y())}''')
 
     def on_scale(self, event):
         try:
+            self.setDragMode(QGraphicsView.NoDrag)
+
             if event.buttons() == Qt.LeftButton:
                 delta = self.mapToScene(event.pos()) - self.startPos
                 scale = 1 + delta.y() / 100.0
@@ -355,6 +357,8 @@ y: {int(p.y())}''')
             pass
 
     def on_scale_end(self, event):
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+
         for item in self.canvas.selectedItems():
             item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
 
