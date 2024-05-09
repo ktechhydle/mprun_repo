@@ -6,7 +6,7 @@ from custom_classes import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, option_btn, button4, erase_btn, add_canvas_btn, select_btn):
+    def __init__(self, canvas, button, button2, option_btn, button4, erase_btn, add_canvas_btn, select_btn, scale_btn):
         super().__init__()
         self.points = []
 
@@ -26,6 +26,9 @@ class CustomGraphicsView(QGraphicsView):
         self.erase_btn = erase_btn
         self.add_canvas_btn = add_canvas_btn
         self.select_btn = select_btn
+        self.scale_btn = scale_btn
+
+        # Items
         self.canvas = canvas
         self.temp_path_item = None
         self.pen = None
@@ -63,6 +66,9 @@ class CustomGraphicsView(QGraphicsView):
         elif self.text_btn.isChecked():
             self.on_add_text(event)
 
+        elif self.scale_btn.isChecked():
+            self.on_scale_start(event)
+
         self.on_add_canvas(event)
 
         super().mousePressEvent(event)
@@ -84,6 +90,9 @@ y: {int(p.y())}''')
         elif self.button2.isChecked():
             self.on_label(event)
 
+        elif self.scale_btn.isChecked():
+            self.on_scale(event)
+
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -94,6 +103,9 @@ y: {int(p.y())}''')
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
             self.on_label_end(event)
+
+        elif self.scale_btn.isChecked():
+            self.on_scale_end(event)
 
         super().mouseReleaseEvent(event)
         
@@ -308,6 +320,43 @@ y: {int(p.y())}''')
         text.setPos(pos)
 
         text = None
+
+    def on_scale_start(self, event):
+        try:
+            self.initialScale = None
+
+            if event.buttons() == Qt.LeftButton:
+                self.startPos = self.mapToScene(event.pos())
+
+                for item in self.canvas.selectedItems():
+                    self.initialScale = item.scale()
+
+        except Exception:
+            pass
+
+    def on_scale(self, event):
+        try:
+            if event.buttons() == Qt.LeftButton:
+                delta = self.mapToScene(event.pos()) - self.startPos
+                scale = 1 + delta.y() / 100.0
+
+                for item in self.canvas.selectedItems():
+                    if self.initialScale is not None:
+                        if isinstance(item, CanvasItem):
+                            pass
+
+                        else:
+                            item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
+                            item.setTransformOriginPoint(item.boundingRect().center())
+                            command = ScaleCommand(item, self.initialScale, self.initialScale * scale)
+                            self.canvas.addCommand(command)
+
+        except Exception:
+            pass
+
+    def on_scale_end(self, event):
+        for item in self.canvas.selectedItems():
+            item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
 
     def on_add_canvas(self, event):
         if self.add_canvas_btn.isChecked():

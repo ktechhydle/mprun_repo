@@ -712,6 +712,15 @@ class MPRUN(QMainWindow):
         self.path_btn.triggered.connect(self.update_pen)
         self.path_btn.triggered.connect(self.use_path)
 
+        # Erase Button
+        self.erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
+        self.erase_btn.setToolTip('''Erase Tool:
+                        Key-E''')
+        self.erase_btn.setCheckable(True)
+        self.erase_btn.setShortcut(QKeySequence('E'))
+        self.erase_btn.triggered.connect(self.update_pen)
+        self.erase_btn.triggered.connect(self.use_erase)
+
         # Label draw button
         self.label_btn = QAction(QIcon('logos and icons/Tool Icons/label_icon.png'), "", self)
         self.label_btn.setCheckable(True)
@@ -719,7 +728,7 @@ class MPRUN(QMainWindow):
         Key-T''')
         self.label_btn.setShortcut(QKeySequence('T'))
         self.label_btn.triggered.connect(self.update_font)
-        self.label_btn.triggered.connect(self.use_label)  # Connect to method to toggle path drawing
+        self.label_btn.triggered.connect(self.use_label)
 
         # Add Text Button
         self.add_text_btn = QAction(QIcon('logos and icons/Tool Icons/text_icon.png'), '', self)
@@ -730,14 +739,13 @@ class MPRUN(QMainWindow):
         self.add_text_btn.triggered.connect(self.update_font)
         self.add_text_btn.triggered.connect(self.use_text)
 
-        # Erase Button
-        self.erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
-        self.erase_btn.setToolTip('''Erase Tool:
-        Key-E''')
-        self.erase_btn.setCheckable(True)
-        self.erase_btn.setShortcut(QKeySequence('E'))
-        self.erase_btn.triggered.connect(self.update_pen)
-        self.erase_btn.triggered.connect(self.use_erase)
+        # Scale Button
+        self.scale_btn = QAction(QIcon('logos and icons/Tool Icons/scale_icon.png'), '', self)
+        self.scale_btn.setToolTip('''Scale Tool: 
+        Key-Q''')
+        self.scale_btn.setCheckable(True)
+        self.scale_btn.setShortcut(QKeySequence('Q'))
+        self.scale_btn.triggered.connect(self.use_scale_tool)
 
         # Hide Button
         hide_btn = QAction(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
@@ -770,7 +778,7 @@ class MPRUN(QMainWindow):
 
         # Insert Image Button
         insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_image_icon2.png'), '', self)
-        insert_btn.setToolTip('''Smooth Path Tool: 
+        insert_btn.setToolTip('''Insert Image Tool: 
         Key-I''')
         insert_btn.setShortcut(QKeySequence('I'))
         insert_btn.triggered.connect(self.insert_image)
@@ -784,6 +792,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.erase_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
+        self.toolbar.addAction(self.scale_btn)
         self.toolbar.addAction(hide_btn)
         self.toolbar.addAction(unhide_btn)
         self.toolbar.addAction(smooth_btn)
@@ -797,6 +806,7 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.erase_btn)
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
+        self.action_group.addAction(self.scale_btn)
         self.action_group.addAction(hide_btn)
         self.action_group.addAction(unhide_btn)
         self.action_group.addAction(smooth_btn)
@@ -838,7 +848,8 @@ class MPRUN(QMainWindow):
                                               self.add_text_btn,
                                               self.erase_btn,
                                               self.add_canvas_btn,
-                                              self.select_btn)
+                                              self.select_btn,
+                                              self.scale_btn)
         self.canvas_view.setRenderHint(QPainter.Antialiasing)
         self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
         self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
@@ -1472,6 +1483,9 @@ Date:""")
 
         except Exception as e:
             pass
+
+    def use_scale_tool(self):
+        self.scale_btn.setChecked(True)
 
     def use_rotate(self, value):
         items = self.canvas.selectedItems()
