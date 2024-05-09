@@ -129,6 +129,9 @@ class MPRUN(QMainWindow):
         name_action.setShortcut(QKeySequence('N'))
         name_action.triggered.connect(self.use_name_item)
 
+        scale_action = QAction('Scale', self)
+        scale_action.triggered.connect(self.use_scale_tool)
+
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.setShortcut(QKeySequence("D"))
         duplicate_action.triggered.connect(self.use_duplicate)
@@ -229,6 +232,7 @@ class MPRUN(QMainWindow):
         self.edit_menu.addSeparator()
         self.edit_menu.addAction(name_action)
         self.edit_menu.addSeparator()
+        self.edit_menu.addAction(scale_action)
         self.edit_menu.addAction(duplicate_action)
         self.edit_menu.addAction(group_action)
         self.edit_menu.addAction(ungroup_action)
@@ -278,7 +282,7 @@ class MPRUN(QMainWindow):
         # View Toolbar
         self.view_toolbar = QToolBar('MPRUN View Toolbar')
         self.view_toolbar.setMovable(False)
-        self.view_toolbar.setFixedHeight(40)
+        self.view_toolbar.setFixedHeight(22)
         self.view_toolbar.setStyleSheet('padding: 1px;')
         self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.view_toolbar)
 
@@ -825,12 +829,14 @@ class MPRUN(QMainWindow):
                              '500%': 5.00,
                              'Fit On Screen': 'fit'}
         self.view_zoom_combo = QComboBox(self)
+        self.view_zoom_combo.setFixedHeight(20)
         for zoom, actual in self.zoom_amounts.items():
             self.view_zoom_combo.addItem(zoom, actual)
         self.view_zoom_combo.setCurrentIndex(3)
         self.view_zoom_combo.currentIndexChanged.connect(self.use_zoom_view)
 
         self.rotate_sceen_spin = QSpinBox(self)
+        self.rotate_sceen_spin.setFixedHeight(20)
         self.rotate_sceen_spin.setMinimum(-10000)
         self.rotate_sceen_spin.setMaximum(10000)
         self.rotate_sceen_spin.valueChanged.connect(self.use_rotate_screen)
