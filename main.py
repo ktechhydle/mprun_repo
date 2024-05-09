@@ -11,6 +11,7 @@ from PyQt5.Qt import *
 from graphics_framework import *
 from custom_classes import *
 from custom_widgets import *
+from custom_tab_widget import *
 from course_elements import *
 from canvas_creation_dialog import *
 from version_dialog import *
@@ -43,7 +44,6 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
-        self.undo_stack.setUndoLimit(10)
 
         # Create GUI
         self.create_initial_canvas()
@@ -290,7 +290,7 @@ class MPRUN(QMainWindow):
         #----action toolbar widgets----#
 
         # Tabview
-        self.tab_view = QTabWidget(self)
+        self.tab_view = QDetachTabWidget(self)
         self.tab_view.setMovable(True)
         self.tab_view.setTabsClosable(True)
         self.tab_view.setDocumentMode(True)
