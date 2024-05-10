@@ -1644,7 +1644,8 @@ Date:""")
         item.insert_table(11, 3)
         item.setToolTip('Trick Table (MPRUN Element)')
 
-        self.canvas.addItem(item)
+        command = AddItemCommand(self.canvas, item)
+        self.canvas.addCommand(command)
         self.create_item_attributes(item)
 
     def use_name_item(self):
