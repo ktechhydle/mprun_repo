@@ -50,7 +50,7 @@ class QDetachTabWidget(QTabWidget):
             self.removeTab(tabIndex)
             self.insertTab(tabIndex, placeholder, tabinfo._title)
             w.setParent(None)
-            flags = w.windowFlags() & ~Qt.WindowCloseButtonHint
+            flags = w.windowFlags() & ~Qt.WindowCloseButtonHint & ~Qt.WindowMinimizeButtonHint
             w.setWindowFlags(flags)
             w.setWindowTitle(tabinfo._title)
             w.setWindowIcon(self.windowIcon())

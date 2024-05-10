@@ -300,6 +300,7 @@ class MPRUN(QMainWindow):
 
         # Properties Tab
         self.properties_tab = QWidget(self)
+        self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.properties_tab.setMaximumHeight(800)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
@@ -307,6 +308,7 @@ class MPRUN(QMainWindow):
 
         # Layers Tab
         self.layers_tab = QWidget()
+        self.layers_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.layers_tab.setMaximumHeight(200)
         self.layers_tab_layout = QVBoxLayout()
         self.layers_tab.setLayout(self.layers_tab_layout)
@@ -314,18 +316,21 @@ class MPRUN(QMainWindow):
 
         # Characters Tab
         self.characters_tab = QWidget()
+        self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.characters_tab.setMaximumHeight(400)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
         # Vectorize Tab
         self.vectorize_tab = QWidget()
+        self.vectorize_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.vectorize_tab.setMaximumHeight(600)
         self.vectorize_tab_layout = QVBoxLayout()
         self.vectorize_tab.setLayout(self.vectorize_tab_layout)
 
         # Libraries Tab
         self.libraries_tab = QWidget()
+        self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setMaximumHeight(600)
         self.libraries_tab_layout = QVBoxLayout()
         self.libraries_tab.setLayout(self.libraries_tab_layout)
@@ -1021,11 +1026,36 @@ Date:""")
 
             # If the user clicked Yes, close the window
             if result == QMessageBox.Yes:
+                try:
+                    self.properties_tab.close()
+                    self.libraries_tab.close()
+                    self.layers_tab.close()
+                    self.characters_tab.close()
+                    self.vectorize_tab.close()
+                    self.canvas_tab.close()
+                    if self.add_canvas_dialog:
+                        self.add_canvas_dialog.close()
+
+                except Exception:
+                    pass
+
                 event.accept()
+
             else:
                 event.ignore()
 
         else:
+            try:
+                self.properties_tab.close()
+                self.libraries_tab.close()
+                self.layers_tab.close()
+                self.characters_tab.close()
+                self.vectorize_tab.close()
+                self.canvas_tab.close()
+                self.add_canvas_dialog.close()
+
+            except Exception:
+                pass
             event.accept()
 
     def update_pen(self):
@@ -1579,8 +1609,8 @@ Date:""")
         self.canvas.addCommand(command)
 
     def use_add_canvas(self):
-        self.window = AddCanvasDialog(self.canvas, self.last_paper)
-        self.window.show()
+        self.add_canvas_dialog = AddCanvasDialog(self.canvas, self.last_paper)
+        self.add_canvas_dialog.show()
 
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
@@ -1596,7 +1626,7 @@ Date:""")
 
                     add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
                     self.canvas.addCommand(add_command)
-                    item.setToolTip('Smoothed MPRUN Path Element')
+                    item.setToolTip('Smoothed Path')
 
                 except Exception as e:
                     QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
@@ -1642,7 +1672,7 @@ Date:""")
     def use_trick_table(self):
         item = EditableTextBlock(' ')
         item.insert_table(11, 3)
-        item.setToolTip('Trick Table (MPRUN Element)')
+        item.setToolTip('Trick Table')
 
         command = AddItemCommand(self.canvas, item)
         self.canvas.addCommand(command)
@@ -1669,7 +1699,7 @@ Date:""")
 
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable, False)
-            items.setToolTip('Locked MPRUN Element')
+            items.setToolTip('Locked Element')
 
             if isinstance(items, CustomGraphicsItemGroup):
                 items.set_locked()
@@ -1679,7 +1709,7 @@ Date:""")
 
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable)
-            items.setToolTip('Free MPRUN Element')
+            items.setToolTip('Free Element')
 
             if isinstance(items, CustomGraphicsItemGroup):
                 items.set_unlocked()
@@ -1708,11 +1738,11 @@ Date:""")
 
                     if isinstance(items, EditableTextBlock):
                         items.set_locked()
-                        items.setToolTip('Permanently Locked MPRUN Element')
+                        items.setToolTip('Permanently Locked Element')
 
                     if isinstance(items, CustomGraphicsItemGroup):
                         items.set_locked()
-                        items.setToolTip('Permanently Locked MPRUN Element')
+                        items.setToolTip('Permanently Locked Element')
 
                     if isinstance(items, CanvasItem):
                         pass
@@ -1742,7 +1772,7 @@ Date:""")
 
                 add_command = AddItemCommand(self.canvas, svg_item)
                 self.canvas.addCommand(add_command)
-                svg_item.setToolTip('Imported SVG Item (Not an MPRUN Element)')
+                svg_item.setToolTip('Imported SVG Item')
 
                 self.create_item_attributes(svg_item)
 
@@ -1758,7 +1788,7 @@ Date:""")
 
                 add_command = AddItemCommand(self.canvas, image2)
                 self.canvas.addCommand(add_command)
-                image2.setToolTip('Imported Bitmap Item (Not an MPRUN Element)')
+                image2.setToolTip('Imported Bitmap Item')
 
                 self.create_item_attributes(image2)
 
@@ -1949,8 +1979,6 @@ Date:""")
                     # Set flag
                     items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
-                    group.setToolTip('Group')
-
                     # Add items to group
                     group.addToGroup(items)
                     group.setToolTip('Group')
@@ -1961,7 +1989,7 @@ Date:""")
                 if group.childItems():
                     for child in group.childItems():
                         child.setFlag(QGraphicsItem.ItemIsSelectable)
-                        child.setToolTip('Free MPRUN Element')
+                        child.setToolTip(child.toolTip())
                         child.setParentItem(child)
 
                 self.canvas.destroyItemGroup(group)

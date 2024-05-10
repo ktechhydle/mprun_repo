@@ -22,6 +22,7 @@ class CanvasEditorPanel(QWidget):
         super().__init__()
 
         self.setMaximumHeight(600)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.canvas = canvas
         self.layout = QVBoxLayout()

@@ -138,22 +138,3 @@ class CourseElementsWin(QWidget):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setZValue(0)
-
-    def closeEvent(self, event):
-        # Display a confirmation dialog
-        confirmation_dialog = QMessageBox()
-        confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-        confirmation_dialog.setWindowTitle('Close Course Elements Picker')
-        confirmation_dialog.setIcon(QMessageBox.Warning)
-        confirmation_dialog.setText("Are you sure you want to close the Course Elements Picker? (This will delete imported Course Element spawn buttons)")
-        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        confirmation_dialog.setDefaultButton(QMessageBox.No)
-
-        # Get the result of the confirmation dialog
-        result = confirmation_dialog.exec_()
-
-        # If the user clicked Yes, close the window
-        if result == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
