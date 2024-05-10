@@ -955,10 +955,6 @@ class MPRUN(QMainWindow):
 
         # Drawing paper
         self.paper = CanvasItem(0, 0, 1000, 700)
-        brush = QBrush(QColor('white'))
-        pen = QPen(QColor('white'), 2, Qt.SolidLine)
-        self.paper.setBrush(brush)
-        self.paper.setPen(pen)
         self.paper.setZValue(-1)
         self.paper.setToolTip('Canvas 1')
         self.canvas.addItem(self.paper)
@@ -977,7 +973,6 @@ Date:""")
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(-1)
-        self.paper_text.setToolTip(f"Editable Text Block")
         self.canvas.addItem(self.paper_text)
 
         self.text_item = EditableTextBlock('Canvas 1')

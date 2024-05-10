@@ -373,7 +373,7 @@ class EditableTextBlock(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
 
-        self.setToolTip('Editable Text Block')
+        self.setToolTip('Text')
 
         self.locked = False
         self.old_text = self.toPlainText()
@@ -469,6 +469,11 @@ class EditableTextBlock(QGraphicsTextItem):
 class CanvasItem(QGraphicsRectItem):
     def __init__(self, *coords):
         super().__init__(*coords)
+
+        brush = QBrush(QColor('white'))
+        pen = QPen(QColor('white'), 2, Qt.SolidLine)
+        self.setBrush(brush)
+        self.setPen(pen)
 
     def paint(self, painter, option, widget=None):
         # Call the parent class paint method first

@@ -306,20 +306,19 @@ y: {int(p.y())}''')
                 self.select_btn.setChecked(True)
 
     def on_add_text(self, event):
-        pos = self.mapToScene(event.pos())
+        if event.button() == Qt.LeftButton:
+            pos = self.mapToScene(event.pos())
 
-        text = EditableTextBlock('Lorem Ipsum')
-        text.setFont(self.font)
-        text.setDefaultTextColor(self.font_color)
+            self.text = EditableTextBlock('Lorem Ipsum')
+            self.text.setFont(self.font)
+            self.text.setDefaultTextColor(self.font_color)
 
-        add_command = AddItemCommand(self.canvas, text)
-        self.canvas.addCommand(add_command)
+            add_command = AddItemCommand(self.canvas, self.text)
+            self.canvas.addCommand(add_command)
 
-        text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-        text.setZValue(0)
-        text.setPos(pos)
-
-        text = None
+            self.text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+            self.text.setZValue(0)
+            self.text.setPos(pos)
 
     def on_scale_start(self, event):
         try:
