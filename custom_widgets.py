@@ -21,7 +21,7 @@ class CanvasEditorPanel(QWidget):
     def __init__(self, canvas):
         super().__init__()
 
-        self.setMaximumHeight(600)
+        self.setMaximumHeight(225)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.canvas = canvas
@@ -87,7 +87,6 @@ class CanvasEditorPanel(QWidget):
         self.layout.addWidget(widget1)
         self.layout.addWidget(widget2)
         self.layout.addWidget(widget3)
-        self.layout.addSpacing(900)
 
     def update_canvas(self):
         choice = self.canvas_preset_dropdown.itemData(self.canvas_preset_dropdown.currentIndex())

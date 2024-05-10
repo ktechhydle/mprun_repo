@@ -317,7 +317,7 @@ class MPRUN(QMainWindow):
         # Characters Tab
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.characters_tab.setMaximumHeight(400)
+        self.characters_tab.setMaximumHeight(325)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
@@ -331,7 +331,7 @@ class MPRUN(QMainWindow):
         # Libraries Tab
         self.libraries_tab = QWidget()
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.setMaximumHeight(600)
+        self.libraries_tab.setMaximumHeight(400)
         self.libraries_tab_layout = QVBoxLayout()
         self.libraries_tab.setLayout(self.libraries_tab_layout)
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
@@ -654,7 +654,6 @@ class MPRUN(QMainWindow):
         self.characters_tab_layout.addWidget(widget4)
         self.characters_tab_layout.addWidget(font_spacing_label)
         self.characters_tab_layout.addWidget(self.font_letter_spacing_spin)
-        self.characters_tab_layout.addSpacerItem(QSpacerItem(10, 700))
 
         # Layers Tab Widgets
         self.layers_tab_layout.addWidget(layers_label)
@@ -683,12 +682,10 @@ class MPRUN(QMainWindow):
         self.vectorize_tab_layout.addWidget(self.length_threshold_spin)
         self.vectorize_tab_layout.addWidget(splice_threshold_label)
         self.vectorize_tab_layout.addWidget(self.splice_threshold_spin)
-        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 380))
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(course_elements_label)
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
-        self.libraries_tab_layout.addSpacerItem(QSpacerItem(10, 200))
 
     def create_toolbar2(self):
         self.action_group = QActionGroup(self)
