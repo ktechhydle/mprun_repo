@@ -75,7 +75,7 @@ QToolButton:checked:hover {
 }
 
 QLabel {
-  color: white;
+  color: #c7c7c7;
   background-color: transparent;
   font-family: Segoe UI; }
 

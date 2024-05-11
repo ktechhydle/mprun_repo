@@ -340,6 +340,9 @@ class MPRUN(QMainWindow):
         self.canvas_tab = CanvasEditorPanel(self.canvas)
 
         # All labels
+        self.selection_label = QLabel('No Selection')
+        self.selection_label.setStyleSheet("QLabel { font-size: 12px; }")
+
         properties_label = QLabel('Transform', self)
         properties_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         properties_label.setAlignment(Qt.AlignLeft)
@@ -626,6 +629,7 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(self.tab_view)
 
         # Properties Tab Widgets
+        self.properties_tab_layout.addWidget(self.selection_label)
         self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(properties_label)
         self.properties_tab_layout.addWidget(widget7)
@@ -1177,9 +1181,16 @@ Date:""")
         self.italic_btn.blockSignals(True)
         self.underline_btn.blockSignals(True)
 
+        if self.canvas.selectedItems():
+            for item in self.canvas.selectedItems():
+                self.selection_label.setText(item.toolTip())
+
+        else:
+            self.selection_label.setText('No Selection')
+
         for item in self.canvas.selectedItems():
-            self.x_pos_spin.setValue(int(item.x()))
-            self.y_pos_spin.setValue(int(item.y()))
+            self.x_pos_spin.setValue(int(item.sceneBoundingRect().center().x()))
+            self.y_pos_spin.setValue(int(item.sceneBoundingRect().center().y()))
             self.rotate_item_spin.setValue(int(item.rotation()))
             self.width_scale_spin.setValue(int(item.transform().m11()))
             self.height_scale_spin.setValue(int(item.transform().m22()))
@@ -1967,20 +1978,24 @@ Date:""")
 
                 item = self.canvas.selectedItems()
 
-                # Set flags for group
-                group.setFlag(QGraphicsItem.ItemIsMovable)
-                group.setFlag(QGraphicsItem.ItemIsSelectable)
+                if len(item) > 1:
+                    # Set flags for group
+                    group.setFlag(QGraphicsItem.ItemIsMovable)
+                    group.setFlag(QGraphicsItem.ItemIsSelectable)
 
-                # Add group
-                self.canvas.addItem(group)
+                    # Add group
+                    self.canvas.addItem(group)
 
-                for items in item:
-                    # Set flag
-                    items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    for items in item:
+                        # Set flag
+                        items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
-                    # Add items to group
-                    group.addToGroup(items)
-                    group.setToolTip('Group')
+                        # Add items to group
+                        group.addToGroup(items)
+                        group.setToolTip('Group')
+
+                else:
+                    pass
 
     def ungroup_group(self):
         for group in self.canvas.selectedItems():
