@@ -12,7 +12,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 
 # How It Works...
 ### 1. Set up the course:
-- Use the `Course Elements Picker`, or import your own SVG files to add features to the Canvas.
+- Use the libraries tab to add Course Elements as needed, or import your own SVG files to add features to the Canvas.
 - Scale, Rotate, or Group Elements to achieve the desired course setup.
 - Lock Element positions to prevent further editing.
 ### 2. Draw your path:
@@ -39,13 +39,13 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Layer management:
 	> Elements can be raised and lowered or set to a specific layer height.
 - Elements are named:
-	> You will often see elements named `Editable Text Block` or `Free MPRUN Element` on the Canvas. ***Hover your mouse over an element to see the element name.***
+	> You will often see elements named `Path` or `Group` on the Canvas. ***Hover your mouse over an element to see the element name, or name the element via the `Name` tool.***
 - Insert different files:
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Export multiple file types:
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
 - Add text blocks:
-	> Add `Editable Text Block`'s on to the Canvas.
+	> Add `Text` objects on to the Canvas by clicking a point on the scene.
 - Vector conversion:
   	> Use the `Vectorize` tool to convert raster imagery to vector formats.
 - Element position management:
