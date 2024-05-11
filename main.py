@@ -309,7 +309,7 @@ class MPRUN(QMainWindow):
         # Layers Tab
         self.layers_tab = QWidget()
         self.layers_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.layers_tab.setMaximumHeight(130)
+        self.layers_tab.setMaximumHeight(150)
         self.layers_tab_layout = QVBoxLayout()
         self.layers_tab.setLayout(self.layers_tab_layout)
         self.tab_view.addTab(self.layers_tab, 'Layers')
@@ -1184,8 +1184,8 @@ Date:""")
 
 
         for item in self.canvas.selectedItems():
-            self.x_pos_spin.setValue(int(item.sceneBoundingRect().center().x()))
-            self.y_pos_spin.setValue(int(item.sceneBoundingRect().center().y()))
+            self.x_pos_spin.setValue(int(item.x()))
+            self.y_pos_spin.setValue(int(item.y()))
             self.rotate_item_spin.setValue(int(item.rotation()))
             self.width_scale_spin.setValue(int(item.transform().m11()))
             self.height_scale_spin.setValue(int(item.transform().m22()))
@@ -1446,7 +1446,7 @@ Date:""")
                         add_command = AddItemCommand(self.canvas, item)
                         self.canvas.addCommand(add_command)
                         self.create_item_attributes(item)
-                        item.setToolTip('Converted Vector (MPRUN Element)')
+                        item.setToolTip('Vector Element')
 
                 except Exception as e:
                     # Set cursor back
@@ -1698,12 +1698,13 @@ Date:""")
                     command = NameCommand(item, item.toolTip(), entry)
                     self.canvas.addCommand(command)
 
+                    self.update_appearance_ui()
+
     def lock_item(self):
         item = self.canvas.selectedItems()
 
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable, False)
-            items.setToolTip('Locked Element')
 
             if isinstance(items, CustomGraphicsItemGroup):
                 items.set_locked()
@@ -1713,7 +1714,6 @@ Date:""")
 
         for items in item:
             items.setFlag(QGraphicsItem.ItemIsMovable)
-            items.setToolTip('Free Element')
 
             if isinstance(items, CustomGraphicsItemGroup):
                 items.set_unlocked()
@@ -2095,21 +2095,27 @@ Date:""")
             else:
                 if tab_name == 'Properties':
                     self.tab_view.addTab(self.properties_tab, tab_name)
+                    self.tab_view.setCurrentWidget(self.properties_tab)
 
                 elif tab_name == 'Layers':
                     self.tab_view.addTab(self.layers_tab, tab_name)
+                    self.tab_view.setCurrentWidget(self.layers_tab)
 
                 elif tab_name == 'Libraries':
                     self.tab_view.addTab(self.libraries_tab, tab_name)
+                    self.tab_view.setCurrentWidget(self.libraries_tab)
 
                 elif tab_name == 'Characters':
                     self.tab_view.addTab(self.characters_tab, tab_name)
+                    self.tab_view.setCurrentWidget(self.characters_tab)
 
                 elif tab_name == 'Vectorizing':
                     self.tab_view.addTab(self.vectorize_tab, tab_name)
+                    self.tab_view.setCurrentWidget(self.vectorize_tab)
 
                 elif tab_name == 'Canvas':
                     self.tab_view.addTab(self.canvas_tab, tab_name)
+                    self.tab_view.setCurrentWidget(self.canvas_tab)
 
 
 
