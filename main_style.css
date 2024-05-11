@@ -1,7 +1,8 @@
 QMainWindow {
   background-color: #535353;
   color: white;
-  font-family: Segoe UI; }
+  font-family: Segoe UI;
+}
 
 #centralwidget {
   background-color: #535353; }

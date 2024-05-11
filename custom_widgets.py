@@ -11,6 +11,14 @@ class ToolbarHorizontalLayout(QWidget):
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
 
+class HorizontalSeparator(QFrame):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.color = QColor('#4b4b4b')
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Plain)
+        self.setStyleSheet(f'background-color: {self.color}; ')
+
 class CustomColorPicker(QColorDialog):
     def __init__(self):
         super().__init__()
@@ -83,6 +91,7 @@ class CanvasEditorPanel(QWidget):
         widget3.layout.addWidget(canvas_name_label)
         widget3.layout.addWidget(self.canvas_name_entry)
 
+        self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(canvas_label)
         self.layout.addWidget(widget1)
         self.layout.addWidget(widget2)

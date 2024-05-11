@@ -309,7 +309,7 @@ class MPRUN(QMainWindow):
         # Layers Tab
         self.layers_tab = QWidget()
         self.layers_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.layers_tab.setMaximumHeight(200)
+        self.layers_tab.setMaximumHeight(130)
         self.layers_tab_layout = QVBoxLayout()
         self.layers_tab.setLayout(self.layers_tab_layout)
         self.tab_view.addTab(self.layers_tab, 'Layers')
@@ -341,39 +341,39 @@ class MPRUN(QMainWindow):
 
         # All labels
         properties_label = QLabel('Transform', self)
-        properties_label.setStyleSheet("QLabel { font-size: 20px; alignment: center; }")
+        properties_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         properties_label.setAlignment(Qt.AlignLeft)
 
         appearence_label = QLabel('Appearance', self)
-        appearence_label.setStyleSheet("QLabel { font-size: 20px; alignment: center; }")
+        appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
 
         quick_actions_label = QLabel('Quick Actions', self)
-        quick_actions_label.setStyleSheet("QLabel {font-size: 20px; alignment: center; }")
+        quick_actions_label.setStyleSheet("QLabel {font-size: 12px; alignment: center; }")
         quick_actions_label.setAlignment(Qt.AlignLeft)
 
         layers_label = QLabel('Layers', self)
-        layers_label.setStyleSheet("QLabel { font-size: 20px;}")
+        layers_label.setStyleSheet("QLabel { font-size: 12px;}")
         layers_label.setAlignment(Qt.AlignLeft)
 
         text_options_label = QLabel('Characters', self)
-        text_options_label.setStyleSheet("QLabel { font-size: 20px;}")
+        text_options_label.setStyleSheet("QLabel { font-size: 12px;}")
         text_options_label.setAlignment(Qt.AlignLeft)
 
         vector_options_label = QLabel('Precision', self)
-        vector_options_label.setStyleSheet("QLabel { font-size: 20px;}")
+        vector_options_label.setStyleSheet("QLabel { font-size: 12px;}")
         vector_options_label.setAlignment(Qt.AlignLeft)
 
         vector_options_label2 = QLabel('Color', self)
-        vector_options_label2.setStyleSheet("QLabel { font-size: 20px;}")
+        vector_options_label2.setStyleSheet("QLabel { font-size: 12px;}")
         vector_options_label2.setAlignment(Qt.AlignLeft)
 
         vector_options_label3 = QLabel('Threshold', self)
-        vector_options_label3.setStyleSheet("QLabel { font-size: 20px;}")
+        vector_options_label3.setStyleSheet("QLabel { font-size: 12px;}")
         vector_options_label3.setAlignment(Qt.AlignLeft)
 
         course_elements_label = QLabel('Course Elements', self)
-        course_elements_label.setStyleSheet('font-size: 20px;')
+        course_elements_label.setStyleSheet('font-size: 12px;')
 
         # Labels
         rotation_label = QLabel('Rotating:')
@@ -389,8 +389,11 @@ class MPRUN(QMainWindow):
         self.opacity_slider.valueChanged.connect(self.use_change_opacity)
 
         # Fill Widgets
+        fill_label = QLabel('Fill')
+        fill_label.setStyleSheet('text-decoration: underline;')
         self.fill_color_btn = QPushButton('', self)
         self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
+        self.fill_color_btn.setFixedWidth(28)
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         self.fill_color.set('#00ff00')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
@@ -399,6 +402,7 @@ class MPRUN(QMainWindow):
         self.fill_transparent_btn.clicked.connect(self.use_fill_transparent)
         widget5 = ToolbarHorizontalLayout()
         widget5.layout.addWidget(self.fill_color_btn)
+        widget5.layout.addWidget(fill_label)
         widget5.layout.addWidget(self.fill_transparent_btn)
 
         # Layer Combobox
@@ -444,6 +448,7 @@ class MPRUN(QMainWindow):
             self.stroke_pencap_combo.addItem(pencap, value)
         self.outline_color_btn = QPushButton('', self)
         self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
+        self.outline_color_btn.setFixedWidth(28)
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
@@ -451,12 +456,12 @@ class MPRUN(QMainWindow):
         self.stroke_size_spin.setValue(3)
         self.stroke_size_spin.setMaximum(1000)
         self.stroke_size_spin.setMinimum(1)
+        stroke_label = QLabel('Stroke')
+        stroke_label.setStyleSheet('text-decoration: underline;')
         widget6 = ToolbarHorizontalLayout()
         widget6.layout.addWidget(self.outline_color_btn)
+        widget6.layout.addWidget(stroke_label)
         widget6.layout.addWidget(self.stroke_size_spin)
-        stroke_size_label = QLabel('Stroke Size:', self)
-        stroke_attributes_label = QLabel('Stroke Attributes:', self)
-        fill_attributes_label = QLabel('Fill Attributes:', self)
 
         # Font related widgets
         self.font_choice_combo = QFontComboBox(self)
@@ -621,30 +626,29 @@ class MPRUN(QMainWindow):
         self.action_toolbar.addWidget(self.tab_view)
 
         # Properties Tab Widgets
+        self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(properties_label)
         self.properties_tab_layout.addWidget(widget7)
         self.properties_tab_layout.addWidget(widget8)
         self.properties_tab_layout.addWidget(widget9)
-        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(appearence_label)
-        self.properties_tab_layout.addWidget(stroke_size_label)
         self.properties_tab_layout.addWidget(widget6)
-        self.properties_tab_layout.addWidget(stroke_attributes_label)
+        self.properties_tab_layout.addWidget(widget5)
         self.properties_tab_layout.addWidget(self.stroke_style_combo)
         self.properties_tab_layout.addWidget(self.stroke_pencap_combo)
-        self.properties_tab_layout.addWidget(fill_attributes_label)
-        self.properties_tab_layout.addWidget(widget5)
         self.properties_tab_layout.addWidget(opacity_label)
         self.properties_tab_layout.addWidget(self.opacity_slider)
-        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(quick_actions_label)
         self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
         self.properties_tab_layout.addWidget(widget3)
-        self.properties_tab_layout.addSpacerItem(QSpacerItem(10, 10))
+        self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(grid_size_label)
         self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
 
         # Elements Tab Widgets
+        self.characters_tab_layout.addWidget(HorizontalSeparator())
         self.characters_tab_layout.addWidget(text_options_label)
         self.characters_tab_layout.addWidget(font_choice_label)
         self.characters_tab_layout.addWidget(self.font_choice_combo)
@@ -656,17 +660,19 @@ class MPRUN(QMainWindow):
         self.characters_tab_layout.addWidget(self.font_letter_spacing_spin)
 
         # Layers Tab Widgets
+        self.layers_tab_layout.addWidget(HorizontalSeparator())
         self.layers_tab_layout.addWidget(layers_label)
         self.layers_tab_layout.addWidget(self.layer_combo)
         self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
 
         # Vectorize Tab Widgets
+        self.vectorize_tab_layout.addWidget(HorizontalSeparator())
         self.vectorize_tab_layout.addWidget(vector_options_label)
         self.vectorize_tab_layout.addWidget(path_precision_label)
         self.vectorize_tab_layout.addWidget(self.path_precision_spin)
         self.vectorize_tab_layout.addWidget(color_precision_label)
         self.vectorize_tab_layout.addWidget(self.color_precision_spin)
-        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.vectorize_tab_layout.addWidget(HorizontalSeparator())
         self.vectorize_tab_layout.addWidget(vector_options_label2)
         self.vectorize_tab_layout.addWidget(layer_difference_label)
         self.vectorize_tab_layout.addWidget(self.layer_difference_spin)
@@ -674,7 +680,7 @@ class MPRUN(QMainWindow):
         self.vectorize_tab_layout.addWidget(self.filter_speckle_spin)
         self.vectorize_tab_layout.addWidget(max_iterations_label)
         self.vectorize_tab_layout.addWidget(self.max_iterations_spin)
-        self.vectorize_tab_layout.addSpacerItem(QSpacerItem(10, 15))
+        self.vectorize_tab_layout.addWidget(HorizontalSeparator())
         self.vectorize_tab_layout.addWidget(vector_options_label3)
         self.vectorize_tab_layout.addWidget(corner_threshold_label)
         self.vectorize_tab_layout.addWidget(self.corner_threshold_spin)
@@ -684,6 +690,7 @@ class MPRUN(QMainWindow):
         self.vectorize_tab_layout.addWidget(self.splice_threshold_spin)
 
         # Libraries Tab Widgets
+        self.libraries_tab_layout.addWidget(HorizontalSeparator())
         self.libraries_tab_layout.addWidget(course_elements_label)
         self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
 
