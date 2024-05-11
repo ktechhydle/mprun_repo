@@ -140,7 +140,7 @@ class CanvasEditorPanel(QWidget):
                 item.setToolTip(self.canvas_name_entry.text())
 
                 try:
-                    item.setRect(item.boundingRect().x(), item.boundingRect().y(), self.canvas_x_entry.value(), self.canvas_y_entry.value())
+                    item.setRect(0, 0, self.canvas_x_entry.value(), self.canvas_y_entry.value())
                     self.child.setPos(item.boundingRect().x(), item.boundingRect().y() - 30)
 
                 except Exception:
