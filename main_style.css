@@ -77,7 +77,15 @@ QToolButton:checked:hover {
 QLabel {
   color: #c7c7c7;
   background-color: transparent;
-  font-family: Segoe UI; }
+  font-family: Segoe UI;
+}
+
+#strokeLabel {
+  color: white;
+  background-color: transparent;
+  font-family: Segoe UI;
+  text-decoration: underline;
+}
 
 QLineEdit,
 QComboBox,

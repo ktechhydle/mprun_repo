@@ -145,3 +145,50 @@ class CanvasEditorPanel(QWidget):
 
                 except Exception:
                     pass
+
+class StrokeLabel(QLabel):
+    def __init__(self, text, parent):
+        super().__init__(parent)
+
+        self.setText(text)
+        self.setObjectName('strokeLabel')
+
+        self.pencap_combo = None
+        self.stroke_combo = None
+        self.stroke_options = None
+        self.pencap_options = None
+
+        self.menu = QMenu(self)
+
+        widget1 = QWidgetAction(parent)
+        widget2 = QWidgetAction(parent)
+
+        self.stroke_style_options = {'Solid Stroke': Qt.SolidLine,
+                                     'Dotted Stroke': Qt.DotLine,
+                                     'Dashed Stroke': Qt.DashLine,
+                                     'Dashed Dot Stroke': Qt.DashDotLine,
+                                     'Dashed Double Dot Stroke': Qt.DashDotDotLine}
+        self.stroke_style_combo = QComboBox(self)
+        self.stroke_style_combo.setStyleSheet('text-decoration: none;')
+        for style, value in self.stroke_style_options.items():
+            self.stroke_style_combo.addItem(style, value)
+        self.stroke_pencap_options = {'Square Cap': Qt.SquareCap, 'Flat Cap': Qt.FlatCap, 'Round Cap': Qt.RoundCap}
+        self.stroke_pencap_combo = QComboBox(self)
+        self.stroke_pencap_combo.setStyleSheet('text-decoration: none;')
+        for pencap, value in self.stroke_pencap_options.items():
+            self.stroke_pencap_combo.addItem(pencap, value)
+
+        widget1.setDefaultWidget(self.stroke_style_combo)
+        widget2.setDefaultWidget(self.stroke_pencap_combo)
+
+        self.menu.addAction(widget1)
+        self.menu.addAction(widget2)
+
+        self.stroke_combo = self.stroke_style_combo
+        self.stroke_options = self.stroke_style_options
+        self.pencap_combo = self.stroke_pencap_combo
+        self.pencap_options = self.stroke_pencap_options
+
+    def mousePressEvent(self, event):
+        self.menu.exec_(event.globalPos())
+

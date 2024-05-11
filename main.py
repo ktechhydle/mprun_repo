@@ -393,7 +393,7 @@ class MPRUN(QMainWindow):
 
         # Fill Widgets
         fill_label = QLabel('Fill')
-        fill_label.setStyleSheet('text-decoration: underline;')
+        fill_label.setStyleSheet('color: white;')
         self.fill_color_btn = QPushButton('', self)
         self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
         self.fill_color_btn.setFixedWidth(28)
@@ -437,18 +437,6 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
         # Stroke fill related widgets
-        self.stroke_style_options = {'Solid Stroke': Qt.SolidLine,
-                                     'Dotted Stroke': Qt.DotLine,
-                                     'Dashed Stroke': Qt.DashLine,
-                                     'Dashed Dot Stroke': Qt.DashDotLine,
-                                     'Dashed Double Dot Stroke': Qt.DashDotDotLine}
-        self.stroke_style_combo = QComboBox(self)
-        for style, value in self.stroke_style_options.items():
-            self.stroke_style_combo.addItem(style, value)
-        self.stroke_pencap_options = {'Square Cap': Qt.SquareCap, 'Flat Cap': Qt.FlatCap, 'Round Cap': Qt.RoundCap}
-        self.stroke_pencap_combo = QComboBox(self)
-        for pencap, value in self.stroke_pencap_options.items():
-            self.stroke_pencap_combo.addItem(pencap, value)
         self.outline_color_btn = QPushButton('', self)
         self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
         self.outline_color_btn.setFixedWidth(28)
@@ -459,8 +447,11 @@ class MPRUN(QMainWindow):
         self.stroke_size_spin.setValue(3)
         self.stroke_size_spin.setMaximum(1000)
         self.stroke_size_spin.setMinimum(1)
-        stroke_label = QLabel('Stroke')
-        stroke_label.setStyleSheet('text-decoration: underline;')
+        stroke_label = StrokeLabel('Stroke', self)
+        self.stroke_style_combo = stroke_label.stroke_combo
+        self.stroke_style_options = stroke_label.stroke_options
+        self.stroke_pencap_combo = stroke_label.pencap_combo
+        self.stroke_pencap_options = stroke_label.pencap_options
         widget6 = ToolbarHorizontalLayout()
         widget6.layout.addWidget(self.outline_color_btn)
         widget6.layout.addWidget(stroke_label)
@@ -639,8 +630,6 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(appearence_label)
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(widget5)
-        self.properties_tab_layout.addWidget(self.stroke_style_combo)
-        self.properties_tab_layout.addWidget(self.stroke_pencap_combo)
         self.properties_tab_layout.addWidget(opacity_label)
         self.properties_tab_layout.addWidget(self.opacity_slider)
         self.properties_tab_layout.addWidget(HorizontalSeparator())
@@ -1187,6 +1176,12 @@ Date:""")
 
         else:
             self.selection_label.setText('No Selection')
+            self.x_pos_spin.setValue(0)
+            self.y_pos_spin.setValue(0)
+            self.rotate_item_spin.setValue(0)
+            self.width_scale_spin.setValue(1)
+            self.height_scale_spin.setValue(1)
+
 
         for item in self.canvas.selectedItems():
             self.x_pos_spin.setValue(int(item.sceneBoundingRect().center().x()))
@@ -1636,7 +1631,6 @@ Date:""")
 
                     add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
                     self.canvas.addCommand(add_command)
-                    item.setToolTip('Smoothed Path')
 
                 except Exception as e:
                     QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
