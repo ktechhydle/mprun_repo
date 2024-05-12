@@ -237,6 +237,14 @@ QTabBar {
     width: 5px;
     height: 5px; }
 
+QTabBar::scroller {
+  width: 0px; /* Set the width of the scroller */
+}
+
+QTabBar::scroller:next, QTabBar::scroller:prev {
+  width: 0px;
+}
+
 QTabWidget {
   border: 5px solid #2a2a2a; }
   QTabWidget:pane {

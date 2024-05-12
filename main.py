@@ -2092,6 +2092,9 @@ Date:""")
         # Refit screen
         self.use_refit_screen()
 
+        if default_text == '':
+            self.canvas.removeItem(self.paper_text)
+
         for item in self.canvas.items():
             if isinstance(item, CustomGraphicsItemGroup):
                 item.set_grid_size(grid_size)
