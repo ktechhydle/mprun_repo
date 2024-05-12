@@ -290,7 +290,7 @@ class MPRUN(QMainWindow):
         #----action toolbar widgets----#
 
         # Tabview
-        self.tab_view = QDetachTabWidget(self)
+        self.tab_view = DetachableTabWidget(self)
         self.tab_view.setMovable(True)
         self.tab_view.setDocumentMode(True)
         self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
@@ -1313,6 +1313,7 @@ Date:""")
     def stroke_color_chooser(self):
         color_dialog = CustomColorPicker()
         color_dialog.setWindowTitle('Stroke Color')
+        color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         if color_dialog.exec_():
             color = color_dialog.selectedColor()
@@ -1322,6 +1323,7 @@ Date:""")
     def fill_color_chooser(self):
         color_dialog = QColorDialog(self)
         color_dialog.setWindowTitle('Fill Color')
+        color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         if color_dialog.exec_():
             color = color_dialog.selectedColor()
@@ -1331,6 +1333,7 @@ Date:""")
     def font_color_chooser(self):
         color_dialog = QColorDialog(self)
         color_dialog.setWindowTitle('Font Color')
+        color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         if color_dialog.exec_():
             color = color_dialog.selectedColor()
