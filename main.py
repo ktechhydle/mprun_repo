@@ -292,11 +292,9 @@ class MPRUN(QMainWindow):
         # Tabview
         self.tab_view = QDetachTabWidget(self)
         self.tab_view.setMovable(True)
-        self.tab_view.setTabsClosable(True)
         self.tab_view.setDocumentMode(True)
         self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
-        self.tab_view.tabCloseRequested.connect(self.close_tab)
 
         # Properties Tab
         self.properties_tab = QWidget(self)
@@ -2105,12 +2103,6 @@ Date:""")
         app = VersionWin()
         app.mainloop()
 
-    def close_tab(self, i):
-        if self.tab_view.count() < 2:
-            return
-
-        self.tab_view.removeTab(i)
-
     def display_choosen_tab(self, tab_name):
         for i in range(self.tab_view.count()):
             if self.tab_view.tabText(i) == tab_name:
@@ -2140,7 +2132,6 @@ Date:""")
                 elif tab_name == 'Canvas':
                     self.tab_view.addTab(self.canvas_tab, tab_name)
                     self.tab_view.setCurrentWidget(self.canvas_tab)
-
 
 
 if __name__ == '__main__':

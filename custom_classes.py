@@ -426,6 +426,8 @@ class EditableTextBlock(QGraphicsTextItem):
         # Call the parent class paint method first
         super().paint(painter, option, widget)
 
+        painter.setPen(Qt.NoPen)
+
         # If the item is selected, draw a custom selection highlight
         if option.state & QStyle.State_Selected:
             self.custom_pen = painter.pen()

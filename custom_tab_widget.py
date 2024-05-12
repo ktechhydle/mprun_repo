@@ -28,6 +28,7 @@ class QDetachTabWidget(QTabWidget):
             return
         tabIndex = self.tabBar().tabAt(point)
         menu = QMenu("Window Action", self)
+        closeAction = menu.addAction('Close')
         detachAction = menu.addAction("Detach")
         reattachAction = menu.addAction("Reattach")
         w = self.widget(tabIndex)
@@ -69,6 +70,13 @@ class QDetachTabWidget(QTabWidget):
             self.insertTab(tabIndex, it._widget, it._title)
             self.setCurrentIndex(tabIndex)
             self._tabInfo.remove(it)
+
+        if action == closeAction:
+            if self.count() > 1:
+                self.removeTab(tabIndex)
+
+            else:
+                pass
 
     def handleTabClosedRequested(self, tabIndex):
         w = self.widget(tabIndex)
