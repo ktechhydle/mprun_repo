@@ -568,14 +568,16 @@ class MPRUN(QMainWindow):
         self.y_pos_spin = QSpinBox(self)
         self.y_pos_spin.setMaximum(10000)
         self.y_pos_spin.setMinimum(-10000)
-        self.width_scale_spin = QSpinBox(self)
-        self.width_scale_spin.setValue(1)
-        self.width_scale_spin.setMaximum(10000)
-        self.width_scale_spin.setMinimum(-10000)
-        self.height_scale_spin = QSpinBox(self)
-        self.height_scale_spin.setValue(1)
-        self.height_scale_spin.setMaximum(10000)
-        self.height_scale_spin.setMinimum(-10000)
+        self.width_scale_spin = QDoubleSpinBox(self)
+        self.width_scale_spin.setValue(10.0)
+        self.width_scale_spin.setDecimals(2)
+        self.width_scale_spin.setRange(-10000.00, 10000.00)
+        self.width_scale_spin.setSingleStep(0.1)
+        self.height_scale_spin = QDoubleSpinBox(self)
+        self.height_scale_spin.setValue(10.0)
+        self.height_scale_spin.setDecimals(2)
+        self.height_scale_spin.setRange(-10000.00, 10000.00)
+        self.height_scale_spin.setSingleStep(0.1)
         self.rotate_item_spin = QSpinBox(self)
         self.rotate_item_spin.setMaximum(10000)
         self.rotate_item_spin.setMinimum(-10000)
@@ -1179,16 +1181,15 @@ Date:""")
             self.x_pos_spin.setValue(0)
             self.y_pos_spin.setValue(0)
             self.rotate_item_spin.setValue(0)
-            self.width_scale_spin.setValue(1)
-            self.height_scale_spin.setValue(1)
-
+            self.width_scale_spin.setValue(10.0)
+            self.height_scale_spin.setValue(10.0)
 
         for item in self.canvas.selectedItems():
             self.x_pos_spin.setValue(int(item.x()))
             self.y_pos_spin.setValue(int(item.y()))
             self.rotate_item_spin.setValue(int(item.rotation()))
-            self.width_scale_spin.setValue(int(item.transform().m11()))
-            self.height_scale_spin.setValue(int(item.transform().m22()))
+            self.width_scale_spin.setValue(float(item.transform().m11() * 10))
+            self.height_scale_spin.setValue(float(item.transform().m22() * 10))
 
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
@@ -1222,26 +1223,38 @@ Date:""")
             elif isinstance(item, CustomCircleItem):
                 if item.childItems():
                     for child in item.childItems():
-                        pen = item.pen()
-                        brush = item.brush()
+                        if isinstance(child, CustomRectangleItem):
+                            pen = child.pen()
+                            brush = child.brush()
 
-                        # Set Colors
-                        self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                        self.outline_color.set(pen.color().name())
-                        self.fill_color_btn.setStyleSheet(
-                            f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                        self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+                            # Set Colors
+                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                            self.outline_color.set(pen.color().name())
+                            self.fill_color_btn.setStyleSheet(
+                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
 
-                        # Set Values
-                        self.stroke_size_spin.setValue(pen.width())
+                        else:
+                            pen = item.pen()
+                            brush = item.brush()
 
-                        for index, (style, value) in enumerate(self.stroke_style_options.items()):
-                            if pen.style() == value:
-                                self.stroke_style_combo.setCurrentIndex(index)
+                            # Set Colors
+                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                            self.outline_color.set(pen.color().name())
+                            self.fill_color_btn.setStyleSheet(
+                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
 
-                        for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
-                            if pen.capStyle() == v:
-                                self.stroke_pencap_combo.setCurrentIndex(i)
+                            # Set Values
+                            self.stroke_size_spin.setValue(pen.width())
+
+                            for index, (style, value) in enumerate(self.stroke_style_options.items()):
+                                if pen.style() == value:
+                                    self.stroke_style_combo.setCurrentIndex(index)
+
+                            for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
+                                if pen.capStyle() == v:
+                                    self.stroke_pencap_combo.setCurrentIndex(i)
 
                 else:
                     pen = item.pen()
@@ -1511,8 +1524,8 @@ Date:""")
 
     def use_scale(self, x_value, y_value):
         try:
-            x_value = float(x_value)
-            y_value = float(y_value)
+            x_value = float(x_value / 10)
+            y_value = float(y_value / 10)
             items = self.canvas.selectedItems()
             for item in items:
                 if isinstance(item, CanvasItem):
@@ -1656,6 +1669,14 @@ Date:""")
             elif isinstance(item, CanvasItem):
                 pass
 
+            elif isinstance(item, CustomCircleItem):
+                item.setBrush(QBrush(QColor(Qt.transparent)))
+
+                if item.childItems():
+                    for child in item.childItems():
+                        if isinstance(child, CustomRectangleItem):
+                            child.setBrush(QBrush(QColor(Qt.transparent)))
+
             else:
                 item.setBrush(QBrush(QColor(Qt.transparent)))
 
@@ -1776,7 +1797,7 @@ Date:""")
 
                 add_command = AddItemCommand(self.canvas, svg_item)
                 self.canvas.addCommand(add_command)
-                svg_item.setToolTip('Imported SVG Item')
+                svg_item.setToolTip('Imported SVG')
 
                 self.create_item_attributes(svg_item)
 
@@ -1792,7 +1813,7 @@ Date:""")
 
                 add_command = AddItemCommand(self.canvas, image2)
                 self.canvas.addCommand(add_command)
-                image2.setToolTip('Imported Bitmap Item')
+                image2.setToolTip('Imported Pixmap')
 
                 self.create_item_attributes(image2)
 

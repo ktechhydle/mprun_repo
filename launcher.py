@@ -182,13 +182,16 @@ class Dialog(CTk):
         self.app = MPRUN()
         self.app.show()
         self.set_attr()
+
+        with open('main_style.css', 'r') as file:
+            self.app.setStyleSheet(file.read())
+
         sys.exit(win.exec_())
 
     def set_attr(self):
         selected_template = self.template_combo.get()
         selected_value = self.values[selected_template]
         self.app.set_template(selected_value)
-
 
 class CreateTemplateDialog(CTk):
     def __init__(self):
@@ -247,6 +250,10 @@ class CreateTemplateDialog(CTk):
         self.app.show()
         self.set_attr()
         self.destroy()
+
+        with open('main_style.css', 'r') as file:
+            self.app.setStyleSheet(file.read())
+
         sys.exit(win.exec_())
 
     def set_attr(self):

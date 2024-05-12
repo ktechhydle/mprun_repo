@@ -136,21 +136,30 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
 
     def duplicate(self):
         # Create a new instance of CustomGraphicsItemGroup
-        items = CustomGraphicsItemGroup(self.widget)
+        group = CustomGraphicsItemGroup(self.widget)
 
         # Set position, scale, and rotation
-        items.setPos(self.pos().x() + 10, self.pos().y() + 10)
-        items.setScale(self.scale())
-        items.setRotation(self.rotation())
+        group.setPos(self.pos())
+        group.setScale(self.scale())
+        group.setRotation(self.rotation())
+        group.set_grid_size(self.block_size)
 
         # Set flags and tooltip
-        items.setFlag(QGraphicsItem.ItemIsSelectable)
-        items.setFlag(QGraphicsItem.ItemIsMovable)
-        items.setToolTip('Duplicated MPRUN Element')
+        group.setFlag(QGraphicsItem.ItemIsSelectable)
+        group.setFlag(QGraphicsItem.ItemIsMovable)
+        group.setToolTip('Group')
 
         # Add the new item to the scene
-        add_command = AddItemCommand(self.scene(), items)
+        add_command = AddItemCommand(self.scene(), group)
         self.scene().addCommand(add_command)
+
+        for items in self.childItems():
+            copy = items.duplicate()
+
+            # Add items to group
+            group.addToGroup(copy)
+
+        return group
 
 class CustomRectangleItem(QGraphicsRectItem):
     def __init__(self, *coords):
@@ -175,17 +184,19 @@ class CustomRectangleItem(QGraphicsRectItem):
 
         item = CustomRectangleItem(rect)
         item.setPen(self.pen())
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
+        item.setToolTip('Rectangle')
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
 
 class CustomCircleItem(QGraphicsEllipseItem):
     def __init__(self, *coords):
@@ -210,17 +221,32 @@ class CustomCircleItem(QGraphicsEllipseItem):
 
         item = CustomCircleItem(rect)
         item.setPen(self.pen())
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
+        item.setToolTip('Ellipse')
+
+        if self.childItems():
+            for child in self.childItems():
+                copy = child.duplicate()
+
+                if isinstance(copy, EditableTextBlock):
+                    pass
+
+                else:
+                    copy.setFlag(QGraphicsItem.ItemIsMovable, False)
+                    copy.setFlag(QGraphicsItem.ItemIsSelectable, False)
+
+                copy.setParentItem(item)
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
 
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
@@ -246,17 +272,19 @@ class CustomPathItem(QGraphicsPathItem):
         item = CustomPathItem(path)
         item.setPen(self.pen())
         item.setBrush(self.brush())
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
+        item.setToolTip('Path')
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
 
     def smooth_path(self, path):
         vertices = [(point.x(), point.y()) for point in path.toSubpathPolygons()[0]]
@@ -309,7 +337,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         pixmap = QPixmap(self.return_filename())
 
         item = CustomPixmapItem(pixmap)
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(0)
@@ -317,10 +345,12 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
+        item.setToolTip('Imported Pixmap')
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
 
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, file):
@@ -353,7 +383,7 @@ class CustomSvgItem(QGraphicsSvgItem):
         svg = self.return_filename()
 
         item = CustomSvgItem(svg)
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(0)
@@ -361,10 +391,12 @@ class CustomSvgItem(QGraphicsSvgItem):
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
+        item.setToolTip('Imported SVG')
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
 
     def mouseDoubleClickEvent(self, event):
         print('Logic not implemented')
@@ -428,17 +460,19 @@ class EditableTextBlock(QGraphicsTextItem):
         item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
         item.setPlainText(self.toPlainText())
-        item.setPos(self.pos().x() + 10, self.pos().y() + 10)
+        item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(0)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Duplicated MPRUN Element')
+        item.setToolTip('Text')
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
 
     def insert_table(self, rows, cols):
         cursor = self.textCursor()
