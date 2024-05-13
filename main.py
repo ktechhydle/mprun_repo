@@ -116,6 +116,9 @@ class MPRUN(QMainWindow):
         smooth_action = QAction('Smooth Path', self)
         smooth_action.triggered.connect(self.use_smooth_path)
 
+        close_subpath_action = QAction('Close Path', self)
+        close_subpath_action.triggered.connect(self.use_close_path)
+
         # Create edit actions
         undo_action = QAction('Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
@@ -226,6 +229,7 @@ class MPRUN(QMainWindow):
         self.tool_menu.addAction(trick_table_action)
         self.tool_menu.addSeparator()
         self.tool_menu.addAction(smooth_action)
+        self.tool_menu.addAction(close_subpath_action)
 
         self.edit_menu.addAction(undo_action)
         self.edit_menu.addAction(redo_action)
@@ -504,7 +508,6 @@ class MPRUN(QMainWindow):
         self.drop_shadow_check_btn.clicked.connect(self.use_drop_shadow)
         self.close_subpath_check_btn = QCheckBox(self)
         self.close_subpath_check_btn.setText('Close Path')
-        self.close_subpath_check_btn.clicked.connect(self.update_pen)
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
         horizontal_widget_for_stroke_fill.layout.addWidget(self.drop_shadow_check_btn)
@@ -1048,6 +1051,7 @@ Date:""")
 
             except Exception:
                 pass
+
             event.accept()
 
     def update_pen(self):
@@ -1649,6 +1653,12 @@ Date:""")
                 except Exception as e:
                     QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
                     self.canvas.undo()
+
+    def use_close_path(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CustomPathItem):
+                command = CloseSubpathCommand(item, self.canvas)
+                self.canvas.addCommand(command)
 
     def use_fill_transparent(self):
         self.fill_color_btn.setStyleSheet('background-color: transparent')

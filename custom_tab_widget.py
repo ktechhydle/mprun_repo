@@ -19,6 +19,16 @@ class DetachableTabWidget(QtWidgets.QTabWidget):
         # Close all detached tabs if the application is closed explicitly
         QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs)  # @UndefinedVariable
 
+        # Connect the parent window's close event to closeDetachedTabs method
+        if parent is not None:
+            parent.closeEvent = self.closeEvent
+
+        # Add this method to handle the close event of the parent window
+
+    def closeEvent(self, event):
+        self.closeDetachedTabs()
+        event.accept()
+
     ##
     #  The default movable functionality of QTabWidget must remain disabled
     #  so as not to conflict with the added features
@@ -223,7 +233,7 @@ class DetachableTabWidget(QtWidgets.QTabWidget):
             self.setObjectName(name)
             self.setWindowTitle(name)
             self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-            self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowMaximizeButtonHint)
+            self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowMaximizeButtonHint & ~QtCore.Qt.WindowType.WindowMinimizeButtonHint)
 
             self.contentWidget = contentWidget
             self.setCentralWidget(self.contentWidget)
