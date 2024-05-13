@@ -341,7 +341,11 @@ class MPRUN(QMainWindow):
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
 
-        # Properties tab widgets
+        # This next section was recently organized.
+        # This next section is basically all the widgets for each tab
+        # Some tabs don't have many widgets as they are subclassed in other files.
+
+        # _____ Properties tab widgets _____
         self.selection_label = QLabel('No Selection')
         self.selection_label.setStyleSheet("QLabel { font-size: 12px; }")
         properties_label = QLabel('Transform', self)
@@ -424,42 +428,6 @@ class MPRUN(QMainWindow):
         widget6.layout.addWidget(stroke_label)
         widget6.layout.addWidget(self.stroke_size_spin)
 
-
-        # All labels
-
-
-        layers_label = QLabel('Layers', self)
-        layers_label.setStyleSheet("QLabel { font-size: 12px;}")
-        layers_label.setAlignment(Qt.AlignLeft)
-
-        text_options_label = QLabel('Characters', self)
-        text_options_label.setStyleSheet("QLabel { font-size: 12px;}")
-        text_options_label.setAlignment(Qt.AlignLeft)
-
-        vector_options_label = QLabel('Precision', self)
-        vector_options_label.setStyleSheet("QLabel { font-size: 12px;}")
-        vector_options_label.setAlignment(Qt.AlignLeft)
-
-        vector_options_label2 = QLabel('Color', self)
-        vector_options_label2.setStyleSheet("QLabel { font-size: 12px;}")
-        vector_options_label2.setAlignment(Qt.AlignLeft)
-
-        vector_options_label3 = QLabel('Threshold', self)
-        vector_options_label3.setStyleSheet("QLabel { font-size: 12px;}")
-        vector_options_label3.setAlignment(Qt.AlignLeft)
-
-        course_elements_label = QLabel('Course Elements', self)
-        course_elements_label.setStyleSheet('font-size: 12px;')
-
-        # Labels
-
-        self.opacity_slider = QSlider()
-        self.opacity_slider.setRange(1, 100)
-        self.opacity_slider.setOrientation(Qt.Horizontal)
-        self.opacity_slider.setSliderPosition(100)
-        self.opacity_slider.valueChanged.connect(self.use_change_opacity)
-
-        # Fill Widgets
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
         self.fill_color_btn = QPushButton('', self)
@@ -476,7 +444,35 @@ class MPRUN(QMainWindow):
         widget5.layout.addWidget(fill_label)
         widget5.layout.addWidget(self.fill_transparent_btn)
 
-        # Layer Associated Widgets
+        self.opacity_slider = QSlider()
+        self.opacity_slider.setRange(1, 100)
+        self.opacity_slider.setOrientation(Qt.Horizontal)
+        self.opacity_slider.setSliderPosition(100)
+        self.opacity_slider.valueChanged.connect(self.use_change_opacity)
+
+        self.gsnap_check_btn = QCheckBox(self)
+        self.gsnap_check_btn.setText('GSNAP Enabled')
+        self.gsnap_grid_spin = QSpinBox(self)
+        grid_size_label = QLabel('GSNAP Grid Size:', self)
+        self.gsnap_grid_spin.setValue(10)
+        self.gsnap_grid_spin.setMinimum(1)
+        self.gsnap_grid_spin.setMaximum(1000)
+        self.drop_shadow_check_btn = QCheckBox(self)
+        self.drop_shadow_check_btn.setText('Drop Shadow')
+        self.drop_shadow_check_btn.clicked.connect(self.use_drop_shadow)
+        self.close_subpath_check_btn = QCheckBox(self)
+        self.close_subpath_check_btn.setText('Close Path')
+        horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
+        horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
+        horizontal_widget_for_stroke_fill.layout.addWidget(self.drop_shadow_check_btn)
+        widget3 = ToolbarHorizontalLayout()
+        widget3.layout.addWidget(self.close_subpath_check_btn)
+
+        #_____ Layers tab widgets _____
+        layers_label = QLabel('Layers', self)
+        layers_label.setStyleSheet("QLabel { font-size: 12px;}")
+        layers_label.setAlignment(Qt.AlignLeft)
+
         self.layer_spin = QSpinBox(self)
         self.layer_spin.setRange(0, 9999)
         self.layer_spin.setValue(0)
@@ -514,10 +510,15 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(lower_layer_btn)
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
-        # Stroke fill related widgets
+        #_____ Libraries tab widgets _____
+        course_elements_label = QLabel('Course Elements', self)
+        course_elements_label.setStyleSheet('font-size: 12px;')
 
+        #_____ Characters tab widgets _____
+        text_options_label = QLabel('Characters', self)
+        text_options_label.setStyleSheet("QLabel { font-size: 12px;}")
+        text_options_label.setAlignment(Qt.AlignLeft)
 
-        # Font related widgets
         self.font_choice_combo = QFontComboBox(self)
         self.font_size_spin = QSpinBox(self)
         self.font_size_spin.setValue(20)
@@ -553,26 +554,17 @@ class MPRUN(QMainWindow):
         font_spacing_label = QLabel('Font Spacing:', self)
         font_color_label = QLabel('Font Color:')
 
-        # Quick action related widgets
-        self.gsnap_check_btn = QCheckBox(self)
-        self.gsnap_check_btn.setText('GSNAP Enabled')
-        self.gsnap_grid_spin = QSpinBox(self)
-        grid_size_label = QLabel('GSNAP Grid Size:', self)
-        self.gsnap_grid_spin.setValue(10)
-        self.gsnap_grid_spin.setMinimum(1)
-        self.gsnap_grid_spin.setMaximum(1000)
-        self.drop_shadow_check_btn = QCheckBox(self)
-        self.drop_shadow_check_btn.setText('Drop Shadow')
-        self.drop_shadow_check_btn.clicked.connect(self.use_drop_shadow)
-        self.close_subpath_check_btn = QCheckBox(self)
-        self.close_subpath_check_btn.setText('Close Path')
-        horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
-        horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
-        horizontal_widget_for_stroke_fill.layout.addWidget(self.drop_shadow_check_btn)
-        widget3 = ToolbarHorizontalLayout()
-        widget3.layout.addWidget(self.close_subpath_check_btn)
+        #_____ Vectorize tab widgets _____
+        vector_options_label = QLabel('Precision', self)
+        vector_options_label.setStyleSheet("QLabel { font-size: 12px;}")
+        vector_options_label.setAlignment(Qt.AlignLeft)
+        vector_options_label2 = QLabel('Color', self)
+        vector_options_label2.setStyleSheet("QLabel { font-size: 12px;}")
+        vector_options_label2.setAlignment(Qt.AlignLeft)
+        vector_options_label3 = QLabel('Threshold', self)
+        vector_options_label3.setStyleSheet("QLabel { font-size: 12px;}")
+        vector_options_label3.setAlignment(Qt.AlignLeft)
 
-        # Vectorize widgets
         filter_speckle_label = QLabel('Filter Speckle (Cleaner):', self)
         color_precision_label = QLabel('Color Precision (More Accurate):', self)
         layer_difference_label = QLabel('Layer Difference (Less Layers):', self)
@@ -615,8 +607,6 @@ class MPRUN(QMainWindow):
         self.path_precision_spin.setMaximum(10)
         self.path_precision_spin.setMinimum(1)
         self.path_precision_spin.setSliderPosition(3)
-
-        # Item position related widgets
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
