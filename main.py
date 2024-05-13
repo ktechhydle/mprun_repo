@@ -341,21 +341,92 @@ class MPRUN(QMainWindow):
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
 
-        # All labels
+        # Properties tab widgets
         self.selection_label = QLabel('No Selection')
         self.selection_label.setStyleSheet("QLabel { font-size: 12px; }")
-
         properties_label = QLabel('Transform', self)
         properties_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         properties_label.setAlignment(Qt.AlignLeft)
-
         appearence_label = QLabel('Appearance', self)
         appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
-
         quick_actions_label = QLabel('Quick Actions', self)
         quick_actions_label.setStyleSheet("QLabel {font-size: 12px; alignment: center; }")
         quick_actions_label.setAlignment(Qt.AlignLeft)
+
+        rotation_label = QLabel('Rotating:')
+        rotation_label.setStyleSheet('font-size: 10px;')
+        scale_label = QLabel('Scaling:')
+        scale_label.setStyleSheet('font-size: 10px;')
+        opacity_label = QLabel('Opacity:')
+        opacity_label.setStyleSheet('font-size: 10px;')
+
+        x_pos_label = QLabel('X:')
+        y_pos_label = QLabel('Y:')
+        width_transform_label = QLabel('W:')
+        height_transform_label = QLabel('H:')
+        self.x_pos_spin = QSpinBox(self)
+        self.x_pos_spin.setMaximum(10000)
+        self.x_pos_spin.setMinimum(-10000)
+        self.y_pos_spin = QSpinBox(self)
+        self.y_pos_spin.setMaximum(10000)
+        self.y_pos_spin.setMinimum(-10000)
+        self.width_scale_spin = QDoubleSpinBox(self)
+        self.width_scale_spin.setValue(10.0)
+        self.width_scale_spin.setDecimals(2)
+        self.width_scale_spin.setRange(-10000.00, 10000.00)
+        self.width_scale_spin.setSingleStep(0.1)
+        self.height_scale_spin = QDoubleSpinBox(self)
+        self.height_scale_spin.setValue(10.0)
+        self.height_scale_spin.setDecimals(2)
+        self.height_scale_spin.setRange(-10000.00, 10000.00)
+        self.height_scale_spin.setSingleStep(0.1)
+        self.rotate_item_spin = QSpinBox(self)
+        self.rotate_item_spin.setMaximum(10000)
+        self.rotate_item_spin.setMinimum(-10000)
+        flip_horizontal_btn = QPushButton('Flip Horizontal')
+        flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
+        flip_vertical_btn = QPushButton('Flip Vertical')
+        flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
+        widget7 = ToolbarHorizontalLayout()
+        widget7.layout.addWidget(x_pos_label)
+        widget7.layout.addWidget(self.x_pos_spin)
+        widget7.layout.addWidget(width_transform_label)
+        widget7.layout.addWidget(self.width_scale_spin)
+        widget7.layout.addWidget(flip_horizontal_btn)
+        widget8 = ToolbarHorizontalLayout()
+        widget8.layout.addWidget(y_pos_label)
+        widget8.layout.addWidget(self.y_pos_spin)
+        widget8.layout.addWidget(height_transform_label)
+        widget8.layout.addWidget(self.height_scale_spin)
+        widget8.layout.addWidget(flip_vertical_btn)
+        widget9 = ToolbarHorizontalLayout()
+        widget9.layout.addWidget(rotation_label)
+        widget9.layout.addWidget(self.rotate_item_spin)
+
+        self.outline_color_btn = QPushButton('', self)
+        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
+        self.outline_color_btn.setFixedWidth(28)
+        self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
+        self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
+        self.outline_color_btn.clicked.connect(self.update_pen)
+        self.stroke_size_spin = QSpinBox(self)
+        self.stroke_size_spin.setValue(3)
+        self.stroke_size_spin.setMaximum(1000)
+        self.stroke_size_spin.setMinimum(1)
+        stroke_label = StrokeLabel('Stroke', self)
+        self.stroke_style_combo = stroke_label.stroke_combo
+        self.stroke_style_options = stroke_label.stroke_options
+        self.stroke_pencap_combo = stroke_label.pencap_combo
+        self.stroke_pencap_options = stroke_label.pencap_options
+        widget6 = ToolbarHorizontalLayout()
+        widget6.layout.addWidget(self.outline_color_btn)
+        widget6.layout.addWidget(stroke_label)
+        widget6.layout.addWidget(self.stroke_size_spin)
+
+
+        # All labels
+
 
         layers_label = QLabel('Layers', self)
         layers_label.setStyleSheet("QLabel { font-size: 12px;}")
@@ -381,12 +452,7 @@ class MPRUN(QMainWindow):
         course_elements_label.setStyleSheet('font-size: 12px;')
 
         # Labels
-        rotation_label = QLabel('Rotating:')
-        rotation_label.setStyleSheet('font-size: 10px;')
-        scale_label = QLabel('Scaling:')
-        scale_label.setStyleSheet('font-size: 10px;')
-        opacity_label = QLabel('Opacity:')
-        opacity_label.setStyleSheet('font-size: 10px;')
+
         self.opacity_slider = QSlider()
         self.opacity_slider.setRange(1, 100)
         self.opacity_slider.setOrientation(Qt.Horizontal)
@@ -410,22 +476,32 @@ class MPRUN(QMainWindow):
         widget5.layout.addWidget(fill_label)
         widget5.layout.addWidget(self.fill_transparent_btn)
 
-        # Layer Combobox
-        self.layer_options = {'Layer 0 (Default)': 0, 'Layer 1 (Course Elements)': 1, 'Layer 2 (Lines/Paths)': 2,
-                              'Layer 3 (Text/Labels)': 3}
-        self.layer_combo = QComboBox(self)
-        for layer, value in self.layer_options.items():
-            self.layer_combo.addItem(layer, value)
-
         # Layer Associated Widgets
+        self.layer_spin = QSpinBox(self)
+        self.layer_spin.setRange(0, 9999)
+        self.layer_spin.setValue(0)
+        self.hide_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
+        self.hide_layer_btn.setFixedWidth(28)
+        self.hide_layer_btn.setToolTip('Hide Selected Layer')
+        self.hide_layer_btn.clicked.connect(self.use_hide_layer)
+        self.unhide_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/unhide_icon.png'), '', self)
+        self.unhide_layer_btn.setFixedWidth(28)
+        self.unhide_layer_btn.setToolTip('Unhide Selected Layer')
+        self.unhide_layer_btn.clicked.connect(self.use_unhide_layer)
+        layer_hlayout = ToolbarHorizontalLayout()
+        layer_hlayout.layout.addWidget(self.hide_layer_btn)
+        layer_hlayout.layout.addWidget(self.unhide_layer_btn)
+        layer_hlayout.layout.addWidget(self.layer_spin)
         raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
-        raise_layer_btn.setToolTip('''Raise Layer Tool:
+        raise_layer_btn.setToolTip('''Raise Layer:
         Key-1''')
+        raise_layer_btn.setFixedWidth(28)
         raise_layer_btn.setShortcut(QKeySequence('1'))
         raise_layer_btn.clicked.connect(self.use_raise_layer)
         lower_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/lower_layer_icon.png'), '', self)
-        lower_layer_btn.setToolTip('''Lower Layer Tool:
+        lower_layer_btn.setToolTip('''Lower Layer:
         Key-2''')
+        lower_layer_btn.setFixedWidth(28)
         lower_layer_btn.setShortcut(QKeySequence('2'))
         lower_layer_btn.clicked.connect(self.use_lower_layer)
         bring_to_front_btn = QPushButton(QIcon('logos and icons/Tool Icons/set_always_on_top_icon.png'), '', self)
@@ -439,25 +515,7 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
         # Stroke fill related widgets
-        self.outline_color_btn = QPushButton('', self)
-        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
-        self.outline_color_btn.setFixedWidth(28)
-        self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
-        self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
-        self.outline_color_btn.clicked.connect(self.update_pen)
-        self.stroke_size_spin = QSpinBox(self)
-        self.stroke_size_spin.setValue(3)
-        self.stroke_size_spin.setMaximum(1000)
-        self.stroke_size_spin.setMinimum(1)
-        stroke_label = StrokeLabel('Stroke', self)
-        self.stroke_style_combo = stroke_label.stroke_combo
-        self.stroke_style_options = stroke_label.stroke_options
-        self.stroke_pencap_combo = stroke_label.pencap_combo
-        self.stroke_pencap_options = stroke_label.pencap_options
-        widget6 = ToolbarHorizontalLayout()
-        widget6.layout.addWidget(self.outline_color_btn)
-        widget6.layout.addWidget(stroke_label)
-        widget6.layout.addWidget(self.stroke_size_spin)
+
 
         # Font related widgets
         self.font_choice_combo = QFontComboBox(self)
@@ -559,50 +617,6 @@ class MPRUN(QMainWindow):
         self.path_precision_spin.setSliderPosition(3)
 
         # Item position related widgets
-        x_pos_label = QLabel('X:')
-        y_pos_label = QLabel('Y:')
-        width_transform_label = QLabel('W:')
-        height_transform_label = QLabel('H:')
-        self.x_pos_spin = QSpinBox(self)
-        self.x_pos_spin.setMaximum(10000)
-        self.x_pos_spin.setMinimum(-10000)
-        self.y_pos_spin = QSpinBox(self)
-        self.y_pos_spin.setMaximum(10000)
-        self.y_pos_spin.setMinimum(-10000)
-        self.width_scale_spin = QDoubleSpinBox(self)
-        self.width_scale_spin.setValue(10.0)
-        self.width_scale_spin.setDecimals(2)
-        self.width_scale_spin.setRange(-10000.00, 10000.00)
-        self.width_scale_spin.setSingleStep(0.1)
-        self.height_scale_spin = QDoubleSpinBox(self)
-        self.height_scale_spin.setValue(10.0)
-        self.height_scale_spin.setDecimals(2)
-        self.height_scale_spin.setRange(-10000.00, 10000.00)
-        self.height_scale_spin.setSingleStep(0.1)
-        self.rotate_item_spin = QSpinBox(self)
-        self.rotate_item_spin.setMaximum(10000)
-        self.rotate_item_spin.setMinimum(-10000)
-        flip_horizontal_btn = QPushButton('Flip Horizontal')
-        flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
-        flip_vertical_btn = QPushButton('Flip Vertical')
-        flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
-
-        # Create transform widgets
-        widget7 = ToolbarHorizontalLayout()
-        widget7.layout.addWidget(x_pos_label)
-        widget7.layout.addWidget(self.x_pos_spin)
-        widget7.layout.addWidget(width_transform_label)
-        widget7.layout.addWidget(self.width_scale_spin)
-        widget7.layout.addWidget(flip_horizontal_btn)
-        widget8 = ToolbarHorizontalLayout()
-        widget8.layout.addWidget(y_pos_label)
-        widget8.layout.addWidget(self.y_pos_spin)
-        widget8.layout.addWidget(height_transform_label)
-        widget8.layout.addWidget(self.height_scale_spin)
-        widget8.layout.addWidget(flip_vertical_btn)
-        widget9 = ToolbarHorizontalLayout()
-        widget9.layout.addWidget(rotation_label)
-        widget9.layout.addWidget(self.rotate_item_spin)
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
@@ -611,7 +625,7 @@ class MPRUN(QMainWindow):
         self.font_size_spin.valueChanged.connect(self.update_font)
         self.font_letter_spacing_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
-        self.layer_combo.currentIndexChanged.connect(self.use_set_layer)
+        self.layer_spin.valueChanged.connect(self.use_set_layer)
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
         self.x_pos_spin.valueChanged.connect(self.use_set_item_x)
         self.y_pos_spin.valueChanged.connect(self.use_set_item_y)
@@ -658,7 +672,7 @@ class MPRUN(QMainWindow):
         # Layers Tab Widgets
         self.layers_tab_layout.addWidget(HorizontalSeparator())
         self.layers_tab_layout.addWidget(layers_label)
-        self.layers_tab_layout.addWidget(self.layer_combo)
+        self.layers_tab_layout.addWidget(layer_hlayout)
         self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
 
         # Vectorize Tab Widgets
@@ -972,7 +986,7 @@ Date:""")
         self.paper_text.setFont(font)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-        self.paper_text.setZValue(-1)
+        self.paper_text.setZValue(0)
         self.canvas.addItem(self.paper_text)
 
         self.text_item = EditableTextBlock('Canvas 1')
@@ -1173,6 +1187,7 @@ Date:""")
         self.bold_btn.blockSignals(True)
         self.italic_btn.blockSignals(True)
         self.underline_btn.blockSignals(True)
+        self.layer_spin.blockSignals(True)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
@@ -1185,6 +1200,7 @@ Date:""")
             self.rotate_item_spin.setValue(0)
             self.width_scale_spin.setValue(10.0)
             self.height_scale_spin.setValue(10.0)
+            self.layer_spin.setValue(0)
 
         for item in self.canvas.selectedItems():
             self.x_pos_spin.setValue(int(item.x()))
@@ -1192,6 +1208,7 @@ Date:""")
             self.rotate_item_spin.setValue(int(item.rotation()))
             self.width_scale_spin.setValue(float(item.transform().m11() * 10))
             self.height_scale_spin.setValue(float(item.transform().m22() * 10))
+            self.layer_spin.setValue(int(item.zValue()))
 
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
@@ -1313,6 +1330,7 @@ Date:""")
         self.bold_btn.blockSignals(False)
         self.italic_btn.blockSignals(False)
         self.underline_btn.blockSignals(False)
+        self.layer_spin.blockSignals(False)
 
     def stroke_color_chooser(self):
         color_dialog = CustomColorPicker()
@@ -1411,18 +1429,37 @@ Date:""")
             self.canvas_view.rotate(self.rotate_sceen_spin.value())
 
     def use_set_layer(self):
-        index = self.layer_combo.currentIndex()
-        data = self.layer_combo.itemData(index)
+        for items in self.canvas.selectedItems():
+            items.setZValue(self.layer_spin.value())
 
-        if self.canvas.selectedItems():
-            for items in self.canvas.selectedItems():
-                items.setZValue(data)
+    def use_hide_layer(self):
+        for item in self.canvas.items():
+            if int(item.zValue()) == self.layer_spin.value():
+                item.setVisible(False)
+
+    def use_unhide_layer(self):
+        for item in self.canvas.items():
+            if int(item.zValue()) == self.layer_spin.value():
+                item.setVisible(True)
+
+    def use_raise_layer(self):
+        for item in self.canvas.selectedItems():
+            item.setZValue(item.zValue() + 1.0)
+
+    def use_lower_layer(self):
+        for item in self.canvas.selectedItems():
+            if item.zValue() <= 0:
+                QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+
+            else:
+                item.setZValue(item.zValue() - 1.0)
 
     def use_bring_to_front(self):
         selected_items = self.canvas.selectedItems()
-        max_z_value = max(item.zValue() for item in self.canvas.items())
-        for item in selected_items:
-            item.setZValue(max_z_value + 1)
+        if selected_items:
+            max_z = max([item.zValue() for item in self.canvas.items()])
+            for item in selected_items:
+                item.setZValue(max_z + 1)
 
     def use_vectorize(self):
         for item in self.canvas.selectedItems():
@@ -1500,18 +1537,6 @@ Date:""")
 
             elif isinstance(item, CustomGraphicsItemGroup):
                 item.duplicate()
-
-    def use_raise_layer(self):
-        for item in self.canvas.selectedItems():
-            item.setZValue(item.zValue() + 1.0)
-
-    def use_lower_layer(self):
-        for item in self.canvas.selectedItems():
-            if item.zValue() <= 0:
-                QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
-
-            else:
-                item.setZValue(item.zValue() - 1.0)
 
     def use_set_item_x(self, value):
         for item in self.canvas.selectedItems():

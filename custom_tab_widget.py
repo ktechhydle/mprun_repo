@@ -1,3 +1,6 @@
+# Huge thanks for this one
+# https://stackoverflow.com/questions/47267195/in-pyqt-is-it-possible-to-detach-tabs-from-a-qtabwidget
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import pyqtSignal, pyqtSlot
 
