@@ -980,7 +980,6 @@ Date:""")
         self.canvas.addItem(self.paper_text)
 
         self.text_item = CanvasTextItem('Canvas 1', self.paper)
-        self.text_item.setZValue(-1)
         self.text_item.setVisible(False)
 
         self.use_refit_screen()
@@ -1028,8 +1027,7 @@ Date:""")
                     self.characters_tab.close()
                     self.vectorize_tab.close()
                     self.canvas_tab.close()
-                    if self.add_canvas_dialog:
-                        self.add_canvas_dialog.close()
+                    self.add_canvas_dialog.close()
 
                 except Exception:
                     pass
