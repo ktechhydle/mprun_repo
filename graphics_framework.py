@@ -366,6 +366,7 @@ y: {int(p.y())}''')
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     for items in item.childItems():
+                        items.setVisible(True)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
@@ -373,6 +374,7 @@ y: {int(p.y())}''')
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     for items in item.childItems():
+                        items.setVisible(False)
                         items.parentItem().setSelected(False)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)

@@ -523,6 +523,17 @@ class CanvasItem(QGraphicsRectItem):
             painter.setPen(pen)
             painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
+class CanvasTextItem(QGraphicsTextItem):
+    def __init__(self, text, parent):
+        super().__init__()
+
+        self.setScale(1.5)
+        self.setPos(parent.boundingRect().x(), parent.boundingRect().y())
+        self.setParentItem(parent)
+        self.setDefaultTextColor(QColor('#d66b00'))
+        self.setPlainText(text)
+        self.setFlag(QGraphicsItem.ItemIgnoresTransformations)
+
 class CenterPointItem(QGraphicsEllipseItem):
     def __init__(self, *coords):
         super().__init__(*coords)

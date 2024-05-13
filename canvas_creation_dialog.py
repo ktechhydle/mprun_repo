@@ -115,7 +115,7 @@ class AddCanvasDialog(QWidget):
 
             else:
                 self.rect_item = CanvasItem(0, 0, width, height)
-                text_item = EditableTextBlock(canvas_name)
+                text_item = CanvasTextItem(canvas_name, self.rect_item)
 
                 command = AddItemCommand(self.canvas, self.rect_item)
                 self.canvas.addCommand(command)
@@ -127,11 +127,6 @@ class AddCanvasDialog(QWidget):
                 self.rect_item.setToolTip(canvas_name)
 
                 text_item.setZValue(-1)
-                text_item.setParentItem(self.rect_item)
-                text_item.setDefaultTextColor(QColor('black'))
-                text_item.setScale(1.5)
-                text_item.setPos(self.rect_item.boundingRect().x(), self.rect_item.boundingRect().y() - 30)
-                text_item.set_locked()
 
         except ValueError as e:
             QMessageBox.critical(self, 'Incorrect Value', 'Please enter a correct value in width and height entries.')

@@ -134,7 +134,7 @@ class CanvasEditorPanel(QWidget):
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
                 for self.child in item.childItems():
-                    if isinstance(self.child, EditableTextBlock):
+                    if isinstance(self.child, CanvasTextItem):
                         self.child.setPlainText(self.canvas_name_entry.text())
 
                 item.setToolTip(self.canvas_name_entry.text())

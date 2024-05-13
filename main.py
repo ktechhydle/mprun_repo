@@ -979,13 +979,9 @@ Date:""")
         self.paper_text.setZValue(0)
         self.canvas.addItem(self.paper_text)
 
-        self.text_item = EditableTextBlock('Canvas 1')
+        self.text_item = CanvasTextItem('Canvas 1', self.paper)
         self.text_item.setZValue(-1)
-        self.text_item.setParentItem(self.paper)
-        self.text_item.setDefaultTextColor(QColor('black'))
-        self.text_item.setScale(1.5)
-        self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-        self.text_item.set_locked()
+        self.text_item.setVisible(False)
 
         self.use_refit_screen()
 
@@ -1425,12 +1421,20 @@ Date:""")
     def use_hide_layer(self):
         for item in self.canvas.items():
             if int(item.zValue()) == self.layer_spin.value():
-                item.setVisible(False)
+                if isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.setVisible(False)
 
     def use_unhide_layer(self):
         for item in self.canvas.items():
             if int(item.zValue()) == self.layer_spin.value():
-                item.setVisible(True)
+                if isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.setVisible(True)
 
     def use_raise_layer(self):
         for item in self.canvas.selectedItems():
@@ -1653,6 +1657,9 @@ Date:""")
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
                 for items in item.childItems():
+                    if isinstance(items, CanvasTextItem):
+                        items.setVisible(True)
+
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
@@ -1713,12 +1720,16 @@ Date:""")
 
     def use_unhide_all(self):
         for item in self.canvas.items():
-            if not item.isVisible():
-                command = HideCommand(item, False, True)
-                self.canvas.addCommand(command)
+            if isinstance(item, CanvasTextItem):
+                pass
 
             else:
-                pass
+                if not item.isVisible():
+                    command = HideCommand(item, False, True)
+                    self.canvas.addCommand(command)
+
+                else:
+                    pass
 
     def use_trick_table(self):
         item = EditableTextBlock(' ')
