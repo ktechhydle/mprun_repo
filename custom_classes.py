@@ -49,12 +49,6 @@ class RemoveItemCommand(QUndoCommand):
             self.scene.addItem(self.item)
             self.removed = False
 
-class StandardItem(QStandardItem):
-    def __init__(self, text):
-        super().__init__()
-
-        self.setText(text)
-
 class item_stack:
     def __init__(self, initial_value=""):
         self._value = initial_value
@@ -74,20 +68,6 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
 
         self.locked = False
         self.stored_items = None
-
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#ff0d00"))
-            painter.setPen(pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -165,20 +145,6 @@ class CustomRectangleItem(QGraphicsRectItem):
     def __init__(self, *coords):
         super().__init__(*coords)
 
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#009ceb"))
-            painter.setPen(pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
-
     def duplicate(self):
         rect = self.rect()
 
@@ -201,20 +167,6 @@ class CustomRectangleItem(QGraphicsRectItem):
 class CustomCircleItem(QGraphicsEllipseItem):
     def __init__(self, *coords):
         super().__init__(*coords)
-
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#009ceb"))
-            painter.setPen(pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def duplicate(self):
         rect = self.rect()
@@ -251,20 +203,6 @@ class CustomCircleItem(QGraphicsEllipseItem):
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)
-
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#009ceb"))
-            painter.setPen(pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def duplicate(self):
         path = self.path()
@@ -313,20 +251,6 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         self.filename = None
 
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#009ceb"))
-            painter.setPen(pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
-
     def store_filename(self, file):
         self.filename = file
 
@@ -358,20 +282,6 @@ class CustomSvgItem(QGraphicsSvgItem):
 
         self.filename = None
         self.render = QSvgRenderer(file)
-
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#009ceb"))
-            painter.setPen(pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
 
     def store_filename(self, file):
         self.filename = file
@@ -406,9 +316,10 @@ class EditableTextBlock(QGraphicsTextItem):
         super().__init__(text, parent)
 
         self.setToolTip('Text')
-
         self.locked = False
         self.old_text = self.toPlainText()
+
+        self.setAcceptHoverEvents(True)
 
     def mouseDoubleClickEvent(self, event):
         if self.locked == False:
@@ -421,23 +332,6 @@ class EditableTextBlock(QGraphicsTextItem):
 
         else:
             super().mouseDoubleClickEvent(event)
-
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            self.custom_pen = painter.pen()
-            self.custom_pen.setWidth(8)
-            self.custom_pen.setStyle(Qt.SolidLine)
-            self.custom_pen.setCapStyle(Qt.FlatCap)
-            self.custom_pen.setColor(QColor("#009ceb"))
-            painter.setPen(self.custom_pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
-
-            if self.custom_pen.width() > 8:
-                self.custom_pen.setWidth(8)
 
     def focusOutEvent(self, event):
         new_text = self.toPlainText()

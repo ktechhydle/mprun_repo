@@ -204,8 +204,8 @@ class MPRUN(QMainWindow):
         characters_action = QAction('Characters', self)
         characters_action.triggered.connect(lambda: self.display_choosen_tab('Characters'))
 
-        vectorizing_action = QAction('Vectorizing', self)
-        vectorizing_action.triggered.connect(lambda: self.display_choosen_tab('Vectorizing'))
+        vectorizing_action = QAction('Image Trace', self)
+        vectorizing_action.triggered.connect(lambda: self.display_choosen_tab('Image Trace'))
 
         canvas_action = QAction('Canvas', self)
         canvas_action.triggered.connect(lambda: self.display_choosen_tab('Canvas'))
@@ -324,11 +324,11 @@ class MPRUN(QMainWindow):
         self.characters_tab.setLayout(self.characters_tab_layout)
 
         # Vectorize Tab
-        self.vectorize_tab = QWidget()
-        self.vectorize_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.vectorize_tab.setMaximumHeight(600)
-        self.vectorize_tab_layout = QVBoxLayout()
-        self.vectorize_tab.setLayout(self.vectorize_tab_layout)
+        self.image_trace = QWidget()
+        self.image_trace.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.image_trace.setMaximumHeight(600)
+        self.image_trace_layout = QVBoxLayout()
+        self.image_trace.setLayout(self.image_trace_layout)
 
         # Libraries Tab
         self.libraries_tab = QWidget()
@@ -554,16 +554,9 @@ class MPRUN(QMainWindow):
         font_spacing_label = QLabel('Font Spacing:', self)
         font_color_label = QLabel('Font Color:')
 
-        #_____ Vectorize tab widgets _____
-        vector_options_label = QLabel('Precision', self)
+        #_____ Image Trace tab widgets _____
+        vector_options_label = QLabel('Image Trace', self)
         vector_options_label.setStyleSheet("QLabel { font-size: 12px;}")
-        vector_options_label.setAlignment(Qt.AlignLeft)
-        vector_options_label2 = QLabel('Color', self)
-        vector_options_label2.setStyleSheet("QLabel { font-size: 12px;}")
-        vector_options_label2.setAlignment(Qt.AlignLeft)
-        vector_options_label3 = QLabel('Threshold', self)
-        vector_options_label3.setStyleSheet("QLabel { font-size: 12px;}")
-        vector_options_label3.setAlignment(Qt.AlignLeft)
 
         filter_speckle_label = QLabel('Filter Speckle (Cleaner):', self)
         color_precision_label = QLabel('Color Precision (More Accurate):', self)
@@ -666,28 +659,26 @@ class MPRUN(QMainWindow):
         self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
 
         # Vectorize Tab Widgets
-        self.vectorize_tab_layout.addWidget(HorizontalSeparator())
-        self.vectorize_tab_layout.addWidget(vector_options_label)
-        self.vectorize_tab_layout.addWidget(path_precision_label)
-        self.vectorize_tab_layout.addWidget(self.path_precision_spin)
-        self.vectorize_tab_layout.addWidget(color_precision_label)
-        self.vectorize_tab_layout.addWidget(self.color_precision_spin)
-        self.vectorize_tab_layout.addWidget(HorizontalSeparator())
-        self.vectorize_tab_layout.addWidget(vector_options_label2)
-        self.vectorize_tab_layout.addWidget(layer_difference_label)
-        self.vectorize_tab_layout.addWidget(self.layer_difference_spin)
-        self.vectorize_tab_layout.addWidget(filter_speckle_label)
-        self.vectorize_tab_layout.addWidget(self.filter_speckle_spin)
-        self.vectorize_tab_layout.addWidget(max_iterations_label)
-        self.vectorize_tab_layout.addWidget(self.max_iterations_spin)
-        self.vectorize_tab_layout.addWidget(HorizontalSeparator())
-        self.vectorize_tab_layout.addWidget(vector_options_label3)
-        self.vectorize_tab_layout.addWidget(corner_threshold_label)
-        self.vectorize_tab_layout.addWidget(self.corner_threshold_spin)
-        self.vectorize_tab_layout.addWidget(length_threshhold_label)
-        self.vectorize_tab_layout.addWidget(self.length_threshold_spin)
-        self.vectorize_tab_layout.addWidget(splice_threshold_label)
-        self.vectorize_tab_layout.addWidget(self.splice_threshold_spin)
+        self.image_trace_layout.addWidget(HorizontalSeparator())
+        self.image_trace_layout.addWidget(vector_options_label)
+        self.image_trace_layout.addWidget(path_precision_label)
+        self.image_trace_layout.addWidget(self.path_precision_spin)
+        self.image_trace_layout.addWidget(color_precision_label)
+        self.image_trace_layout.addWidget(self.color_precision_spin)
+        self.image_trace_layout.addWidget(HorizontalSeparator())
+        self.image_trace_layout.addWidget(layer_difference_label)
+        self.image_trace_layout.addWidget(self.layer_difference_spin)
+        self.image_trace_layout.addWidget(filter_speckle_label)
+        self.image_trace_layout.addWidget(self.filter_speckle_spin)
+        self.image_trace_layout.addWidget(max_iterations_label)
+        self.image_trace_layout.addWidget(self.max_iterations_spin)
+        self.image_trace_layout.addWidget(HorizontalSeparator())
+        self.image_trace_layout.addWidget(corner_threshold_label)
+        self.image_trace_layout.addWidget(self.corner_threshold_spin)
+        self.image_trace_layout.addWidget(length_threshhold_label)
+        self.image_trace_layout.addWidget(self.length_threshold_spin)
+        self.image_trace_layout.addWidget(splice_threshold_label)
+        self.image_trace_layout.addWidget(self.splice_threshold_spin)
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(HorizontalSeparator())
@@ -1025,7 +1016,7 @@ Date:""")
                     self.libraries_tab.close()
                     self.layers_tab.close()
                     self.characters_tab.close()
-                    self.vectorize_tab.close()
+                    self.image_trace.close()
                     self.canvas_tab.close()
                     self.add_canvas_dialog.close()
 
@@ -1043,7 +1034,7 @@ Date:""")
                 self.libraries_tab.close()
                 self.layers_tab.close()
                 self.characters_tab.close()
-                self.vectorize_tab.close()
+                self.image_trace.close()
                 self.canvas_tab.close()
                 self.add_canvas_dialog.close()
 
@@ -1220,8 +1211,8 @@ Date:""")
                 self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
 
                 for child in item.childItems():
-                    if isinstance(child, EditableTextBlock):
-                        self.canvas_tab.canvas_name_entry.setText(child.toPlainText())
+                    if isinstance(child, CanvasTextItem):
+                        self.canvas_tab.canvas_name_entry.setText(child.text())
 
             elif isinstance(item, CustomCircleItem):
                 if item.childItems():
@@ -2162,9 +2153,9 @@ Date:""")
                     self.tab_view.addTab(self.characters_tab, tab_name)
                     self.tab_view.setCurrentWidget(self.characters_tab)
 
-                elif tab_name == 'Vectorizing':
-                    self.tab_view.addTab(self.vectorize_tab, tab_name)
-                    self.tab_view.setCurrentWidget(self.vectorize_tab)
+                elif tab_name == 'Image Trace':
+                    self.tab_view.addTab(self.image_trace, tab_name)
+                    self.tab_view.setCurrentWidget(self.image_trace)
 
                 elif tab_name == 'Canvas':
                     self.tab_view.addTab(self.canvas_tab, tab_name)
