@@ -341,7 +341,6 @@ class MPRUN(QMainWindow):
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
 
-        # This next section was recently organized.
         # This next section is basically all the widgets for each tab
         # Some tabs don't have many widgets as they are subclassed in other files.
 
@@ -391,12 +390,14 @@ class MPRUN(QMainWindow):
         self.height_scale_spin.setSingleStep(0.1)
         self.height_scale_spin.setSuffix(' pt')
         self.rotate_item_spin = QSpinBox(self)
-        self.rotate_item_spin.setRange(0, 360)
+        self.rotate_item_spin.setRange(-360, 360)
         self.rotate_item_spin.setSuffix('°')
         flip_horizontal_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_horizontal_icon.png'), '')
+        flip_horizontal_btn.setToolTip('Flip Horizontal')
         flip_horizontal_btn.setStyleSheet('border: none;')
         flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
         flip_vertical_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_vertical_icon.png'), '')
+        flip_vertical_btn.setToolTip('Flip Vertical')
         flip_vertical_btn.setStyleSheet('border: none;')
         flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
         widget7 = ToolbarHorizontalLayout()
@@ -668,6 +669,7 @@ class MPRUN(QMainWindow):
         self.image_trace_layout.addWidget(image_tracehlayout2)
         self.image_trace_layout.addWidget(path_precision_label)
         self.image_trace_layout.addWidget(self.path_precision_spin)
+        self.image_trace_layout.addWidget(QMoreOrLessLabel(self))
         self.image_trace_layout.addWidget(color_precision_label)
         self.image_trace_layout.addWidget(self.color_precision_spin)
         self.image_trace_layout.addWidget(corner_threshold_label)

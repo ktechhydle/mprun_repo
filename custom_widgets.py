@@ -200,5 +200,20 @@ class QIconWidget(QLabel):
         self.setPixmap(icon.pixmap(w, h))
         self.setText(text)
 
+class QMoreOrLessLabel(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        layout = QHBoxLayout()
+        self.setLayout(layout)
+
+        less_label = QLabel('Less')
+        less_label.setAlignment(Qt.AlignLeft)
+        more_label = QLabel('More')
+        more_label.setAlignment(Qt.AlignRight)
+
+        layout.addWidget(less_label)
+        layout.addWidget(more_label)
+
 
 
