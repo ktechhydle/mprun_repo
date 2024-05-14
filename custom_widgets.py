@@ -192,3 +192,13 @@ class StrokeLabel(QLabel):
     def mousePressEvent(self, event):
         self.menu.exec_(event.globalPos())
 
+class QIconWidget(QLabel):
+    def __init__(self, text, icon_file, w, h, parent=None):
+        super().__init__(parent)
+
+        icon = QIcon(icon_file)
+        self.setPixmap(icon.pixmap(w, h))
+        self.setText(text)
+
+
+
