@@ -147,8 +147,8 @@ class MPRUN(QMainWindow):
         ungroup_action.setShortcut(QKeySequence('Ctrl+G'))
         ungroup_action.triggered.connect(self.ungroup_group)
 
-        vectorize_action = QAction('Vectorize', self)
-        vectorize_action.triggered.connect(self.use_vectorize)
+        image_trace_action = QAction('Trace Image', self)
+        image_trace_action.triggered.connect(self.use_vectorize)
 
         # Create item actions
         raise_layer_action = QAction('Raise Layer', self)
@@ -241,7 +241,7 @@ class MPRUN(QMainWindow):
         self.edit_menu.addAction(group_action)
         self.edit_menu.addAction(ungroup_action)
         self.edit_menu.addSeparator()
-        self.edit_menu.addAction(vectorize_action)
+        self.edit_menu.addAction(image_trace_action)
         self.edit_menu.addSeparator()
 
         self.item_menu.addAction(raise_layer_action)
@@ -326,7 +326,7 @@ class MPRUN(QMainWindow):
         # Vectorize Tab
         self.image_trace = QWidget()
         self.image_trace.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.image_trace.setMaximumHeight(600)
+        self.image_trace.setMaximumHeight(375)
         self.image_trace_layout = QVBoxLayout()
         self.image_trace.setLayout(self.image_trace_layout)
 
@@ -558,48 +558,40 @@ class MPRUN(QMainWindow):
         vector_options_label = QLabel('Image Trace', self)
         vector_options_label.setStyleSheet("QLabel { font-size: 12px;}")
 
-        filter_speckle_label = QLabel('Filter Speckle (Cleaner):', self)
+        colormode_label = QLabel('Preset:')
+        mode_label = QLabel('Mode:')
         color_precision_label = QLabel('Color Precision (More Accurate):', self)
-        layer_difference_label = QLabel('Layer Difference (Less Layers):', self)
         corner_threshold_label = QLabel('Corner Threshold (Smoother):', self)
-        length_threshhold_label = QLabel('Length Threshold (More Coarse):', self)
-        max_iterations_label = QLabel('Max Iterations (Number of Times Processed):', self)
-        splice_threshold_label = QLabel('Splice Threshold (Less Accurate):', self)
         path_precision_label = QLabel('Path Precision (More Accurate):', self)
 
-        self.filter_speckle_spin = QSpinBox(self)
-        self.filter_speckle_spin.setMaximum(128)
-        self.filter_speckle_spin.setMinimum(1)
-        self.filter_speckle_spin.setValue(4)
+        self.colormode_combo = QComboBox(self)
+        self.colormode_combo.addItem('Color', 'color')
+        self.colormode_combo.addItem('Black and White', 'binary')
+        self.mode_combo = QComboBox(self)
+        self.mode_combo.addItem('Spline', 'spline')
+        self.mode_combo.addItem('Polygon', 'polygon')
+        self.mode_combo.addItem('None', 'none')
+
         self.color_precision_spin = QSpinBox(self)
         self.color_precision_spin.setMaximum(8)
         self.color_precision_spin.setMinimum(1)
         self.color_precision_spin.setValue(6)
-        self.layer_difference_spin = QSpinBox(self)
-        self.layer_difference_spin.setMaximum(128)
-        self.layer_difference_spin.setMinimum(1)
-        self.layer_difference_spin.setValue(16)
         self.corner_threshold_spin = QSpinBox(self)
         self.corner_threshold_spin.setMaximum(180)
         self.corner_threshold_spin.setMinimum(1)
         self.corner_threshold_spin.setValue(60)
-        self.length_threshold_spin = QSpinBox(self)
-        self.length_threshold_spin.setMaximum(10)
-        self.length_threshold_spin.setMinimum(4)
-        self.length_threshold_spin.setValue(4)
-        self.max_iterations_spin = QSpinBox(self)
-        self.max_iterations_spin.setMaximum(100)
-        self.max_iterations_spin.setMinimum(1)
-        self.max_iterations_spin.setValue(10)
-        self.splice_threshold_spin = QSpinBox(self)
-        self.splice_threshold_spin.setMaximum(180)
-        self.splice_threshold_spin.setMinimum(1)
-        self.splice_threshold_spin.setValue(45)
         self.path_precision_spin = QSlider(self)
         self.path_precision_spin.setOrientation(Qt.Horizontal)
         self.path_precision_spin.setMaximum(10)
         self.path_precision_spin.setMinimum(1)
         self.path_precision_spin.setSliderPosition(3)
+
+        image_tracehlayout1 = ToolbarHorizontalLayout()
+        image_tracehlayout1.layout.addWidget(colormode_label)
+        image_tracehlayout1.layout.addWidget(self.colormode_combo)
+        image_tracehlayout2 = ToolbarHorizontalLayout()
+        image_tracehlayout2.layout.addWidget(mode_label)
+        image_tracehlayout2.layout.addWidget(self.mode_combo)
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
@@ -661,24 +653,14 @@ class MPRUN(QMainWindow):
         # Vectorize Tab Widgets
         self.image_trace_layout.addWidget(HorizontalSeparator())
         self.image_trace_layout.addWidget(vector_options_label)
+        self.image_trace_layout.addWidget(image_tracehlayout1)
+        self.image_trace_layout.addWidget(image_tracehlayout2)
         self.image_trace_layout.addWidget(path_precision_label)
         self.image_trace_layout.addWidget(self.path_precision_spin)
         self.image_trace_layout.addWidget(color_precision_label)
         self.image_trace_layout.addWidget(self.color_precision_spin)
-        self.image_trace_layout.addWidget(HorizontalSeparator())
-        self.image_trace_layout.addWidget(layer_difference_label)
-        self.image_trace_layout.addWidget(self.layer_difference_spin)
-        self.image_trace_layout.addWidget(filter_speckle_label)
-        self.image_trace_layout.addWidget(self.filter_speckle_spin)
-        self.image_trace_layout.addWidget(max_iterations_label)
-        self.image_trace_layout.addWidget(self.max_iterations_spin)
-        self.image_trace_layout.addWidget(HorizontalSeparator())
         self.image_trace_layout.addWidget(corner_threshold_label)
         self.image_trace_layout.addWidget(self.corner_threshold_spin)
-        self.image_trace_layout.addWidget(length_threshhold_label)
-        self.image_trace_layout.addWidget(self.length_threshold_spin)
-        self.image_trace_layout.addWidget(splice_threshold_label)
-        self.image_trace_layout.addWidget(self.splice_threshold_spin)
 
         # Libraries Tab Widgets
         self.libraries_tab_layout.addWidget(HorizontalSeparator())
@@ -1459,17 +1441,17 @@ Date:""")
                         # Create vector
                         vtracer.convert_image_to_svg_py(item.return_filename(),
                                                         f'V-C STOR/{entry}.svg',
-                                                        colormode='color',  # ["color"] or "binary"
+                                                        colormode=self.colormode_combo.itemData(self.colormode_combo.currentIndex()),  # ["color"] or "binary"
                                                         hierarchical='cutout',  # ["stacked"] or "cutout"
-                                                        mode='spline',  # ["spline"] "polygon", or "none"
-                                                        filter_speckle=self.filter_speckle_spin.value(),  # default: 4
-                                                        color_precision=self.color_precision_spin.value(),  # default: 6
-                                                        layer_difference=self.layer_difference_spin.value(),  # default: 16
+                                                        mode=self.mode_combo.itemData(self.mode_combo.currentIndex()),  # ["spline"] "polygon", or "none"
+                                                        filter_speckle=4,  # default: 4
+                                                        color_precision=6,  # default: 6
+                                                        layer_difference=16,  # default: 16
                                                         corner_threshold=self.corner_threshold_spin.value(),  # default: 60
-                                                        length_threshold=float(self.length_threshold_spin.value()),  # in [3.5, 10] default: 4.0
-                                                        max_iterations=self.max_iterations_spin.value(),  # default: 10
-                                                        splice_threshold=self.splice_threshold_spin.value(),  # default: 45
-                                                        path_precision=self.path_precision_spin.value()
+                                                        length_threshold=4.0,  # in [3.5, 10] default: 4.0
+                                                        max_iterations=10,  # default: 10
+                                                        splice_threshold=45,  # default: 45
+                                                        path_precision=3  # default: 8
                                                         )
 
                         # Set cursor back

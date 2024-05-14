@@ -32,9 +32,6 @@ class GraphicsView(QGraphicsView):
     def __init__(self):
         super().__init__()
 
-        self.path = QPainterPath()
-        self.points = []
-
         # Set flags
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setMouseTracking(True)
@@ -42,24 +39,10 @@ class GraphicsView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-    def mousePressEvent(self, event):
-        self.path = QPainterPath()
-        self.points.append(self.mapToScene(event.pos()))
+        self.path = None
+        self.current_point = None
+        self.last_point = None
 
-        if len(self.points) > 1:
-            self.path = QPainterPath()
-            self.path.moveTo(self.points[0])
-            for point in self.points[1:]:
-                self.path.lineTo(point)
-
-            self.scene().addItem(QGraphicsPathItem(self.path))
-
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-
-
-        super().mouseMoveEvent(event)
         
 if __name__ == '__main__':
     win = QApplication([])
