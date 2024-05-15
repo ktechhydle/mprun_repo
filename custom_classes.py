@@ -49,6 +49,24 @@ class RemoveItemCommand(QUndoCommand):
             self.scene.addItem(self.item)
             self.removed = False
 
+class DropShadowGraphicsEffectCommand(QUndoCommand):
+    def __init__(self, item, amount, og_effect):
+        super().__init__()
+
+        self.item = item
+        self.amount = amount
+        self.og_effect = og_effect
+
+    def redo(self):
+        effect = QGraphicsDropShadowEffect()
+        effect.setBlurRadius(self.amount)
+
+        self.item.setGraphicsEffect(effect)
+
+
+    def undo(self):
+        self.item.setGraphicsEffect(self.og_effect)
+
 class item_stack:
     def __init__(self, initial_value=""):
         self._value = initial_value

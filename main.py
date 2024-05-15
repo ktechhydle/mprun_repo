@@ -69,6 +69,7 @@ class MPRUN(QMainWindow):
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.item_menu = self.menu_bar.addMenu('&Item')
+        self.effects_menu = self.menu_bar.addMenu('&Effects')
         self.window_menu = self.menu_bar.addMenu('&Window')
 
         # Create MPRUN actions
@@ -191,6 +192,10 @@ class MPRUN(QMainWindow):
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
 
+        # Create effects menu actions
+        drop_shadow_action = QAction('Drop Shadow', self)
+        drop_shadow_action.triggered.connect(self.use_drop_shadow)
+
         # Create window menu actions
         properties_action = QAction('Properties', self)
         properties_action.triggered.connect(lambda: self.display_choosen_tab('Properties'))
@@ -260,6 +265,8 @@ class MPRUN(QMainWindow):
         self.item_menu.addAction(unhide_action)
         self.item_menu.addSeparator()
         self.item_menu.addAction(select_all_action)
+
+        self.effects_menu.addAction(drop_shadow_action)
 
         self.window_menu.addAction(properties_action)
         self.window_menu.addAction(layers_action)
@@ -466,16 +473,11 @@ class MPRUN(QMainWindow):
         self.gsnap_grid_spin.setValue(10)
         self.gsnap_grid_spin.setMinimum(1)
         self.gsnap_grid_spin.setMaximum(1000)
-        self.drop_shadow_check_btn = QCheckBox(self)
-        self.drop_shadow_check_btn.setText('Drop Shadow')
-        self.drop_shadow_check_btn.clicked.connect(self.use_drop_shadow)
         self.close_subpath_check_btn = QCheckBox(self)
         self.close_subpath_check_btn.setText('Close Path')
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
-        horizontal_widget_for_stroke_fill.layout.addWidget(self.drop_shadow_check_btn)
-        widget3 = ToolbarHorizontalLayout()
-        widget3.layout.addWidget(self.close_subpath_check_btn)
+        horizontal_widget_for_stroke_fill.layout.addWidget(self.close_subpath_check_btn)
 
         #_____ Layers tab widgets _____
         layers_label = QLabel('Layers', self)
@@ -639,7 +641,6 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(quick_actions_label)
         self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
-        self.properties_tab_layout.addWidget(widget3)
         self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(grid_size_label)
         self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
@@ -1585,22 +1586,16 @@ Date:""")
                 self.canvas.addCommand(command)
 
     def use_drop_shadow(self):
-        # Create effect
-        effect = QGraphicsDropShadowEffect()
-        effect.setBlurRadius(10)
-
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
+            og_effect = item.graphicsEffect()
+
             if isinstance(item, CanvasItem):
                 pass
 
             else:
-                if self.drop_shadow_check_btn.isChecked():
-                    item.setGraphicsEffect(effect)
-
-                else:
-                    if item.graphicsEffect() and QGraphicsDropShadowEffect():
-                        item.setGraphicsEffect(None)
+                command = DropShadowGraphicsEffectCommand(item, 10, og_effect)
+                self.canvas.addCommand(command)
 
     def use_center_item(self):
         if self.canvas.selectedItems():
