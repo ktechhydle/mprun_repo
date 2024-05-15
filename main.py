@@ -1970,24 +1970,25 @@ Date:""")
                                             QMessageBox.Ok)
 
             elif selected_extension == '.pdf':
-                # Export as PDF
-                printer = QPdfWriter(file_path)
-                printer.setPageSize(QPdfWriter.Letter)
-                printer.setResolution(300)  # Set the resolution (in DPI)
+                try:
+                    printer = QPrinter()
+                    printer.setOutputFormat(QPrinter.PdfFormat)
+                    printer.setOutputFileName(file_path)
+                    printer.setPaperSize(QSizeF(int(selected_item.sceneBoundingRect().width()),
+                                                int(selected_item.sceneBoundingRect().height())),
+                                         QPrinter.Unit.Point)
 
-                # Clear selection
-                self.canvas.clearSelection()
+                    painter = QPainter()
+                    painter.begin(printer)
 
-                # Create painter, save file
-                painter = QPainter(printer)
-                painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-                painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+                    # Render your content directly onto the painter
+                    self.canvas.render(painter, source=selected_item.sceneBoundingRect(),
+                                       target=selected_item.sceneBoundingRect())
 
-                # Render the scene onto the QPainter
-                self.canvas.render(painter, target=selected_item.sceneBoundingRect(), source=selected_item.sceneBoundingRect())
+                    painter.end()
 
-                # End painting
-                painter.end()
+                except Exception as e:
+                    print(e)
 
                 # Show export finished notification
                 QMessageBox.information(self, 'Export Finished', 'Export completed successfully.',
