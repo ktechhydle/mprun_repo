@@ -403,20 +403,6 @@ class CanvasItem(QGraphicsRectItem):
         self.setBrush(brush)
         self.setPen(pen)
 
-    def paint(self, painter, option, widget=None):
-        # Call the parent class paint method first
-        super().paint(painter, option, widget)
-
-        # If the item is selected, draw a custom selection highlight
-        if option.state & QStyle.State_Selected:
-            pen = painter.pen()
-            pen.setWidth(8)
-            pen.setStyle(Qt.SolidLine)
-            pen.setCapStyle(Qt.FlatCap)
-            pen.setColor(QColor("#d66b00"))
-            painter.setPen(pen)
-            painter.drawRoundedRect(self.boundingRect(), 5, 5)
-
 class CanvasTextItem(QGraphicsSimpleTextItem):
     def __init__(self, text, parent):
         super().__init__()
@@ -424,7 +410,7 @@ class CanvasTextItem(QGraphicsSimpleTextItem):
         self.setScale(1.5)
         self.setPos(parent.boundingRect().x(), parent.boundingRect().y())
         self.setParentItem(parent)
-        self.setBrush(QBrush(QColor('#d66b00')))
+        self.setBrush(QBrush(QColor('blue')))
         self.setText(text)
         self.setFlag(QGraphicsItem.ItemIgnoresTransformations)
         self.setZValue(10000)

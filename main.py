@@ -1163,6 +1163,9 @@ Date:""")
             for item in self.canvas.selectedItems():
                 self.selection_label.setText(item.toolTip())
 
+                if len(self.canvas.selectedItems()) > 1:
+                    self.selection_label.setText('Combined Selection')
+
         else:
             self.selection_label.setText('No Selection')
             self.x_pos_spin.setValue(0)
@@ -1423,6 +1426,7 @@ Date:""")
     def use_raise_layer(self):
         for item in self.canvas.selectedItems():
             item.setZValue(item.zValue() + 1.0)
+            self.update_appearance_ui()
 
     def use_lower_layer(self):
         for item in self.canvas.selectedItems():
@@ -1431,6 +1435,7 @@ Date:""")
 
             else:
                 item.setZValue(item.zValue() - 1.0)
+                self.update_appearance_ui()
 
     def use_bring_to_front(self):
         selected_items = self.canvas.selectedItems()
@@ -1668,6 +1673,7 @@ Date:""")
     def use_fill_transparent(self):
         self.fill_color_btn.setStyleSheet('background-color: transparent')
         self.fill_color.set(Qt.transparent)
+        self.update_pen()
 
         for item in self.canvas.selectedItems():
             if isinstance(item, EditableTextBlock):
