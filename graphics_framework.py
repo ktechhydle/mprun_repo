@@ -247,6 +247,10 @@ y: {int(p.y())}''')
             self.text_box_rect = CustomRectangleItem(self.label_text.boundingRect())
             self.text_box_rect.setPen(self.pen)
             self.text_box_rect.setPos(self.mapToScene(event.pos()))
+            self.text_box_rect.setToolTip('Text Box')
+
+            # Create path item
+            self.pathg_item = LeaderLineItem(self.leader_line)
 
             # Set z values
             self.text_box_rect.stackBefore(self.label_text)
@@ -255,6 +259,8 @@ y: {int(p.y())}''')
             self.canvas.addCommand(add_command)
             add_command2 = AddItemCommand(self.canvas, self.label_text)
             self.canvas.addCommand(add_command2)
+            add_command3 = AddItemCommand(self.canvas, self.pathg_item)
+            self.canvas.addCommand(add_command3)
 
             self.canvas.update()
 
@@ -263,6 +269,7 @@ y: {int(p.y())}''')
         if event.button() == Qt.LeftButton:
             # Move line to current coords
             self.leader_line.lineTo(self.mapToScene(event.pos()))
+            self.pathg_item.setPath(self.pathg_item.path())
 
             self.canvas.update()
 
@@ -271,6 +278,7 @@ y: {int(p.y())}''')
         if event.button() == Qt.LeftButton:
             # Move line to current mouse coords
             self.leader_line.lineTo(self.mapToScene(event.pos()))
+            self.pathg_item.setPath(self.leader_line)
             self.canvas.update()
 
             # Draw circle at the end of path
@@ -279,23 +287,23 @@ y: {int(p.y())}''')
             self.canvas.update()
 
             # Load path as QGraphicsItem, set parent items
-            path_item = LeaderLineItem(self.leader_line)
-            path_item.setPen(self.pen)
-            path_item.setZValue(0)
-            self.text_box_rect.setParentItem(path_item)
-            self.label_text.setParentItem(path_item)
+            self.pathg_item.setPen(self.pen)
+            self.pathg_item.setZValue(0)
+            self.label_text.setParentItem(self.pathg_item)
+            self.text_box_rect.setParentItem(self.pathg_item)
 
             # Add items (no need to add rect, circle, and label because parent is path_item)
-            add_command = AddItemCommand(self.canvas, path_item)
+            add_command = AddItemCommand(self.canvas, self.pathg_item)
             self.canvas.addCommand(add_command)
 
             # Set flags
-            path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-            path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+            self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+            self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
             self.label_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+            self.text_box_rect.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
             # Set Tooltips for elements
-            path_item.setToolTip('Leader Line')
+            self.pathg_item.setToolTip('Leader Line')
 
             # Check if item is selected or moved so we can turn tool off
             if self.canvas.selectedItems():
@@ -397,17 +405,24 @@ class CustomGraphicsScene(QGraphicsScene):
         self.scale_btn = w
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
-        if self.scale_btn is not None:
-            if self.scale_btn.isChecked():
-                pass
+        if event.button() == Qt.RightButton:
+            mousePos = event.buttonDownScenePos(Qt.RightButton)
+            list = self.items(mousePos)
+            for item in list:
+                item.setSelected(True)
 
-            else:
-                mousePos = event.buttonDownScenePos(Qt.LeftButton)
-                itemList = self.items(mousePos)
-                self.movingItem = None if not itemList else itemList[0]
+        else:
+            if self.scale_btn is not None:
+                if self.scale_btn.isChecked():
+                    pass
 
-                if self.movingItem and event.button() == Qt.LeftButton:
-                    self.oldPos = self.movingItem.pos()
+                else:
+                    mousePos = event.buttonDownScenePos(Qt.LeftButton)
+                    itemList = self.items(mousePos)
+                    self.movingItem = None if not itemList else itemList[0]
+
+                    if self.movingItem and event.button() == Qt.LeftButton:
+                        self.oldPos = self.movingItem.pos()
 
                 self.clearSelection()
 

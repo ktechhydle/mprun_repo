@@ -1615,7 +1615,6 @@ Date:""")
                     rect = self.stored_center_item
                     center = rect.center()
 
-                    item.setTransformOriginPoint(item.boundingRect().center())
                     new_pos = center - item.boundingRect().center()
                     item.setPos(new_pos)
 
