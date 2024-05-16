@@ -1,51 +1,46 @@
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from graphics_framework import *
-from scipy.interpolate import *
-import numpy as np
 
-class MainWin(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        
-        self.setWindowTitle('MPRUN Beta Test Scene')
-        self.setGeometry(100, 100, 600, 600)
-        
-        self.create_ui()
-        self.create_test_object()
-        
-    def create_ui(self):
-        self.canvas = QGraphicsScene()
-        self.canvas_view = GraphicsView()
-        
-        self.canvas_view.setScene(self.canvas)
-        
-        self.setCentralWidget(self.canvas_view)
+        self.initUI()
 
-    def create_test_object(self):
-        path = QPainterPath()
-        path.moveTo(100, 100)
+    def initUI(self):
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
 
-        p = QGraphicsPathItem(path.simplified())
+        layout = QVBoxLayout()
+        central_widget.setLayout(layout)
 
-        self.canvas.addItem(p)
+        # Create a QGraphicsView
+        view = QGraphicsView(self)
+        layout.addWidget(view)
+        view.setScene(QGraphicsScene(self))
+
+        ruler = QtRuleBar(Qt.Horizontal, view, self)
+
+        # Create QtCornerBox
+        corner_box = QtCornerBox()
+        layout.addWidget(corner_box)
+        layout.addWidget(ruler)
+
+        self.setWindowTitle('Ruler Example')
+        self.show()
 
 class GraphicsView(QGraphicsView):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
-        # Set flags
-        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        self.setMouseTracking(True)
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.m_hruler = QtRuleBar(Qt.Horizontal, self, self)
+        self.m_vruler = QtRuleBar(Qt.Vertical, self, self)
+        self.box = QtCornerBox(self)
+        self.setViewport(QWidget())
 
-        self.path = None
-        self.current_point = None
-        self.last_point = None
-
-        
 if __name__ == '__main__':
-    win = QApplication([])
-    app = MainWin()
-    app.show()
-    win.exec_()
+    app = QApplication(sys.argv)
+    mainWindow = MainWindow()
+    sys.exit(app.exec_())

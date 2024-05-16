@@ -196,6 +196,9 @@ class MPRUN(QMainWindow):
         drop_shadow_action = QAction('Drop Shadow', self)
         drop_shadow_action.triggered.connect(self.use_drop_shadow)
 
+        blur_action = QAction('Blur', self)
+        blur_action.triggered.connect(self.use_blur)
+
         # Create window menu actions
         properties_action = QAction('Properties', self)
         properties_action.triggered.connect(lambda: self.display_choosen_tab('Properties'))
@@ -267,6 +270,7 @@ class MPRUN(QMainWindow):
         self.item_menu.addAction(select_all_action)
 
         self.effects_menu.addAction(drop_shadow_action)
+        self.effects_menu.addAction(blur_action)
 
         self.window_menu.addAction(properties_action)
         self.window_menu.addAction(layers_action)
@@ -852,9 +856,6 @@ class MPRUN(QMainWindow):
                                               self.add_canvas_btn,
                                               self.select_btn,
                                               self.scale_btn)
-        self.canvas_view.setRenderHint(QPainter.Antialiasing)
-        self.canvas_view.setRenderHint(QPainter.TextAntialiasing)
-        self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.canvas_view.setScene(self.canvas)
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
@@ -1588,24 +1589,42 @@ Date:""")
     def use_drop_shadow(self):
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
+            item.setGraphicsEffect(None)
             og_effect = item.graphicsEffect()
 
             if isinstance(item, CanvasItem):
                 pass
 
             else:
-                command = DropShadowGraphicsEffectCommand(item, 10, og_effect)
+                command = GraphicsEffectCommand(item, 10, og_effect, 'dropShadow')
+                self.canvas.addCommand(command)
+
+    def use_blur(self):
+        # Apply the effect to selected items
+        for item in self.canvas.selectedItems():
+            item.setGraphicsEffect(None)
+            og_effect = item.graphicsEffect()
+
+            if isinstance(item, CanvasItem):
+                pass
+
+            else:
+                command = GraphicsEffectCommand(item, 10, og_effect, 'blur')
                 self.canvas.addCommand(command)
 
     def use_center_item(self):
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
-                rect = self.stored_center_item
-                center = rect.center()
+                if isinstance(item, CanvasItem):
+                    pass
 
-                item.setTransformOriginPoint(item.boundingRect().center())
-                new_pos = center - item.boundingRect().center()
-                item.setPos(new_pos)
+                else:
+                    rect = self.stored_center_item
+                    center = rect.center()
+
+                    item.setTransformOriginPoint(item.boundingRect().center())
+                    new_pos = center - item.boundingRect().center()
+                    item.setPos(new_pos)
 
     def use_set_center(self):
         if not self.canvas.selectedItems():

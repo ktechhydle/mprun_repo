@@ -5,67 +5,8 @@ from PyQt5.QtSvg import *
 from PyQt5.Qt import *
 from scipy.interpolate import splprep, splev
 from skimage.measure import *
+from undo_commands import *
 import numpy as np
-
-class AddItemCommand(QUndoCommand):
-    def __init__(self, scene, item):
-        super().__init__()
-        self.scene = scene
-        self.item = item
-
-    def redo(self):
-        self.scene.addItem(self.item)
-
-    def undo(self):
-        self.scene.removeItem(self.item)
-
-class EditTextCommand(QUndoCommand):
-    def __init__(self, item, old_text, new_text):
-        super().__init__()
-        self.item = item
-        self.old_text = old_text
-        self.new_text = new_text
-
-    def redo(self):
-        self.item.setPlainText(self.new_text)
-
-    def undo(self):
-        self.item.setPlainText(self.old_text)
-
-class RemoveItemCommand(QUndoCommand):
-    def __init__(self, scene, item):
-        super().__init__()
-        self.scene = scene
-        self.item = item
-        self.removed = False
-
-    def redo(self):
-        if not self.removed:
-            self.scene.removeItem(self.item)
-            self.removed = True
-
-    def undo(self):
-        if self.removed:
-            self.scene.addItem(self.item)
-            self.removed = False
-
-class DropShadowGraphicsEffectCommand(QUndoCommand):
-    def __init__(self, item, amount, og_effect):
-        super().__init__()
-
-        self.item = item
-        self.amount = amount
-        self.og_effect = og_effect
-
-    def redo(self):
-        effect = QGraphicsDropShadowEffect()
-        effect.setBlurRadius(self.amount)
-
-        self.item.setGraphicsEffect(effect)
-
-
-    def undo(self):
-        self.item.setGraphicsEffect(self.og_effect)
 
 class item_stack:
     def __init__(self, initial_value=""):

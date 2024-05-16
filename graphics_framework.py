@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
+from undo_commands import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
@@ -17,6 +18,9 @@ class CustomGraphicsView(QGraphicsView):
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setRenderHint(QPainter.TextAntialiasing)
+        self.setContextMenuPolicy(Qt.ActionsContextMenu)
 
         # Set widgets
         self.button = button
@@ -380,6 +384,8 @@ y: {int(p.y())}''')
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
 class CustomGraphicsScene(QGraphicsScene):
+    itemMoved = pyqtSignal(QGraphicsItem, QPointF)
+
     def __init__(self, undoStack):
         super().__init__()
         self.undo_stack = undoStack
@@ -388,6 +394,33 @@ class CustomGraphicsScene(QGraphicsScene):
         height = 64000
         self.setSceneRect(-width // 2, -height // 2, width, height)
         self.setBackgroundBrush(QBrush(QColor('#606060')))
+
+        self.movingItem = None
+        self.oldPos = QPointF()
+        self.itemMoved.connect(self.on_move_item)
+
+    def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
+        mousePos = event.buttonDownScenePos(Qt.LeftButton)
+        itemList = self.items(mousePos)
+        self.movingItem = None if not itemList else itemList[0]
+
+        if self.movingItem and event.button() == Qt.LeftButton:
+            self.oldPos = self.movingItem.pos()
+
+        self.clearSelection()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
+        if self.movingItem and event.button() == Qt.LeftButton:
+            if self.oldPos != self.movingItem.pos():
+                self.itemMoved.emit(self.movingItem, self.oldPos)
+            self.movingItem = None
+
+        super().mouseReleaseEvent(event)
+
+    def on_move_item(self, movedItem, oldPos):
+        command = MoveItemCommand(movedItem, oldPos)
+        self.addCommand(command)
 
     def undo(self):
         self.undo_stack.undo()
@@ -404,161 +437,6 @@ class CustomGraphicsScene(QGraphicsScene):
             bounding_rect = bounding_rect.united(item.sceneBoundingRect())
         return bounding_rect
 
-class AddItemCommand(QUndoCommand):
-    def __init__(self, scene, item):
-        super().__init__()
-        self.scene = scene
-        self.item = item
-
-    def redo(self):
-        self.scene.addItem(self.item)
-
-    def undo(self):
-        self.scene.removeItem(self.item)
-
-class MoveItemCommand(QUndoCommand):
-    def __init__(self, item, oldPos, newPos):
-        super().__init__()
-        self.item = item
-        self.oldPos = oldPos
-        self.newPos = newPos
-
-    def undo(self):
-        self.item.setPos(self.oldPos)
-
-    def redo(self):
-        self.item.setPos(self.newPos)
-
-class SmoothPathCommand(QUndoCommand):
-    def __init__(self, scene, item, new_path, old_path):
-        super().__init__()
-        self.scene = scene
-        self.item = item
-        self.new_path = new_path
-        self.old_path = old_path
-
-    def redo(self):
-        self.item.setPath(self.new_path)
-
-    def undo(self):
-        self.item.setPath(self.old_path)
-
-class EditTextCommand(QUndoCommand):
-    def __init__(self, item, old_text, new_text):
-        super().__init__()
-        self.item = item
-        self.old_text = old_text
-        self.new_text = new_text
-
-    def redo(self):
-        self.item.setText(self.new_text)
-
-    def undo(self):
-        self.item.setText(self.old_text)
-
-class ScaleCommand(QUndoCommand):
-    def __init__(self, item, old_scale, new_scale):
-        super().__init__()
-        self.item = item
-        self.old_scale = old_scale
-        self.new_scale = new_scale
-
-    def redo(self):
-        self.item.setScale(self.new_scale)
-
-    def undo(self):
-        self.item.setScale(self.old_scale)
-
-class TransformScaleCommand(QUndoCommand):
-    def __init__(self, item, x, y, old_scalex, old_scaley):
-        super().__init__()
-        self.item = item
-        self.old_scalex = old_scalex
-        self.old_scaley = old_scaley
-        self.x = x
-        self.y = y
-
-    def redo(self):
-        transform = QTransform()
-        transform.scale(self.x, self.y)
-        self.item.setTransform(transform)
-
-    def undo(self):
-        transform = QTransform()
-        transform.scale(self.old_scaley, self.old_scalex)
-        self.item.setTransform(transform)
-
-class RotateCommand(QUndoCommand):
-    def __init__(self, item, old_rotation, new_rotation):
-        super().__init__()
-        self.item = item
-        self.old_value = old_rotation
-        self.new_value = new_rotation
-
-    def redo(self):
-        self.item.setRotation(self.new_value)
-
-    def undo(self):
-        self.item.setRotation(self.old_value)
-
-class OpacityCommand(QUndoCommand):
-    def __init__(self, item, old_opacity, new_opacity):
-        super().__init__()
-        self.item = item
-        self.old_value = old_opacity
-        self.new_value = new_opacity
-
-    def redo(self):
-        effect = QGraphicsOpacityEffect()
-        effect.setOpacity(self.new_value)
-        self.item.setGraphicsEffect(effect)
-
-    def undo(self):
-        effect = QGraphicsOpacityEffect()
-        effect.setOpacity(self.old_value)
-        self.item.setGraphicsEffect(effect)
-
-class HideCommand(QUndoCommand):
-    def __init__(self, item, old_visible, new_visible):
-        super().__init__()
-        self.item = item
-        self.old_value = old_visible
-        self.new_value = new_visible
-
-    def redo(self):
-        self.item.setVisible(self.new_value)
-
-    def undo(self):
-        self.item.setVisible(self.old_value)
-
-class NameCommand(QUndoCommand):
-    def __init__(self, item, old_name, new_name):
-        super().__init__()
-        self.item = item
-        self.old_value = old_name
-        self.new_value = new_name
-
-    def redo(self):
-        self.item.setToolTip(self.new_value)
-
-    def undo(self):
-        self.item.setToolTip(self.old_value)
-
-class CloseSubpathCommand(QUndoCommand):
-    def __init__(self, item, scene):
-        super().__init__()
-        self.item = item
-        self.scene = scene
-        self.oldPath = self.item.path()
-        self.newPath = QPainterPath(self.oldPath)
-
-    def redo(self):
-        if self.newPath.elementCount() > 0:
-            self.newPath.closeSubpath()
-            self.item.setPath(self.newPath)
-
-    def undo(self):
-        self.item.setPath(self.oldPath)
 
 
 
