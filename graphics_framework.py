@@ -62,16 +62,24 @@ class CustomGraphicsView(QGraphicsView):
         # Check if the path tool is turned on
         if self.button.isChecked() or self.erase_btn.isChecked():
             for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
             self.on_path_draw_start(event)
 
         # Check if the Line and Label tool is turned on
         elif self.button2.isChecked():
             for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
             self.on_label_start(event)
 
@@ -79,16 +87,16 @@ class CustomGraphicsView(QGraphicsView):
             self.on_add_text(event)
 
         elif self.scale_btn.isChecked():
-            for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
             self.on_scale_start(event)
 
         elif self.add_canvas_btn.isChecked():
             for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
             self.on_add_canvas_start(event)
 
@@ -107,16 +115,40 @@ y: {int(p.y())}''')
 
         # Check if the path tool is enabled
         if self.button.isChecked() or self.erase_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
             self.on_path_draw(event)
 
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
             self.on_label(event)
 
         elif self.scale_btn.isChecked():
             self.on_scale(event)
 
         elif self.add_canvas_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
             self.on_add_canvas_drag(event)
 
         super().mouseMoveEvent(event)
@@ -125,30 +157,46 @@ y: {int(p.y())}''')
         # Check if path tool is enabled
         if self.button.isChecked() or self.erase_btn.isChecked():
             for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable)
-                item.setFlag(QGraphicsItem.ItemIsMovable)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable)
+                    item.setFlag(QGraphicsItem.ItemIsMovable)
 
             self.on_path_draw_end(event)
 
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
             for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable)
-                item.setFlag(QGraphicsItem.ItemIsMovable)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable)
+                    item.setFlag(QGraphicsItem.ItemIsMovable)
 
             self.on_label_end(event)
 
         elif self.scale_btn.isChecked():
             for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable)
-                item.setFlag(QGraphicsItem.ItemIsMovable)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable)
+                    item.setFlag(QGraphicsItem.ItemIsMovable)
 
             self.on_scale_end(event)
 
         elif self.add_canvas_btn.isChecked():
             for item in self.canvas.items():
-                item.setFlag(QGraphicsItem.ItemIsSelectable)
-                item.setFlag(QGraphicsItem.ItemIsMovable)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable)
+                    item.setFlag(QGraphicsItem.ItemIsMovable)
 
             self.on_add_canvas_end(event)
 
