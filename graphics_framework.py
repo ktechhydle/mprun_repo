@@ -66,6 +66,7 @@ class CustomGraphicsView(QGraphicsView):
                     pass
 
                 else:
+                    self.scene().clearSelection()
                     item.setFlag(QGraphicsItem.ItemIsSelectable, False)
                     item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
@@ -78,6 +79,7 @@ class CustomGraphicsView(QGraphicsView):
                     pass
 
                 else:
+                    self.scene().clearSelection()
                     item.setFlag(QGraphicsItem.ItemIsSelectable, False)
                     item.setFlag(QGraphicsItem.ItemIsMovable, False)
 

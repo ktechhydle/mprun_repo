@@ -423,7 +423,7 @@ class CanvasTextItem(QGraphicsSimpleTextItem):
         self.setScale(1.5)
         self.setPos(parent.boundingRect().x(), parent.boundingRect().y())
         self.setParentItem(parent)
-        self.setBrush(QBrush(QColor('blue')))
+        self.setBrush(QBrush(QColor('black')))
         self.setText(text)
         self.setFlag(QGraphicsItem.ItemIgnoresTransformations)
         self.setZValue(10000)
