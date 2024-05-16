@@ -857,6 +857,7 @@ class MPRUN(QMainWindow):
                                               self.select_btn,
                                               self.scale_btn)
         self.canvas_view.setScene(self.canvas)
+        self.canvas.set_widget(self.scale_btn)
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
@@ -1068,7 +1069,7 @@ Date:""")
                     item.setPen(pen)
                     item.setBrush(QColor(self.fill_color.get()))
 
-                elif isinstance(item, CustomCircleItem):
+                elif isinstance(item, LeaderLineItem):
                     index1 = self.stroke_style_combo.currentIndex()
                     data1 = self.stroke_style_combo.itemData(index1)
                     index2 = self.stroke_pencap_combo.currentIndex()
@@ -1079,18 +1080,7 @@ Date:""")
 
                     if item.childItems():
                         for child in item.childItems():
-                            if isinstance(child, CustomPathItem):
-                                index1 = self.stroke_style_combo.currentIndex()
-                                data1 = self.stroke_style_combo.itemData(index1)
-                                index2 = self.stroke_pencap_combo.currentIndex()
-                                data2 = self.stroke_pencap_combo.itemData(index2)
-
-                                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
-                                           data2)
-                                child.setPen(pen)
-                                child.setBrush(QColor(self.fill_color.get()))
-
-                            elif isinstance(child, CustomRectangleItem):
+                            if isinstance(child, CustomRectangleItem):
                                 index1 = self.stroke_style_combo.currentIndex()
                                 data1 = self.stroke_style_combo.itemData(index1)
                                 index2 = self.stroke_pencap_combo.currentIndex()
@@ -1521,6 +1511,9 @@ Date:""")
                 item.duplicate()
 
             elif isinstance(item, CustomGraphicsItemGroup):
+                item.duplicate()
+
+            elif isinstance(item, LeaderLineItem):
                 item.duplicate()
 
     def use_set_item_x(self, value):

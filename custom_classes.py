@@ -353,6 +353,60 @@ class EditableTextBlock(QGraphicsTextItem):
 
         self.setTextCursor(cursor)
 
+class LeaderLineItem(QGraphicsPathItem):
+    def __init__(self, path):
+        super().__init__(path)
+
+    def paint(self, painter, option, widget=None):
+        super().paint(painter, option, widget)
+
+        painter.setPen(self.pen())
+        painter.setBrush(QBrush(QColor(self.pen().color().name())))
+
+        try:
+            path = self.path()
+            if path.elementCount() > 1:
+                last_point = path.elementAt(path.elementCount() - 1)
+                end_point = QPointF(last_point.x, last_point.y)
+                # Drawing a 10x10 ellipse around the last point
+                painter.drawEllipse(end_point, 5, 5)
+
+        except Exception as e:
+            print(e)
+
+    def duplicate(self):
+        path = self.path()
+
+        item = LeaderLineItem(path)
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+        item.setPos(self.pos())
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
+        item.setZValue(0)
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Path')
+
+        if self.childItems():
+            for child in self.childItems():
+                copy = child.duplicate()
+
+                if isinstance(copy, EditableTextBlock):
+                    pass
+
+                else:
+                    copy.setFlag(QGraphicsItem.ItemIsMovable, False)
+                    copy.setFlag(QGraphicsItem.ItemIsSelectable, False)
+
+                copy.setParentItem(item)
+
+        add_command = AddItemCommand(self.scene(), item)
+        self.scene().addCommand(add_command)
+
+        return item
+
 class CanvasItem(QGraphicsRectItem):
     def __init__(self, *coords):
         super().__init__(*coords)

@@ -275,34 +275,27 @@ y: {int(p.y())}''')
 
             # Draw circle at the end of path
             scene_pos = self.mapToScene(event.pos())
-            circle = CustomCircleItem(scene_pos.x() - 3, scene_pos.y() - 3, 6, 6)
-            circle.setZValue(0)
-            circle.setPen(self.pen)
 
             self.canvas.update()
 
             # Load path as QGraphicsItem, set parent items
-            path_item = CustomPathItem(self.leader_line)
+            path_item = LeaderLineItem(self.leader_line)
             path_item.setPen(self.pen)
             path_item.setZValue(0)
-            path_item.stackBefore(circle)
-            path_item.setParentItem(circle)
-            self.text_box_rect.setParentItem(circle)
-            self.label_text.setParentItem(circle)
+            self.text_box_rect.setParentItem(path_item)
+            self.label_text.setParentItem(path_item)
 
             # Add items (no need to add rect, circle, and label because parent is path_item)
-            add_command = AddItemCommand(self.canvas, circle)
+            add_command = AddItemCommand(self.canvas, path_item)
             self.canvas.addCommand(add_command)
 
             # Set flags
-            circle.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-            circle.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-            path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemStacksBehindParent)
+            path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+            path_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
             self.label_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
             # Set Tooltips for elements
             path_item.setToolTip('Leader Line')
-            circle.setToolTip('Leader Line Arrow')
 
             # Check if item is selected or moved so we can turn tool off
             if self.canvas.selectedItems():
@@ -389,6 +382,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, undoStack):
         super().__init__()
         self.undo_stack = undoStack
+        self.scale_btn = None
 
         width = 64000
         height = 64000
@@ -399,22 +393,36 @@ class CustomGraphicsScene(QGraphicsScene):
         self.oldPos = QPointF()
         self.itemMoved.connect(self.on_move_item)
 
+    def set_widget(self, w):
+        self.scale_btn = w
+
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
-        mousePos = event.buttonDownScenePos(Qt.LeftButton)
-        itemList = self.items(mousePos)
-        self.movingItem = None if not itemList else itemList[0]
+        if self.scale_btn is not None:
+            if self.scale_btn.isChecked():
+                pass
 
-        if self.movingItem and event.button() == Qt.LeftButton:
-            self.oldPos = self.movingItem.pos()
+            else:
+                mousePos = event.buttonDownScenePos(Qt.LeftButton)
+                itemList = self.items(mousePos)
+                self.movingItem = None if not itemList else itemList[0]
 
-        self.clearSelection()
+                if self.movingItem and event.button() == Qt.LeftButton:
+                    self.oldPos = self.movingItem.pos()
+
+                self.clearSelection()
+
         super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
-        if self.movingItem and event.button() == Qt.LeftButton:
-            if self.oldPos != self.movingItem.pos():
-                self.itemMoved.emit(self.movingItem, self.oldPos)
-            self.movingItem = None
+        if self.scale_btn is not None:
+            if self.scale_btn.isChecked():
+                pass
+
+            else:
+                if self.movingItem and event.button() == Qt.LeftButton:
+                    if self.oldPos != self.movingItem.pos():
+                        self.itemMoved.emit(self.movingItem, self.oldPos)
+                    self.movingItem = None
 
         super().mouseReleaseEvent(event)
 

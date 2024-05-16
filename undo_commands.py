@@ -139,6 +139,17 @@ class MoveItemCommand(QUndoCommand):
         self.oldPos = oldPos
         self.newPos = item.pos()
 
+    def mergeWith(self, command):
+        moveCommand = command
+        item = moveCommand.item
+
+        if self.item != item:
+            return False
+
+        self.newPos = item.pos()
+
+        return True
+
     def undo(self):
         self.item.setPos(self.oldPos)
 
