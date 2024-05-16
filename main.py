@@ -161,17 +161,6 @@ class MPRUN(QMainWindow):
         bring_to_front_action = QAction('Bring to Front', self)
         bring_to_front_action.triggered.connect(self.use_bring_to_front)
 
-        lock_action = QAction('Lock Position', self)
-        lock_action.setShortcut(QKeySequence('Ctrl+L'))
-        lock_action.triggered.connect(self.lock_item)
-
-        unlock_action = QAction('Unlock Position', self)
-        unlock_action.setShortcut(QKeySequence('U'))
-        unlock_action.triggered.connect(self.unlock_item)
-
-        permanent_lock_action = QAction('Permanent Lock Position', self)
-        permanent_lock_action.triggered.connect(self.permanent_lock_item)
-
         hide_action = QAction('Hide Selected', self)
         hide_action.triggered.connect(self.use_hide_item)
 
@@ -245,10 +234,6 @@ class MPRUN(QMainWindow):
         self.item_menu.addAction(raise_layer_action)
         self.item_menu.addAction(lower_layer_action)
         self.item_menu.addAction(bring_to_front_action)
-        self.item_menu.addSeparator()
-        self.item_menu.addAction(lock_action)
-        self.item_menu.addAction(unlock_action)
-        self.item_menu.addAction(permanent_lock_action)
         self.item_menu.addSeparator()
         self.item_menu.addAction(hide_action)
         self.item_menu.addAction(unhide_action)
@@ -881,12 +866,6 @@ class MPRUN(QMainWindow):
         lower_layer_action.triggered.connect(self.use_lower_layer)
         bring_to_front_action = QAction('Bring to Front', self)
         bring_to_front_action.triggered.connect(self.use_bring_to_front)
-        lock_action = QAction('Lock Position', self)
-        lock_action.triggered.connect(self.lock_item)
-        unlock_action = QAction('Unlock Position', self)
-        unlock_action.triggered.connect(self.unlock_item)
-        permanent_lock_action = QAction('Permanent Lock Position', self)
-        permanent_lock_action.triggered.connect(self.permanent_lock_item)
         hide_action = QAction('Hide Selected', self)
         hide_action.triggered.connect(self.use_hide_item)
         unhide_action = QAction('Unhide All', self)
@@ -910,8 +889,6 @@ class MPRUN(QMainWindow):
         self.canvas_view.addAction(sep3)
         self.canvas_view.addAction(raise_layer_action)
         self.canvas_view.addAction(lower_layer_action)
-        self.canvas_view.addAction(lock_action)
-        self.canvas_view.addAction(unlock_action)
         self.canvas_view.addAction(sep4)
         self.canvas_view.addAction(hide_action)
         self.canvas_view.addAction(unhide_action)
@@ -1691,63 +1668,6 @@ Date:""")
 
                     self.update_appearance_ui()
 
-    def lock_item(self):
-        item = self.canvas.selectedItems()
-
-        for items in item:
-            items.setFlag(QGraphicsItem.ItemIsMovable, False)
-
-            if isinstance(items, CustomGraphicsItemGroup):
-                items.set_locked()
-
-    def unlock_item(self):
-        item = self.canvas.selectedItems()
-
-        for items in item:
-            items.setFlag(QGraphicsItem.ItemIsMovable)
-
-            if isinstance(items, CustomGraphicsItemGroup):
-                items.set_unlocked()
-
-    def permanent_lock_item(self):
-        if self.canvas.selectedItems():
-            # Display a confirmation dialog
-            confirmation_dialog = QMessageBox()
-            confirmation_dialog.setWindowTitle('Permanently Lock Item')
-            confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-            confirmation_dialog.setIcon(QMessageBox.Warning)
-            confirmation_dialog.setText("Are you sure you want to permanently lock the selected Element? (The Element will no longer be editable!)")
-            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            confirmation_dialog.setDefaultButton(QMessageBox.No)
-
-            # Get the result of the confirmation dialog
-            result = confirmation_dialog.exec_()
-
-            # If the user clicked Yes, close the window
-            if result == QMessageBox.Yes:
-                item = self.canvas.selectedItems()
-
-                for items in item:
-                    items.setFlag(QGraphicsItem.ItemIsMovable, False)
-                    items.setFlag(QGraphicsItem.ItemIsSelectable, False)
-
-                    if isinstance(items, EditableTextBlock):
-                        items.set_locked()
-                        items.setToolTip('Permanently Locked Element')
-
-                    if isinstance(items, CustomGraphicsItemGroup):
-                        items.set_locked()
-                        items.setToolTip('Permanently Locked Element')
-
-                    if isinstance(items, CanvasItem):
-                        pass
-
-                    else:
-                        items.setToolTip('Permanently Locked MPRUN Element')
-
-            else:
-                pass
-
     def insert_image(self):
         # Create Options
         options = QFileDialog.Options()
@@ -1952,11 +1872,7 @@ Date:""")
     def create_group(self):
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
-                if item.childItems():
-                    pass
-
-                else:
-                    pass
+                pass
 
             else:
                 group = CustomGraphicsItemGroup(self.gsnap_check_btn)

@@ -61,19 +61,35 @@ class CustomGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
         if self.button.isChecked() or self.erase_btn.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
             self.on_path_draw_start(event)
 
         # Check if the Line and Label tool is turned on
         elif self.button2.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
             self.on_label_start(event)
 
         elif self.text_btn.isChecked():
             self.on_add_text(event)
 
         elif self.scale_btn.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
             self.on_scale_start(event)
 
         elif self.add_canvas_btn.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
             self.on_add_canvas_start(event)
 
         self.on_add_canvas(event)
@@ -108,16 +124,32 @@ y: {int(p.y())}''')
     def mouseReleaseEvent(self, event):
         # Check if path tool is enabled
         if self.button.isChecked() or self.erase_btn.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable)
+                item.setFlag(QGraphicsItem.ItemIsMovable)
+
             self.on_path_draw_end(event)
 
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable)
+                item.setFlag(QGraphicsItem.ItemIsMovable)
+
             self.on_label_end(event)
 
         elif self.scale_btn.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable)
+                item.setFlag(QGraphicsItem.ItemIsMovable)
+
             self.on_scale_end(event)
 
         elif self.add_canvas_btn.isChecked():
+            for item in self.canvas.items():
+                item.setFlag(QGraphicsItem.ItemIsSelectable)
+                item.setFlag(QGraphicsItem.ItemIsMovable)
+
             self.on_add_canvas_end(event)
 
         super().mouseReleaseEvent(event)
@@ -244,6 +276,7 @@ y: {int(p.y())}''')
             self.leader_line = QPainterPath()  # Create a new QPainterPath
             self.leader_line.moveTo(self.mapToScene(event.pos()))
             self.setDragMode(QGraphicsView.NoDrag)
+            self.clicked_label_point = self.mapToScene(event.pos())
 
             # Create the label text
             self.label_text = EditableTextBlock('An Editable Text Block')
@@ -384,6 +417,10 @@ y: {int(p.y())}''')
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
         elif not self.add_canvas_btn.isChecked():
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
@@ -393,12 +430,17 @@ y: {int(p.y())}''')
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable)
+                    item.setFlag(QGraphicsItem.ItemIsMovable)
+
     def on_add_canvas_start(self, event):
-        if event.buttons() & Qt.RightButton:
+        if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
             self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
             self.setDragMode(QGraphicsView.NoDrag)
 
             self.clicked_canvas_point = self.mapToScene(event.pos())
+            self.added_click = event.pos()
             self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
                                           0)  # Initialize with zero width and height
             self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
@@ -407,7 +449,7 @@ y: {int(p.y())}''')
             self.scene().addItem(self.canvas_item_text)  # Add canvas text item to the scene
 
     def on_add_canvas_drag(self, event):
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
             if not hasattr(self, 'canvas_item'):
                 self.clicked_canvas_point = self.mapToScene(event.pos())
                 self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
@@ -415,25 +457,33 @@ y: {int(p.y())}''')
                 self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
 
             current_pos = self.mapToScene(event.pos())
-            self.canvas_item.setRect(self.clicked_canvas_point.x(),
-                                     self.clicked_canvas_point.y(),
+            self.canvas_item.setRect(0,
+                                     0,
                                      current_pos.x() - self.clicked_canvas_point.x(),
                                      current_pos.y() - self.clicked_canvas_point.y())
+
     def on_add_canvas_end(self, event):
-        if event.button() == Qt.RightButton:
-            self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
+        if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
+            self.setDragMode(QGraphicsView.RubberBandDrag)
             current_pos = self.mapToScene(event.pos())
-            self.canvas_item.setRect(self.clicked_canvas_point.x(),
-                                     self.clicked_canvas_point.y(),
+            self.canvas_item.setRect(0, 0,
                                      current_pos.x() - self.clicked_canvas_point.x(),
                                      current_pos.y() - self.clicked_canvas_point.y())
 
             command = AddItemCommand(self.scene(), self.canvas_item)  # Assuming AddItemCommand is defined elsewhere
             self.canvas.addCommand(command)
 
+            self.canvas_item.setPos(self.clicked_canvas_point)
             self.canvas_item_text.setPos(self.canvas_item.boundingRect().x(), self.canvas_item.boundingRect().y())
+            self.canvas_item.setToolTip('Canvas')
+            self.canvas_item.setZValue(-1)
+
+            if self.canvas_item.rect().isEmpty():
+                self.scene().removeItem(self.canvas_item)
 
             self.clicked_canvas_point = None
+
+            self.canvas.update()
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)
