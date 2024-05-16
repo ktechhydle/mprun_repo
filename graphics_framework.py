@@ -73,6 +73,9 @@ class CustomGraphicsView(QGraphicsView):
         elif self.scale_btn.isChecked():
             self.on_scale_start(event)
 
+        elif self.add_canvas_btn.isChecked():
+            self.on_add_canvas_start(event)
+
         self.on_add_canvas(event)
 
         super().mousePressEvent(event)
@@ -97,6 +100,9 @@ y: {int(p.y())}''')
         elif self.scale_btn.isChecked():
             self.on_scale(event)
 
+        elif self.add_canvas_btn.isChecked():
+            self.on_add_canvas_drag(event)
+
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -110,6 +116,9 @@ y: {int(p.y())}''')
 
         elif self.scale_btn.isChecked():
             self.on_scale_end(event)
+
+        elif self.add_canvas_btn.isChecked():
+            self.on_add_canvas_end(event)
 
         super().mouseReleaseEvent(event)
         
@@ -383,6 +392,48 @@ y: {int(p.y())}''')
                         items.parentItem().setSelected(False)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
                         items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
+
+    def on_add_canvas_start(self, event):
+        if event.buttons() & Qt.RightButton:
+            self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+            self.setDragMode(QGraphicsView.NoDrag)
+
+            self.clicked_canvas_point = self.mapToScene(event.pos())
+            self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
+                                          0)  # Initialize with zero width and height
+            self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
+
+            self.scene().addItem(self.canvas_item)  # Add canvas item to the scene
+            self.scene().addItem(self.canvas_item_text)  # Add canvas text item to the scene
+
+    def on_add_canvas_drag(self, event):
+        if event.button() == Qt.RightButton:
+            if not hasattr(self, 'canvas_item'):
+                self.clicked_canvas_point = self.mapToScene(event.pos())
+                self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
+                                              0)  # Initialize with zero width and height
+                self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
+
+            current_pos = self.mapToScene(event.pos())
+            self.canvas_item.setRect(self.clicked_canvas_point.x(),
+                                     self.clicked_canvas_point.y(),
+                                     current_pos.x() - self.clicked_canvas_point.x(),
+                                     current_pos.y() - self.clicked_canvas_point.y())
+    def on_add_canvas_end(self, event):
+        if event.button() == Qt.RightButton:
+            self.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
+            current_pos = self.mapToScene(event.pos())
+            self.canvas_item.setRect(self.clicked_canvas_point.x(),
+                                     self.clicked_canvas_point.y(),
+                                     current_pos.x() - self.clicked_canvas_point.x(),
+                                     current_pos.y() - self.clicked_canvas_point.y())
+
+            command = AddItemCommand(self.scene(), self.canvas_item)  # Assuming AddItemCommand is defined elsewhere
+            self.canvas.addCommand(command)
+
+            self.canvas_item_text.setPos(self.canvas_item.boundingRect().x(), self.canvas_item.boundingRect().y())
+
+            self.clicked_canvas_point = None
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)

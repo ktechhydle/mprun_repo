@@ -142,6 +142,7 @@ class CanvasEditorPanel(QWidget):
                 try:
                     item.setRect(0, 0, self.canvas_x_entry.value(), self.canvas_y_entry.value())
                     self.child.setPos(item.boundingRect().x(), item.boundingRect().y())
+                    item.setPos(item.pos())
 
                 except Exception:
                     pass

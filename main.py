@@ -172,16 +172,6 @@ class MPRUN(QMainWindow):
         permanent_lock_action = QAction('Permanent Lock Position', self)
         permanent_lock_action.triggered.connect(self.permanent_lock_item)
 
-        center_action = QAction('Center', self)
-        center_action.setShortcut(QKeySequence("C"))
-        center_action.triggered.connect(self.use_center_item)
-
-        element_center_action = QAction('Set Default Center', self)
-        element_center_action.triggered.connect(self.use_set_center)
-
-        display_center_action = QAction('Display Current Center', self)
-        display_center_action.triggered.connect(self.use_display_center)
-
         hide_action = QAction('Hide Selected', self)
         hide_action.triggered.connect(self.use_hide_item)
 
@@ -259,10 +249,6 @@ class MPRUN(QMainWindow):
         self.item_menu.addAction(lock_action)
         self.item_menu.addAction(unlock_action)
         self.item_menu.addAction(permanent_lock_action)
-        self.item_menu.addSeparator()
-        self.item_menu.addAction(center_action)
-        self.item_menu.addAction(element_center_action)
-        self.item_menu.addAction(display_center_action)
         self.item_menu.addSeparator()
         self.item_menu.addAction(hide_action)
         self.item_menu.addAction(unhide_action)
@@ -901,10 +887,6 @@ class MPRUN(QMainWindow):
         unlock_action.triggered.connect(self.unlock_item)
         permanent_lock_action = QAction('Permanent Lock Position', self)
         permanent_lock_action.triggered.connect(self.permanent_lock_item)
-        center_action = QAction('Center', self)
-        center_action.triggered.connect(self.use_center_item)
-        element_center_action = QAction('Set Default Center', self)
-        element_center_action.triggered.connect(self.use_set_center)
         hide_action = QAction('Hide Selected', self)
         hide_action.triggered.connect(self.use_hide_item)
         unhide_action = QAction('Unhide All', self)
@@ -930,8 +912,6 @@ class MPRUN(QMainWindow):
         self.canvas_view.addAction(lower_layer_action)
         self.canvas_view.addAction(lock_action)
         self.canvas_view.addAction(unlock_action)
-        self.canvas_view.addAction(center_action)
-        self.canvas_view.addAction(element_center_action)
         self.canvas_view.addAction(sep4)
         self.canvas_view.addAction(hide_action)
         self.canvas_view.addAction(unhide_action)
@@ -1605,49 +1585,7 @@ Date:""")
                 command = GraphicsEffectCommand(item, 10, og_effect, 'blur')
                 self.canvas.addCommand(command)
 
-    def use_center_item(self):
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    rect = self.stored_center_item
-                    center = rect.center()
-
-                    new_pos = center - item.boundingRect().center()
-                    item.setPos(new_pos)
-
-    def use_set_center(self):
-        if not self.canvas.selectedItems():
-            QMessageBox.information(self, 'Set Default Center', 'Select an item to set the default center to.')
-
-        else:
-            self.stored_center_item = self.canvas.selectedItemsBoundingRect()
-
-    def use_display_center(self):
-        # Create the ellipse item
-        ellipse_item = CenterPointItem(0, 0, 30, 30)
-        ellipse_item.setBrush(QBrush(QColor(Qt.blue)))  # Set brush color to blue
-        ellipse_item.setToolTip('Current Center Point')
-
-        # Calculate the center of the stored item
-        center = self.stored_center_item.center()
-
-        # Position the ellipse at the calculated center
-        ellipse_item.setPos(center.x() - 15, center.y() - 15)  # Adjust for ellipse size
-
-        # Set Z-value
-        ellipse_item.setZValue(10000)
-
-        # Add the ellipse to the scene
-        command = AddItemCommand(self.canvas, ellipse_item)
-        self.canvas.addCommand(command)
-
     def use_add_canvas(self):
-        self.add_canvas_dialog = AddCanvasDialog(self.canvas, self.last_paper)
-        self.add_canvas_dialog.show()
-
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
                 for items in item.childItems():
