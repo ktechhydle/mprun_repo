@@ -216,14 +216,19 @@ class CloseSubpathCommand(QUndoCommand):
         self.item.setPath(self.oldPath)
 
 class AddTextToPathCommand(QUndoCommand):
-    def __init__(self, path, og_value, new_value):
+    def __init__(self, path, widget, og_value, new_value):
         super().__init__()
         self.item = path
+        self.widget = widget
         self.og = og_value
         self.new = new_value
 
     def redo(self):
         self.item.add_text = self.new
+        self.widget.setChecked(self.new)
+        self.item.update()
 
     def undo(self):
         self.item.add_text = self.og
+        self.widget.setChecked(self.og)
+        self.item.update()

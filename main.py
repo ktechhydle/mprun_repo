@@ -1708,7 +1708,7 @@ Date:""")
                 font.setItalic(True if self.italic_btn.isChecked() else False)
                 font.setUnderline(True if self.underline_btn.isChecked() else False)
 
-                command = AddTextToPathCommand(item, False, True)
+                command = AddTextToPathCommand(item, self.text_along_path_tab.text_along_path_check_btn, False, True)
                 self.canvas.addCommand(command)
                 item.update()
 
