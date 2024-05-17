@@ -13,7 +13,7 @@ from custom_classes import *
 from custom_widgets import *
 from custom_tab_widget import *
 from course_elements import *
-from canvas_creation_dialog import *
+from custom_dialogs import *
 from version_dialog import *
 
 class MPRUN(QMainWindow):
@@ -120,6 +120,9 @@ class MPRUN(QMainWindow):
         close_subpath_action = QAction('Close Path', self)
         close_subpath_action.triggered.connect(self.use_close_path)
 
+        add_text_along_path_action = QAction('Add Text Along Path', self)
+        add_text_along_path_action.triggered.connect(self.use_add_text_along_path)
+
         # Create edit actions
         undo_action = QAction('Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
@@ -194,6 +197,9 @@ class MPRUN(QMainWindow):
         vectorizing_action = QAction('Image Trace', self)
         vectorizing_action.triggered.connect(lambda: self.display_choosen_tab('Image Trace'))
 
+        text_along_path_action = QAction('Text Along Path', self)
+        text_along_path_action.triggered.connect(lambda: self.display_choosen_tab('Text Along Path'))
+
         canvas_action = QAction('Canvas', self)
         canvas_action.triggered.connect(lambda: self.display_choosen_tab('Canvas'))
 
@@ -217,6 +223,7 @@ class MPRUN(QMainWindow):
         self.tool_menu.addSeparator()
         self.tool_menu.addAction(smooth_action)
         self.tool_menu.addAction(close_subpath_action)
+        self.tool_menu.addAction(add_text_along_path_action)
 
         self.edit_menu.addAction(undo_action)
         self.edit_menu.addAction(redo_action)
@@ -248,6 +255,7 @@ class MPRUN(QMainWindow):
         self.window_menu.addAction(libraries_action)
         self.window_menu.addAction(characters_action)
         self.window_menu.addAction(vectorizing_action)
+        self.window_menu.addAction(text_along_path_action)
         self.window_menu.addAction(canvas_action)
 
     def init_toolbars(self):
@@ -322,6 +330,9 @@ class MPRUN(QMainWindow):
 
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
+
+        # Text Along Path Tab
+        self.text_along_path_tab = TextAlongPathPanel(self.canvas)
 
         # This next section is basically all the widgets for each tab
         # Some tabs don't have many widgets as they are subclassed in other files.
@@ -951,38 +962,34 @@ Date:""")
         super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        if len(self.canvas.items()) > 3:
-            # Display a confirmation dialog
-            confirmation_dialog = QMessageBox()
-            confirmation_dialog.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
-            confirmation_dialog.setWindowTitle('Close Project')
-            confirmation_dialog.setIcon(QMessageBox.Warning)
-            confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
-            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            confirmation_dialog.setDefaultButton(QMessageBox.No)
+        # Display a confirmation dialog
+        confirmation_dialog = QMessageBox(self)
+        confirmation_dialog.setWindowTitle('Close Project')
+        confirmation_dialog.setIcon(QMessageBox.Warning)
+        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
+        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        confirmation_dialog.setDefaultButton(QMessageBox.No)
 
-            # Get the result of the confirmation dialog
-            result = confirmation_dialog.exec_()
+        # Get the result of the confirmation dialog
+        result = confirmation_dialog.exec_()
 
-            # If the user clicked Yes, close the window
-            if result == QMessageBox.Yes:
-                try:
-                    self.properties_tab.close()
-                    self.libraries_tab.close()
-                    self.layers_tab.close()
-                    self.characters_tab.close()
-                    self.image_trace.close()
-                    self.canvas_tab.close()
-                    self.add_canvas_dialog.close()
+        # If the user clicked Yes, close the window
+        if result == QMessageBox.Yes:
+            try:
+                self.properties_tab.close()
+                self.libraries_tab.close()
+                self.layers_tab.close()
+                self.characters_tab.close()
+                self.image_trace.close()
+                self.canvas_tab.close()
+                self.add_canvas_dialog.close()
+                self.undo_stack.clear()
 
-                except Exception:
-                    pass
+            except Exception:
+                pass
 
-                event.accept()
-
-            else:
-                event.ignore()
-
+            event.accept()
+            
         else:
             try:
                 self.properties_tab.close()
@@ -1075,6 +1082,11 @@ Date:""")
                     item.setFont(font)
                     item.setDefaultTextColor(QColor(self.font_color.get()))
 
+                elif isinstance(item, CustomPathItem):
+                    if item.add_text == True:
+                        item.setTextAlongPathFont(font)
+                        item.setTextAlongPathColor(QColor(self.font_color.get()))
+
     def update_grid_size(self, value):
         for item in self.canvas.items():
             if isinstance(item, CustomGraphicsItemGroup):
@@ -1107,6 +1119,9 @@ Date:""")
         self.italic_btn.blockSignals(True)
         self.underline_btn.blockSignals(True)
         self.layer_spin.blockSignals(True)
+        self.text_along_path_tab.text_entry.blockSignals(True)
+        self.text_along_path_tab.text_along_path_check_btn.blockSignals(True)
+        self.text_along_path_tab.spacing_spin.blockSignals(True)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
@@ -1153,6 +1168,23 @@ Date:""")
                     if pen.capStyle() == v:
                         self.stroke_pencap_combo.setCurrentIndex(i)
 
+                if item.add_text == True:
+                    self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
+                    self.text_along_path_tab.text_entry.setText(item.text_along_path)
+                    self.text_along_path_tab.spacing_spin.setValue(item.text_along_path_spacing)
+
+                    font = item.text_along_path_font
+                    color = item.text_along_path_color.name()
+
+                    self.font_color_btn.setStyleSheet(f'background-color: {color};')
+                    self.font_choice_combo.setCurrentText(font.family())
+                    self.font_size_spin.setValue(font.pixelSize())
+                    self.font_letter_spacing_spin.setValue(int(font.letterSpacing()))
+                    self.bold_btn.setChecked(True if font.bold() else False)
+                    self.italic_btn.setChecked(True if font.italic() else False)
+                    self.underline_btn.setChecked(True if font.underline() else False)
+
+
             elif isinstance(item, CanvasItem):
                 self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
                 self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
@@ -1162,6 +1194,64 @@ Date:""")
                         self.canvas_tab.canvas_name_entry.setText(child.text())
 
             elif isinstance(item, CustomCircleItem):
+                if item.childItems():
+                    for child in item.childItems():
+                        if isinstance(child, CustomRectangleItem):
+                            pen = child.pen()
+                            brush = child.brush()
+
+                            # Set Colors
+                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                            self.outline_color.set(pen.color().name())
+                            self.fill_color_btn.setStyleSheet(
+                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+
+                        else:
+                            pen = item.pen()
+                            brush = item.brush()
+
+                            # Set Colors
+                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                            self.outline_color.set(pen.color().name())
+                            self.fill_color_btn.setStyleSheet(
+                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+
+                            # Set Values
+                            self.stroke_size_spin.setValue(pen.width())
+
+                            for index, (style, value) in enumerate(self.stroke_style_options.items()):
+                                if pen.style() == value:
+                                    self.stroke_style_combo.setCurrentIndex(index)
+
+                            for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
+                                if pen.capStyle() == v:
+                                    self.stroke_pencap_combo.setCurrentIndex(i)
+
+                else:
+                    pen = item.pen()
+                    brush = item.brush()
+
+                    # Set Colors
+                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.outline_color.set(pen.color().name())
+                    self.fill_color_btn.setStyleSheet(
+                        f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                    self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+
+                    # Set Values
+                    self.stroke_size_spin.setValue(pen.width())
+
+                    for index, (style, value) in enumerate(self.stroke_style_options.items()):
+                        if pen.style() == value:
+                            self.stroke_style_combo.setCurrentIndex(index)
+
+                    for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
+                        if pen.capStyle() == v:
+                            self.stroke_pencap_combo.setCurrentIndex(i)
+
+            elif isinstance(item, LeaderLineItem):
                 if item.childItems():
                     for child in item.childItems():
                         if isinstance(child, CustomRectangleItem):
@@ -1253,6 +1343,9 @@ Date:""")
         self.italic_btn.blockSignals(False)
         self.underline_btn.blockSignals(False)
         self.layer_spin.blockSignals(False)
+        self.text_along_path_tab.text_entry.blockSignals(False)
+        self.text_along_path_tab.text_along_path_check_btn.blockSignals(False)
+        self.text_along_path_tab.spacing_spin.blockSignals(False)
 
     def stroke_color_chooser(self):
         color_dialog = CustomColorPicker()
@@ -1590,6 +1683,21 @@ Date:""")
             if isinstance(item, CustomPathItem):
                 command = CloseSubpathCommand(item, self.canvas)
                 self.canvas.addCommand(command)
+
+    def use_add_text_along_path(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CustomPathItem):
+                font = QFont()
+                font.setFamily(self.font_choice_combo.currentText())
+                font.setPixelSize(self.font_size_spin.value())
+                font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
+                font.setBold(True if self.bold_btn.isChecked() else False)
+                font.setItalic(True if self.italic_btn.isChecked() else False)
+                font.setUnderline(True if self.underline_btn.isChecked() else False)
+
+                item.add_text = True
+                self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
+                self.text_along_path_tab.text_entry.setText('Text along a path')
 
     def use_fill_transparent(self):
         self.fill_color_btn.setStyleSheet('background-color: transparent')
@@ -2017,6 +2125,9 @@ Date:""")
                 elif tab_name == 'Image Trace':
                     self.tab_view.addTab(self.image_trace, tab_name)
                     self.tab_view.setCurrentWidget(self.image_trace)
+
+                elif tab_name == 'Text Along Path':
+                    self.tab_view.addTab(self.text_along_path_tab, tab_name)
 
                 elif tab_name == 'Canvas':
                     self.tab_view.addTab(self.canvas_tab, tab_name)
