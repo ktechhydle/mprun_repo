@@ -1695,7 +1695,8 @@ Date:""")
                 font.setItalic(True if self.italic_btn.isChecked() else False)
                 font.setUnderline(True if self.underline_btn.isChecked() else False)
 
-                item.add_text = True
+                command = AddTextToPathCommand(item, False, True)
+                self.canvas.addCommand(command)
                 self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
                 self.text_along_path_tab.text_entry.setText('Text along a path')
 

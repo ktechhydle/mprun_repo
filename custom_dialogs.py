@@ -4,6 +4,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
 from custom_widgets import *
+from undo_commands import *
 
 class CanvasItemSelector(QDialog):
     def __init__(self, parent=None):
@@ -71,9 +72,11 @@ class TextAlongPathPanel(QWidget):
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
                 if self.text_along_path_check_btn.isChecked():
-                    item.add_text = True
+                    command = AddTextToPathCommand(item, False, True)
+                    self.canvas.addCommand(command)
                     item.setTextAlongPath(self.text_entry.text())
                     item.setTextAlongPathSpacingFromPath(self.spacing_spin.value())
 
                 else:
-                    item.add_text = False
+                    command = AddTextToPathCommand(item, True, False)
+                    self.canvas.addCommand(command)
