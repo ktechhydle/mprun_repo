@@ -48,10 +48,10 @@ class TextAlongPathPanel(QWidget):
         spacing_label.setStyleSheet("QLabel { font-size: 12px; }")
 
         self.text_along_path_check_btn = QCheckBox(self)
-        self.text_along_path_check_btn.setText('Text Along Path')
+        self.text_along_path_check_btn.setText('Add Text Along Path')
 
         self.spacing_spin = QSpinBox(self)
-        self.spacing_spin.setRange(0, 10000)
+        self.spacing_spin.setRange(-1000, 10000)
         self.spacing_spin.setSuffix(' pt')
 
         self.text_entry = QLineEdit(self)
@@ -76,7 +76,9 @@ class TextAlongPathPanel(QWidget):
                     self.canvas.addCommand(command)
                     item.setTextAlongPath(self.text_entry.text())
                     item.setTextAlongPathSpacingFromPath(self.spacing_spin.value())
+                    item.update()
 
                 else:
                     command = AddTextToPathCommand(item, True, False)
                     self.canvas.addCommand(command)
+                    item.update()

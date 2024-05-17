@@ -213,15 +213,19 @@ class CustomPathItem(QGraphicsPathItem):
 
     def setTextAlongPath(self, text):
         self.text_along_path = text
+        self.update()
 
     def setTextAlongPathFont(self, font):
         self.text_along_path_font = font
+        self.update()
 
     def setTextAlongPathColor(self, color):
         self.text_along_path_color = color
+        self.update()
 
     def setTextAlongPathSpacingFromPath(self, spacing):
         self.text_along_path_spacing = spacing
+        self.update()
 
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)

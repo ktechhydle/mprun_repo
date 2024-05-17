@@ -1084,6 +1084,7 @@ Date:""")
 
                 elif isinstance(item, CustomPathItem):
                     if item.add_text == True:
+                        item.update()
                         item.setTextAlongPathFont(font)
                         item.setTextAlongPathColor(QColor(self.font_color.get()))
 
@@ -1689,6 +1690,14 @@ Date:""")
                 self.canvas.addCommand(command)
 
     def use_add_text_along_path(self):
+        self.display_choosen_tab('Text Along Path')
+        for i in range(self.tab_view.count()):
+            if self.tab_view.tabText(i) == 'Text Along Path':
+                self.tab_view.setCurrentIndex(i)
+                self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
+                self.text_along_path_tab.text_entry.setFocus()
+                self.text_along_path_tab.text_entry.clear()
+
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
                 font = QFont()
@@ -1701,8 +1710,7 @@ Date:""")
 
                 command = AddTextToPathCommand(item, False, True)
                 self.canvas.addCommand(command)
-                self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
-                self.text_along_path_tab.text_entry.setText('Text along a path')
+                item.update()
 
     def use_fill_transparent(self):
         self.fill_color_btn.setStyleSheet('background-color: transparent')
