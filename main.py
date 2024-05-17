@@ -1172,6 +1172,7 @@ Date:""")
                     self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
                     self.text_along_path_tab.text_entry.setText(item.text_along_path)
                     self.text_along_path_tab.spacing_spin.setValue(item.text_along_path_spacing)
+                    self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
 
                     font = item.text_along_path_font
                     color = item.text_along_path_color.name()
@@ -1183,6 +1184,9 @@ Date:""")
                     self.bold_btn.setChecked(True if font.bold() else False)
                     self.italic_btn.setChecked(True if font.italic() else False)
                     self.underline_btn.setChecked(True if font.underline() else False)
+
+                else:
+                    self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
 
 
             elif isinstance(item, CanvasItem):
