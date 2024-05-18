@@ -473,6 +473,7 @@ class CanvasItem(QGraphicsRectItem):
 
         brush = QBrush(QColor('white'))
         pen = QPen(QColor('white'), 2, Qt.SolidLine)
+        pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
         self.setBrush(brush)
         self.setPen(pen)
 
