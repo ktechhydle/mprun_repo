@@ -21,6 +21,7 @@ class CustomGraphicsView(QGraphicsView):
         self.setRenderHint(QPainter.Antialiasing)
         self.setRenderHint(QPainter.TextAntialiasing)
         self.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.setAttribute(Qt.WA_DeleteOnClose)
 
         # Set widgets
         self.button = button

@@ -293,7 +293,7 @@ class MPRUN(QMainWindow):
         # Properties Tab
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.properties_tab.setMaximumHeight(800)
+        self.properties_tab.setMaximumHeight(775)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
@@ -1139,6 +1139,8 @@ Date:""")
             self.width_scale_spin.setValue(10.0)
             self.height_scale_spin.setValue(10.0)
             self.layer_spin.setValue(0)
+            self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
+            self.text_along_path_tab.text_entry.clear()
 
         for item in self.canvas.selectedItems():
             self.x_pos_spin.setValue(int(item.x()))
