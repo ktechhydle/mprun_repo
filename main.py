@@ -1956,7 +1956,39 @@ Date:""")
                 pass
 
             elif isinstance(item, LeaderLineItem):
+                if item.childItems():
+                    pass
+
                 pass
+
+            elif isinstance(item, EditableTextBlock):
+                if item.parentItem():
+                    pass
+
+                else:
+                    group = CustomGraphicsItemGroup(self.gsnap_check_btn)
+                    group.set_grid_size(self.gsnap_grid_size)
+
+                    item = self.canvas.selectedItems()
+
+                    if len(item) > 1:
+                        # Set flags for group
+                        group.setFlag(QGraphicsItem.ItemIsMovable)
+                        group.setFlag(QGraphicsItem.ItemIsSelectable)
+
+                        # Add group
+                        self.canvas.addItem(group)
+
+                        for items in item:
+                            # Set flag
+                            items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+
+                            # Add items to group
+                            group.addToGroup(items)
+                            group.setToolTip('Group')
+
+                    else:
+                        pass
 
             else:
                 group = CustomGraphicsItemGroup(self.gsnap_check_btn)
