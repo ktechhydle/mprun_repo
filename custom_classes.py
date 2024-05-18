@@ -412,9 +412,18 @@ class LeaderLineItem(QGraphicsPathItem):
         super().paint(painter, option, widget)
 
         painter.setPen(self.pen())
-        painter.setBrush(QBrush(QColor(self.pen().color().name())))
+        painter.setBrush(self.brush())
+
+        if self.childItems():
+            for child in self.childItems():
+                # Map the child's bounding rect to the parent's coordinate system
+                mapped_rect = self.mapRectFromItem(child, child.boundingRect())
+                painter.drawRect(mapped_rect)
 
         try:
+            painter.setPen(self.pen())
+            painter.setBrush(QBrush(QColor(self.pen().color().name())))
+
             path = self.path()
             if path.elementCount() > 1:
                 last_point = path.elementAt(path.elementCount() - 1)

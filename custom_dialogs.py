@@ -74,8 +74,10 @@ class TextAlongPathPanel(QWidget):
                 if self.text_along_path_check_btn.isChecked():
                     command = AddTextToPathCommand(item, self.text_along_path_check_btn, False, True)
                     self.canvas.addCommand(command)
-                    item.setTextAlongPath(self.text_entry.text())
-                    item.setTextAlongPathSpacingFromPath(self.spacing_spin.value())
+                    command2 = PathTextChangedCommand(item, item.text_along_path, self.text_entry.text())
+                    self.canvas.addCommand(command2)
+                    command3 = PathTextSpacingChangedCommand(item, item.text_along_path_spacing, self.spacing_spin.value())
+                    self.canvas.addCommand(command3)
                     item.update()
 
                 else:

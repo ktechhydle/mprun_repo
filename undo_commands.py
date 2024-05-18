@@ -232,3 +232,51 @@ class AddTextToPathCommand(QUndoCommand):
         self.item.add_text = self.og
         self.widget.setChecked(self.og)
         self.item.update()
+
+class PathTextChangedCommand(QUndoCommand):
+    def __init__(self, item, og, new):
+        super().__init__()
+
+        self.item = item
+        self.og = og
+        self.new = new
+
+    def redo(self):
+        self.item.setTextAlongPath(self.new)
+        self.item.update()
+
+    def undo(self):
+        self.item.setTextAlongPath(self.og)
+        self.item.update()
+
+class PathTextSpacingChangedCommand(QUndoCommand):
+    def __init__(self, item, og, new):
+        super().__init__()
+
+        self.item = item
+        self.og = og
+        self.new = new
+
+    def redo(self):
+        self.item.setTextAlongPathSpacingFromPath(self.new)
+        self.item.update()
+
+    def undo(self):
+        self.item.setTextAlongPathSpacingFromPath(self.og)
+        self.item.update()
+
+class FontChangeCommand(QUndoCommand):
+    def __init__(self, item, oldf, newf):
+        super().__init__()
+
+        self.item = item
+        self.old = oldf
+        self.new = newf
+
+    def redo(self):
+        self.item.setFont(self.new)
+        self.item.update()
+
+    def undo(self):
+        self.item.setFont(self.old)
+        self.item.update()

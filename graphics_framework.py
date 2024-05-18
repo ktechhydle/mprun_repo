@@ -336,20 +336,9 @@ y: {int(p.y())}''')
             self.label_text.setDefaultTextColor(QColor('black'))
             self.label_text.setToolTip("Text")
 
-            # Create the bounding rectangle around the text (for style)
-            self.text_box_rect = CustomRectangleItem(self.label_text.boundingRect())
-            self.text_box_rect.setPen(self.pen)
-            self.text_box_rect.setPos(self.mapToScene(event.pos()))
-            self.text_box_rect.setToolTip('Text Box')
-
             # Create path item
             self.pathg_item = LeaderLineItem(self.leader_line)
 
-            # Set z values
-            self.text_box_rect.stackBefore(self.label_text)
-
-            add_command = AddItemCommand(self.canvas, self.text_box_rect)
-            self.canvas.addCommand(add_command)
             add_command2 = AddItemCommand(self.canvas, self.label_text)
             self.canvas.addCommand(add_command2)
             add_command3 = AddItemCommand(self.canvas, self.pathg_item)
@@ -362,7 +351,8 @@ y: {int(p.y())}''')
         if event.button() == Qt.LeftButton:
             # Move line to current coords
             self.leader_line.lineTo(self.mapToScene(event.pos()))
-            self.pathg_item.setPath(self.pathg_item.path())
+            self.pathg_item.setPath(self.leader_line)
+            self.pathg_item.update()
 
             self.canvas.update()
 
@@ -383,7 +373,9 @@ y: {int(p.y())}''')
             self.pathg_item.setPen(self.pen)
             self.pathg_item.setZValue(0)
             self.label_text.setParentItem(self.pathg_item)
-            self.text_box_rect.setParentItem(self.pathg_item)
+
+            if self.leader_line.isEmpty():
+                self.scene().removeItem(self.pathg_item)
 
             # Add items (no need to add rect, circle, and label because parent is path_item)
             add_command = AddItemCommand(self.canvas, self.pathg_item)
@@ -393,7 +385,6 @@ y: {int(p.y())}''')
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
             self.label_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-            self.text_box_rect.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
             # Set Tooltips for elements
             self.pathg_item.setToolTip('Leader Line')

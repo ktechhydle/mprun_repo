@@ -1041,19 +1041,7 @@ Date:""")
 
                     pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                     item.setPen(pen)
-
-                    if item.childItems():
-                        for child in item.childItems():
-                            if isinstance(child, CustomRectangleItem):
-                                index1 = self.stroke_style_combo.currentIndex()
-                                data1 = self.stroke_style_combo.itemData(index1)
-                                index2 = self.stroke_pencap_combo.currentIndex()
-                                data2 = self.stroke_pencap_combo.itemData(index2)
-
-                                pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
-                                           data2)
-                                child.setPen(pen)
-                                child.setBrush(QColor(self.fill_color.get()))
+                    item.setBrush(QColor(self.fill_color.get()))
 
                 elif isinstance(item, CustomRectangleItem):
                     index1 = self.stroke_style_combo.currentIndex()
@@ -1079,7 +1067,8 @@ Date:""")
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 if isinstance(item, EditableTextBlock):
-                    item.setFont(font)
+                    command = FontChangeCommand(item, item.font(), font)
+                    self.canvas.addCommand(command)
                     item.setDefaultTextColor(QColor(self.font_color.get()))
 
                 elif isinstance(item, CustomPathItem):
@@ -1087,6 +1076,7 @@ Date:""")
                         item.update()
                         item.setTextAlongPathFont(font)
                         item.setTextAlongPathColor(QColor(self.font_color.get()))
+                        item.update()
 
     def update_grid_size(self, value):
         for item in self.canvas.items():
@@ -1259,62 +1249,26 @@ Date:""")
                             self.stroke_pencap_combo.setCurrentIndex(i)
 
             elif isinstance(item, LeaderLineItem):
-                if item.childItems():
-                    for child in item.childItems():
-                        if isinstance(child, CustomRectangleItem):
-                            pen = child.pen()
-                            brush = child.brush()
+                pen = item.pen()
+                brush = item.brush()
 
-                            # Set Colors
-                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                            self.outline_color.set(pen.color().name())
-                            self.fill_color_btn.setStyleSheet(
-                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+                # Set Colors
+                self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                self.outline_color.set(pen.color().name())
+                self.fill_color_btn.setStyleSheet(
+                    f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
+                self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
 
-                        else:
-                            pen = item.pen()
-                            brush = item.brush()
+                # Set Values
+                self.stroke_size_spin.setValue(pen.width())
 
-                            # Set Colors
-                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                            self.outline_color.set(pen.color().name())
-                            self.fill_color_btn.setStyleSheet(
-                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+                for index, (style, value) in enumerate(self.stroke_style_options.items()):
+                    if pen.style() == value:
+                        self.stroke_style_combo.setCurrentIndex(index)
 
-                            # Set Values
-                            self.stroke_size_spin.setValue(pen.width())
-
-                            for index, (style, value) in enumerate(self.stroke_style_options.items()):
-                                if pen.style() == value:
-                                    self.stroke_style_combo.setCurrentIndex(index)
-
-                            for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
-                                if pen.capStyle() == v:
-                                    self.stroke_pencap_combo.setCurrentIndex(i)
-
-                else:
-                    pen = item.pen()
-                    brush = item.brush()
-
-                    # Set Colors
-                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                    self.outline_color.set(pen.color().name())
-                    self.fill_color_btn.setStyleSheet(
-                        f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                    self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
-
-                    # Set Values
-                    self.stroke_size_spin.setValue(pen.width())
-
-                    for index, (style, value) in enumerate(self.stroke_style_options.items()):
-                        if pen.style() == value:
-                            self.stroke_style_combo.setCurrentIndex(index)
-
-                    for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
-                        if pen.capStyle() == v:
-                            self.stroke_pencap_combo.setCurrentIndex(i)
+                for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
+                    if pen.capStyle() == v:
+                        self.stroke_pencap_combo.setCurrentIndex(i)
 
             elif isinstance(item, EditableTextBlock):
                 font = item.font()
@@ -1710,6 +1664,10 @@ Date:""")
                 font.setItalic(True if self.italic_btn.isChecked() else False)
                 font.setUnderline(True if self.underline_btn.isChecked() else False)
 
+                item.setTextAlongPathFont(font)
+                item.setTextAlongPathSpacingFromPath(self.text_along_path_tab.spacing_spin.value())
+                item.setTextAlongPathColor(QColor(self.font_color.get()))
+
                 command = AddTextToPathCommand(item, self.text_along_path_tab.text_along_path_check_btn, False, True)
                 self.canvas.addCommand(command)
                 item.update()
@@ -1995,6 +1953,9 @@ Date:""")
     def create_group(self):
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, LeaderLineItem):
                 pass
 
             else:
