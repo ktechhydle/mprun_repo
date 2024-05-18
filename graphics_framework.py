@@ -49,6 +49,9 @@ class CustomGraphicsView(QGraphicsView):
         self.zoomStep = 1
         self.zoomRange = [0, 100]
 
+        # Canvas item
+        self.canvas_item = None
+
     def update_pen(self, pen):
         self.pen = pen
 
@@ -529,8 +532,9 @@ y: {int(p.y())}''')
             self.canvas.update()
 
         else:
-            if self.canvas_item.rect().isEmpty():
-                self.scene().removeItem(self.canvas_item)
+            if self.canvas_item is not None:
+                if self.canvas_item.rect().isEmpty():
+                    self.scene().removeItem(self.canvas_item)
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)
