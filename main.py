@@ -1113,6 +1113,7 @@ Date:""")
         self.text_along_path_tab.text_entry.blockSignals(True)
         self.text_along_path_tab.text_along_path_check_btn.blockSignals(True)
         self.text_along_path_tab.spacing_spin.blockSignals(True)
+        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
@@ -1177,6 +1178,12 @@ Date:""")
                     self.bold_btn.setChecked(True if font.bold() else False)
                     self.italic_btn.setChecked(True if font.italic() else False)
                     self.underline_btn.setChecked(True if font.underline() else False)
+
+                    if item.start_text_from_beginning == True:
+                        self.text_along_path_tab.distrubute_evenly_check_btn.setChecked(False)
+
+                    else:
+                        self.text_along_path_tab.distrubute_evenly_check_btn.setChecked(True)
 
                 else:
                     self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
@@ -1307,6 +1314,7 @@ Date:""")
         self.text_along_path_tab.text_entry.blockSignals(False)
         self.text_along_path_tab.text_along_path_check_btn.blockSignals(False)
         self.text_along_path_tab.spacing_spin.blockSignals(False)
+        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(False)
 
     def stroke_color_chooser(self):
         color_dialog = CustomColorPicker()

@@ -37,7 +37,7 @@ class TextAlongPathPanel(QWidget):
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        self.setFixedHeight(200)
+        self.setFixedHeight(225)
 
         self.createUi()
 
@@ -50,6 +50,9 @@ class TextAlongPathPanel(QWidget):
         self.text_along_path_check_btn = QCheckBox(self)
         self.text_along_path_check_btn.setText('Add Text Along Path')
 
+        self.distrubute_evenly_check_btn = QCheckBox(self)
+        self.distrubute_evenly_check_btn.setText('Distribute Text Evenly')
+
         self.spacing_spin = QSpinBox(self)
         self.spacing_spin.setRange(-1000, 10000)
         self.spacing_spin.setSuffix(' pt')
@@ -60,11 +63,13 @@ class TextAlongPathPanel(QWidget):
         self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(main_label)
         self.layout.addWidget(self.text_along_path_check_btn)
+        self.layout.addWidget(self.distrubute_evenly_check_btn)
         self.layout.addWidget(spacing_label)
         self.layout.addWidget(self.spacing_spin)
         self.layout.addWidget(self.text_entry)
 
         self.text_along_path_check_btn.clicked.connect(self.update_path)
+        self.distrubute_evenly_check_btn.clicked.connect(self.update_path)
         self.spacing_spin.valueChanged.connect(self.update_path)
         self.text_entry.textChanged.connect(self.update_path)
 
@@ -78,6 +83,13 @@ class TextAlongPathPanel(QWidget):
                     self.canvas.addCommand(command2)
                     command3 = PathTextSpacingChangedCommand(item, item.text_along_path_spacing, self.spacing_spin.value())
                     self.canvas.addCommand(command3)
+
+                    if self.distrubute_evenly_check_btn.isChecked():
+                        item.setTextAlongPathFromBeginning(False)
+
+                    else:
+                        item.setTextAlongPathFromBeginning(True)
+
                     item.update()
 
                 else:

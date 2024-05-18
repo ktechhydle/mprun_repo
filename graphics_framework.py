@@ -338,6 +338,7 @@ y: {int(p.y())}''')
 
             # Create path item
             self.pathg_item = LeaderLineItem(self.leader_line)
+            self.pathg_item.setBrush(QBrush(QColor(Qt.transparent)))
 
             add_command2 = AddItemCommand(self.canvas, self.label_text)
             self.canvas.addCommand(add_command2)

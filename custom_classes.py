@@ -169,6 +169,7 @@ class CustomPathItem(QGraphicsPathItem):
         self.text_along_path_font = QFont('Arial', 9)
         self.text_along_path_color = QColor('black')
         self.text_along_path_spacing = 3
+        self.start_text_from_beginning = False
 
     def duplicate(self):
         path = self.path()
@@ -211,6 +212,9 @@ class CustomPathItem(QGraphicsPathItem):
 
         return smooth_path
 
+    def setTextAlongPathFromBeginning(self, a0):
+        self.start_text_from_beginning = a0
+
     def setTextAlongPath(self, text):
         self.text_along_path = text
         self.update()
@@ -233,7 +237,7 @@ class CustomPathItem(QGraphicsPathItem):
         if self.add_text == True:
             path = self.path()
             hw = self.text_along_path
-            drawWidth = self.text_along_path_spacing  # Adjust the width as needed
+            drawWidth = self.text_along_path_spacing
             pen = painter.pen()
             pen.setWidth(drawWidth)
             pen.setColor(self.text_along_path_color)
@@ -241,19 +245,41 @@ class CustomPathItem(QGraphicsPathItem):
             font = self.text_along_path_font
             painter.setFont(font)
 
-            percentIncrease = 1 / (len(hw) + 1)
-            percent = 0
+            if self.start_text_from_beginning == True:
 
-            for i in range(len(hw)):
-                percent += percentIncrease
-                point = path.pointAtPercent(percent)
-                angle = path.angleAtPercent(percent)
+                font_metrics = QFontMetricsF(font)
+                total_length = path.length()
 
-                painter.save()
-                painter.translate(point)
-                painter.rotate(-angle)
-                painter.drawText(QPointF(0, -pen.width()), hw[i])
-                painter.restore()
+                current_length = 0
+
+                for char in hw:
+                    char_width = font_metrics.width(char)
+                    percent = current_length / total_length
+                    point = path.pointAtPercent(percent)
+                    angle = path.angleAtPercent(percent)
+
+                    painter.save()
+                    painter.translate(point)
+                    painter.rotate(-angle)
+                    painter.drawText(QPointF(0, -pen.width()), char)
+                    painter.restore()
+
+                    current_length += char_width
+
+            else:
+                percentIncrease = 1 / (len(hw) + 1)
+                percent = 0
+
+                for i in range(len(hw)):
+                    percent += percentIncrease
+                    point = path.pointAtPercent(percent)
+                    angle = path.angleAtPercent(percent)
+
+                    painter.save()
+                    painter.translate(point)
+                    painter.rotate(-angle)
+                    painter.drawText(QPointF(0, -pen.width()), hw[i])
+                    painter.restore()
 
 class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):
