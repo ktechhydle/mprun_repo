@@ -479,6 +479,13 @@ class CanvasTextItem(QGraphicsSimpleTextItem):
         self.setFlag(QGraphicsItem.ItemIgnoresTransformations)
         self.setZValue(10000)
 
+    def paint(self, painter, option, widget=None):
+        painter.setBrush(QBrush(QColor('#dcdcdc')))
+        painter.setPen(QPen(QColor('black')))
+        painter.drawRect(self.boundingRect())
+
+        super().paint(painter, option, widget)
+
 class CenterPointItem(QGraphicsEllipseItem):
     def __init__(self, *coords):
         super().__init__(*coords)
