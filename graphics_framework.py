@@ -528,6 +528,10 @@ y: {int(p.y())}''')
 
             self.canvas.update()
 
+        else:
+            if self.canvas_item.rect().isEmpty():
+                self.scene().removeItem(self.canvas_item)
+
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)
 
@@ -603,6 +607,12 @@ class CustomGraphicsScene(QGraphicsScene):
         for item in self.selectedItems():
             bounding_rect = bounding_rect.united(item.sceneBoundingRect())
         return bounding_rect
+
+    def update(self, rect=None):
+        super().update()
+
+        for item in self.items():
+            item.update()
 
 
 

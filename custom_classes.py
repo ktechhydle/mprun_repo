@@ -483,6 +483,10 @@ class CanvasItem(QGraphicsRectItem):
     def __init__(self, *coords):
         super().__init__(*coords)
 
+        effect = QGraphicsDropShadowEffect()
+        effect.setBlurRadius(5)
+        self.setGraphicsEffect(effect)
+
         brush = QBrush(QColor('white'))
         pen = QPen(QColor('white'), 2, Qt.SolidLine)
         pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)

@@ -1597,28 +1597,30 @@ Date:""")
     def use_drop_shadow(self):
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
-            item.setGraphicsEffect(None)
-            og_effect = item.graphicsEffect()
-
             if isinstance(item, CanvasItem):
                 pass
 
             else:
-                command = GraphicsEffectCommand(item, 10, og_effect, 'dropShadow')
-                self.canvas.addCommand(command)
+                item.setGraphicsEffect(None)
+                og_effect = item.graphicsEffect()
+
+                if True:
+                    command = GraphicsEffectCommand(item, 10, og_effect, 'dropShadow')
+                    self.canvas.addCommand(command)
 
     def use_blur(self):
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
-            item.setGraphicsEffect(None)
-            og_effect = item.graphicsEffect()
-
             if isinstance(item, CanvasItem):
                 pass
 
             else:
-                command = GraphicsEffectCommand(item, 10, og_effect, 'blur')
-                self.canvas.addCommand(command)
+                item.setGraphicsEffect(None)
+                og_effect = item.graphicsEffect()
+
+                if True:
+                    command = GraphicsEffectCommand(item, 10, og_effect, 'blur')
+                    self.canvas.addCommand(command)
 
     def use_add_canvas(self):
         for item in self.canvas.items():
