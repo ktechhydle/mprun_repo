@@ -186,6 +186,14 @@ class CustomPathItem(QGraphicsPathItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Path')
 
+        if self.add_text == True:
+            item.add_text = True
+            item.setTextAlongPathFromBeginning(True if self.start_text_from_beginning else False)
+            item.setTextAlongPath(self.text_along_path)
+            item.setTextAlongPathSpacingFromPath(self.text_along_path_spacing)
+            item.setTextAlongPathFont(self.text_along_path_font)
+            item.setTextAlongPathColor(self.text_along_path_color)
+
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
 
@@ -372,9 +380,13 @@ class EditableTextBlock(QGraphicsTextItem):
     def focusOutEvent(self, event):
         new_text = self.toPlainText()
         if self.old_text != new_text:
-            edit_command = EditTextCommand(self, self.old_text, new_text)
-            self.scene().addCommand(edit_command)
-            self.old_text = new_text
+            if new_text == '':
+                self.scene().removeItem(self)
+
+            else:
+                edit_command = EditTextCommand(self, self.old_text, new_text)
+                self.scene().addCommand(edit_command)
+                self.old_text = new_text
 
         cursor = self.textCursor()
         cursor.clearSelection()
@@ -403,32 +415,6 @@ class EditableTextBlock(QGraphicsTextItem):
         self.scene().addCommand(add_command)
 
         return item
-
-    def insert_table(self, rows, cols):
-        cursor = self.textCursor()
-
-        # Set the format for the table
-        tableFormat = QTextTableFormat()
-        tableFormat.setAlignment(Qt.AlignCenter)  # Set alignment of the table
-        tableFormat.setBorderStyle(QTextTableFormat.BorderStyle_Solid)  # Set border style
-        tableFormat.setBorderBrush(Qt.gray)  # Set border color
-        tableFormat.setWidth(275)  # Set width of the table
-
-        # Apply the table format to the current cursor position
-        cursor.insertTable(rows, cols, tableFormat)
-
-        # Move cursor to the beginning of the table
-        cursor.movePosition(QTextCursor.Start, QTextCursor.MoveAnchor)
-        cursor.movePosition(QTextCursor.Down, QTextCursor.MoveAnchor)
-
-        # Insert header
-        cursor.insertText("Trick Name")
-        cursor.movePosition(QTextCursor.NextCell)
-        cursor.insertText("Feature")
-        cursor.movePosition(QTextCursor.NextCell)
-        cursor.insertText("Score")
-
-        self.setTextCursor(cursor)
 
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path):

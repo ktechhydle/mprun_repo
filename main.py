@@ -110,10 +110,6 @@ class MPRUN(QMainWindow):
         text_action.triggered.connect(self.use_text)
         text_action.triggered.connect(self.update_font)
 
-        trick_table_action = QAction('Trick Table', self)
-        trick_table_action.setShortcut(QKeySequence('Ctrl+Shift+T'))
-        trick_table_action.triggered.connect(self.use_trick_table)
-
         smooth_action = QAction('Smooth Path', self)
         smooth_action.triggered.connect(self.use_smooth_path)
 
@@ -219,7 +215,6 @@ class MPRUN(QMainWindow):
         self.tool_menu.addSeparator()
         self.tool_menu.addAction(linelabel_action)
         self.tool_menu.addAction(text_action)
-        self.tool_menu.addAction(trick_table_action)
         self.tool_menu.addSeparator()
         self.tool_menu.addAction(smooth_action)
         self.tool_menu.addAction(close_subpath_action)
@@ -1559,6 +1554,7 @@ Date:""")
                     pass
 
                 else:
+                    item.setTransformOriginPoint(item.boundingRect().center())
                     command = TransformScaleCommand(item, x_value, y_value, item.transform().m11(), item.transform().m22())
                     self.canvas.addCommand(command)
 
@@ -1729,15 +1725,6 @@ Date:""")
 
                 else:
                     pass
-
-    def use_trick_table(self):
-        item = EditableTextBlock(' ')
-        item.insert_table(11, 3)
-        item.setToolTip('Trick Table')
-
-        command = AddItemCommand(self.canvas, item)
-        self.canvas.addCommand(command)
-        self.create_item_attributes(item)
 
     def use_name_item(self):
         for item in self.canvas.selectedItems():
