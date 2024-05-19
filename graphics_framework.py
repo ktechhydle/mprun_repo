@@ -496,40 +496,42 @@ y: {int(p.y())}''')
 
     def on_add_canvas_drag(self, event):
         if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
-            if not hasattr(self, 'canvas_item'):
-                self.clicked_canvas_point = self.mapToScene(event.pos())
-                self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
-                                              0)  # Initialize with zero width and height
-                self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
+            if self.canvas_item is not None:
+                if not hasattr(self, 'canvas_item'):
+                    self.clicked_canvas_point = self.mapToScene(event.pos())
+                    self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
+                                                  0)  # Initialize with zero width and height
+                    self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
 
-            current_pos = self.mapToScene(event.pos())
-            self.canvas_item.setRect(0,
-                                     0,
-                                     current_pos.x() - self.clicked_canvas_point.x(),
-                                     current_pos.y() - self.clicked_canvas_point.y())
+                current_pos = self.mapToScene(event.pos())
+                self.canvas_item.setRect(0,
+                                         0,
+                                         current_pos.x() - self.clicked_canvas_point.x(),
+                                         current_pos.y() - self.clicked_canvas_point.y())
 
     def on_add_canvas_end(self, event):
         if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
-            self.setDragMode(QGraphicsView.RubberBandDrag)
-            current_pos = self.mapToScene(event.pos())
-            self.canvas_item.setRect(0, 0,
-                                     current_pos.x() - self.clicked_canvas_point.x(),
-                                     current_pos.y() - self.clicked_canvas_point.y())
+            if self.canvas_item is not None:
+                self.setDragMode(QGraphicsView.RubberBandDrag)
+                current_pos = self.mapToScene(event.pos())
+                self.canvas_item.setRect(0, 0,
+                                         current_pos.x() - self.clicked_canvas_point.x(),
+                                         current_pos.y() - self.clicked_canvas_point.y())
 
-            command = AddItemCommand(self.scene(), self.canvas_item)  # Assuming AddItemCommand is defined elsewhere
-            self.canvas.addCommand(command)
+                command = AddItemCommand(self.scene(), self.canvas_item)  # Assuming AddItemCommand is defined elsewhere
+                self.canvas.addCommand(command)
 
-            self.canvas_item.setPos(self.clicked_canvas_point)
-            self.canvas_item_text.setPos(self.canvas_item.boundingRect().x(), self.canvas_item.boundingRect().y())
-            self.canvas_item.setToolTip('Canvas')
-            self.canvas_item.setZValue(-1)
+                self.canvas_item.setPos(self.clicked_canvas_point)
+                self.canvas_item_text.setPos(self.canvas_item.boundingRect().x(), self.canvas_item.boundingRect().y())
+                self.canvas_item.setToolTip('Canvas')
+                self.canvas_item.setZValue(-1)
 
-            if self.canvas_item.rect().isEmpty():
-                self.scene().removeItem(self.canvas_item)
+                if self.canvas_item.rect().isEmpty():
+                    self.scene().removeItem(self.canvas_item)
 
-            self.clicked_canvas_point = None
+                self.clicked_canvas_point = None
 
-            self.canvas.update()
+                self.canvas.update()
 
         else:
             if self.canvas_item is not None:
