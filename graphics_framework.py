@@ -7,7 +7,7 @@ from undo_commands import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, option_btn, button4, erase_btn, add_canvas_btn, select_btn, scale_btn):
+    def __init__(self, canvas, button, button2, smooth_btn, option_btn, button4, erase_btn, add_canvas_btn, select_btn, scale_btn):
         super().__init__()
         self.points = []
 
@@ -27,6 +27,7 @@ class CustomGraphicsView(QGraphicsView):
         self.button = button
         self.button2 = button2
         self.button3 = option_btn
+        self.pen_btn = smooth_btn
         self.text_btn = button4
         self.erase_btn = erase_btn
         self.add_canvas_btn = add_canvas_btn
@@ -41,6 +42,9 @@ class CustomGraphicsView(QGraphicsView):
         self.font = None
         self.font = None
         self.layer_height = None
+        self.path = None
+        self.temp_path_item = None
+        self.last_point = None
 
         # Add methods for zooming
         self.zoomInFactor = 1.25
@@ -75,6 +79,18 @@ class CustomGraphicsView(QGraphicsView):
                     item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
             self.on_path_draw_start(event)
+
+        elif self.pen_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    self.scene().clearSelection()
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+            self.on_smooth_path_draw_start(event)
 
         # Check if the Line and Label tool is turned on
         elif self.button2.isChecked():
@@ -131,6 +147,18 @@ y: {int(p.y())}''')
 
             self.on_path_draw(event)
 
+        elif self.pen_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    self.scene().clearSelection()
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+            self.on_smooth_path_draw_draw(event)
+
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
             for item in self.canvas.items():
@@ -171,6 +199,18 @@ y: {int(p.y())}''')
                     item.setFlag(QGraphicsItem.ItemIsMovable)
 
             self.on_path_draw_end(event)
+
+        elif self.pen_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    self.scene().clearSelection()
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+            self.on_smooth_path_draw_end(event)
 
         # Check if the line and label tool is enabled
         elif self.button2.isChecked():
@@ -315,14 +355,95 @@ y: {int(p.y())}''')
             path_item.setFlag(QGraphicsItem.ItemIsSelectable)
             path_item.setFlag(QGraphicsItem.ItemIsMovable)
 
-            # Set Tooltop
+            # Set Tooltip
             path_item.setToolTip('Path')
 
-            # Check if item is selected or moved so we can turn tool off
-            if self.canvas.selectedItems():
-                self.button.setChecked(False)
-                self.setDragMode(QGraphicsView.RubberBandDrag)
-                self.select_btn.setChecked(True)
+    def on_smooth_path_draw_start(self, event):
+        # Check the button being pressed
+        if event.button() == Qt.LeftButton:
+            # Create a new path
+            self.path = QPainterPath()
+            self.path.setFillRule(Qt.WindingFill)
+            self.path.moveTo(self.mapToScene(event.pos()))
+            self.last_point = self.mapToScene(event.pos())
+
+            # Set drag mode
+            self.setDragMode(QGraphicsView.NoDrag)
+
+            super().mousePressEvent(event)
+
+    def on_smooth_path_draw_draw(self, event):
+        if self.path is not None:
+            # Check the buttons
+            if event.buttons() == Qt.LeftButton:
+                self.path.lineTo(self.mapToScene(event.pos()))
+                self.last_point = self.mapToScene(event.pos())
+
+                # Remove temporary path if it exists
+                if self.temp_path_item is not None:
+                    self.canvas.removeItem(self.temp_path_item)
+
+                # Load temporary path as QGraphicsItem to view it while drawing
+                self.path.setFillRule(Qt.WindingFill)
+                self.temp_path_item = CustomPathItem(self.path)
+                self.temp_path_item.path().setFillRule(Qt.WindingFill)
+                self.temp_path_item.setPen(self.pen)
+                self.temp_path_item.setBrush(self.stroke_fill)
+                self.temp_path_item.setZValue(0)
+                self.canvas.addItem(self.temp_path_item)
+
+                if self.temp_path_item.path().elementCount() > 4:
+                    self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path()))
+
+                self.canvas.update()
+
+                super().mouseMoveEvent(event)
+
+    def on_smooth_path_draw_end(self, event):
+        if self.path is not None:
+            if self.path.isEmpty():
+                return
+
+            else:
+                # Check the buttons
+                if event.button() == Qt.LeftButton:
+                    self.path.lineTo(self.mapToScene(event.pos()))
+                    self.last_point = self.mapToScene(event.pos())
+
+                    # Check if there is a temporary path (if so, remove it now)
+                    if self.temp_path_item is not None:
+                        self.canvas.removeItem(self.temp_path_item)
+
+                    # If stroke fill button is checked, close the subpath
+                    if self.button3.isChecked():
+                        self.path.closeSubpath()
+
+                    self.canvas.update()
+
+                    # Load main path as QGraphicsItem
+                    path_item = CustomPathItem(self.path)
+                    path_item.path().setFillRule(Qt.WindingFill)
+                    path_item.setPen(self.pen)
+                    path_item.setZValue(0)
+                    path_item.setBrush(self.stroke_fill)
+                    path_item.setPath(path_item.smooth_path(path_item.path()))
+
+                    # Add item
+                    add_command = AddItemCommand(self.canvas, path_item)
+                    self.canvas.addCommand(add_command)
+
+                    # Set Flags
+                    path_item.setFlag(QGraphicsItem.ItemIsSelectable)
+                    path_item.setFlag(QGraphicsItem.ItemIsMovable)
+
+                    # Set Tooltop
+                    path_item.setToolTip('Path')
+
+                    self.path = None
+                    self.temp_path_item = None
+                    self.last_point = None
+
+                    super().mouseReleaseEvent(event)
 
     def on_label_start(self, event):
         # Check the button being pressed
@@ -393,11 +514,6 @@ y: {int(p.y())}''')
 
             # Set Tooltips for elements
             self.pathg_item.setToolTip('Leader Line')
-
-            # Check if item is selected or moved so we can turn tool off
-            if self.canvas.selectedItems():
-                self.setDragMode(QGraphicsView.RubberBandDrag)
-                self.select_btn.setChecked(True)
 
     def on_add_text(self, event):
         if event.button() == Qt.LeftButton:

@@ -14,7 +14,7 @@ from custom_widgets import *
 from custom_tab_widget import *
 from course_elements import *
 from custom_dialogs import *
-from version_dialog import *
+from app_screens import *
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -74,7 +74,7 @@ class MPRUN(QMainWindow):
 
         # Create MPRUN actions
         about_action = QAction('About', self)
-        about_action.triggered.connect(lambda: webbrowser.open('https://github.com/ktechhydle/mprun_repo/blob/main/README.md#introducing-mprun-the-ultimate-snowboard-and-ski-competion-run-planning-software'))
+        about_action.triggered.connect(self.show_about)
 
         show_version_action = QAction('Version', self)
         show_version_action.triggered.connect(self.show_version)
@@ -693,6 +693,15 @@ class MPRUN(QMainWindow):
         self.path_btn.triggered.connect(self.update_pen)
         self.path_btn.triggered.connect(self.use_path)
 
+        # Pen draw button
+        self.pen_btn = QAction(QIcon('logos and icons/Tool Icons/pen_tool_icon.png'), '', self)
+        self.pen_btn.setCheckable(True)
+        self.pen_btn.setToolTip('''Pen Draw Tool:
+        Key-L''')
+        self.pen_btn.setShortcut(QKeySequence('Ctrl+L'))
+        self.pen_btn.triggered.connect(self.update_pen)
+        self.pen_btn.triggered.connect(self.use_pen_tool)
+
         # Erase Button
         self.erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
         self.erase_btn.setToolTip('''Erase Tool:
@@ -742,13 +751,6 @@ class MPRUN(QMainWindow):
         unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
         unhide_btn.triggered.connect(self.use_unhide_all)
 
-        # Smooth Button
-        smooth_btn = QAction(QIcon('logos and icons/Tool Icons/smooth_path_icon.png'), '', self)
-        smooth_btn.setToolTip('''Smooth Path Tool: 
-        Key-S''')
-        smooth_btn.setShortcut(QKeySequence('S'))
-        smooth_btn.triggered.connect(self.use_smooth_path)
-
         # Add Canvas Button
         self.add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/add_canvas_icon.png'), '', self)
         self.add_canvas_btn.setToolTip('''Add Canvas Tool: 
@@ -770,13 +772,13 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(pan_btn)
         self.toolbar.addAction(self.path_btn)
+        self.toolbar.addAction(self.pen_btn)
         self.toolbar.addAction(self.erase_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addAction(self.scale_btn)
         self.toolbar.addAction(hide_btn)
         self.toolbar.addAction(unhide_btn)
-        self.toolbar.addAction(smooth_btn)
         self.toolbar.addAction(self.add_canvas_btn)
         self.toolbar.addAction(insert_btn)
 
@@ -784,13 +786,13 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.select_btn)
         self.action_group.addAction(pan_btn)
         self.action_group.addAction(self.path_btn)
+        self.action_group.addAction(self.pen_btn)
         self.action_group.addAction(self.erase_btn)
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
         self.action_group.addAction(self.scale_btn)
         self.action_group.addAction(hide_btn)
         self.action_group.addAction(unhide_btn)
-        self.action_group.addAction(smooth_btn)
         self.action_group.addAction(self.add_canvas_btn)
 
     def create_toolbar3(self):
@@ -827,6 +829,7 @@ class MPRUN(QMainWindow):
         self.canvas_view = CustomGraphicsView(self.canvas,
                                               self.path_btn,
                                               self.label_btn,
+                                              self.pen_btn,
                                               self.close_subpath_check_btn,
                                               self.add_text_btn,
                                               self.erase_btn,
@@ -1354,6 +1357,9 @@ Date:""")
 
     def use_path(self):
         self.path_btn.setChecked(True)
+
+    def use_pen_tool(self):
+        self.pen_btn.setChecked(True)
 
     def use_erase(self):
         index1 = self.stroke_style_combo.currentIndex()
@@ -2110,8 +2116,12 @@ Date:""")
                 self.gsnap_grid_size = grid_size
 
     def show_version(self):
-        app = VersionWin()
-        app.mainloop()
+        self.w = VersionWin()
+        self.w.show()
+
+    def show_about(self):
+        self.w = AboutWin()
+        self.w.show()
 
     def display_choosen_tab(self, tab_name):
         for i in range(self.tab_view.count()):
