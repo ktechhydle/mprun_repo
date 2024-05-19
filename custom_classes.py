@@ -163,6 +163,8 @@ class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)
 
+        self.path().setFillRule(Qt.FillRule.WindingFill)
+
         self.text_items = []
         self.add_text = False
         self.text_along_path = ''

@@ -257,6 +257,7 @@ y: {int(p.y())}''')
         if event.button() == Qt.LeftButton:
             # Create a new path
             self.path = QPainterPath()
+            self.path.setFillRule(Qt.WindingFill)
             self.path.moveTo(self.mapToScene(event.pos()))
             self.last_point = self.mapToScene(event.pos())
 
