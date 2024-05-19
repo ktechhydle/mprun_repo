@@ -1865,6 +1865,14 @@ Date:""")
             if not file_path.endswith(selected_extension):
                 file_path += selected_extension
 
+            self.canvas.clearSelection()
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    for child in item.childItems():
+                        child.setVisible(False)
+                        self.select_btn.setChecked(True)
+                        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+
             if selected_extension == '.svg':
                 try:
                     # Get the bounding rect
