@@ -694,7 +694,7 @@ class MPRUN(QMainWindow):
         self.path_btn.triggered.connect(self.use_path)
 
         # Pen draw button
-        self.pen_btn = QAction(QIcon('logos and icons/Tool Icons/pen_tool_icon.png'), '', self)
+        self.pen_btn = QAction(QIcon('logos and icons/Tool Icons/pen_draw_icon.png'), '', self)
         self.pen_btn.setCheckable(True)
         self.pen_btn.setToolTip('''Pen Draw Tool:
         Key-L''')
@@ -1349,6 +1349,7 @@ Date:""")
 
     def use_pan(self):
         self.pan_btn.setChecked(True)
+        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_path(self):
         self.path_btn.setChecked(True)
