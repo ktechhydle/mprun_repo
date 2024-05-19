@@ -7,7 +7,17 @@ from undo_commands import *
 import time
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, button, button2, smooth_btn, option_btn, button4, erase_btn, add_canvas_btn, select_btn, scale_btn):
+    def __init__(self, canvas,
+                 button,
+                 button2,
+                 smooth_btn,
+                 option_btn,
+                 button4,
+                 erase_btn,
+                 add_canvas_btn,
+                 select_btn,
+                 scale_btn,
+                 pan_btn):
         super().__init__()
         self.points = []
 
@@ -33,6 +43,7 @@ class CustomGraphicsView(QGraphicsView):
         self.add_canvas_btn = add_canvas_btn
         self.select_btn = select_btn
         self.scale_btn = scale_btn
+        self.pan_btn = pan_btn
 
         # Items
         self.canvas = canvas
@@ -122,6 +133,14 @@ class CustomGraphicsView(QGraphicsView):
 
             self.on_add_canvas_start(event)
 
+        elif self.pan_btn.isChecked():
+            for item in self.canvas.items():
+                self.scene().clearSelection()
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+            self.on_pan_start(event)
+
         self.on_add_canvas(event)
 
         super().mousePressEvent(event)
@@ -185,6 +204,14 @@ y: {int(p.y())}''')
 
             self.on_add_canvas_drag(event)
 
+        elif self.pan_btn.isChecked():
+            for item in self.canvas.items():
+                self.scene().clearSelection()
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+        self.on_add_canvas(event)
+
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -245,6 +272,14 @@ y: {int(p.y())}''')
                     item.setFlag(QGraphicsItem.ItemIsMovable)
 
             self.on_add_canvas_end(event)
+
+        elif self.pan_btn.isChecked():
+            for item in self.canvas.items():
+                self.scene().clearSelection()
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+            self.on_pan_end(event)
 
         super().mouseReleaseEvent(event)
         
@@ -654,6 +689,22 @@ y: {int(p.y())}''')
             if self.canvas_item is not None:
                 if self.canvas_item.rect().isEmpty():
                     self.scene().removeItem(self.canvas_item)
+
+    def on_pan_start(self, event):
+        releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
+                                   Qt.LeftButton, Qt.NoButton, event.modifiers())
+        super().mouseReleaseEvent(releaseEvent)
+        self.setDragMode(QGraphicsView.ScrollHandDrag)
+        fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
+                                Qt.LeftButton, event.buttons() | Qt.LeftButton, event.modifiers())
+        super().mousePressEvent(fakeEvent)
+
+    def on_pan_end(self, event):
+        fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
+                                Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
+        super().mouseReleaseEvent(fakeEvent)
+        self.setDragMode(QGraphicsView.NoDrag)
+
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)

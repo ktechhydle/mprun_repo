@@ -677,12 +677,12 @@ class MPRUN(QMainWindow):
         self.select_btn.triggered.connect(self.use_select)
 
         # Pan Button
-        pan_btn = QAction(QIcon('logos and icons/Tool Icons/pan_icon.png'), '', self)
-        pan_btn.setToolTip('''Pan Tool:
+        self.pan_btn = QAction(QIcon('logos and icons/Tool Icons/pan_icon.png'), '', self)
+        self.pan_btn.setToolTip('''Pan Tool:
         Key-P''')
-        pan_btn.setCheckable(True)
-        pan_btn.setShortcut(QKeySequence("P"))
-        pan_btn.triggered.connect(self.use_pan)
+        self.pan_btn.setCheckable(True)
+        self.pan_btn.setShortcut(QKeySequence("P"))
+        self.pan_btn.triggered.connect(self.use_pan)
 
         # Path draw button
         self.path_btn = QAction(QIcon('logos and icons/Tool Icons/pen_tool_icon.png'), '', self)
@@ -770,7 +770,7 @@ class MPRUN(QMainWindow):
 
         # Add toolbar actions
         self.toolbar.addAction(self.select_btn)
-        self.toolbar.addAction(pan_btn)
+        self.toolbar.addAction(self.pan_btn)
         self.toolbar.addAction(self.path_btn)
         self.toolbar.addAction(self.pen_btn)
         self.toolbar.addAction(self.erase_btn)
@@ -784,7 +784,7 @@ class MPRUN(QMainWindow):
 
         # Action Group
         self.action_group.addAction(self.select_btn)
-        self.action_group.addAction(pan_btn)
+        self.action_group.addAction(self.pan_btn)
         self.action_group.addAction(self.path_btn)
         self.action_group.addAction(self.pen_btn)
         self.action_group.addAction(self.erase_btn)
@@ -835,7 +835,8 @@ class MPRUN(QMainWindow):
                                               self.erase_btn,
                                               self.add_canvas_btn,
                                               self.select_btn,
-                                              self.scale_btn)
+                                              self.scale_btn,
+                                              self.pan_btn)
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
         index1 = self.stroke_style_combo.currentIndex()
@@ -947,12 +948,6 @@ Date:""")
 
         elif event.key() == QKeySequence('Escape'):
             self.canvas.clearSelection()
-
-            for action in self.action_group.actions():
-                action.setChecked(False)
-
-            self.select_btn.setChecked(True)
-            self.use_select()
 
         elif event.key() == QKeySequence('Z'):
             self.gsnap_check_btn.setChecked(False) if self.gsnap_check_btn.isChecked() else self.gsnap_check_btn.setChecked(True)
@@ -1353,7 +1348,7 @@ Date:""")
                 item.setSelected(True)
 
     def use_pan(self):
-        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.pan_btn.setChecked(True)
 
     def use_path(self):
         self.path_btn.setChecked(True)

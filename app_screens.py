@@ -3,7 +3,6 @@ from PIL import Image
 from PyQt5 import QtWidgets, QtGui, QtCore
 import sys
 
-
 class AboutWin(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()

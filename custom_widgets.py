@@ -40,7 +40,7 @@ class CanvasEditorPanel(QWidget):
 
     def create_ui(self):
         canvas_label = QLabel('Canvas')
-        canvas_label.setStyleSheet('font-size: 20px;')
+        canvas_label.setStyleSheet('font-size: 12px;')
         canvas_x_size_label = QLabel('W:')
         canvas_y_size_label = QLabel('H:')
         canvas_preset_label = QLabel('Preset:')
