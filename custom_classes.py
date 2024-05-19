@@ -515,4 +515,12 @@ class CenterPointItem(QGraphicsEllipseItem):
     def mousePressEvent(self, event):
         self.scene().removeItem(self)
 
+class ControlPoint(QGraphicsEllipseItem):
+    def __init__(self, x, y, parent=None):
+        super().__init__(-5, -5, 10, 10, parent)
+        self.setBrush(QBrush(Qt.blue))
+        self.setPen(QPen(Qt.black))
+        self.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemSendsGeometryChanges)
+        self.setPos(x, y)
+
 
