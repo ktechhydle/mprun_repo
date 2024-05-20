@@ -18,7 +18,7 @@ from app_screens import *
 
 class MPRUN(QMainWindow):
     def __init__(self):
-        super().__init__()
+        super(MPRUN, self).__init__()
         # Creating the main window
         self.setWindowTitle('MPRUN - Workspace')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
@@ -54,6 +54,8 @@ class MPRUN(QMainWindow):
         self.create_toolbar3()
         self.create_view()
         self.create_default_objects()
+
+        self.show()
 
     def create_initial_canvas(self):
         # Canvas, canvas color
@@ -98,9 +100,9 @@ class MPRUN(QMainWindow):
         path_action.triggered.connect(self.use_path)
         path_action.triggered.connect(self.update_pen)
 
-        erase_action = QAction('Erase', self)
-        erase_action.triggered.connect(self.use_erase)
-        erase_action.triggered.connect(self.update_pen)
+        pen_action = QAction('Pen', self)
+        pen_action.triggered.connect(self.use_pen_tool)
+        pen_action.triggered.connect(self.update_pen)
 
         linelabel_action = QAction('Line and Label', self)
         linelabel_action.triggered.connect(self.use_label)
@@ -211,7 +213,7 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(close_action)
 
         self.tool_menu.addAction(path_action)
-        self.tool_menu.addAction(erase_action)
+        self.tool_menu.addAction(pen_action)
         self.tool_menu.addSeparator()
         self.tool_menu.addAction(linelabel_action)
         self.tool_menu.addAction(text_action)
@@ -702,15 +704,6 @@ class MPRUN(QMainWindow):
         self.pen_btn.triggered.connect(self.update_pen)
         self.pen_btn.triggered.connect(self.use_pen_tool)
 
-        # Erase Button
-        self.erase_btn = QAction(QIcon('logos and icons/Tool Icons/erase_icon.png'), '', self)
-        self.erase_btn.setToolTip('''Erase Tool:
-                        Key-E''')
-        self.erase_btn.setCheckable(True)
-        self.erase_btn.setShortcut(QKeySequence('E'))
-        self.erase_btn.triggered.connect(self.update_pen)
-        self.erase_btn.triggered.connect(self.use_erase)
-
         # Label draw button
         self.label_btn = QAction(QIcon('logos and icons/Tool Icons/label_icon.png'), "", self)
         self.label_btn.setCheckable(True)
@@ -773,7 +766,6 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.pan_btn)
         self.toolbar.addAction(self.path_btn)
         self.toolbar.addAction(self.pen_btn)
-        self.toolbar.addAction(self.erase_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addAction(self.scale_btn)
@@ -787,7 +779,6 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.pan_btn)
         self.action_group.addAction(self.path_btn)
         self.action_group.addAction(self.pen_btn)
-        self.action_group.addAction(self.erase_btn)
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
         self.action_group.addAction(self.scale_btn)
@@ -832,7 +823,6 @@ class MPRUN(QMainWindow):
                                               self.pen_btn,
                                               self.close_subpath_check_btn,
                                               self.add_text_btn,
-                                              self.erase_btn,
                                               self.add_canvas_btn,
                                               self.select_btn,
                                               self.scale_btn,
@@ -955,7 +945,11 @@ Date:""")
         super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        # Display a confirmation dialog
+        print('quit')
+
+        event.accept()
+
+        '''# Display a confirmation dialog
         confirmation_dialog = QMessageBox(self)
         confirmation_dialog.setWindowTitle('Close Project')
         confirmation_dialog.setIcon(QMessageBox.Warning)
@@ -996,7 +990,7 @@ Date:""")
             except Exception:
                 pass
 
-            event.accept()
+            event.accept()'''
 
     def update_pen(self):
         index1 = self.stroke_style_combo.currentIndex()
@@ -1343,6 +1337,7 @@ Date:""")
 
     def use_select(self):
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+        self.canvas_view.enable_item_flags()
 
     def use_select_all(self):
         for item in self.canvas.items():
@@ -1354,26 +1349,11 @@ Date:""")
 
     def use_path(self):
         self.path_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
 
     def use_pen_tool(self):
         self.pen_btn.setChecked(True)
-
-    def use_erase(self):
-        index1 = self.stroke_style_combo.currentIndex()
-        data1 = self.stroke_style_combo.itemData(index1)
-        index2 = self.stroke_pencap_combo.currentIndex()
-        data2 = self.stroke_pencap_combo.itemData(index2)
-
-        self.fill_color.set(Qt.transparent)
-        self.outline_color.set('white')
-
-        self.canvas_view.update_pen(QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2))
-        self.canvas_view.update_stroke_fill_color(QBrush(QColor(self.fill_color.get())))
-
-        self.outline_color_btn.setStyleSheet(f'background-color: white;')
-        self.fill_color_btn.setStyleSheet('background-color: transparent;')
-
-        self.erase_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
 
     def use_label(self):
         self.label_btn.setChecked(True)
@@ -1412,12 +1392,22 @@ Date:""")
 
     def use_set_layer(self):
         for items in self.canvas.selectedItems():
-            items.setZValue(self.layer_spin.value())
+            if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, CanvasTextItem):
+                pass
+
+            else:
+                items.setZValue(self.layer_spin.value())
 
     def use_hide_layer(self):
         for item in self.canvas.items():
             if int(item.zValue()) == self.layer_spin.value():
-                if isinstance(item, CanvasTextItem):
+                if isinstance(item, CanvasItem):
+                    pass
+
+                elif isinstance(item, CanvasTextItem):
                     pass
 
                 else:
@@ -1426,7 +1416,10 @@ Date:""")
     def use_unhide_layer(self):
         for item in self.canvas.items():
             if int(item.zValue()) == self.layer_spin.value():
-                if isinstance(item, CanvasTextItem):
+                if isinstance(item, CanvasItem):
+                    pass
+
+                elif isinstance(item, CanvasTextItem):
                     pass
 
                 else:
@@ -1434,8 +1427,15 @@ Date:""")
 
     def use_raise_layer(self):
         for item in self.canvas.selectedItems():
-            item.setZValue(item.zValue() + 1.0)
-            self.update_appearance_ui()
+            if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, CanvasTextItem):
+                pass
+
+            else:
+                item.setZValue(item.zValue() + 1.0)
+                self.update_appearance_ui()
 
     def use_lower_layer(self):
         for item in self.canvas.selectedItems():
@@ -1443,15 +1443,29 @@ Date:""")
                 QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
 
             else:
-                item.setZValue(item.zValue() - 1.0)
-                self.update_appearance_ui()
+                if isinstance(item, CanvasItem):
+                    pass
+
+                elif isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.setZValue(item.zValue() - 1.0)
+                    self.update_appearance_ui()
 
     def use_bring_to_front(self):
         selected_items = self.canvas.selectedItems()
         if selected_items:
             max_z = max([item.zValue() for item in self.canvas.items()])
             for item in selected_items:
-                item.setZValue(max_z + 1)
+                if isinstance(item, CanvasItem):
+                    pass
+
+                elif isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.setZValue(max_z + 1)
 
     def use_vectorize(self):
         for item in self.canvas.selectedItems():
@@ -2162,5 +2176,4 @@ if __name__ == '__main__':
         app.setStyleSheet(fh.read())
 
     window = MPRUN()
-    window.show()
-    app.exec_()
+    sys.exit(app.exec_())

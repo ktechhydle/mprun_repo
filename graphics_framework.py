@@ -13,7 +13,6 @@ class CustomGraphicsView(QGraphicsView):
                  smooth_btn,
                  option_btn,
                  button4,
-                 erase_btn,
                  add_canvas_btn,
                  select_btn,
                  scale_btn,
@@ -39,7 +38,6 @@ class CustomGraphicsView(QGraphicsView):
         self.button3 = option_btn
         self.pen_btn = smooth_btn
         self.text_btn = button4
-        self.erase_btn = erase_btn
         self.add_canvas_btn = add_canvas_btn
         self.select_btn = select_btn
         self.scale_btn = scale_btn
@@ -86,8 +84,6 @@ class CustomGraphicsView(QGraphicsView):
                 pass
 
             else:
-                self.canvas.clearSelection()
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
                 item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
     def disable_item_movement(self):
@@ -232,11 +228,13 @@ class CustomGraphicsView(QGraphicsView):
             if url.toLocalFile().endswith('.svg'):
                 item = CustomSvgItem(url.toLocalFile())
                 item.store_filename(url.toLocalFile())
+                item.setToolTip('Imported SVG')
 
             else:
                 pixmap = QPixmap(url.toLocalFile())
                 item = CustomPixmapItem(pixmap)
                 item.store_filename(url.toLocalFile())
+                item.setToolTip('Imported Bitmap')
 
             # Set default attributes
             item.setPos(self.mapToScene(event.pos()))

@@ -132,11 +132,19 @@ QComboBox QAbstractItemView {
 }
 
 QAbstractSpinBox::up-button {
-    background: #4b4b4b;
+    background: #5f5f5f;
 }
 
 QAbstractSpinBox::down-button {
-    background: #4b4b4b;
+    background: #5f5f5f;
+}
+
+QAbstractSpinBox::up-button:hover {
+    background: #595959;
+}
+
+QAbstractSpinBox::down-button:hover {
+    background: #595959;
 }
 
 
