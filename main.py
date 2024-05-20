@@ -1108,6 +1108,8 @@ Date:""")
         self.text_along_path_tab.spacing_spin.blockSignals(True)
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
+        rect = self.canvas.selectedItemsBoundingRect()
+
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 self.selection_label.setText(item.toolTip())
@@ -1127,8 +1129,8 @@ Date:""")
             self.text_along_path_tab.text_entry.clear()
 
         for item in self.canvas.selectedItems():
-            self.x_pos_spin.setValue(int(item.x()))
-            self.y_pos_spin.setValue(int(item.y()))
+            self.x_pos_spin.setValue(int(rect.x()))
+            self.y_pos_spin.setValue(int(rect.y()))
             self.rotate_item_spin.setValue(int(item.rotation()))
             self.width_scale_spin.setValue(float(item.transform().m11() * 10))
             self.height_scale_spin.setValue(float(item.transform().m22() * 10))
@@ -1349,7 +1351,6 @@ Date:""")
 
     def use_pan(self):
         self.pan_btn.setChecked(True)
-        self.canvas_view.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def use_path(self):
         self.path_btn.setChecked(True)

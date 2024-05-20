@@ -77,43 +77,35 @@ class CustomGraphicsView(QGraphicsView):
         self.font = font
         self.font_color = color
 
+    def disable_item_flags(self):
+        for item in self.scene().items():
+            if isinstance(item, CanvasItem and CanvasTextItem):
+                pass
+
+            else:
+                self.scene().clearSelection()
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+    def enable_item_flags(self):
+        for item in self.scene().items():
+            if not isinstance(item, CanvasItem):
+                self.scene().clearSelection()
+                item.setFlag(QGraphicsItem.ItemIsSelectable, True)
+                item.setFlag(QGraphicsItem.ItemIsMovable, True)
+
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
         if self.button.isChecked() or self.erase_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    self.scene().clearSelection()
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.disable_item_flags()
             self.on_path_draw_start(event)
 
         elif self.pen_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    self.scene().clearSelection()
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.disable_item_flags()
             self.on_smooth_path_draw_start(event)
 
-        # Check if the Line and Label tool is turned on
         elif self.button2.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    self.scene().clearSelection()
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.disable_item_flags()
             self.on_label_start(event)
 
         elif self.text_btn.isChecked():
@@ -123,166 +115,71 @@ class CustomGraphicsView(QGraphicsView):
             self.on_scale_start(event)
 
         elif self.add_canvas_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
             self.on_add_canvas_start(event)
 
         elif self.pan_btn.isChecked():
-            for item in self.canvas.items():
-                self.scene().clearSelection()
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.disable_item_flags()
             self.on_pan_start(event)
 
         self.on_add_canvas(event)
-
+        
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        # Create a tooltip for whenever we move the mouse
         point = event.pos()
         p = self.mapToGlobal(point)
         p.setY(p.y())
         p.setX(p.x() + 10)
         QToolTip.showText(p, f'''x: {int(p.x())} 
-y: {int(p.y())}''')
+    y: {int(p.y())}''')
 
-        # Check if the path tool is enabled
         if self.button.isChecked() or self.erase_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
             self.on_path_draw(event)
 
         elif self.pen_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    self.scene().clearSelection()
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.disable_item_flags()
             self.on_smooth_path_draw_draw(event)
 
-        # Check if the line and label tool is enabled
         elif self.button2.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.disable_item_flags()
             self.on_label(event)
 
         elif self.scale_btn.isChecked():
             self.on_scale(event)
 
         elif self.add_canvas_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
             self.on_add_canvas_drag(event)
 
         elif self.pan_btn.isChecked():
-            for item in self.canvas.items():
-                self.scene().clearSelection()
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
-        self.on_add_canvas(event)
-
+            self.disable_item_flags()
+            
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
-        # Check if path tool is enabled
         if self.button.isChecked() or self.erase_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable)
-                    item.setFlag(QGraphicsItem.ItemIsMovable)
-
+            self.enable_item_flags()
             self.on_path_draw_end(event)
 
         elif self.pen_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    self.scene().clearSelection()
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.enable_item_flags()
             self.on_smooth_path_draw_end(event)
 
-        # Check if the line and label tool is enabled
         elif self.button2.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable)
-                    item.setFlag(QGraphicsItem.ItemIsMovable)
-
+            self.enable_item_flags()
             self.on_label_end(event)
 
         elif self.scale_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable)
-                    item.setFlag(QGraphicsItem.ItemIsMovable)
-
             self.on_scale_end(event)
 
         elif self.add_canvas_btn.isChecked():
-            for item in self.canvas.items():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable)
-                    item.setFlag(QGraphicsItem.ItemIsMovable)
-
             self.on_add_canvas_end(event)
 
         elif self.pan_btn.isChecked():
-            for item in self.canvas.items():
-                self.scene().clearSelection()
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
+            self.enable_item_flags()
             self.on_pan_end(event)
-
+            
         super().mouseReleaseEvent(event)
-        
+
     def wheelEvent(self, event):
         # Calculate zoom Factor
         zoomOutFactor = 1 / self.zoomInFactor
@@ -704,7 +601,6 @@ y: {int(p.y())}''')
                                 Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
-
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)
