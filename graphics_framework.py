@@ -78,35 +78,44 @@ class CustomGraphicsView(QGraphicsView):
         self.font_color = color
 
     def disable_item_flags(self):
-        for item in self.scene().items():
-            if isinstance(item, CanvasItem and CanvasTextItem):
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, CanvasTextItem):
                 pass
 
             else:
-                self.scene().clearSelection()
+                self.canvas.clearSelection()
                 item.setFlag(QGraphicsItem.ItemIsSelectable, False)
                 item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
     def enable_item_flags(self):
         for item in self.scene().items():
-            if not isinstance(item, CanvasItem):
+            if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, CanvasTextItem):
+                pass
+
+            else:
                 self.scene().clearSelection()
                 item.setFlag(QGraphicsItem.ItemIsSelectable, True)
                 item.setFlag(QGraphicsItem.ItemIsMovable, True)
 
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
-        if self.button.isChecked() or self.erase_btn.isChecked():
-            self.disable_item_flags()
+        if self.button.isChecked():
             self.on_path_draw_start(event)
+            self.disable_item_flags()
 
         elif self.pen_btn.isChecked():
-            self.disable_item_flags()
             self.on_smooth_path_draw_start(event)
+            self.disable_item_flags()
 
         elif self.button2.isChecked():
-            self.disable_item_flags()
             self.on_label_start(event)
+            self.disable_item_flags()
 
         elif self.text_btn.isChecked():
             self.on_add_text(event)
@@ -116,10 +125,11 @@ class CustomGraphicsView(QGraphicsView):
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_start(event)
+            self.disable_item_flags()
 
         elif self.pan_btn.isChecked():
-            self.disable_item_flags()
             self.on_pan_start(event)
+            self.disable_item_flags()
 
         self.on_add_canvas(event)
         
@@ -133,16 +143,17 @@ class CustomGraphicsView(QGraphicsView):
         QToolTip.showText(p, f'''x: {int(p.x())} 
     y: {int(p.y())}''')
 
-        if self.button.isChecked() or self.erase_btn.isChecked():
+        if self.button.isChecked():
             self.on_path_draw(event)
+            self.disable_item_flags()
 
         elif self.pen_btn.isChecked():
-            self.disable_item_flags()
             self.on_smooth_path_draw_draw(event)
+            self.disable_item_flags()
 
         elif self.button2.isChecked():
-            self.disable_item_flags()
             self.on_label(event)
+            self.disable_item_flags()
 
         elif self.scale_btn.isChecked():
             self.on_scale(event)
@@ -156,27 +167,28 @@ class CustomGraphicsView(QGraphicsView):
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
-        if self.button.isChecked() or self.erase_btn.isChecked():
-            self.enable_item_flags()
+        if self.button.isChecked():
             self.on_path_draw_end(event)
+            self.enable_item_flags()
 
         elif self.pen_btn.isChecked():
-            self.enable_item_flags()
             self.on_smooth_path_draw_end(event)
+            self.enable_item_flags()
 
         elif self.button2.isChecked():
-            self.enable_item_flags()
             self.on_label_end(event)
+            self.enable_item_flags()
 
         elif self.scale_btn.isChecked():
             self.on_scale_end(event)
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_end(event)
+            self.enable_item_flags()
 
         elif self.pan_btn.isChecked():
-            self.enable_item_flags()
             self.on_pan_end(event)
+            self.enable_item_flags()
             
         super().mouseReleaseEvent(event)
 
