@@ -90,6 +90,17 @@ class CustomGraphicsView(QGraphicsView):
                 item.setFlag(QGraphicsItem.ItemIsSelectable, False)
                 item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
+    def disable_item_movement(self):
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, CanvasTextItem):
+                pass
+
+            else:
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
     def enable_item_flags(self):
         for item in self.scene().items():
             if isinstance(item, CanvasItem):
@@ -99,7 +110,6 @@ class CustomGraphicsView(QGraphicsView):
                 pass
 
             else:
-                self.scene().clearSelection()
                 item.setFlag(QGraphicsItem.ItemIsSelectable, True)
                 item.setFlag(QGraphicsItem.ItemIsMovable, True)
 
@@ -122,6 +132,7 @@ class CustomGraphicsView(QGraphicsView):
 
         elif self.scale_btn.isChecked():
             self.on_scale_start(event)
+            self.disable_item_movement()
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_start(event)
@@ -157,6 +168,7 @@ class CustomGraphicsView(QGraphicsView):
 
         elif self.scale_btn.isChecked():
             self.on_scale(event)
+            self.disable_item_movement()
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_drag(event)
@@ -181,10 +193,10 @@ class CustomGraphicsView(QGraphicsView):
 
         elif self.scale_btn.isChecked():
             self.on_scale_end(event)
+            self.enable_item_flags()
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_end(event)
-            self.enable_item_flags()
 
         elif self.pan_btn.isChecked():
             self.on_pan_end(event)

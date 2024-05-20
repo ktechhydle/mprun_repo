@@ -5,6 +5,8 @@ from PyQt5.QtSvg import *
 from PyQt5.Qt import *
 from scipy.interpolate import splprep, splev
 from skimage.measure import *
+from shapely.geometry import Polygon
+from shapely.geometry.polygon import orient
 from undo_commands import *
 import numpy as np
 
