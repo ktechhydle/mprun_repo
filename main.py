@@ -259,7 +259,7 @@ class MPRUN(QMainWindow):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.TopToolBarArea)
+        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.TopToolBarArea | Qt.RightToolBarArea)
         self.toolbar.setFloatable(False)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
