@@ -62,16 +62,14 @@ QToolButton {
 }
 
 QToolButton:hover {
-    background-color: None; /* Button background color on hover */
+    background: #3d3d3d;
+    border-radius: 5px;
+    border: 1px solid #515151;
 }
 
 QToolButton:checked {
     background-color: #303030;
     border-radius: 5px; /* Button background color when checked */
-}
-
-QToolButton:checked:hover {
-    background-color: #303030; /* Button background color when checked and hovered */
 }
 
 QLabel {
