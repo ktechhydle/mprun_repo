@@ -85,6 +85,7 @@ class CustomGraphicsView(QGraphicsView):
 
             else:
                 item.setFlag(QGraphicsItem.ItemIsMovable, False)
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
     def disable_item_movement(self):
         for item in self.canvas.items():
@@ -113,7 +114,6 @@ class CustomGraphicsView(QGraphicsView):
         # Check if the path tool is turned on
         if self.button.isChecked():
             self.on_path_draw_start(event)
-            self.disable_item_flags()
 
         elif self.pen_btn.isChecked():
             self.on_smooth_path_draw_start(event)
@@ -125,23 +125,29 @@ class CustomGraphicsView(QGraphicsView):
 
         elif self.text_btn.isChecked():
             self.on_add_text(event)
+            self.disable_item_movement()
+            super().mousePressEvent(event)
 
         elif self.scale_btn.isChecked():
             self.on_scale_start(event)
             self.disable_item_movement()
+            super().mousePressEvent(event)
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_start(event)
             self.disable_item_flags()
+            super().mousePressEvent(event)
 
         elif self.pan_btn.isChecked():
             self.on_pan_start(event)
             self.disable_item_flags()
+            super().mousePressEvent(event)
+
+        else:
+            super().mousePressEvent(event)
 
         self.on_add_canvas(event)
         
-        super().mousePressEvent(event)
-
     def mouseMoveEvent(self, event):
         point = event.pos()
         p = self.mapToGlobal(point)
@@ -157,6 +163,9 @@ class CustomGraphicsView(QGraphicsView):
         elif self.pen_btn.isChecked():
             self.on_smooth_path_draw_draw(event)
             self.disable_item_flags()
+            
+        elif self.text_btn.isChecked():
+            super().mouseMoveEvent(event)
 
         elif self.button2.isChecked():
             self.on_label(event)
@@ -165,40 +174,47 @@ class CustomGraphicsView(QGraphicsView):
         elif self.scale_btn.isChecked():
             self.on_scale(event)
             self.disable_item_movement()
+            super().mouseMoveEvent(event)
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_drag(event)
+            self.disable_item_flags()
+            super().mouseMoveEvent(event)
 
         elif self.pan_btn.isChecked():
             self.disable_item_flags()
-            
-        super().mouseMoveEvent(event)
+            super().mouseMoveEvent(event)
+
+        else:
+            super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         if self.button.isChecked():
             self.on_path_draw_end(event)
-            self.enable_item_flags()
 
         elif self.pen_btn.isChecked():
             self.on_smooth_path_draw_end(event)
-            self.enable_item_flags()
+            
+        elif self.text_btn.isChecked():
+            super().mouseReleaseEvent(event)
 
         elif self.button2.isChecked():
             self.on_label_end(event)
-            self.enable_item_flags()
 
         elif self.scale_btn.isChecked():
             self.on_scale_end(event)
-            self.enable_item_flags()
+            super().mouseReleaseEvent(event)
 
         elif self.add_canvas_btn.isChecked():
             self.on_add_canvas_end(event)
+            super().mouseReleaseEvent(event)
 
         elif self.pan_btn.isChecked():
             self.on_pan_end(event)
-            self.enable_item_flags()
-            
-        super().mouseReleaseEvent(event)
+            super().mouseReleaseEvent(event)
+
+        else:
+            super().mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
         # Calculate zoom Factor
@@ -566,8 +582,8 @@ class CustomGraphicsView(QGraphicsView):
             self.scene().addItem(self.canvas_item_text)  # Add canvas text item to the scene
 
     def on_add_canvas_drag(self, event):
-        if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
-            if self.canvas_item is not None:
+        if self.canvas_item is not None:
+            if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
                 if not hasattr(self, 'canvas_item'):
                     self.clicked_canvas_point = self.mapToScene(event.pos())
                     self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
@@ -581,28 +597,32 @@ class CustomGraphicsView(QGraphicsView):
                                          current_pos.y() - self.clicked_canvas_point.y())
 
     def on_add_canvas_end(self, event):
-        if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
-            if self.canvas_item is not None:
-                self.setDragMode(QGraphicsView.RubberBandDrag)
-                current_pos = self.mapToScene(event.pos())
-                self.canvas_item.setRect(0, 0,
-                                         current_pos.x() - self.clicked_canvas_point.x(),
-                                         current_pos.y() - self.clicked_canvas_point.y())
+        if self.canvas_item is not None:
+            if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
+                try:
+                    self.setDragMode(QGraphicsView.RubberBandDrag)
+                    current_pos = self.mapToScene(event.pos())
+                    self.canvas_item.setRect(0, 0,
+                                             current_pos.x() - self.clicked_canvas_point.x(),
+                                             current_pos.y() - self.clicked_canvas_point.y())
 
-                command = AddItemCommand(self.scene(), self.canvas_item)  # Assuming AddItemCommand is defined elsewhere
-                self.canvas.addCommand(command)
+                    command = AddItemCommand(self.scene(), self.canvas_item)  # Assuming AddItemCommand is defined elsewhere
+                    self.canvas.addCommand(command)
 
-                self.canvas_item.setPos(self.clicked_canvas_point)
-                self.canvas_item_text.setPos(self.canvas_item.boundingRect().x(), self.canvas_item.boundingRect().y())
-                self.canvas_item.setToolTip('Canvas')
-                self.canvas_item.setZValue(-1)
+                    self.canvas_item.setPos(self.clicked_canvas_point)
+                    self.canvas_item_text.setPos(self.canvas_item.boundingRect().x(), self.canvas_item.boundingRect().y())
+                    self.canvas_item.setToolTip('Canvas')
+                    self.canvas_item.setZValue(-1)
 
-                if self.canvas_item.rect().isEmpty():
-                    self.scene().removeItem(self.canvas_item)
+                    if self.canvas_item.rect().isEmpty():
+                        self.scene().removeItem(self.canvas_item)
 
-                self.clicked_canvas_point = None
+                    self.clicked_canvas_point = None
 
-                self.canvas.update()
+                    self.canvas.update()
+
+                except Exception:
+                    pass
 
         else:
             if self.canvas_item is not None:

@@ -352,8 +352,6 @@ class MPRUN(QMainWindow):
         rotation_label.setStyleSheet('font-size: 10px;')
         scale_label = QLabel('Scaling:')
         scale_label.setStyleSheet('font-size: 10px;')
-        opacity_label = QLabel('Opacity:')
-        opacity_label.setStyleSheet('font-size: 10px;')
 
         x_pos_label = QLabel('X:')
         y_pos_label = QLabel('Y:')
@@ -443,11 +441,22 @@ class MPRUN(QMainWindow):
         widget5.layout.addWidget(fill_label)
         widget5.layout.addWidget(self.fill_transparent_btn)
 
-        self.opacity_slider = QSlider()
-        self.opacity_slider.setRange(1, 100)
-        self.opacity_slider.setOrientation(Qt.Horizontal)
-        self.opacity_slider.setSliderPosition(100)
-        self.opacity_slider.valueChanged.connect(self.use_change_opacity)
+        opacity_label = QLabel('Opacity')
+        opacity_label.setStyleSheet('color: white;')
+        self.opacity_btn = QPushButton('')
+        self.opacity_btn.setFixedWidth(28)
+        self.opacity_btn.setIcon(QIcon('logos and icons/UI Icons/opacity_icon.png'))
+        self.opacity_btn.setIconSize(QSize(24, 24))
+        self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
+        self.opacity_spin = QSpinBox()
+        self.opacity_spin.setRange(0, 100)
+        self.opacity_spin.setValue(100)
+        self.opacity_spin.setSuffix('%')
+        self.opacity_spin.valueChanged.connect(self.use_change_opacity)
+        opacity_hlayout = ToolbarHorizontalLayout()
+        opacity_hlayout.layout.addWidget(self.opacity_btn)
+        opacity_hlayout.layout.addWidget(opacity_label)
+        opacity_hlayout.layout.addWidget(self.opacity_spin)
 
         self.gsnap_check_btn = QCheckBox(self)
         self.gsnap_check_btn.setText('GSNAP Enabled')
@@ -619,8 +628,7 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(appearence_label)
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(widget5)
-        self.properties_tab_layout.addWidget(opacity_label)
-        self.properties_tab_layout.addWidget(self.opacity_slider)
+        self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addWidget(HorizontalSeparator())
         self.properties_tab_layout.addWidget(quick_actions_label)
         self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
@@ -1080,6 +1088,7 @@ Date:""")
         self.width_scale_spin.blockSignals(True)
         self.height_scale_spin.blockSignals(True)
         self.rotate_item_spin.blockSignals(True)
+        self.opacity_spin.blockSignals(True)
         self.canvas_tab.canvas_x_entry.blockSignals(True)
         self.canvas_tab.canvas_y_entry.blockSignals(True)
         self.canvas_tab.canvas_name_entry.blockSignals(True)
@@ -1116,6 +1125,7 @@ Date:""")
             self.x_pos_spin.setValue(0)
             self.y_pos_spin.setValue(0)
             self.rotate_item_spin.setValue(0)
+            self.opacity_spin.setValue(100)
             self.width_scale_spin.setValue(10.0)
             self.height_scale_spin.setValue(10.0)
             self.layer_spin.setValue(0)
@@ -1126,6 +1136,7 @@ Date:""")
             self.x_pos_spin.setValue(int(rect.x()))
             self.y_pos_spin.setValue(int(rect.y()))
             self.rotate_item_spin.setValue(int(item.rotation()))
+            self.opacity_spin.setValue(int(item.opacity() * 100))
             self.width_scale_spin.setValue(float(item.transform().m11() * 10))
             self.height_scale_spin.setValue(float(item.transform().m22() * 10))
             self.layer_spin.setValue(int(item.zValue()))
@@ -1281,6 +1292,7 @@ Date:""")
         self.x_pos_spin.blockSignals(False)
         self.y_pos_spin.blockSignals(False)
         self.rotate_item_spin.blockSignals(False)
+        self.opacity_spin.blockSignals(False)
         self.width_scale_spin.blockSignals(False)
         self.height_scale_spin.blockSignals(False)
         self.canvas_tab.canvas_x_entry.blockSignals(False)
@@ -1357,6 +1369,7 @@ Date:""")
 
     def use_label(self):
         self.label_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
@@ -1600,11 +1613,14 @@ Date:""")
 
     def use_change_opacity(self, value):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
-        opacity = value / self.opacity_slider.maximum()
+        opacity = value / self.opacity_spin.maximum()
 
         # Apply the effect to selected items
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, CanvasTextItem):
                 pass
 
             else:

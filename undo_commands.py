@@ -164,14 +164,10 @@ class OpacityCommand(QUndoCommand):
         self.new_value = new_opacity
 
     def redo(self):
-        effect = QGraphicsOpacityEffect()
-        effect.setOpacity(self.new_value)
-        self.item.setGraphicsEffect(effect)
+        self.item.setOpacity(self.new_value)
 
     def undo(self):
-        effect = QGraphicsOpacityEffect()
-        effect.setOpacity(self.old_value)
-        self.item.setGraphicsEffect(effect)
+        self.item.setOpacity(self.old_value)
 
 class HideCommand(QUndoCommand):
     def __init__(self, item, old_visible, new_visible):
