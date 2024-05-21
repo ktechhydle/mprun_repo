@@ -1561,12 +1561,20 @@ Date:""")
                 item.duplicate()
 
     def use_set_item_x(self, value):
-        for item in self.canvas.selectedItems():
-            item.setPos(value, item.y())
+        self.canvas.blockSignals(True)  # Block signals to prevent recursive updates
+        try:
+            for item in self.canvas.selectedItems():
+                item.setPos(value, item.y())
+        finally:
+            self.canvas.blockSignals(False)
 
     def use_set_item_y(self, value):
-        for item in self.canvas.selectedItems():
-            item.setPos(item.x(), value)
+        self.canvas.blockSignals(True)  # Block signals to prevent recursive updates
+        try:
+            for item in self.canvas.selectedItems():
+                item.setPos(item.x(), value)
+        finally:
+            self.canvas.blockSignals(False)
 
     def use_scale_x(self, value):
         self.use_scale(self.width_scale_spin.value(), self.height_scale_spin.value())
