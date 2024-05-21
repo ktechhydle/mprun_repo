@@ -146,7 +146,7 @@ class CustomGraphicsView(QGraphicsView):
         else:
             super().mousePressEvent(event)
 
-        self.on_add_canvas(event)
+        self.on_add_canvas()
         
     def mouseMoveEvent(self, event):
         point = event.pos()
@@ -541,8 +541,10 @@ class CustomGraphicsView(QGraphicsView):
         for item in self.canvas.selectedItems():
             item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
 
-    def on_add_canvas(self, event):
+    def on_add_canvas(self):
         if self.add_canvas_btn.isChecked():
+            self.scene().setBackgroundBrush(QBrush(QColor('#737373')))
+
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     for items in item.childItems():
@@ -555,6 +557,8 @@ class CustomGraphicsView(QGraphicsView):
                     item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
         elif not self.add_canvas_btn.isChecked():
+            self.scene().setBackgroundBrush(QBrush(QColor('#606060')))
+
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     for items in item.childItems():

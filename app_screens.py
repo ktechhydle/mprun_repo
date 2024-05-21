@@ -36,7 +36,7 @@ power of building apps.
 
 LICENCE:
 
-This program is free software and is distributed under the GNU General Public License, version 3. In short, this means you are free to use and distribute Inkscape for any purpose, commercial or non-commercial, without any restrictions. You are also free to modify the program as you wish, with the only restriction that if you distribute the modified version, you must provide access to its source code.
+This program is free software and is distributed under the GNU General Public License, version 3. In short, this means you are free to use and distribute MPRUN for any purpose, commercial or non-commercial, without any restrictions. You are also free to modify the program as you wish, with the only restriction that if you distribute the modified version, you must provide access to its source code.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. For more details about the license, check the LISCENSE.txt file included with this distribution.
 

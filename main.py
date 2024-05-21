@@ -1349,7 +1349,7 @@ Date:""")
 
     def use_select(self):
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.canvas_view.enable_item_flags()
+        self.canvas_view.on_add_canvas()
 
     def use_select_all(self):
         for item in self.canvas.items():
@@ -1358,21 +1358,26 @@ Date:""")
 
     def use_pan(self):
         self.pan_btn.setChecked(True)
+        self.canvas_view.on_add_canvas()
 
     def use_path(self):
         self.path_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
+        self.canvas_view.on_add_canvas()
 
     def use_pen_tool(self):
         self.pen_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
+        self.canvas_view.on_add_canvas()
 
     def use_label(self):
         self.label_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
+        self.canvas_view.on_add_canvas()
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
+        self.canvas_view.on_add_canvas()
 
     def use_refit_screen(self):
         for item in self.canvas.items():
@@ -1601,6 +1606,7 @@ Date:""")
 
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
+        self.canvas_view.on_add_canvas()
 
     def use_rotate(self, value):
         items = self.canvas.selectedItems()
@@ -1664,6 +1670,8 @@ Date:""")
                     self.canvas.addCommand(command)
 
     def use_add_canvas(self):
+        self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
+
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
                 for items in item.childItems():
@@ -1693,6 +1701,7 @@ Date:""")
                 self.canvas.addCommand(command)
 
     def use_add_text_along_path(self):
+        self.canvas_view.on_add_canvas()
         self.display_choosen_tab('Text Along Path')
         for i in range(self.tab_view.count()):
             if self.tab_view.tabText(i) == 'Text Along Path':
@@ -1788,6 +1797,18 @@ Date:""")
                     self.update_appearance_ui()
 
     def insert_image(self):
+        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+        self.select_btn.setChecked(True)
+        self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
+
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                for items in item.childItems():
+                    items.setVisible(False)
+                    items.parentItem().setSelected(False)
+                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
+                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
+
         # Create Options
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
