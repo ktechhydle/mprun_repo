@@ -837,6 +837,7 @@ class MPRUN(QMainWindow):
                                               self.pan_btn)
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
+        self.action_group.triggered.connect(self.canvas_view.on_add_canvas)
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
@@ -1349,7 +1350,6 @@ Date:""")
 
     def use_select(self):
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.canvas_view.on_add_canvas()
 
     def use_select_all(self):
         for item in self.canvas.items():
@@ -1358,26 +1358,21 @@ Date:""")
 
     def use_pan(self):
         self.pan_btn.setChecked(True)
-        self.canvas_view.on_add_canvas()
 
     def use_path(self):
         self.path_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
-        self.canvas_view.on_add_canvas()
 
     def use_pen_tool(self):
         self.pen_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
-        self.canvas_view.on_add_canvas()
 
     def use_label(self):
         self.label_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
-        self.canvas_view.on_add_canvas()
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
-        self.canvas_view.on_add_canvas()
 
     def use_refit_screen(self):
         for item in self.canvas.items():
@@ -1606,7 +1601,6 @@ Date:""")
 
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
-        self.canvas_view.on_add_canvas()
 
     def use_rotate(self, value):
         items = self.canvas.selectedItems()

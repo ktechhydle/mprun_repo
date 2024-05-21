@@ -10,6 +10,8 @@ class AboutWin(QtWidgets.QWidget):
         self.setWindowTitle('About MPRUN')
         self.setWindowIcon(QtGui.QIcon('logos and icons/MPRUN_icon.ico'))
         self.setFixedSize(500, 700)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setStyleSheet('border-radius: 5px;')
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
 
         self.create_ui()
@@ -59,6 +61,9 @@ You are responsible for publishing your work under a license of your choosing an
         # Set layout to the main window
         self.setLayout(layout)
 
+    def mousePressEvent(self, event):
+        self.close()
+
 class VersionWin(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -67,6 +72,7 @@ class VersionWin(QtWidgets.QWidget):
         self.setWindowIcon(QtGui.QIcon('logos and icons/MPRUN_icon.ico'))
         self.setFixedSize(500, 300)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
         self.create_ui()
 
@@ -105,6 +111,9 @@ Thank you for using MPRUN!
 
         # Set layout to the main window
         self.setLayout(layout)
+
+    def mousePressEvent(self, e):
+        self.close()
 
 
 
