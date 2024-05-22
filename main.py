@@ -45,6 +45,7 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
+        self.undo_stack.setUndoLimit(15)
 
         # Create GUI
         self.create_initial_canvas()
@@ -62,6 +63,7 @@ class MPRUN(QMainWindow):
         # Canvas, canvas color
         self.canvas = CustomGraphicsScene(self.undo_stack)
         self.canvas.selectionChanged.connect(self.update_appearance_ui)
+        self.canvas.itemMoved.connect(self.update_appearance_ui)
 
     def create_menu(self):
         # Create menus
@@ -114,7 +116,6 @@ class MPRUN(QMainWindow):
         text_action.triggered.connect(self.update_font)
 
         smooth_action = QAction('Smooth Path', self)
-        smooth_action.setShortcut(QKeySequence('S'))
         smooth_action.triggered.connect(self.use_smooth_path)
 
         close_subpath_action = QAction('Close Path', self)
@@ -803,7 +804,8 @@ class MPRUN(QMainWindow):
 
     def create_toolbar3(self):
         #----toolbar widgets----#
-        self.zoom_amounts = {'25%': 0.25,
+        self.zoom_amounts = {'10%': 0.10,
+                             '25%': 0.25,
                              '50%': 0.50,
                              '75%': 0.75,
                              '100%': 1.00,
@@ -842,7 +844,10 @@ class MPRUN(QMainWindow):
                                               self.select_btn,
                                               self.scale_btn,
                                               self.pan_btn)
+        format = QSurfaceFormat()
+        format.setSamples(4)
         self.opengl_widget = QOpenGLWidget()
+        self.opengl_widget.setFormat(format)
         self.canvas_view.setViewport(self.opengl_widget)
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
@@ -1705,7 +1710,7 @@ Date:""")
                     add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
                     self.canvas.addCommand(add_command)
 
-                except Exception as e:
+                except Exception:
                     QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
                     self.canvas.undo()
 
@@ -1716,32 +1721,36 @@ Date:""")
                 self.canvas.addCommand(command)
 
     def use_add_text_along_path(self):
-        self.canvas_view.on_add_canvas()
-        self.display_choosen_tab('Text Along Path')
-        for i in range(self.tab_view.count()):
-            if self.tab_view.tabText(i) == 'Text Along Path':
-                self.tab_view.setCurrentIndex(i)
-                self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
-                self.text_along_path_tab.text_entry.setFocus()
-                self.text_along_path_tab.text_entry.clear()
+        try:
+            self.canvas_view.on_add_canvas()
+            self.display_choosen_tab('Text Along Path')
+            for i in range(self.tab_view.count()):
+                if self.tab_view.tabText(i) == 'Text Along Path':
+                    self.tab_view.setCurrentIndex(i)
+                    self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
+                    self.text_along_path_tab.text_entry.setFocus()
+                    self.text_along_path_tab.text_entry.clear()
 
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CustomPathItem):
-                font = QFont()
-                font.setFamily(self.font_choice_combo.currentText())
-                font.setPixelSize(self.font_size_spin.value())
-                font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
-                font.setBold(True if self.bold_btn.isChecked() else False)
-                font.setItalic(True if self.italic_btn.isChecked() else False)
-                font.setUnderline(True if self.underline_btn.isChecked() else False)
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CustomPathItem):
+                    font = QFont()
+                    font.setFamily(self.font_choice_combo.currentText())
+                    font.setPixelSize(self.font_size_spin.value())
+                    font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
+                    font.setBold(True if self.bold_btn.isChecked() else False)
+                    font.setItalic(True if self.italic_btn.isChecked() else False)
+                    font.setUnderline(True if self.underline_btn.isChecked() else False)
 
-                item.setTextAlongPathFont(font)
-                item.setTextAlongPathSpacingFromPath(self.text_along_path_tab.spacing_spin.value())
-                item.setTextAlongPathColor(QColor(self.font_color.get()))
+                    item.setTextAlongPathFont(font)
+                    item.setTextAlongPathSpacingFromPath(self.text_along_path_tab.spacing_spin.value())
+                    item.setTextAlongPathColor(QColor(self.font_color.get()))
 
-                command = AddTextToPathCommand(item, self.text_along_path_tab.text_along_path_check_btn, False, True)
-                self.canvas.addCommand(command)
-                item.update()
+                    command = AddTextToPathCommand(item, self.text_along_path_tab.text_along_path_check_btn, False, True)
+                    self.canvas.addCommand(command)
+                    item.update()
+
+        except Exception:
+            pass
 
     def use_fill_transparent(self):
         self.fill_color_btn.setStyleSheet('background-color: transparent')
