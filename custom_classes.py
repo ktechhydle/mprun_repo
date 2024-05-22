@@ -170,6 +170,8 @@ class CustomPathItem(QGraphicsPathItem):
 
         path.setFillRule(Qt.FillRule.WindingFill)
 
+        self.smooth = False
+
         self.text_items = []
         self.add_text = False
         self.text_along_path = ''
@@ -224,6 +226,8 @@ class CustomPathItem(QGraphicsPathItem):
                 simplified_vertices[i + 1][0], simplified_vertices[i + 1][1],
                 simplified_vertices[i + 2][0], simplified_vertices[i + 2][1]
             )
+
+        self.smooth = True
 
         return smooth_path
 

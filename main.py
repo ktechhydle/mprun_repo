@@ -21,7 +21,7 @@ class MPRUN(QMainWindow):
     def __init__(self):
         super(MPRUN, self).__init__()
         # Creating the main window
-        self.setWindowTitle('MPRUN - Workspace')
+        self.setWindowTitle('MPRUN - **Untitled')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
@@ -90,6 +90,9 @@ class MPRUN(QMainWindow):
 
         add_canvas_action = QAction('Add Canvas', self)
         add_canvas_action.triggered.connect(self.use_add_canvas)
+
+        save_action = QAction('Save', self)
+        save_action.triggered.connect(lambda: self.canvas.save())
 
         export_action = QAction('Export', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
@@ -210,6 +213,8 @@ class MPRUN(QMainWindow):
 
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addAction(insert_action)
+        self.file_menu.addSeparator()
+        self.file_menu.addAction(save_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
         self.file_menu.addSeparator()
@@ -1704,15 +1709,19 @@ Date:""")
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
-                try:
-                    smoothed_path = item.smooth_path(item.path())
+                if item.smooth == True:
+                    pass
 
-                    add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
-                    self.canvas.addCommand(add_command)
+                else:
+                    try:
+                        smoothed_path = item.smooth_path(item.path())
 
-                except Exception:
-                    QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
-                    self.canvas.undo()
+                        add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
+                        self.canvas.addCommand(add_command)
+
+                    except Exception:
+                        QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
+                        self.canvas.undo()
 
     def use_close_path(self):
         for item in self.canvas.selectedItems():

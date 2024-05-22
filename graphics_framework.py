@@ -7,6 +7,7 @@ from undo_commands import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import time
+import json
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas,
@@ -655,7 +656,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def __init__(self, undoStack):
         super().__init__()
-        self.file_name = None
+        self.file_name = ''
         self.undo_stack = undoStack
         self.scale_btn = None
 
@@ -733,14 +734,103 @@ class CustomGraphicsScene(QGraphicsScene):
         for item in self.items():
             item.update()
 
+    def serialize_scene(self):
+        items = []
+        for item in self.items():
+            if isinstance(item, CustomPathItem):
+                items.append({
+                    'type': 'path',
+                    'geompath': self.serialize_path(item.path()),
+                    'pos': self.serialize_pos(item.pos()),
+                    'pen': self.serialize_pen(item.pen()),
+                    'brush': self.serialize_brush(item.brush()),
+                    'zval': item.zValue(),
+                    'text': item.text_along_path if item.add_text is True else None,
+                    'font': self.serialize_font(item.text_along_path_font) if item.add_text is True else None,
+                    'text_spacing': item.text_along_path_spacing if item.add_text is True else None,
+                    'text_color': self.serialize_color(item.text_along_path_color) if item.add_text is True else None,
+                    'starttextfrombeginning': True if item.start_text_from_beginning is True else False,
+                    'smooth': True if item.smooth is True else False,
+
+                })
+
+        return {'scene': items}
+
+    def serialize_path(self, path):
+        # Convert QPainterPath to a JSON-serializable format
+        elements = []
+        for i in range(path.elementCount()):
+            element = path.elementAt(i)
+            elements.append({'x': element.x, 'y': element.y, 'type': element.type})
+        return elements
+
+    def serialize_pen(self, pen):
+        return {
+            'color': self.serialize_color(pen.color()),
+            'width': pen.width(),
+            'style': pen.style(),
+            'pencap': pen.capStyle(),
+            'penjoin': pen.joinStyle()
+        }
+
+    def serialize_pos(self, pos):
+        return {'x': pos.x(),
+                'y': pos.y()}
+
+    def serialize_brush(self, brush):
+        return {
+            'color': self.serialize_color(brush.color()),
+            'style': brush.style()
+        }
+
+    def serialize_color(self, color):
+        return {
+            'r': color.red(),
+            'g': color.green(),
+            'b': color.blue(),
+            'a': color.alpha()
+        }
+
+    def serialize_font(self, font):
+        return {
+            'family': font.family(),
+            'pixelsize': font.pixelSize(),
+            'weight': font.weight(),
+            'italic': font.italic(),
+            'bold': font.bold(),
+            'underline': font.underline(),
+            'spacing': font.letterSpacing()
+        }
+
+    def deserialize_scene(self, data):
+        self.clear()
+        for item_data in data['scene']:
+            if item_data['type'] == 'path':
+                item = CustomPathItem(item_data['geompath'])
+                item.setPen(item_data['pen'])
+                self.addItem(item)
+
     def save_as(self, filename):
-        pass
+        self.file_name = filename
+        self.save()
 
     def save(self):
-        pass
+        if self.file_name == '':
+            self.file_name, _ = QFileDialog.getSaveFileName(self.parent(), "Save File", "", "MPRUN Files (*.mp)")
+            data = self.serialize_scene()
+            with open(self.file_name, 'w') as file:
+                json.dump(data, file)
+
+        else:
+            data = self.serialize_scene()
+            with open(self.file_name, 'w') as file:
+                json.dump(data, file)
 
     def open(self, filename):
-        pass
+        with open(filename, 'r') as file:
+            data = json.load(file)
+            self.deserialize_scene(data)
+        self.file_name = filename
 
     def create_new(self):
         warning = QMessageBox(self)
