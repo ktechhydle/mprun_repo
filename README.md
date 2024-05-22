@@ -14,15 +14,12 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 ### 1. Set up the course:
 - Use the libraries tab to add Course Elements as needed, or import your own SVG files to add features to the Canvas.
 - Scale, Rotate, or Group Elements to achieve the desired course setup.
-- Lock Element positions to prevent further editing.
 ### 2. Draw your path:
 - Use the `Path` tool to draw your line along the course.
 - The Path colors and stroke styles can be changed for any reason you find necessary.
-- Lock the Path position to prevent further editing.
 ### 3. Label your path:
 - Use the `Line and Label` tool to create Leader lines along your Path.
 - Edit these labels to include your tricks along each part of the Path.
-- Lock Element positions to prevent further editing.
 ### 4. And it's that simple. 
 > [!IMPORTANT]
 > MPRUN can be a simple software, and a powerful software when necessary.
@@ -44,8 +41,6 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Add `Text` objects on to the Canvas by clicking a point on the scene.
 - Vector conversion:
   	> Use the `Vectorize` tool to convert raster imagery to vector formats.
-- Element position management:
-  	> Lock or unlock element positions, or even use the `Permanent Lock Tool` to lock Elements permanently.
 - Path Simplifying:
   	> Simplify drawn paths to achieve a less hand drawn appearance.
 > [!TIP]
