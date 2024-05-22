@@ -33,7 +33,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 
 # Additional Features
 - Vector Graphics:
-	> MPRUN uses a Vector Graphics Engine (`QGraphicsScene`), making the use of SVG or any Vector format a better choice for import.
+	> MPRUN uses a Vector Graphics Engine (`QGraphicsScene`), further leveraged by OpenGL.
 - Panning and zooming:
 	> Pan and zoom on the Canvas.
 - Layer management:
