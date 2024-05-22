@@ -157,11 +157,14 @@ class StrokeLabel(QLabel):
         self.stroke_combo = None
         self.stroke_options = None
         self.pencap_options = None
+        self.join_style_combo = None
+        self.join_style_options = None
 
         self.menu = QMenu(self)
 
         widget1 = QWidgetAction(parent)
         widget2 = QWidgetAction(parent)
+        widget3 = QWidgetAction(parent)
 
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine,
                                      'Dotted Stroke': Qt.DotLine,
@@ -178,11 +181,23 @@ class StrokeLabel(QLabel):
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
 
+        self.join_style_options = {'Miter Join': Qt.MiterJoin,
+                                   'Round Join': Qt.RoundJoin,
+                                   'Bevel Join': Qt.BevelJoin
+                                   }
+        self.join_style_combo = QComboBox(self)
+        self.join_style_combo.setStyleSheet('text-decoration: none;')
+        for join, v in self.join_style_options.items():
+            self.join_style_combo.addItem(join, v)
+
         widget1.setDefaultWidget(self.stroke_style_combo)
         widget2.setDefaultWidget(self.stroke_pencap_combo)
+        widget3.setDefaultWidget(self.join_style_combo)
+
 
         self.menu.addAction(widget1)
         self.menu.addAction(widget2)
+        self.menu.addAction(widget3)
 
         self.stroke_combo = self.stroke_style_combo
         self.stroke_options = self.stroke_style_options

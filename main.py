@@ -284,8 +284,10 @@ class MPRUN(QMainWindow):
         self.tab_view = DetachableTabWidget(self)
         self.tab_view.setMovable(True)
         self.tab_view.setDocumentMode(True)
+        self.tab_view.setTabsClosable(True)
         self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
+        self.tab_view.tabCloseRequested.connect(self.close_tab)
 
         # Properties Tab
         self.properties_tab = QWidget(self)
@@ -420,6 +422,8 @@ class MPRUN(QMainWindow):
         self.stroke_style_options = stroke_label.stroke_options
         self.stroke_pencap_combo = stroke_label.pencap_combo
         self.stroke_pencap_options = stroke_label.pencap_options
+        self.join_style_combo = stroke_label.join_style_combo
+        self.join_style_options = stroke_label.join_style_options
         widget6 = ToolbarHorizontalLayout()
         widget6.layout.addWidget(self.outline_color_btn)
         widget6.layout.addWidget(stroke_label)
@@ -603,6 +607,7 @@ class MPRUN(QMainWindow):
         self.stroke_size_spin.valueChanged.connect(self.update_pen)
         self.stroke_style_combo.currentIndexChanged.connect(self.update_pen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.update_pen)
+        self.join_style_combo.currentIndexChanged.connect(self.update_pen)
         self.font_size_spin.valueChanged.connect(self.update_font)
         self.font_letter_spacing_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
@@ -838,10 +843,6 @@ class MPRUN(QMainWindow):
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas)
-        index1 = self.stroke_style_combo.currentIndex()
-        data1 = self.stroke_style_combo.itemData(index1)
-        index2 = self.stroke_pencap_combo.currentIndex()
-        data2 = self.stroke_pencap_combo.itemData(index2)
         font = QFont()
         font.setFamily(self.font_choice_combo.currentText())
         font.setPixelSize(self.font_size_spin.value())
@@ -849,10 +850,23 @@ class MPRUN(QMainWindow):
         font.setBold(True if self.bold_btn.isChecked() else False)
         font.setItalic(True if self.italic_btn.isChecked() else False)
         font.setUnderline(True if self.underline_btn.isChecked() else False)
-        self.canvas_view.update_pen(
-            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
+        index1 = self.stroke_style_combo.currentIndex()
+        data1 = self.stroke_style_combo.itemData(index1)
+        index2 = self.stroke_pencap_combo.currentIndex()
+        data2 = self.stroke_pencap_combo.itemData(index2)
+
+        pen = QPen()
+        pen.setColor(QColor(self.outline_color.get()))
+        pen.setWidth(self.stroke_size_spin.value())
+        pen.setJoinStyle(self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
+        pen.setStyle(data1)
+        pen.setCapStyle(data2)
+
+        brush = QBrush(QColor(self.fill_color.get()))
+
+        self.canvas_view.update_pen(pen)
+        self.canvas_view.update_stroke_fill_color(brush)
         self.canvas_view.update_font(font, QColor(self.font_color.get()))
-        self.canvas_view.update_stroke_fill_color(self.fill_color.get())
 
         # Use default tools, set central widget
         self.use_select()
@@ -1006,48 +1020,38 @@ Date:""")
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
-        self.canvas_view.update_pen(
-            QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2, Qt.PenJoinStyle.RoundJoin))
-        self.canvas_view.update_stroke_fill_color(QBrush(QColor(self.fill_color.get())))
+
+        pen = QPen()
+        pen.setColor(QColor(self.outline_color.get()))
+        pen.setWidth(self.stroke_size_spin.value())
+        pen.setJoinStyle(self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
+        pen.setStyle(data1)
+        pen.setCapStyle(data2)
+
+        brush = QBrush(QColor(self.fill_color.get()))
+
+        self.canvas_view.update_pen(pen)
+        self.canvas_view.update_stroke_fill_color(brush)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 if isinstance(item, CustomPathItem):
-                    index1 = self.stroke_style_combo.currentIndex()
-                    data1 = self.stroke_style_combo.itemData(index1)
-                    index2 = self.stroke_pencap_combo.currentIndex()
-                    data2 = self.stroke_pencap_combo.itemData(index2)
-
                     if self.close_subpath_check_btn.isChecked():
                         path = item.path()
                         if path.elementCount() > 0:
                             command = CloseSubpathCommand(item, self.canvas)
                             self.canvas.addCommand(command)
 
-                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1,
-                               data2)
                     item.setPen(pen)
-                    item.setBrush(QColor(self.fill_color.get()))
+                    item.setBrush(brush)
 
                 elif isinstance(item, LeaderLineItem):
-                    index1 = self.stroke_style_combo.currentIndex()
-                    data1 = self.stroke_style_combo.itemData(index1)
-                    index2 = self.stroke_pencap_combo.currentIndex()
-                    data2 = self.stroke_pencap_combo.itemData(index2)
-
-                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                     item.setPen(pen)
-                    item.setBrush(QColor(self.fill_color.get()))
+                    item.setBrush(brush)
 
                 elif isinstance(item, CustomRectangleItem):
-                    index1 = self.stroke_style_combo.currentIndex()
-                    data1 = self.stroke_style_combo.itemData(index1)
-                    index2 = self.stroke_pencap_combo.currentIndex()
-                    data2 = self.stroke_pencap_combo.itemData(index2)
-
-                    pen = QPen(QColor(self.outline_color.get()), self.stroke_size_spin.value(), data1, data2)
                     item.setPen(pen)
-                    item.setBrush(QColor(self.fill_color.get()))
+                    item.setBrush(brush)
 
     def update_font(self):
         font = QFont()
@@ -1097,6 +1101,7 @@ Date:""")
         self.stroke_size_spin.blockSignals(True)
         self.stroke_style_combo.blockSignals(True)
         self.stroke_pencap_combo.blockSignals(True)
+        self.join_style_combo.blockSignals(True)
         self.fill_color_btn.blockSignals(True)
         self.outline_color_btn.blockSignals(True)
         self.font_choice_combo.blockSignals(True)
@@ -1132,6 +1137,7 @@ Date:""")
             self.layer_spin.setValue(0)
             self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
             self.text_along_path_tab.text_entry.clear()
+            self.text_along_path_tab.spacing_spin.setValue(0)
 
         for item in self.canvas.selectedItems():
             self.x_pos_spin.setValue(int(rect.x()))
@@ -1163,6 +1169,10 @@ Date:""")
                     if pen.capStyle() == v:
                         self.stroke_pencap_combo.setCurrentIndex(i)
 
+                for index, (s, v) in enumerate(self.join_style_options.items()):
+                    if pen.joinStyle() == v:
+                        self.join_style_combo.setCurrentIndex(i)
+
                 if item.add_text == True:
                     self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
                     self.text_along_path_tab.text_entry.setText(item.text_along_path)
@@ -1188,7 +1198,6 @@ Date:""")
 
                 else:
                     self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
-
 
             elif isinstance(item, CanvasItem):
                 self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
@@ -1256,6 +1265,10 @@ Date:""")
                         if pen.capStyle() == v:
                             self.stroke_pencap_combo.setCurrentIndex(i)
 
+                    for index, (s, v) in enumerate(self.join_style_options.items()):
+                        if pen.joinStyle() == v:
+                            self.join_style_combo.setCurrentIndex(i)
+
             elif isinstance(item, LeaderLineItem):
                 pen = item.pen()
                 brush = item.brush()
@@ -1277,6 +1290,10 @@ Date:""")
                 for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
                     if pen.capStyle() == v:
                         self.stroke_pencap_combo.setCurrentIndex(i)
+
+                for index, (s, v) in enumerate(self.join_style_options.items()):
+                    if pen.joinStyle() == v:
+                        self.join_style_combo.setCurrentIndex(i)
 
             elif isinstance(item, EditableTextBlock):
                 font = item.font()
@@ -1303,6 +1320,7 @@ Date:""")
         self.stroke_size_spin.blockSignals(False)
         self.stroke_style_combo.blockSignals(False)
         self.stroke_pencap_combo.blockSignals(False)
+        self.join_style_combo.blockSignals(False)
         self.fill_color_btn.blockSignals(False)
         self.outline_color_btn.blockSignals(False)
         self.font_choice_combo.blockSignals(False)
@@ -2205,6 +2223,13 @@ Date:""")
                 elif tab_name == 'Canvas':
                     self.tab_view.addTab(self.canvas_tab, tab_name)
                     self.tab_view.setCurrentWidget(self.canvas_tab)
+
+    def close_tab(self, i):
+        if self.tab_view.count() > 1:
+            self.tab_view.removeTab(i)
+
+        else:
+            pass
 
 
 if __name__ == '__main__':

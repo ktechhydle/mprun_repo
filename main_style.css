@@ -258,6 +258,14 @@ QTabBar::scroller {
   width: 0px; /* Set the width of the scroller */
 }
 
+QTabBar::close-button {
+    image: url(logos and icons/UI Icons/close_icon.png);
+}
+
+QTabBar::close-button:hover {
+    background: #424242;
+}
+
 QTabBar::scroller:next, QTabBar::scroller:prev {
   width: 0px;
 }
