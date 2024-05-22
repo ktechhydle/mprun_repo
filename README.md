@@ -69,8 +69,8 @@ This is important because it ensures athletes don't go into competitions without
 Home screen UI
 ![mprun_homescreen_screenshot.png](Examples%2Fmprun_homescreen_screenshot.png)
 
-VectorSpace UI
-![mprun_ui_screenshot.png](Examples%2Fmprun_ui_screenshot.png)
+Workspace UI
+![Screenshot 2024-05-21 191939](https://github.com/ktechhydle/mprun_repo/assets/151480646/e6ccd3b5-f269-48a0-bf3f-7b88b065d2e1)
 
 Halfipe run example
 ![mprun_halfpipe_run_example](https://github.com/ktechhydle/mprun_repo/assets/151480646/ce52950f-e929-4f02-a482-2adcc3d061be)
