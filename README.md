@@ -23,11 +23,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Use the `Line and Label` tool to create Leader lines along your Path.
 - Edit these labels to include your tricks along each part of the Path.
 - Lock Element positions to prevent further editing.
-### 4. (Optional) Create a trick table:
-- Use the `Trick Table` tool to create a table displaying all of the important run information in your file.
-- Edit these tables as need.
-- Lock Element positions to prevent further editing.
-### 5. And it's that simple. 
+### 4. And it's that simple. 
 > [!IMPORTANT]
 > MPRUN can be a simple software, and a powerful software when necessary.
 
