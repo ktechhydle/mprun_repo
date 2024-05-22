@@ -4,6 +4,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
 from undo_commands import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 import time
 
 class CustomGraphicsView(QGraphicsView):

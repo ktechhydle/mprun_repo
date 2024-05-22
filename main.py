@@ -6,6 +6,7 @@ import vtracer
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5.QtOpenGL import *
 from PyQt5.QtSvg import *
 from PyQt5.Qt import *
 from graphics_framework import *
@@ -830,7 +831,7 @@ class MPRUN(QMainWindow):
         self.view_toolbar.addWidget(self.rotate_sceen_spin)
 
     def create_view(self):
-        # QGraphicsView Logic (messy but whatever)
+        # QGraphicsView Logic
         self.canvas_view = CustomGraphicsView(self.canvas,
                                               self.path_btn,
                                               self.label_btn,
@@ -841,9 +842,13 @@ class MPRUN(QMainWindow):
                                               self.select_btn,
                                               self.scale_btn,
                                               self.pan_btn)
+        self.opengl_widget = QGLWidget()
+        self.canvas_view.setViewport(self.opengl_widget)
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas)
+
+        # Update default fonts, colors, etc.
         font = QFont()
         font.setFamily(self.font_choice_combo.currentText())
         font.setPixelSize(self.font_size_spin.value())
@@ -855,16 +860,13 @@ class MPRUN(QMainWindow):
         data1 = self.stroke_style_combo.itemData(index1)
         index2 = self.stroke_pencap_combo.currentIndex()
         data2 = self.stroke_pencap_combo.itemData(index2)
-
         pen = QPen()
         pen.setColor(QColor(self.outline_color.get()))
         pen.setWidth(self.stroke_size_spin.value())
         pen.setJoinStyle(self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
         pen.setStyle(data1)
         pen.setCapStyle(data2)
-
         brush = QBrush(QColor(self.fill_color.get()))
-
         self.canvas_view.update_pen(pen)
         self.canvas_view.update_stroke_fill_color(brush)
         self.canvas_view.update_font(font, QColor(self.font_color.get()))
