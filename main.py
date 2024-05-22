@@ -842,7 +842,7 @@ class MPRUN(QMainWindow):
                                               self.select_btn,
                                               self.scale_btn,
                                               self.pan_btn)
-        self.opengl_widget = QGLWidget()
+        self.opengl_widget = QOpenGLWidget()
         self.canvas_view.setViewport(self.opengl_widget)
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
