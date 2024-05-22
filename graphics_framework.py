@@ -653,6 +653,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def __init__(self, undoStack):
         super().__init__()
+        self.file_name = None
         self.undo_stack = undoStack
         self.scale_btn = None
 
@@ -729,6 +730,28 @@ class CustomGraphicsScene(QGraphicsScene):
 
         for item in self.items():
             item.update()
+
+    def save_as(self, filename):
+        pass
+
+    def save(self):
+        pass
+
+    def open(self, filename):
+        pass
+
+    def create_new(self):
+        warning = QMessageBox(self)
+        warning.setIcon(QMessageBox.Warning)
+        warning.setWindowTitle('New File')
+        warning.setText('The document has been modified. Would you like to save any changes?')
+        warning.setStandardButtons(QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Cancel)
+        warning.setDefaultButton(QMessageBox.StandardButton.Save)
+
+        result = warning.exec_()
+
+        if result == QMessageBox.StandardButton.Save:
+            pass
 
 
 

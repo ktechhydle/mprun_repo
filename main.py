@@ -113,6 +113,7 @@ class MPRUN(QMainWindow):
         text_action.triggered.connect(self.update_font)
 
         smooth_action = QAction('Smooth Path', self)
+        smooth_action.setShortcut(QKeySequence('S'))
         smooth_action.triggered.connect(self.use_smooth_path)
 
         close_subpath_action = QAction('Close Path', self)
