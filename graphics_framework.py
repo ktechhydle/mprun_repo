@@ -61,7 +61,7 @@ class CustomGraphicsView(QGraphicsView):
         # Add methods for zooming
         self.zoomInFactor = 1.25
         self.zoomClamp = True
-        self.zoom = 20
+        self.zoom = 15
         self.zoomStep = 1
         self.zoomRange = [0, 100]
 
@@ -157,7 +157,7 @@ class CustomGraphicsView(QGraphicsView):
         p.setY(p.y())
         p.setX(p.x() + 10)
         QToolTip.showText(p, f'''x: {int(p.x())} 
-    y: {int(p.y())}''')
+y: {int(p.y())}''')
 
         if self.button.isChecked():
             self.on_path_draw(event)
@@ -657,6 +657,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, undoStack):
         super().__init__()
         self.file_name = ''
+        self.mpversion = '1.0.0'
         self.undo_stack = undoStack
         self.scale_btn = None
 
@@ -736,33 +737,45 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def serialize_scene(self):
         items = []
+        items.append({'version': self.mpversion})
+
         for item in self.items():
             if isinstance(item, CustomPathItem):
                 items.append({
                     'type': 'path',
-                    'geompath': self.serialize_path(item.path()),
+                    'zval': item.zValue(),
                     'pos': self.serialize_pos(item.pos()),
+                    'geompath': self.serialize_path(item.path()),
                     'pen': self.serialize_pen(item.pen()),
                     'brush': self.serialize_brush(item.brush()),
-                    'zval': item.zValue(),
+                    'addtext': True if item.add_text is True else False,
                     'text': item.text_along_path if item.add_text is True else None,
                     'font': self.serialize_font(item.text_along_path_font) if item.add_text is True else None,
                     'text_spacing': item.text_along_path_spacing if item.add_text is True else None,
                     'text_color': self.serialize_color(item.text_along_path_color) if item.add_text is True else None,
-                    'starttextfrombeginning': True if item.start_text_from_beginning is True else False,
-                    'smooth': True if item.smooth is True else False,
-
+                    'starttextfrombeginning': item.start_text_from_beginning,
+                    'smooth': item.smooth,
                 })
 
         return {'scene': items}
 
     def serialize_path(self, path):
-        # Convert QPainterPath to a JSON-serializable format
         elements = []
         for i in range(path.elementCount()):
             element = path.elementAt(i)
             elements.append({'x': element.x, 'y': element.y, 'type': element.type})
         return elements
+
+    def deserialize_path(self, elements):
+        path = QPainterPath()
+        for elem in elements:
+            if elem['type'] == 0:  # MoveToElement
+                path.moveTo(elem['x'], elem['y'])
+            elif elem['type'] == 1:  # LineToElement
+                path.lineTo(elem['x'], elem['y'])
+            elif elem['type'] == 2:  # CurveToElement
+                pass
+        return path
 
     def serialize_pen(self, pen):
         return {
@@ -773,15 +786,32 @@ class CustomGraphicsScene(QGraphicsScene):
             'penjoin': pen.joinStyle()
         }
 
+    def deserialize_pen(self, pen_data):
+        pen = QPen()
+        pen.setColor(self.deserialize_color(pen_data['color']))
+        pen.setWidth(pen_data['width'])
+        pen.setStyle(pen_data['style'])
+        pen.setCapStyle(pen_data['pencap'])
+        pen.setJoinStyle(pen_data['penjoin'])
+        return pen
+
     def serialize_pos(self, pos):
-        return {'x': pos.x(),
-                'y': pos.y()}
+        return {'x': pos.x(), 'y': pos.y()}
+
+    def deserialize_pos(self, pos_data):
+        return QPointF(pos_data['x'], pos_data['y'])
 
     def serialize_brush(self, brush):
         return {
             'color': self.serialize_color(brush.color()),
             'style': brush.style()
         }
+
+    def deserialize_brush(self, brush_data):
+        brush = QBrush()
+        brush.setColor(self.deserialize_color(brush_data['color']))
+        brush.setStyle(brush_data['style'])
+        return brush
 
     def serialize_color(self, color):
         return {
@@ -790,6 +820,9 @@ class CustomGraphicsScene(QGraphicsScene):
             'b': color.blue(),
             'a': color.alpha()
         }
+
+    def deserialize_color(self, color_data):
+        return QColor(color_data['r'], color_data['g'], color_data['b'], color_data['a'])
 
     def serialize_font(self, font):
         return {
@@ -802,13 +835,54 @@ class CustomGraphicsScene(QGraphicsScene):
             'spacing': font.letterSpacing()
         }
 
+    def deserialize_font(self, font_data):
+        font = QFont()
+        font.setFamily(font_data['family'])
+        font.setPixelSize(font_data['pixelsize'])
+        font.setWeight(font_data['weight'])
+        font.setItalic(font_data['italic'])
+        font.setBold(font_data['bold'])
+        font.setUnderline(font_data['underline'])
+        font.setLetterSpacing(QFont.AbsoluteSpacing, font_data['spacing'])
+        return font
+
     def deserialize_scene(self, data):
-        self.clear()
-        for item_data in data['scene']:
-            if item_data['type'] == 'path':
-                item = CustomPathItem(item_data['geompath'])
-                item.setPen(item_data['pen'])
-                self.addItem(item)
+        try:
+            self.clear()
+            for item_data in data['scene']:
+                if item_data['type'] == 'path':
+                    item = CustomPathItem(self.deserialize_path(item_data['geompath']))
+                    item.setPen(self.deserialize_pen(item_data['pen']))
+                    item.setBrush(self.deserialize_brush(item_data['brush']))
+                    item.setPos(self.deserialize_pos(item_data['pos']))
+                    item.setZValue(item_data['zval'])
+                    if item_data.get('addtext') == True:
+                        item.add_text = True
+                        item.text_along_path = item_data['text']
+                        item.text_along_path_font = self.deserialize_font(item_data['font'])
+                        item.text_along_path_spacing = item_data['text_spacing']
+                        item.text_along_path_color = self.deserialize_color(item_data['text_color'])
+                        item.start_text_from_beginning = item_data['starttextfrombeginning']
+                        item.smooth = item_data['smooth']
+                    self.addItem(item)
+
+        except Exception as e:
+            print(e)
+
+            '''if item_data['version'] != self.mpversion:
+                ok, _ = QMessageBox.critical(self.parent(),
+                                     'Older Version',
+                                     "You are attempting to open a file saved in an older version of MPRUN. "
+                                     "Are you sure you want to open this file?"
+                                             )
+
+                if ok:
+                    item_data['version'] = self.mpversion
+                    self.clear()
+                    if item_data['type'] == 'path':
+                        item = CustomPathItem(self.deserialize_path(item_data['geompath']))
+                        item.setPen(self.deserialize_pen(item_data['pen']))
+                        self.addItem(item)'''
 
     def save_as(self, filename):
         self.file_name = filename
@@ -826,11 +900,14 @@ class CustomGraphicsScene(QGraphicsScene):
             with open(self.file_name, 'w') as file:
                 json.dump(data, file)
 
-    def open(self, filename):
-        with open(filename, 'r') as file:
-            data = json.load(file)
-            self.deserialize_scene(data)
-        self.file_name = filename
+    def open(self):
+        filename, _ = QFileDialog.getOpenFileName(self.parent(), 'Open File', '', 'MPRUN files (*.mp)')
+
+        if filename:
+            with open(filename, 'r') as file:
+                data = json.load(file)
+                self.deserialize_scene(data)
+            self.file_name = filename
 
     def create_new(self):
         warning = QMessageBox(self)

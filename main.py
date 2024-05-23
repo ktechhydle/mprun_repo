@@ -94,6 +94,9 @@ class MPRUN(QMainWindow):
         save_action = QAction('Save', self)
         save_action.triggered.connect(lambda: self.canvas.save())
 
+        open_action = QAction('Open', self)
+        open_action.triggered.connect(lambda: self.canvas.open())
+
         export_action = QAction('Export', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
         export_action.triggered.connect(self.choose_export)
@@ -215,6 +218,7 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(insert_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(save_action)
+        self.file_menu.addAction(open_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
         self.file_menu.addSeparator()
@@ -621,8 +625,8 @@ class MPRUN(QMainWindow):
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
         self.layer_spin.valueChanged.connect(self.use_set_layer)
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
-        self.x_pos_spin.valueChanged.connect(self.use_set_item_x)
-        self.y_pos_spin.valueChanged.connect(self.use_set_item_y)
+        self.x_pos_spin.valueChanged.connect(self.use_set_item_pos)
+        self.y_pos_spin.valueChanged.connect(self.use_set_item_pos)
         self.width_scale_spin.valueChanged.connect(self.use_scale_x)
         self.height_scale_spin.valueChanged.connect(self.use_scale_y)
         self.rotate_item_spin.valueChanged.connect(self.use_rotate)
@@ -1130,14 +1134,13 @@ Date:""")
         self.text_along_path_tab.spacing_spin.blockSignals(True)
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
-        rect = self.canvas.selectedItemsBoundingRect()
-
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 self.selection_label.setText(item.toolTip())
 
                 if len(self.canvas.selectedItems()) > 1:
                     self.selection_label.setText('Combined Selection')
+
 
         else:
             self.selection_label.setText('No Selection')
@@ -1153,8 +1156,8 @@ Date:""")
             self.text_along_path_tab.spacing_spin.setValue(0)
 
         for item in self.canvas.selectedItems():
-            self.x_pos_spin.setValue(int(rect.x()))
-            self.y_pos_spin.setValue(int(rect.y()))
+            self.x_pos_spin.setValue(int(item.sceneBoundingRect().x()))
+            self.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
             self.rotate_item_spin.setValue(int(item.rotation()))
             self.opacity_spin.setValue(int(item.opacity() * 100))
             self.width_scale_spin.setValue(float(item.transform().m11() * 10))
@@ -1381,6 +1384,7 @@ Date:""")
 
     def use_select(self):
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+        self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
 
     def use_select_all(self):
         for item in self.canvas.items():
@@ -1591,19 +1595,36 @@ Date:""")
             elif isinstance(item, LeaderLineItem):
                 item.duplicate()
 
-    def use_set_item_x(self, value):
+    def use_set_item_pos(self):
         self.canvas.blockSignals(True)  # Block signals to prevent recursive updates
         try:
-            for item in self.canvas.selectedItems():
-                item.setPos(value, item.y())
-        finally:
-            self.canvas.blockSignals(False)
+            x = self.x_pos_spin.value()
+            y = self.y_pos_spin.value()
 
-    def use_set_item_y(self, value):
-        self.canvas.blockSignals(True)  # Block signals to prevent recursive updates
-        try:
-            for item in self.canvas.selectedItems():
-                item.setPos(item.x(), value)
+            selected_items = self.canvas.selectedItems()
+            if len(selected_items) > 1:
+                # Calculate the average position of all selected items
+                total_x = sum(item.pos().x() for item in selected_items)
+                total_y = sum(item.pos().y() for item in selected_items)
+                avg_x = total_x / len(selected_items)
+                avg_y = total_y / len(selected_items)
+
+                # Calculate the offset from the average position to the new position
+                offset_x = x - avg_x
+                offset_y = y - avg_y
+
+                # Move each selected item by the calculated offset
+                for item in selected_items:
+                    item.moveBy(offset_x, offset_y)
+            else:
+                # Move each selected item to the new position
+                for item in selected_items:
+                    # Calculate the new position for each item based on its bounding rect's top left corner
+                    bounding_rect = item.boundingRect()
+                    offset = bounding_rect.topLeft()
+                    new_pos = QPointF(x - offset.x(), y - offset.y())
+                    item.setPos(new_pos)
+
         finally:
             self.canvas.blockSignals(False)
 
