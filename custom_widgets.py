@@ -181,7 +181,7 @@ class StrokeLabel(QLabel):
         self.stroke_style_combo.setItemData(2, QPixmap('logos and icons/UI Icons/dashed_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setItemData(3, QPixmap('logos and icons/UI Icons/dashed_dotted_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setItemData(4, QPixmap('logos and icons/UI Icons/dashed_dot_dot_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setIconSize(QSize(40, 10))
+        self.stroke_style_combo.setIconSize(QSize(65, 20))
         self.stroke_pencap_options = {'Square Cap': Qt.SquareCap,
                                       'Flat Cap': Qt.FlatCap,
                                       'Round Cap': Qt.RoundCap}
