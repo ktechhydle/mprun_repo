@@ -724,7 +724,7 @@ class MPRUN(QMainWindow):
         self.pen_btn = QAction(QIcon('logos and icons/Tool Icons/pen_draw_icon.png'), '', self)
         self.pen_btn.setCheckable(True)
         self.pen_btn.setToolTip('''Pen Draw Tool:
-        Key-L''')
+        Command+L (MacOS) or Control+L (Windows)''')
         self.pen_btn.setShortcut(QKeySequence('Ctrl+L'))
         self.pen_btn.triggered.connect(self.update_pen)
         self.pen_btn.triggered.connect(self.use_pen_tool)

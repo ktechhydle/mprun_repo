@@ -77,8 +77,6 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Export multiple file types:
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
-- Vector conversion:
-  	> Use the `Image Trace` panel to convert raster imagery to vector formats.
 - Pen and fill customization:
 	> Customize pen styles, caps, and more, also included is the ability to change fill colors in the `Appearance` panel.
 - Font editing:
