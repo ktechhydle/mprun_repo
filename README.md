@@ -24,25 +24,65 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 > [!IMPORTANT]
 > MPRUN can be a simple software, and a powerful software when necessary.
 
+# Full Toolset
+- Select Tool:
+	> Select elements by dragging, or clicking on multiple elements with Control + Left Button.
+- Pan Tool:
+	> Pan the canvas with the left mouse button with the tool active.
+- Path Draw Tool:
+	> Draw paths and shapes with the path tool, use different colors, pen styles and more.
+- Pen Draw Tool:
+	> Similar to the Path Draw Tool, but as you draw, the path smooths via a Savitzky–Golay Filter resulting in beautiful curves (less hand drawn appearance).
+- Line and Label Tool:
+	> Draw AutoCAD like leader lines and labels with editable text.
+- Text Tool:
+	> Place text anywhere on the canvas, click and drag to position the text before placing.
+- Scale Tool:
+	> Interactively scale elements with the mouse by clicking and dragging on the element.
+- Hide Element Tool:
+	> Hide selected elements from the canvas (they will not show on export).
+- Unhide All Tool:
+	> Unhide any previously hidden elements.
+- Add Canvas Tool:
+	> Rearrange or add canvases to the scene by clicking and dragging with the Shift key active, optionally go to the `Canvas` panel to edit sizes and names for selected canvases.
+- Insert Image Tool:
+	> Insert various image types into the scene (including SVG!).
+
+# Additional tools (found in the `Tools` and `Edit` menu)
+- Smooth Path Tool:
+	> Smooth selected path elements (if not already smoothed) with the Savitzky–Golay Filter.
+- Close Path Tool:
+	> Close selected path elements into solid shapes.
+- Add Text Along Path Tool:
+	> Brings up the `Text Along Path` panel, and allows you to type text along selected path elements (the text font and color is also customizable with the `Characters` panel).
+- Name Tool:
+	> Name selected elements to whatever name you want (canvas items are not nameable with this tool).
+- Duplicate Tool:
+	> Duplicate selected elements (canvas items do not have the ability to duplicate).
+- Group Selected Tool:
+	> Group selected elements.
+- Ungroup Selected Tool:
+	> Ungroup selected element groups.
+- Trace Image Tool:
+	> Trace imported Bitmap images into SVG format (this tool is customizable with the `Image Trace` panel).
+
 # Additional Features
 - Vector Graphics:
-	> MPRUN uses a Vector Graphics Engine (`QGraphicsScene`), further leveraged by OpenGL.
-- Panning and zooming:
-	> Pan and zoom on the Canvas.
+	> MPRUN uses a Vector Graphics Engine, and recently added OpenGL functions to make rendering significantly faster.
 - Layer management:
-	> Elements can be raised and lowered or set to a specific layer height.
+	> Elements can be raised and lowered or set to a specific layer height via the `Layers` panel.
 - Elements are named:
 	> You will often see elements named `Path` or `Group` on the Canvas. ***Hover your mouse over an element to see the element name, or name the element via the `Name` tool.***
 - Insert different files:
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Export multiple file types:
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
-- Add text blocks:
-	> Add `Text` objects on to the Canvas by clicking a point on the scene.
 - Vector conversion:
-  	> Use the `Vectorize` tool to convert raster imagery to vector formats.
-- Path Simplifying:
-  	> Simplify drawn paths to achieve a less hand drawn appearance.
+  	> Use the `Image Trace` panel to convert raster imagery to vector formats.
+- Pen and fill customization:
+	> Customize pen styles, caps, and more, also included is the ability to change fill colors in the `Appearance` panel.
+- Font editing:
+	> Edit font families, colors, and more in the `Characters` panel.
 > [!TIP]
 > - Snap-to-grid functionality:
 > 	> Enable `GSNAP` in the action toolbar to enable grid-snapping for grouped items.
