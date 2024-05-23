@@ -7,6 +7,7 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from scipy.interpolate import splprep, splev
+from scipy.signal import savgol_filter
 from skimage.measure import *
 from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
@@ -211,11 +212,16 @@ class CustomPathItem(QGraphicsPathItem):
     def smooth_path(self, path):
         vertices = [(point.x(), point.y()) for point in path.toSubpathPolygons()[0]]
         x, y = zip(*vertices)
-        tck, u = splprep([x, y], s=0)
-        smooth_x, smooth_y = splev(np.linspace(0, 1, len(vertices) * 2), tck)  # Reduce the granularity
+
+        wl = 21
+        po = 3
+
+        # Apply Savitzky-Golay filter for smoothing
+        smooth_x = savgol_filter(x, window_length=wl, polyorder=po)
+        smooth_y = savgol_filter(y, window_length=wl, polyorder=po)
 
         smoothed_vertices = np.column_stack((smooth_x, smooth_y))
-        simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=2.5)  # Adjust the tolerance as needed
+        simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=0.25)  # Adjust the tolerance as needed
 
         smooth_path = QPainterPath()
         smooth_path.moveTo(simplified_vertices[0][0], simplified_vertices[0][1])

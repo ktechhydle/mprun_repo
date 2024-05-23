@@ -367,7 +367,11 @@ y: {int(p.y())}''')
                 self.canvas.addItem(self.temp_path_item)
 
                 if self.temp_path_item.path().elementCount() > 4:
-                    self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path()))
+                    try:
+                        self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path()))
+
+                    except Exception:
+                        pass
 
                 self.canvas.update()
 
