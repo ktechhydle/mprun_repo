@@ -6,6 +6,7 @@ from custom_classes import *
 from undo_commands import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+import xml.etree.ElementTree as ET
 import time
 import json
 
@@ -656,7 +657,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def __init__(self, undoStack):
         super().__init__()
-        self.file_name = ''
+        self.file_name = None
         self.mpversion = '1.0.0'
         self.undo_stack = undoStack
         self.scale_btn = None
@@ -735,178 +736,73 @@ class CustomGraphicsScene(QGraphicsScene):
         for item in self.items():
             item.update()
 
-    def serialize_scene(self):
-        items = []
-        items.append({'version': self.mpversion})
-
-        for item in self.items():
-            if isinstance(item, CustomPathItem):
-                items.append(item.serialize())
-
-        return {'scene': items}
-
-    def serialize_path(self, path):
-        elements = []
-        for i in range(path.elementCount()):
-            element = path.elementAt(i)
-            elements.append({'x': element.x, 'y': element.y, 'type': element.type})
-        return elements
-
-    def deserialize_path(self, elements):
-        path = QPainterPath()
-        for elem in elements:
-            if elem['type'] == 0:  # MoveToElement
-                path.moveTo(elem['x'], elem['y'])
-            elif elem['type'] == 1:  # LineToElement
-                path.lineTo(elem['x'], elem['y'])
-            elif elem['type'] == 2:  # CurveToElement
-                pass
-        return path
-
-    def serialize_pen(self, pen):
-        return {
-            'color': self.serialize_color(pen.color()),
-            'width': pen.width(),
-            'style': pen.style(),
-            'pencap': pen.capStyle(),
-            'penjoin': pen.joinStyle()
-        }
-
-    def deserialize_pen(self, pen_data):
-        pen = QPen()
-        pen.setColor(self.deserialize_color(pen_data['color']))
-        pen.setWidth(pen_data['width'])
-        pen.setStyle(pen_data['style'])
-        pen.setCapStyle(pen_data['pencap'])
-        pen.setJoinStyle(pen_data['penjoin'])
-        return pen
-
-    def serialize_pos(self, pos):
-        return {'x': pos.x(), 'y': pos.y()}
-
-    def deserialize_pos(self, pos_data):
-        return QPointF(pos_data['x'], pos_data['y'])
-
-    def serialize_brush(self, brush):
-        return {
-            'color': self.serialize_color(brush.color()),
-            'style': brush.style()
-        }
-
-    def deserialize_brush(self, brush_data):
-        brush = QBrush()
-        brush.setColor(self.deserialize_color(brush_data['color']))
-        brush.setStyle(brush_data['style'])
-        return brush
-
-    def serialize_color(self, color):
-        return {
-            'r': color.red(),
-            'g': color.green(),
-            'b': color.blue(),
-            'a': color.alpha()
-        }
-
-    def deserialize_color(self, color_data):
-        return QColor(color_data['r'], color_data['g'], color_data['b'], color_data['a'])
-
-    def serialize_font(self, font):
-        return {
-            'family': font.family(),
-            'pixelsize': font.pixelSize(),
-            'weight': font.weight(),
-            'italic': font.italic(),
-            'bold': font.bold(),
-            'underline': font.underline(),
-            'spacing': font.letterSpacing()
-        }
-
-    def deserialize_font(self, font_data):
-        font = QFont()
-        font.setFamily(font_data['family'])
-        font.setPixelSize(font_data['pixelsize'])
-        font.setWeight(font_data['weight'])
-        font.setItalic(font_data['italic'])
-        font.setBold(font_data['bold'])
-        font.setUnderline(font_data['underline'])
-        font.setLetterSpacing(QFont.AbsoluteSpacing, font_data['spacing'])
-        return font
-
-    def deserialize_scene(self, data):
+    def loadSvg(self, fileName):
         try:
-            for item_data in data['scene']:
-                if item_data['item_type'] == 'path':
-                    item = CustomPathItem(self.deserialize_path(item_data['geompath']))
-                    item.setPen(self.deserialize_pen(item_data['pen']))
-                    item.setPos(self.deserialize_pos(item_data['pos']))
-                    '''item.setBrush(self.deserialize_brush(item_data['brush']))
-                    item.setZValue(item_data['zval'])
-                    if item_data.get('addtext') == True:
-                        item.add_text = True
-                        item.text_along_path = item_data['text']
-                        item.text_along_path_font = self.deserialize_font(item_data['font'])
-                        item.text_along_path_spacing = item_data['text_spacing']
-                        item.text_along_path_color = self.deserialize_color(item_data['text_color'])
-                        item.start_text_from_beginning = item_data['starttextfrombeginning']
-                    item.smooth = item_data['smooth']'''
-                    self.addItem(item)
+            tree = ET.parse(fileName)
+            root = tree.getroot()
+
+            ns = {'svg': 'http://www.w3.org/2000/svg'}
+
+            # Load rectangles
+            for elem in root.findall('.//svg:rect', ns):
+                x = float(elem.get('x', 0))
+                y = float(elem.get('y', 0))
+                width = float(elem.get('width', 0))
+                height = float(elem.get('height', 0))
+                rect_item = CustomRectangleItem(QRectF(x, y, width, height))
+                self.addItem(rect_item)
+
+            # Load text
+            for elem in root.findall('.//svg:text', ns):
+                x = float(elem.get('x', 0))
+                y = float(elem.get('y', 0))
+                text = elem.text
+                text_item = EditableTextBlock(text)
+                text_item.setPos(QPointF(x, y))
+                self.addItem(text_item)
 
         except Exception as e:
             print(e)
 
-            '''if item_data['version'] != self.mpversion:
-                ok, _ = QMessageBox.critical(self.parent(),
-                                     'Older Version',
-                                     "You are attempting to open a file saved in an older version of MPRUN. "
-                                     "Are you sure you want to open this file?"
-                                             )
+    def open(self, parent):
+        fileName, _ = QFileDialog.getOpenFileName(self.parent(), "Open File", "", "MPRUN SVG (*.svg)")
 
-                if ok:
-                    item_data['version'] = self.mpversion
-                    self.clear()
-                    if item_data['type'] == 'path':
-                        item = CustomPathItem(self.deserialize_path(item_data['geompath']))
-                        item.setPen(self.deserialize_pen(item_data['pen']))
-                        self.addItem(item)'''
+        if fileName:
+            self.clear()
+            self.loadSvg(fileName)
+            self.file_name = fileName
+            parent.setWindowTitle(f'MPRUN - {fileName}')
+            self.file_name = fileName
 
-    def save_as(self, filename):
-        self.file_name = filename
-        self.save()
+    def save(self, parent):
+        if self.file_name is not None:
+            svgGenerator = QSvgGenerator()
+            svgGenerator.setFileName(self.file_name)
+            svgGenerator.setSize(self.sceneRect().size().toSize())
+            svgGenerator.setViewBox(self.sceneRect())
+            svgGenerator.setTitle("SVG Document")
+            svgGenerator.setDescription("Generated by PyQt QGraphicsScene")
 
-    def save(self):
-        if self.file_name == '':
-            self.file_name, _ = QFileDialog.getSaveFileName(self.parent(), "Save File", "", "MPRUN Files (*.mp)")
-            data = self.serialize_scene()
-            with open(self.file_name, 'w') as file:
-                json.dump(data, file)
+            painter = QPainter(svgGenerator)
+            self.render(painter, target=self.sceneRect(), source=self.sceneRect())
+            painter.end()
 
         else:
-            data = self.serialize_scene()
-            with open(self.file_name, 'w') as file:
-                json.dump(data, file)
+            fileName, _ = QFileDialog.getSaveFileName(self.parent(), "Save File", "", "MPRUN SVG (*.svg)")
+            if fileName:
+                svgGenerator = QSvgGenerator()
+                svgGenerator.setFileName(fileName)
+                svgGenerator.setSize(self.sceneRect().size().toSize())
+                svgGenerator.setViewBox(self.sceneRect())
+                svgGenerator.setTitle("SVG Document")
+                svgGenerator.setDescription("Generated by PyQt QGraphicsScene")
 
-    def open(self):
-        filename, _ = QFileDialog.getOpenFileName(self.parent(), 'Open File', '', 'MPRUN files (*.mp)')
+                painter = QPainter(svgGenerator)
+                self.render(painter, target=self.sceneRect(), source=self.sceneRect())
+                painter.end()
 
-        if filename:
-            with open(filename, 'r') as file:
-                data = json.load(file)
-                self.deserialize_scene(data)
-            self.file_name = filename
-
-    def create_new(self):
-        warning = QMessageBox(self)
-        warning.setIcon(QMessageBox.Warning)
-        warning.setWindowTitle('New File')
-        warning.setText('The document has been modified. Would you like to save any changes?')
-        warning.setStandardButtons(QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Cancel)
-        warning.setDefaultButton(QMessageBox.StandardButton.Save)
-
-        result = warning.exec_()
-
-        if result == QMessageBox.StandardButton.Save:
-            pass
-
+                self.file_name = fileName
+                parent.setWindowTitle(f'MPRUN - {fileName}')
 
 
 
