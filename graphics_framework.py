@@ -404,7 +404,10 @@ y: {int(p.y())}''')
                     path_item.setPen(self.pen)
                     path_item.setZValue(0)
                     path_item.setBrush(self.stroke_fill)
-                    path_item.setPath(path_item.smooth_path(path_item.path()))
+                    try:
+                        path_item.setPath(path_item.smooth_path(path_item.path()))
+                    except Exception:
+                        pass
 
                     # Add item
                     add_command = AddItemCommand(self.canvas, path_item)

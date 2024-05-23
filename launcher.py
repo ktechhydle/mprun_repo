@@ -71,8 +71,16 @@ class Dialog(CTk):
         frame_label.place(x=195, y=5)
 
         # Create new project button
-        create_project_btn = CTkButton(frame, text='Create New Project', text_color='white', fg_color='#525252', hover_color='gray', command=self.launch_project)
-        create_project_btn.place(x=20, y=40)
+        create_project_btn = CTkButton(self,
+                                       text='New File',
+                                       text_color='white',
+                                       fg_color='#1473e6',
+                                       hover_color='#0d66d0',
+                                       corner_radius=35,
+                                       width=100,
+                                       height=30,
+                                       command=self.launch_project)
+        create_project_btn.place(x=20, y=120)
 
         # Template dropdown
         self.values = {'Template 1: Default (1000 x 700, [Medium Quality])': 1,
