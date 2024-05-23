@@ -300,6 +300,31 @@ class CustomPathItem(QGraphicsPathItem):
                     painter.drawText(QPointF(0, -pen.width()), hw[i])
                     painter.restore()
 
+    def serialize(self):
+        items = {'item_type': 'path',
+         'zval': self.zValue(),
+         'x': self.pos().x(),
+         'y': self.pos().y(),
+         'geompath': self.scene().serialize_path(self.path()),
+         'pen': self.scene().serialize_pen(self.pen()),
+         'brush': self.scene().serialize_brush(self.brush()),
+         'addtext': True if self.add_text is True else False,
+         'text': self.text_along_path if self.add_text is True else False,
+         'font': self.serialize_font(self.text_along_path_font) if self.add_text is True else False,
+         'text_spacing': self.text_along_path_spacing if self.add_text is True else False,
+         'text_color': self.scene().serialize_color(self.text_along_path_color) if self.add_text is True else False,
+         'starttextfrombeginning': self.start_text_from_beginning,
+         'smooth': self.smooth,
+         }
+
+        return items
+
+    def deserialize(self, data):
+        path = QPainterPath()
+
+        for item_data in data:
+            pass
+
 class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):
         super().__init__(file)

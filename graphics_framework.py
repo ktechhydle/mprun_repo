@@ -741,21 +741,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
         for item in self.items():
             if isinstance(item, CustomPathItem):
-                items.append({
-                    'type': 'path',
-                    'zval': item.zValue(),
-                    'pos': self.serialize_pos(item.pos()),
-                    'geompath': self.serialize_path(item.path()),
-                    'pen': self.serialize_pen(item.pen()),
-                    'brush': self.serialize_brush(item.brush()),
-                    'addtext': True if item.add_text is True else False,
-                    'text': item.text_along_path if item.add_text is True else None,
-                    'font': self.serialize_font(item.text_along_path_font) if item.add_text is True else None,
-                    'text_spacing': item.text_along_path_spacing if item.add_text is True else None,
-                    'text_color': self.serialize_color(item.text_along_path_color) if item.add_text is True else None,
-                    'starttextfrombeginning': item.start_text_from_beginning,
-                    'smooth': item.smooth,
-                })
+                items.append(item.serialize())
 
         return {'scene': items}
 
@@ -848,13 +834,12 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def deserialize_scene(self, data):
         try:
-            self.clear()
             for item_data in data['scene']:
-                if item_data['type'] == 'path':
+                if item_data['item_type'] == 'path':
                     item = CustomPathItem(self.deserialize_path(item_data['geompath']))
                     item.setPen(self.deserialize_pen(item_data['pen']))
-                    item.setBrush(self.deserialize_brush(item_data['brush']))
                     item.setPos(self.deserialize_pos(item_data['pos']))
+                    '''item.setBrush(self.deserialize_brush(item_data['brush']))
                     item.setZValue(item_data['zval'])
                     if item_data.get('addtext') == True:
                         item.add_text = True
@@ -863,7 +848,7 @@ class CustomGraphicsScene(QGraphicsScene):
                         item.text_along_path_spacing = item_data['text_spacing']
                         item.text_along_path_color = self.deserialize_color(item_data['text_color'])
                         item.start_text_from_beginning = item_data['starttextfrombeginning']
-                        item.smooth = item_data['smooth']
+                    item.smooth = item_data['smooth']'''
                     self.addItem(item)
 
         except Exception as e:
