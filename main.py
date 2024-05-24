@@ -475,9 +475,11 @@ class MPRUN(QMainWindow):
         opacity_hlayout.layout.addWidget(self.opacity_spin)
 
         self.gsnap_check_btn = QCheckBox(self)
-        self.gsnap_check_btn.setText('GSNAP Enabled')
+        self.gsnap_check_btn.setText('Grid Enabled')
         self.gsnap_grid_spin = QSpinBox(self)
-        grid_size_label = QLabel('GSNAP Grid Size:', self)
+        self.gsnap_grid_spin.setFixedWidth(80)
+        self.gsnap_grid_spin.setSuffix(' pt')
+        grid_size_label = QLabel('Grid Size:', self)
         self.gsnap_grid_spin.setValue(10)
         self.gsnap_grid_spin.setMinimum(1)
         self.gsnap_grid_spin.setMaximum(1000)
@@ -486,6 +488,9 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
         horizontal_widget_for_stroke_fill.layout.addWidget(self.close_subpath_check_btn)
+        gsnap_hlayout = ToolbarHorizontalLayout()
+        gsnap_hlayout.layout.addWidget(grid_size_label)
+        gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
 
         #_____ Layers tab widgets _____
         layers_label = QLabel('Layers', self)
@@ -650,8 +655,7 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(quick_actions_label)
         self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
         self.properties_tab_layout.addWidget(HorizontalSeparator())
-        self.properties_tab_layout.addWidget(grid_size_label)
-        self.properties_tab_layout.addWidget(self.gsnap_grid_spin)
+        self.properties_tab_layout.addWidget(gsnap_hlayout)
 
         # Elements Tab Widgets
         self.characters_tab_layout.addWidget(HorizontalSeparator())
