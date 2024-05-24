@@ -837,7 +837,6 @@ class MPRUN(QMainWindow):
                                               self.path_btn,
                                               self.label_btn,
                                               self.pen_btn,
-                                              self.close_subpath_check_btn,
                                               self.add_text_btn,
                                               self.add_canvas_btn,
                                               self.select_btn,

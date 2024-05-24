@@ -15,7 +15,6 @@ class CustomGraphicsView(QGraphicsView):
                  button,
                  button2,
                  smooth_btn,
-                 option_btn,
                  button4,
                  add_canvas_btn,
                  select_btn,
@@ -39,7 +38,6 @@ class CustomGraphicsView(QGraphicsView):
         # Set widgets
         self.button = button
         self.button2 = button2
-        self.button3 = option_btn
         self.pen_btn = smooth_btn
         self.text_btn = button4
         self.add_canvas_btn = add_canvas_btn
@@ -164,10 +162,12 @@ y: {int(p.y())}''')
         if self.button.isChecked():
             self.on_path_draw(event)
             self.disable_item_flags()
+            super().mouseMoveEvent(event)
 
         elif self.pen_btn.isChecked():
             self.on_smooth_path_draw_draw(event)
             self.disable_item_flags()
+            super().mouseMoveEvent(event)
             
         elif self.text_btn.isChecked():
             super().mouseMoveEvent(event)
@@ -175,6 +175,7 @@ y: {int(p.y())}''')
         elif self.button2.isChecked():
             self.on_label(event)
             self.disable_item_flags()
+            super().mouseMoveEvent(event)
 
         elif self.scale_btn.isChecked():
             self.on_scale(event)
@@ -281,7 +282,7 @@ y: {int(p.y())}''')
     def applyZoom(self):
         # Reset the transformation and apply the stored zoom level
         self.resetTransform()
-        zoomFactor = self.zoomInFactor ** (self.zoom - 15)  # 15 is the initial zoom level
+        zoomFactor = self.zoomInFactor ** (self.zoom - 10)  # 15 is the initial zoom level
         self.scale(zoomFactor, zoomFactor)
 
     def on_path_draw_start(self, event):
@@ -326,10 +327,6 @@ y: {int(p.y())}''')
             # Check if there is a temporary path (if so, remove it now)
             if self.temp_path_item:
                 self.canvas.removeItem(self.temp_path_item)
-
-            # If stroke fill button is checked, close the subpath
-            if self.button3.isChecked():
-                self.path.closeSubpath()
 
             self.canvas.update()
 
@@ -384,13 +381,6 @@ y: {int(p.y())}''')
                 self.temp_path_item.setZValue(0)
                 self.canvas.addItem(self.temp_path_item)
 
-                if self.temp_path_item.path().elementCount() > 4:
-                    try:
-                        self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path()))
-
-                    except Exception:
-                        pass
-
                 self.canvas.update()
 
                 super().mouseMoveEvent(event)
@@ -409,10 +399,6 @@ y: {int(p.y())}''')
                     # Check if there is a temporary path (if so, remove it now)
                     if self.temp_path_item is not None:
                         self.canvas.removeItem(self.temp_path_item)
-
-                    # If stroke fill button is checked, close the subpath
-                    if self.button3.isChecked():
-                        self.path.closeSubpath()
 
                     self.canvas.update()
 

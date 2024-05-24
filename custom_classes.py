@@ -176,7 +176,7 @@ class CustomPathItem(QGraphicsPathItem):
         self.text_items = []
         self.add_text = False
         self.text_along_path = ''
-        self.text_along_path_font = QFont('Arial', 9)
+        self.text_along_path_font = QFont('Arial', 20)
         self.text_along_path_color = QColor('black')
         self.text_along_path_spacing = 3
         self.start_text_from_beginning = False
