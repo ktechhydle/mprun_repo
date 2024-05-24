@@ -304,7 +304,7 @@ class MPRUN(QMainWindow):
         # Properties Tab
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.properties_tab.setMaximumHeight(775)
+        self.properties_tab.setMaximumHeight(650)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
@@ -483,11 +483,8 @@ class MPRUN(QMainWindow):
         self.gsnap_grid_spin.setValue(10)
         self.gsnap_grid_spin.setMinimum(1)
         self.gsnap_grid_spin.setMaximum(1000)
-        self.close_subpath_check_btn = QCheckBox(self)
-        self.close_subpath_check_btn.setText('Close Path')
         horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
         horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
-        horizontal_widget_for_stroke_fill.layout.addWidget(self.close_subpath_check_btn)
         gsnap_hlayout = ToolbarHorizontalLayout()
         gsnap_hlayout.layout.addWidget(grid_size_label)
         gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
@@ -1047,22 +1044,28 @@ Date:""")
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 if isinstance(item, CustomPathItem):
-                    if self.close_subpath_check_btn.isChecked():
-                        path = item.path()
-                        if path.elementCount() > 0:
-                            command = CloseSubpathCommand(item, self.canvas)
-                            self.canvas.addCommand(command)
+                    try:
+                        item.setPen(pen)
+                        item.setBrush(brush)
 
-                    item.setPen(pen)
-                    item.setBrush(brush)
+                    except Exception:
+                        print(e)
 
                 elif isinstance(item, LeaderLineItem):
-                    item.setPen(pen)
-                    item.setBrush(brush)
+                    try:
+                        item.setPen(pen)
+                        item.setBrush(brush)
+
+                    except Exception:
+                        print(e)
 
                 elif isinstance(item, CustomRectangleItem):
-                    item.setPen(pen)
-                    item.setBrush(brush)
+                    try:
+                        item.setPen(pen)
+                        item.setBrush(brush)
+
+                    except Exception:
+                        print(e)
 
     def update_font(self):
         font = QFont()

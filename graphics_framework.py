@@ -518,15 +518,14 @@ y: {int(p.y())}''')
     def on_scale_start(self, event):
         try:
             self.initialScale = None
-
             if event.buttons() == Qt.LeftButton:
                 self.startPos = self.mapToScene(event.pos())
 
                 for item in self.canvas.selectedItems():
                     self.initialScale = item.scale()
 
-        except Exception:
-            pass
+        except Exception as e:
+            print("Error in on_scale_start:", e)
 
     def on_scale(self, event):
         try:
@@ -540,15 +539,13 @@ y: {int(p.y())}''')
                     if self.initialScale is not None:
                         if isinstance(item, CanvasItem):
                             pass
-
                         else:
                             item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
                             item.setTransformOriginPoint(item.boundingRect().center())
-                            command = ScaleCommand(item, self.initialScale, self.initialScale * scale)
-                            self.canvas.addCommand(command)
+                            item.setScale(self.initialScale * scale)  # Update the scale directly
 
-        except Exception:
-            pass
+        except Exception as e:
+            print("Error in on_scale:", e)
 
     def on_scale_end(self, event):
         self.setDragMode(QGraphicsView.RubberBandDrag)
