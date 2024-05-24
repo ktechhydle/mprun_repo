@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from custom_classes import *
+import webbrowser
 
 class ToolbarHorizontalLayout(QWidget):
     def __init__(self):
@@ -238,6 +239,25 @@ class QMoreOrLessLabel(QWidget):
 
         layout.addWidget(less_label)
         layout.addWidget(more_label)
+
+class QLinkLabel(QLabel):
+    def __init__(self, text, link: str):
+        super().__init__()
+
+        self.font = QFont()
+        self.font.setUnderline(True)
+        self.setText(text)
+        self.setFont(self.font)
+        self.link = link
+
+    def mousePressEvent(self, e):
+        super().mousePressEvent(e)
+
+        webbrowser.open_new(self.link)
+
+
+
+
 
 
 

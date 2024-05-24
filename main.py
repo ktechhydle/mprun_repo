@@ -21,7 +21,7 @@ class MPRUN(QMainWindow):
     def __init__(self):
         super(MPRUN, self).__init__()
         # Creating the main window
-        self.setWindowTitle('MPRUN - **Untitled')
+        self.setWindowTitle('MPRUN - *Untitled')
         self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
@@ -1410,9 +1410,7 @@ Date:""")
         self.add_text_btn.setChecked(True)
 
     def use_refit_screen(self):
-        for item in self.canvas.items():
-            if isinstance(item, CanvasItem):
-                self.canvas_view.fitInView(item.sceneBoundingRect(), Qt.KeepAspectRatio)
+        self.canvas_view.fitInView(self.canvas.itemsBoundingRect(), Qt.KeepAspectRatio)
 
     def use_zoom_view(self):
         index = self.view_zoom_combo.currentIndex()
@@ -2152,78 +2150,6 @@ Date:""")
         item.setFlag(QGraphicsItem.ItemIsSelectable)
 
         item.setZValue(0)
-
-    def set_template(self, template_choice):
-        if template_choice == 1:
-            pass
-
-        elif template_choice == 2:
-            self.paper.setRect(-100, -100, 728, 521)
-            self.paper_text.setPos(-98, -98)
-            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-            self.use_center_item()
-
-        elif template_choice == 3:
-            self.paper.setRect(-100, -100, 1625, 1193)
-            self.paper_text.setPos(-98, -98)
-            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-            self.use_center_item()
-
-        elif template_choice == 4:
-            self.paper.setRect(-100, -100, 980, 1820)
-            self.paper_text.setPos(-98, -98)
-            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-            self.use_center_item()
-
-        elif template_choice == 5:
-            self.paper.setRect(-100, -100, 491, 299)
-            self.paper_text.setPos(-98, -98)
-            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-            self.use_center_item()
-
-        elif template_choice == 6:
-            self.paper.setRect(-100, -100, 1747, 1147)
-            self.paper_text.setPos(-98, -98)
-            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-            self.use_center_item()
-
-        elif template_choice == 7:
-            self.paper.setRect(-100, -100, 1266, 924)
-            self.paper_text.setPos(-98, -98)
-            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-            self.use_center_item()
-            
-        elif template_choice == 8:
-            self.paper.setRect(-100, -100, 1820, 980)
-            self.paper_text.setPos(-98, -98)
-            self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-            self.use_center_item()
-
-        else:
-            pass
-
-        # Refit screen
-        self.use_refit_screen()
-
-    def custom_template(self, x, y, default_text, grid_size):
-        self.paper.setRect(-100, -100, x-100, y-100)
-        self.paper_text.setPlainText(default_text)
-        self.paper_text.setPos(-98, -98)
-        self.text_item.setPos(self.paper.boundingRect().x(), self.paper.boundingRect().y() - 30)
-        self.last_paper = self.paper
-        self.stored_center_item = self.paper.boundingRect()
-
-        # Refit screen
-        self.use_refit_screen()
-
-        if default_text == '':
-            self.canvas.removeItem(self.paper_text)
-
-        for item in self.canvas.items():
-            if isinstance(item, CustomGraphicsItemGroup):
-                item.set_grid_size(grid_size)
-                self.gsnap_grid_spin.setValue(grid_size)
-                self.gsnap_grid_size = grid_size
 
     def show_version(self):
         self.w = VersionWin()
