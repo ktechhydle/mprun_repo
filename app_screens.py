@@ -9,7 +9,7 @@ class AboutWin(QtWidgets.QWidget):
 
         self.setWindowTitle('About MPRUN')
         self.setWindowIcon(QtGui.QIcon('logos and icons/MPRUN_icon.ico'))
-        self.setFixedSize(500, 700)
+        self.setFixedSize(500, 650)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet('border-radius: 5px;')
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
@@ -34,7 +34,7 @@ MPRUN is a proof of concept that computer software can be useful for
 Snowboard and Ski Athletes to help plan competition runs, tricks, or even goals.
 
 Development started in late January 2024, when athlete Keller Hydle realized the 
-power of building apps. 
+power of building apps. Keller saw a missed opportunity when it came to Snowboard Competitions.
 
 LICENCE:
 

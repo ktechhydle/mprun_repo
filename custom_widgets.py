@@ -24,6 +24,13 @@ class CustomColorPicker(QColorDialog):
     def __init__(self):
         super().__init__()
 
+        self.setOptions(self.options() | QColorDialog.DontUseNativeDialog)
+
+        '''for children in self.findChildren(QWidget):
+            classname = children.metaObject().className()
+            if classname not in ("QColorPicker", "QColorLuminancePicker"):
+                children.hide()'''
+
         self.setOption(QColorDialog.ShowAlphaChannel, True)
 
 class CanvasEditorPanel(QWidget):
