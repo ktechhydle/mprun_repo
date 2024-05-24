@@ -813,32 +813,22 @@ class MPRUN(QMainWindow):
 
     def create_toolbar3(self):
         #----toolbar widgets----#
-        self.zoom_amounts = {'10%': 0.10,
-                             '25%': 0.25,
-                             '50%': 0.50,
-                             '75%': 0.75,
-                             '100%': 1.00,
-                             '125%': 1.25,
-                             '150%': 1.50,
-                             '175%': 1.75,
-                             '200%': 2.00,
-                             '500%': 5.00,
-                             'Fit On Screen': 'fit'}
-        self.view_zoom_combo = QComboBox(self)
-        self.view_zoom_combo.setFixedHeight(20)
-        for zoom, actual in self.zoom_amounts.items():
-            self.view_zoom_combo.addItem(zoom, actual)
-        self.view_zoom_combo.setCurrentIndex(3)
-        self.view_zoom_combo.currentIndexChanged.connect(self.use_zoom_view)
+        self.view_zoom_spin = QSpinBox(self)
+        self.view_zoom_spin.setRange(1, 1000)
+        self.view_zoom_spin.setFixedHeight(20)
+        self.view_zoom_spin.setSuffix('%')
+        self.view_zoom_spin.setValue(100)
+        self.view_zoom_spin.valueChanged.connect(self.use_scale_view)
 
         self.rotate_sceen_spin = QSpinBox(self)
         self.rotate_sceen_spin.setFixedHeight(20)
         self.rotate_sceen_spin.setMinimum(-10000)
         self.rotate_sceen_spin.setMaximum(10000)
+        self.rotate_sceen_spin.setSuffix('°')
         self.rotate_sceen_spin.valueChanged.connect(self.use_rotate_screen)
 
         # Add widgets
-        self.view_toolbar.addWidget(self.view_zoom_combo)
+        self.view_toolbar.addWidget(self.view_zoom_spin)
         self.view_toolbar.addWidget(self.rotate_sceen_spin)
 
     def create_view(self):
@@ -852,7 +842,8 @@ class MPRUN(QMainWindow):
                                               self.add_canvas_btn,
                                               self.select_btn,
                                               self.scale_btn,
-                                              self.pan_btn)
+                                              self.pan_btn,
+                                              self.view_zoom_spin)
         format = QSurfaceFormat()
         format.setSamples(4)
         self.opengl_widget = QOpenGLWidget()
@@ -1411,30 +1402,25 @@ Date:""")
 
     def use_refit_screen(self):
         self.canvas_view.fitInView(self.canvas.itemsBoundingRect(), Qt.KeepAspectRatio)
+        self.canvas_view.resetTransform()
 
-    def use_zoom_view(self):
-        index = self.view_zoom_combo.currentIndex()
-        zoom = self.view_zoom_combo.itemData(index)
+    def use_scale_view(self):
+        # Get the value from the spin box
+        scale_percent = self.view_zoom_spin.value()
+        scale_factor = scale_percent / 100.0
 
-        if zoom == 'fit':
-            self.use_refit_screen()
+        # Reset any previous transformations
+        self.canvas_view.resetTransform()
 
-        else:
-            self.canvas_view.resetTransform()
-            self.canvas_view.scale(zoom, zoom)
-            self.canvas_view.rotate(self.rotate_sceen_spin.value())
+        # Apply the new scale transformation
+        self.canvas_view.scale(scale_factor, scale_factor)
 
     def use_rotate_screen(self, value):
-        index = self.view_zoom_combo.currentIndex()
-        zoom = self.view_zoom_combo.itemData(index)
+        value = self.view_zoom_spin.value()
 
-        if zoom == 'fit':
-            self.use_refit_screen()
-
-        else:
-            self.canvas_view.resetTransform()
-            self.canvas_view.scale(zoom, zoom)
-            self.canvas_view.rotate(self.rotate_sceen_spin.value())
+        self.canvas_view.resetTransform()
+        self.canvas_view.scale(value, value)
+        self.canvas_view.rotate(self.rotate_sceen_spin.value())
 
     def use_set_layer(self):
         for items in self.canvas.selectedItems():

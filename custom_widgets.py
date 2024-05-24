@@ -225,7 +225,7 @@ class StrokeLabel(QLabel):
         self.menu.exec_(event.globalPos())
 
 class QIconWidget(QLabel):
-    def __init__(self, text, icon_file, w, h, parent=None):
+    def __init__(self, text: str, icon_file: str, w: int, h: int, parent=None):
         super().__init__(parent)
 
         icon = QIcon(icon_file)

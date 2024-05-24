@@ -300,3 +300,20 @@ QToolBox::tab {
   image-position: left; }
   QToolBox::tab:selected {
     image: url(:/icons/triangle-down.svg); }
+
+/* Home Screen StyleSheet */
+#mainHomeWindow {
+    background: #1e1e1e;
+}
+
+#homeScreenHeader {
+    background: #323232;
+}
+
+#homeScreen {
+    background: #1e1e1e;
+}
+
+#clickMeButton {
+
+}

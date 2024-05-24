@@ -20,7 +20,8 @@ class CustomGraphicsView(QGraphicsView):
                  add_canvas_btn,
                  select_btn,
                  scale_btn,
-                 pan_btn):
+                 pan_btn,
+                 zoom_spin):
         super().__init__()
         self.points = []
 
@@ -28,7 +29,6 @@ class CustomGraphicsView(QGraphicsView):
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setRenderHint(QPainter.Antialiasing)
@@ -62,9 +62,10 @@ class CustomGraphicsView(QGraphicsView):
         # Add methods for zooming
         self.zoomInFactor = 1.25
         self.zoomClamp = True
-        self.zoom = 15
+        self.zoom = 10
         self.zoomStep = 1
         self.zoomRange = [0, 100]
+        self.zoom_spin = zoom_spin
 
         # Canvas item
         self.canvas_item = None
@@ -221,6 +222,10 @@ y: {int(p.y())}''')
             super().mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
+        self.zoom_spin.blockSignals(True)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+
         # Calculate zoom Factor
         zoomOutFactor = 1 / self.zoomInFactor
 
@@ -239,6 +244,9 @@ y: {int(p.y())}''')
 
         if not clamped or self.zoomClamp is False:
             self.scale(zoomFactor, zoomFactor)
+
+        self.zoom_spin.setValue(int(zoomFactor * 100))
+        self.zoom_spin.blockSignals(False)
 
     def dragMoveEvent(self, event):
         item = event.source()
@@ -265,6 +273,16 @@ y: {int(p.y())}''')
             add_command = AddItemCommand(self.canvas, item)
             self.canvas.addCommand(add_command)
             self.canvas.update()
+
+    def fitInView(self, *args, **kwargs):
+        super().fitInView(*args, **kwargs)
+        self.applyZoom()
+
+    def applyZoom(self):
+        # Reset the transformation and apply the stored zoom level
+        self.resetTransform()
+        zoomFactor = self.zoomInFactor ** (self.zoom - 15)  # 15 is the initial zoom level
+        self.scale(zoomFactor, zoomFactor)
 
     def on_path_draw_start(self, event):
         # Check the button being pressed
