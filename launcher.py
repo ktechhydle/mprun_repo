@@ -54,8 +54,6 @@ class Dialog(QMainWindow):
 
         create_new_btn = QPushButton('New File')
 
-        tabViewLayout.addWidget(create_new_btn)
-
     def launchMPRUN(self):
         app = QApplication([])
 
