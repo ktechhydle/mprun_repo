@@ -15,6 +15,7 @@ class DragDropListWidget(QListWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setDragEnabled(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
     def startDrag(self, supportedActions):
         item = self.currentItem()
@@ -52,15 +53,22 @@ class LibraryWidget(QWidget):
 
         # Library button
         self.open_library_button = QPushButton("Open Library")
-        self.reload_library_button = QPushButton("Reload Library")
+        self.open_library_button.setToolTip('Open library from local directory')
+        self.reload_library_button = QPushButton("")
+        self.reload_library_button.setFixedWidth(28)
+        self.reload_library_button.setStyleSheet('border: none')
+        self.reload_library_button.setIcon(QIcon('logos and icons/UI Icons/refresh_icon.svg'))
+        self.reload_library_button.setToolTip('Reload the current library')
+        library_btn_hlayout = ToolbarHorizontalLayout()
+        library_btn_hlayout.layout.addWidget(self.open_library_button)
+        library_btn_hlayout.layout.addWidget(self.reload_library_button)
 
         # Connect button to the method
         self.open_library_button.clicked.connect(self.open_library)
         self.reload_library_button.clicked.connect(self.reload_library)
 
         self.layout.addWidget(label)
-        self.layout.addWidget(self.open_library_button)
-        self.layout.addWidget(self.reload_library_button)
+        self.layout.addWidget(library_btn_hlayout)
         self.layout.addWidget(self.library_list_widget)
 
     def open_library(self):
@@ -84,7 +92,7 @@ class LibraryWidget(QWidget):
 
         # Check if no SVG files are found
         if not svg_files:
-            list_item = QListWidgetItem('No SVG elements found within this folder')
+            list_item = QListWidgetItem('**No files found within this folder')
             self.library_list_widget.addItem(list_item)
 
         else:
@@ -92,4 +100,5 @@ class LibraryWidget(QWidget):
             for svg_file in svg_files:
                 list_item = QListWidgetItem(svg_file)
                 list_item.setData(Qt.UserRole, os.path.join(folder_path, svg_file))
+                list_item.setIcon(QIcon('logos and icons/UI Icons/folder_icon.svg'))
                 self.library_list_widget.addItem(list_item)

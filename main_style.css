@@ -318,6 +318,9 @@ QListWidget::item {
     border-radius: 5px;
 }
 
+QListWidget::item:selected {
+}
+
 QListWidget::item:hover {
     border: 2px solid #636363;
 }
