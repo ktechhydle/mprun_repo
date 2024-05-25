@@ -13,9 +13,9 @@ from graphics_framework import *
 from custom_classes import *
 from custom_widgets import *
 from custom_tab_widget import *
-from course_elements import *
 from custom_dialogs import *
 from app_screens import *
+from libraries import *
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -332,11 +332,10 @@ class MPRUN(QMainWindow):
         self.image_trace.setLayout(self.image_trace_layout)
 
         # Libraries Tab
-        self.libraries_tab = QWidget()
+        self.libraries_tab = LibraryWidget(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setMaximumHeight(400)
-        self.libraries_tab_layout = QVBoxLayout()
-        self.libraries_tab.setLayout(self.libraries_tab_layout)
+        self.libraries_tab.load_svg_library('Course Element')
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
 
         # Canvas Tab
@@ -532,10 +531,6 @@ class MPRUN(QMainWindow):
         horizontal_widget_for_layer_buttons.layout.addWidget(lower_layer_btn)
         horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
 
-        #_____ Libraries tab widgets _____
-        course_elements_label = QLabel('Course Elements', self)
-        course_elements_label.setStyleSheet('font-size: 12px;')
-
         #_____ Characters tab widgets _____
         text_options_label = QLabel('Characters', self)
         text_options_label.setStyleSheet("QLabel { font-size: 12px;}")
@@ -684,11 +679,6 @@ class MPRUN(QMainWindow):
         self.image_trace_layout.addWidget(self.color_precision_spin)
         self.image_trace_layout.addWidget(corner_threshold_label)
         self.image_trace_layout.addWidget(self.corner_threshold_spin)
-
-        # Libraries Tab Widgets
-        self.libraries_tab_layout.addWidget(HorizontalSeparator())
-        self.libraries_tab_layout.addWidget(course_elements_label)
-        self.libraries_tab_layout.addWidget(CourseElementsWin(self.canvas))
 
     def create_toolbar2(self):
         self.action_group = QActionGroup(self)

@@ -249,8 +249,13 @@ y: {int(p.y())}''')
         self.zoom_spin.setValue(int(zoomFactor * 100))
         self.zoom_spin.blockSignals(False)
 
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
+
     def dragMoveEvent(self, event):
-        item = event.source()
+        if event.mimeData().hasUrls():
+            event.acceptProposedAction()
 
     def dropEvent(self, event):
         for url in event.mimeData().urls():
@@ -266,11 +271,11 @@ y: {int(p.y())}''')
                 item.setToolTip('Imported Bitmap')
 
             # Set default attributes
-            item.setPos(self.mapToScene(event.pos()))
-            item.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+            item.setPos(self.mapToScene(event.pos()) - item.boundingRect().center())
+            item.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
             item.setZValue(0)
 
-            # Add item
+            # Add item to scene
             add_command = AddItemCommand(self.canvas, item)
             self.canvas.addCommand(add_command)
             self.canvas.update()

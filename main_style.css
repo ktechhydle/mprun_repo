@@ -302,3 +302,22 @@ QToolBox::tab {
   image-position: left; }
   QToolBox::tab:selected {
     image: url(:/icons/triangle-down.svg); }
+
+
+QListWidget {
+    background-color: #535353;
+    border: none;
+}
+
+QListWidget::item {
+    color: white;
+    background-color: #474747;
+    padding: 10px;
+    margin: 5px;
+    border: 2px solid #535353;
+    border-radius: 5px;
+}
+
+QListWidget::item:hover {
+    border: 2px solid #636363;
+}
