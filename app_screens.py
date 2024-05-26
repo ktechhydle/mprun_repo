@@ -8,7 +8,7 @@ class AboutWin(QtWidgets.QWidget):
         super().__init__()
 
         self.setWindowTitle('About MPRUN')
-        self.setWindowIcon(QtGui.QIcon('logos and icons/MPRUN_icon.ico'))
+        self.setWindowIcon(QtGui.QIcon('logos and icons/Main Logos/MPRUN_icon.ico'))
         self.setFixedSize(500, 650)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet('border-radius: 5px;')
@@ -22,8 +22,8 @@ class AboutWin(QtWidgets.QWidget):
 
         # App image and label
         mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("logos and icons/MPRUN_logo_rounded_corners_version.png").scaled(80, 80,
-                                                                                                QtCore.Qt.KeepAspectRatio)
+        pixmap = QtGui.QPixmap("logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png").scaled(80, 80,
+                                                                                                           QtCore.Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
 
@@ -45,7 +45,7 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 FILES MADE USING MPRUN:
 
-All files either saved or exported from MPRUN in any format (SVG, PNG, JPG, etc.) are owned by the creators of the work (that's you!) and/or the original authors in case you use derivative works. 
+All files either saved or exported from MPRUN in any format (Combobox Images, PNG, JPG, etc.) are owned by the creators of the work (that's you!) and/or the original authors in case you use derivative works. 
 
 You are responsible for publishing your work under a license of your choosing and for tracking your use of derivative works in the software.
         '''
@@ -69,7 +69,7 @@ class VersionWin(QtWidgets.QWidget):
         super().__init__()
 
         self.setWindowTitle('MPRUN Version')
-        self.setWindowIcon(QtGui.QIcon('logos and icons/MPRUN_icon.ico'))
+        self.setWindowIcon(QtGui.QIcon('logos and icons/Main Logos/MPRUN_icon.ico'))
         self.setFixedSize(500, 300)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
@@ -82,8 +82,8 @@ class VersionWin(QtWidgets.QWidget):
 
         # App image and label
         mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("logos and icons/MPRUN_logo_rounded_corners_version.png").scaled(80, 80,
-                                                                                                QtCore.Qt.KeepAspectRatio)
+        pixmap = QtGui.QPixmap("logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png").scaled(80, 80,
+                                                                                                           QtCore.Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
 

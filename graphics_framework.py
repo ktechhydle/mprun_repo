@@ -262,7 +262,7 @@ y: {int(p.y())}''')
             if url.toLocalFile().endswith('.svg'):
                 item = CustomSvgItem(url.toLocalFile())
                 item.store_filename(url.toLocalFile())
-                item.setToolTip('Imported SVG')
+                item.setToolTip('Imported Combobox Images')
 
             else:
                 pixmap = QPixmap(url.toLocalFile())

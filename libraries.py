@@ -45,11 +45,12 @@ class LibraryWidget(QWidget):
         self.canvas = canvas
 
         # Label
-        label = QLabel('Libraries (local)')
+        label = QLabel('Libraries')
 
         # List widget for the library
         self.library_list_widget = DragDropListWidget()
         self.library_list_widget.setStyleSheet('border: none')
+        self.library_list_widget.setIconSize(QSize(80, 80))
 
         # Library button
         self.open_library_button = QPushButton("Open Library")
@@ -87,18 +88,21 @@ class LibraryWidget(QWidget):
         # Clear existing items in the list widget
         self.library_list_widget.clear()
 
-        # List all SVG files in the selected folder
+        # List all Combobox Images files in the selected folder
         svg_files = [f for f in os.listdir(folder_path) if f.endswith('.svg')]
 
-        # Check if no SVG files are found
+        # Check if no Combobox Images files are found
         if not svg_files:
-            list_item = QListWidgetItem('**No files found within this folder')
+            list_item = QListWidgetItem('No files found')
+            list_item.setIcon(QIcon('logos and icons/UI Icons/folder_failed_icon.svg'))
+            self.library_list_widget.setIconSize(QSize(40, 40))
             self.library_list_widget.addItem(list_item)
 
         else:
-            # Add each SVG file to the list widget
+            # Add each Combobox Images file to the list widget
             for svg_file in svg_files:
                 list_item = QListWidgetItem(svg_file)
                 list_item.setData(Qt.UserRole, os.path.join(folder_path, svg_file))
-                list_item.setIcon(QIcon('logos and icons/UI Icons/folder_icon.svg'))
+                list_item.setIcon(QIcon(os.path.join(folder_path, svg_file)))
+                self.library_list_widget.setIconSize(QSize(80, 80))
                 self.library_list_widget.addItem(list_item)

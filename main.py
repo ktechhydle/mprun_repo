@@ -22,7 +22,7 @@ class MPRUN(QMainWindow):
         super(MPRUN, self).__init__()
         # Creating the main window
         self.setWindowTitle('MPRUN - *Untitled')
-        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
+        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
 
@@ -192,9 +192,6 @@ class MPRUN(QMainWindow):
         properties_action = QAction('Properties', self)
         properties_action.triggered.connect(lambda: self.display_choosen_tab('Properties'))
 
-        layers_action = QAction('Layers', self)
-        layers_action.triggered.connect(lambda: self.display_choosen_tab('Layers'))
-
         libraries_action = QAction('Libraries', self)
         libraries_action.triggered.connect(lambda: self.display_choosen_tab('Libraries'))
 
@@ -260,7 +257,6 @@ class MPRUN(QMainWindow):
         self.effects_menu.addAction(blur_action)
 
         self.window_menu.addAction(properties_action)
-        self.window_menu.addAction(layers_action)
         self.window_menu.addAction(libraries_action)
         self.window_menu.addAction(characters_action)
         self.window_menu.addAction(vectorizing_action)
@@ -308,14 +304,6 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
-
-        # Layers Tab
-        self.layers_tab = QWidget()
-        self.layers_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.layers_tab.setMaximumHeight(175)
-        self.layers_tab_layout = QVBoxLayout()
-        self.layers_tab.setLayout(self.layers_tab_layout)
-        self.tab_view.addTab(self.layers_tab, 'Layers')
 
         # Characters Tab
         self.characters_tab = QWidget()
@@ -488,49 +476,6 @@ class MPRUN(QMainWindow):
         gsnap_hlayout.layout.addWidget(grid_size_label)
         gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
 
-        #_____ Layers tab widgets _____
-        layers_label = QLabel('Layers', self)
-        layers_label.setStyleSheet("QLabel { font-size: 12px;}")
-        layers_label.setAlignment(Qt.AlignLeft)
-
-        self.layer_spin = QSpinBox(self)
-        self.layer_spin.setRange(0, 9999)
-        self.layer_spin.setValue(0)
-        self.layer_spin.setPrefix('Layer ')
-        self.hide_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
-        self.hide_layer_btn.setFixedWidth(28)
-        self.hide_layer_btn.setToolTip('Hide Selected Layer')
-        self.hide_layer_btn.clicked.connect(self.use_hide_layer)
-        self.unhide_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/unhide_icon.png'), '', self)
-        self.unhide_layer_btn.setFixedWidth(28)
-        self.unhide_layer_btn.setToolTip('Unhide Selected Layer')
-        self.unhide_layer_btn.clicked.connect(self.use_unhide_layer)
-        layer_hlayout = ToolbarHorizontalLayout()
-        layer_hlayout.layout.addWidget(self.hide_layer_btn)
-        layer_hlayout.layout.addWidget(self.unhide_layer_btn)
-        layer_hlayout.layout.addWidget(self.layer_spin)
-        raise_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
-        raise_layer_btn.setToolTip('''Raise Layer:
-        Key-1''')
-        raise_layer_btn.setFixedWidth(28)
-        raise_layer_btn.setShortcut(QKeySequence('1'))
-        raise_layer_btn.clicked.connect(self.use_raise_layer)
-        lower_layer_btn = QPushButton(QIcon('logos and icons/Tool Icons/lower_layer_icon.png'), '', self)
-        lower_layer_btn.setToolTip('''Lower Layer:
-        Key-2''')
-        lower_layer_btn.setFixedWidth(28)
-        lower_layer_btn.setShortcut(QKeySequence('2'))
-        lower_layer_btn.clicked.connect(self.use_lower_layer)
-        bring_to_front_btn = QPushButton(QIcon('logos and icons/Tool Icons/set_always_on_top_icon.png'), '', self)
-        bring_to_front_btn.setToolTip('''Bring To Front Tool:
-        Key-B''')
-        bring_to_front_btn.setShortcut(QKeySequence('B'))
-        bring_to_front_btn.clicked.connect(self.use_bring_to_front)
-        horizontal_widget_for_layer_buttons = ToolbarHorizontalLayout()
-        horizontal_widget_for_layer_buttons.layout.addWidget(raise_layer_btn)
-        horizontal_widget_for_layer_buttons.layout.addWidget(lower_layer_btn)
-        horizontal_widget_for_layer_buttons.layout.addWidget(bring_to_front_btn)
-
         #_____ Characters tab widgets _____
         text_options_label = QLabel('Characters', self)
         text_options_label.setStyleSheet("QLabel { font-size: 12px;}")
@@ -620,7 +565,6 @@ class MPRUN(QMainWindow):
         self.font_size_spin.valueChanged.connect(self.update_font)
         self.font_letter_spacing_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
-        self.layer_spin.valueChanged.connect(self.use_set_layer)
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
         self.x_pos_spin.valueChanged.connect(self.use_set_item_pos)
         self.y_pos_spin.valueChanged.connect(self.use_set_item_pos)
@@ -660,12 +604,6 @@ class MPRUN(QMainWindow):
         self.characters_tab_layout.addWidget(widget4)
         self.characters_tab_layout.addWidget(font_spacing_label)
         self.characters_tab_layout.addWidget(self.font_letter_spacing_spin)
-
-        # Layers Tab Widgets
-        self.layers_tab_layout.addWidget(HorizontalSeparator())
-        self.layers_tab_layout.addWidget(layers_label)
-        self.layers_tab_layout.addWidget(layer_hlayout)
-        self.layers_tab_layout.addWidget(horizontal_widget_for_layer_buttons)
 
         # Vectorize Tab Widgets
         self.image_trace_layout.addWidget(HorizontalSeparator())
@@ -809,14 +747,14 @@ class MPRUN(QMainWindow):
         self.view_zoom_spin.setFixedHeight(20)
         self.view_zoom_spin.setSuffix('%')
         self.view_zoom_spin.setValue(100)
-        self.view_zoom_spin.valueChanged.connect(self.use_scale_view)
+        self.view_zoom_spin.valueChanged.connect(self.use_change_view)
 
         self.rotate_sceen_spin = QSpinBox(self)
         self.rotate_sceen_spin.setFixedHeight(20)
         self.rotate_sceen_spin.setMinimum(-10000)
         self.rotate_sceen_spin.setMaximum(10000)
         self.rotate_sceen_spin.setSuffix('°')
-        self.rotate_sceen_spin.valueChanged.connect(self.use_rotate_screen)
+        self.rotate_sceen_spin.valueChanged.connect(self.use_change_view)
 
         # Add widgets
         self.view_toolbar.addWidget(self.view_zoom_spin)
@@ -1115,7 +1053,6 @@ Date:""")
         self.bold_btn.blockSignals(True)
         self.italic_btn.blockSignals(True)
         self.underline_btn.blockSignals(True)
-        self.layer_spin.blockSignals(True)
         self.text_along_path_tab.text_entry.blockSignals(True)
         self.text_along_path_tab.text_along_path_check_btn.blockSignals(True)
         self.text_along_path_tab.spacing_spin.blockSignals(True)
@@ -1137,7 +1074,6 @@ Date:""")
             self.opacity_spin.setValue(100)
             self.width_scale_spin.setValue(10.0)
             self.height_scale_spin.setValue(10.0)
-            self.layer_spin.setValue(0)
             self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
             self.text_along_path_tab.text_entry.clear()
             self.text_along_path_tab.spacing_spin.setValue(0)
@@ -1149,7 +1085,6 @@ Date:""")
             self.opacity_spin.setValue(int(item.opacity() * 100))
             self.width_scale_spin.setValue(float(item.transform().m11() * 10))
             self.height_scale_spin.setValue(float(item.transform().m22() * 10))
-            self.layer_spin.setValue(int(item.zValue()))
 
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
@@ -1333,7 +1268,6 @@ Date:""")
         self.bold_btn.blockSignals(False)
         self.italic_btn.blockSignals(False)
         self.underline_btn.blockSignals(False)
-        self.layer_spin.blockSignals(False)
         self.text_along_path_tab.text_entry.blockSignals(False)
         self.text_along_path_tab.text_along_path_check_btn.blockSignals(False)
         self.text_along_path_tab.spacing_spin.blockSignals(False)
@@ -1400,58 +1334,12 @@ Date:""")
         self.canvas_view.fitInView(self.canvas.itemsBoundingRect(), Qt.KeepAspectRatio)
         self.canvas_view.resetTransform()
 
-    def use_scale_view(self):
-        # Get the value from the spin box
-        scale_percent = self.view_zoom_spin.value()
-        scale_factor = scale_percent / 100.0
-
-        # Reset any previous transformations
-        self.canvas_view.resetTransform()
-
-        # Apply the new scale transformation
-        self.canvas_view.scale(scale_factor, scale_factor)
-
-    def use_rotate_screen(self, value):
-        value = self.view_zoom_spin.value()
+    def use_change_view(self):
+        value = self.view_zoom_spin.value() / 100
 
         self.canvas_view.resetTransform()
         self.canvas_view.scale(value, value)
         self.canvas_view.rotate(self.rotate_sceen_spin.value())
-
-    def use_set_layer(self):
-        for items in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                pass
-
-            elif isinstance(item, CanvasTextItem):
-                pass
-
-            else:
-                items.setZValue(self.layer_spin.value())
-
-    def use_hide_layer(self):
-        for item in self.canvas.items():
-            if int(item.zValue()) == self.layer_spin.value():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                elif isinstance(item, CanvasTextItem):
-                    pass
-
-                else:
-                    item.setVisible(False)
-
-    def use_unhide_layer(self):
-        for item in self.canvas.items():
-            if int(item.zValue()) == self.layer_spin.value():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                elif isinstance(item, CanvasTextItem):
-                    pass
-
-                else:
-                    item.setVisible(True)
 
     def use_raise_layer(self):
         for item in self.canvas.selectedItems():
@@ -2150,10 +2038,6 @@ Date:""")
                 if tab_name == 'Properties':
                     self.tab_view.addTab(self.properties_tab, tab_name)
                     self.tab_view.setCurrentWidget(self.properties_tab)
-
-                elif tab_name == 'Layers':
-                    self.tab_view.addTab(self.layers_tab, tab_name)
-                    self.tab_view.setCurrentWidget(self.layers_tab)
 
                 elif tab_name == 'Libraries':
                     self.tab_view.addTab(self.libraries_tab, tab_name)

@@ -22,10 +22,10 @@ class SvgViewer(QGraphicsView):
     def load_svg(self, file_path):
         renderer = QSvgRenderer(file_path)
         if not renderer.isValid():
-            print("Error: Unable to load SVG file.")
+            print("Error: Unable to load Combobox Images file.")
             return
 
-        # Here we parse the SVG and create individual items for each element.
+        # Here we parse the Combobox Images and create individual items for each element.
         item = DraggableSvgItem()
         item.setSharedRenderer(renderer)
         self.scene.addItem(item)
@@ -34,6 +34,6 @@ class SvgViewer(QGraphicsView):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     viewer = SvgViewer()
-    viewer.load_svg("Course Element/halfpipe 1 (22').svg")  # Replace with your SVG file path
+    viewer.load_svg("Course Element/halfpipe 1 (22').svg")  # Replace with your Combobox Images file path
     viewer.show()
     sys.exit(app.exec_())

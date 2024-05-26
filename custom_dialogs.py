@@ -10,7 +10,7 @@ class CanvasItemSelector(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Select Canvas To Export")
-        self.setWindowIcon(QIcon('logos and icons/MPRUN_logo_rounded_corners_version.png'))
+        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
         self.setFixedWidth(250)
 
         layout = QVBoxLayout(self)

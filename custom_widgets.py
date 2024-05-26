@@ -184,12 +184,15 @@ class StrokeLabel(QLabel):
         for style, value in self.stroke_style_options.items():
             self.stroke_style_combo.addItem(style, value)
 
-        self.stroke_style_combo.setItemData(0, QPixmap('logos and icons/UI Icons/solid_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(1, QPixmap('logos and icons/UI Icons/dotted_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(2, QPixmap('logos and icons/UI Icons/dashed_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(3, QPixmap('logos and icons/UI Icons/dashed_dotted_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(4, QPixmap('logos and icons/UI Icons/dashed_dot_dot_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(0, QPixmap('logos and icons/UI Icons/Combobox Images/solid_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(1, QPixmap('logos and icons/UI Icons/Combobox Images/dotted_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(2, QPixmap('logos and icons/UI Icons/Combobox Images/dashed_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(3, QPixmap(
+            'logos and icons/UI Icons/Combobox Images/dashed_dotted_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(4, QPixmap(
+            'logos and icons/UI Icons/Combobox Images/dashed_dot_dot_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setIconSize(QSize(65, 20))
+
         self.stroke_pencap_options = {'Square Cap': Qt.SquareCap,
                                       'Flat Cap': Qt.FlatCap,
                                       'Round Cap': Qt.RoundCap}
@@ -197,6 +200,16 @@ class StrokeLabel(QLabel):
         self.stroke_pencap_combo.setStyleSheet('text-decoration: none;')
         for pencap, value in self.stroke_pencap_options.items():
             self.stroke_pencap_combo.addItem(pencap, value)
+        self.stroke_pencap_combo.setIconSize(QSize(65, 20))
+        self.stroke_pencap_combo.setItemData(0,
+                                             QIcon('logos and icons/UI Icons/Combobox Images/projecting_cap.svg'),
+                                             Qt.DecorationRole)
+        self.stroke_pencap_combo.setItemData(1,
+                                             QIcon('logos and icons/UI Icons/Combobox Images/flat_cap.svg'),
+                                             Qt.DecorationRole)
+        self.stroke_pencap_combo.setItemData(2,
+                                             QIcon('logos and icons/UI Icons/Combobox Images/round_cap.svg'),
+                                             Qt.DecorationRole)
 
         self.join_style_options = {'Miter Join': Qt.MiterJoin,
                                    'Round Join': Qt.RoundJoin,
