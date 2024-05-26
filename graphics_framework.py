@@ -386,6 +386,12 @@ y: {int(p.y())}''')
                 self.temp_path_item.setZValue(0)
                 self.canvas.addItem(self.temp_path_item)
 
+                try:
+                    self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
+
+                except Exception:
+                    pass
+
                 self.canvas.update()
 
                 super().mouseMoveEvent(event)
@@ -414,7 +420,7 @@ y: {int(p.y())}''')
                     path_item.setZValue(0)
                     path_item.setBrush(self.stroke_fill)
                     try:
-                        path_item.setPath(path_item.smooth_path(path_item.path()))
+                        path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
                     except Exception:
                         pass
 

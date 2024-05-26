@@ -1603,7 +1603,7 @@ Date:""")
 
                 else:
                     try:
-                        smoothed_path = item.smooth_path(item.path())
+                        smoothed_path = item.smooth_path(item.path(), 0.1)
 
                         add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
                         self.canvas.addCommand(add_command)

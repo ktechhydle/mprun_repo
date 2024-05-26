@@ -32,7 +32,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Path Draw Tool:
 	> Draw paths and shapes with the path tool, use different colors, pen styles and more.
 - Pen Draw Tool:
-	> Similar to the Path Draw Tool, but when you finish drawing, the path smooths via a Savitzky–Golay Filter resulting in beautiful curves (less hand drawn appearance).
+	> Similar to the Path Draw Tool, but as you draw, the path smooths via a Savitzky–Golay Filter resulting in beautiful curves (less hand drawn appearance).
 - Line and Label Tool:
 	> Draw AutoCAD like leader lines and labels with editable text.
 - Text Tool:

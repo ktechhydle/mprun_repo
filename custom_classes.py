@@ -209,7 +209,7 @@ class CustomPathItem(QGraphicsPathItem):
 
         return item
 
-    def smooth_path(self, path):
+    def smooth_path(self, path, tolerance: float):
         vertices = [(point.x(), point.y()) for point in path.toSubpathPolygons()[0]]
         x, y = zip(*vertices)
 
@@ -221,7 +221,7 @@ class CustomPathItem(QGraphicsPathItem):
         smooth_y = savgol_filter(y, window_length=wl, polyorder=po)
 
         smoothed_vertices = np.column_stack((smooth_x, smooth_y))
-        simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=0.1)  # Adjust the tolerance as needed
+        simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=tolerance)
 
         smooth_path = QPainterPath()
         smooth_path.moveTo(simplified_vertices[0][0], simplified_vertices[0][1])
