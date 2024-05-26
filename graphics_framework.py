@@ -526,37 +526,53 @@ y: {int(p.y())}''')
             if event.buttons() == Qt.LeftButton:
                 self.startPos = self.mapToScene(event.pos())
 
-                for item in self.canvas.selectedItems():
+                selected_items = self.scene().selectedItems()
+                if selected_items:
+                    item = selected_items[0]
                     self.initialScale = item.scale()
+                    # Create the ScaleCommand with the initial scale
+                    self.scalingCommand = ScaleCommand(item, self.initialScale, self.initialScale)
 
         except Exception as e:
-            print("Error in on_scale_start:", e)
+            pass
 
     def on_scale(self, event):
         try:
             self.setDragMode(QGraphicsView.NoDrag)
 
-            if event.buttons() == Qt.LeftButton:
+            if event.buttons() == Qt.LeftButton and self.scalingCommand:
                 delta = self.mapToScene(event.pos()) - self.startPos
                 scale = 1 + delta.y() / 100.0
 
-                for item in self.canvas.selectedItems():
-                    if self.initialScale is not None:
-                        if isinstance(item, CanvasItem):
-                            pass
-                        else:
-                            item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
-                            item.setTransformOriginPoint(item.boundingRect().center())
-                            item.setScale(self.initialScale * scale)  # Update the scale directly
+                item = self.scalingCommand.item
+                if self.initialScale is not None:
+                    if isinstance(item, CanvasItem):
+                        pass
+                    else:
+                        item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
+                        item.setTransformOriginPoint(item.boundingRect().center())
+                        item.setScale(self.initialScale * scale)  # Update the scale directly
+
+                        # Update the new scale in the command
+                        self.scalingCommand.new_scale = self.initialScale * scale
 
         except Exception as e:
-            print("Error in on_scale:", e)
+            pass
 
     def on_scale_end(self, event):
-        self.setDragMode(QGraphicsView.RubberBandDrag)
+        try:
+            self.setDragMode(QGraphicsView.RubberBandDrag)
 
-        for item in self.canvas.selectedItems():
-            item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
+            for item in self.scene().selectedItems():
+                item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
+
+            if self.scalingCommand and self.scalingCommand.new_scale != self.scalingCommand.old_scale:
+                # Push the command to the undo stack
+                self.canvas.addCommand(self.scalingCommand)
+                self.scalingCommand = None
+
+        except Exception as e:
+            pass
 
     def on_add_canvas(self):
         if self.add_canvas_btn.isChecked():
