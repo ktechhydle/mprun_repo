@@ -362,7 +362,7 @@ class CustomSvgItem(QGraphicsSvgItem):
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Imported Combobox Images')
+        item.setToolTip('Imported SVG')
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
