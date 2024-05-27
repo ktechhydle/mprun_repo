@@ -17,6 +17,7 @@ class CanvasItemSelector(QDialog):
         # Activate add canvas tool
         self.parent().use_add_canvas()
         self.canvas = canvas
+        self.watermark_item = None
 
         # Create the layout
         self.layout = QVBoxLayout()
@@ -42,9 +43,14 @@ class CanvasItemSelector(QDialog):
 
         # Transparent option checkbox
         self.transparent_check_btn = QCheckBox()
-        self.transparent_check_btn.setChecked(False)
         self.transparent_check_btn.setText('Transparent Background')
         self.transparent_check_btn.setToolTip('Export the selected canvas with a transparent background')
+
+        # Watermark option checkbox
+        self.watermark_check_btn = QCheckBox()
+        self.watermark_check_btn.setText('Add Watermark')
+        self.watermark_check_btn.setToolTip('Help support us by adding an MPRUN watermark')
+        self.watermark_check_btn.clicked.connect(self.add_watermark)
 
         # Export button
         self.export_btn = QPushButton("Export")
@@ -57,10 +63,10 @@ class CanvasItemSelector(QDialog):
         self.layout.addWidget(self.canvas_chooser_combo)
         self.layout.addWidget(export_options_label)
         self.layout.addWidget(self.transparent_check_btn)
+        self.layout.addWidget(self.watermark_check_btn)
         self.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
         self.layout.addWidget(self.export_btn)
         self.hlayout.addLayout(self.layout)
-
 
     def add_canvas_item(self, itemName, itemKey):
         if isinstance(itemKey, CanvasItem):
@@ -71,9 +77,25 @@ class CanvasItemSelector(QDialog):
         else:
             pass
 
+    def add_watermark(self):
+        if self.watermark_check_btn.isChecked():
+            if self.watermark_item is not None:
+                self.canvas.removeItem(self.watermark_item)
+
+            self.watermark_item = QGraphicsPixmapItem(QPixmap('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
+            self.canvas.addItem(self.watermark_item)
+
+            selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
+
+            self.watermark_item.setScale(0.1)
+            self.watermark_item.setPos(selected_item.boundingRect().bottomRight().x() - 65, selected_item.boundingRect().bottomRight().y() - 65)
+
+        else:
+            if self.watermark_item is not None:
+                self.canvas.removeItem(self.watermark_item)
+
     def closeEvent(self, e):
         self.parent().use_exit_add_canvas()
-
 
 class TextAlongPathPanel(QWidget):
     def __init__(self, canvas, parent=None):
