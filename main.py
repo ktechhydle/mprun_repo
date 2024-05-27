@@ -1772,16 +1772,11 @@ Date:""")
         # Deactivate the add canvas tool
         self.use_exit_add_canvas()
 
-        # Create Options
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-
         # File Dialog, file path
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico);;(Beta) Python files (*.py)")
 
-        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico);;(Beta) Python files (*.py)",
-                                                   options=options)
+        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico);;(Beta) Python files (*.py)")
 
         if file_path:
             if file_path.endswith('.svg'):
