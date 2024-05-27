@@ -40,6 +40,7 @@ class CanvasItemSelector(QDialog):
         # Canvas selector
         self.canvas_chooser_combo = QComboBox()
         self.canvas_chooser_combo.setToolTip('Select a canvas to export')
+        self.canvas_chooser_combo.currentIndexChanged.connect(self.watermark_changed)
 
         # Transparent option checkbox
         self.transparent_check_btn = QCheckBox()
@@ -88,11 +89,18 @@ class CanvasItemSelector(QDialog):
             selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
 
             self.watermark_item.setScale(0.1)
-            self.watermark_item.setPos(selected_item.boundingRect().bottomRight().x() - 65, selected_item.boundingRect().bottomRight().y() - 65)
+            self.watermark_item.setPos(selected_item.sceneBoundingRect().bottomRight().x() - 65, selected_item.sceneBoundingRect().bottomRight().y() - 65)
 
         else:
             if self.watermark_item is not None:
                 self.canvas.removeItem(self.watermark_item)
+
+    def watermark_changed(self):
+        selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
+
+        if self.watermark_item is not None:
+            self.watermark_item.setPos(selected_item.sceneBoundingRect().bottomRight().x() - 65,
+                                       selected_item.sceneBoundingRect().bottomRight().y() - 65)
 
     def closeEvent(self, e):
         self.parent().use_exit_add_canvas()
