@@ -9,13 +9,11 @@ from undo_commands import *
 class CanvasItemSelector(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Select Canvas")
+        self.setWindowTitle("Export Canvas")
         self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
         self.setFixedWidth(700)
         self.setFixedHeight(500)
 
-        # Activate add canvas tool
-        self.parent().use_add_canvas()
         self.canvas = canvas
         self.watermark_item = None
 
@@ -30,8 +28,8 @@ class CanvasItemSelector(QDialog):
         # Scene and View
         self.view = ViewWidget()
         self.view.setScene(self.canvas)
-        self.view.setDragMode(QGraphicsView.ScrollHandDrag)
-        self.view.scale(0.25, 0.25)
+        self.view.setDragMode(QGraphicsView.NoDrag)
+        self.view.fitInView(self.canvas.itemsBoundingRect())
 
         # Labels
         selected_canvas_label = QLabel('Selected Canvas:')
@@ -40,7 +38,7 @@ class CanvasItemSelector(QDialog):
         # Canvas selector
         self.canvas_chooser_combo = QComboBox()
         self.canvas_chooser_combo.setToolTip('Select a canvas to export')
-        self.canvas_chooser_combo.currentIndexChanged.connect(self.watermark_changed)
+        self.canvas_chooser_combo.currentIndexChanged.connect(self.canvas_changed)
 
         # Transparent option checkbox
         self.transparent_check_btn = QCheckBox()
@@ -89,18 +87,21 @@ class CanvasItemSelector(QDialog):
             selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
 
             self.watermark_item.setScale(0.1)
+            self.watermark_item.setZValue(10000)
             self.watermark_item.setPos(selected_item.sceneBoundingRect().bottomRight().x() - 65, selected_item.sceneBoundingRect().bottomRight().y() - 65)
 
         else:
             if self.watermark_item is not None:
                 self.canvas.removeItem(self.watermark_item)
 
-    def watermark_changed(self):
+    def canvas_changed(self):
         selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
 
         if self.watermark_item is not None:
             self.watermark_item.setPos(selected_item.sceneBoundingRect().bottomRight().x() - 65,
                                        selected_item.sceneBoundingRect().bottomRight().y() - 65)
+
+        self.view.fitInView(selected_item.sceneBoundingRect(), Qt.KeepAspectRatio)
 
     def closeEvent(self, e):
         self.parent().use_exit_add_canvas()

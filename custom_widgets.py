@@ -158,6 +158,9 @@ class ViewWidget(QGraphicsView):
     def __init__(self):
         super().__init__()
 
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
     def mousePressEvent(self, event):
         for item in self.scene().items():
             item.setFlag(QGraphicsItem.ItemIsSelectable, False)
@@ -178,6 +181,9 @@ class ViewWidget(QGraphicsView):
             item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
         super().mouseReleaseEvent(event)
+
+    def wheelEvent(self, event):
+        pass
 
 class StrokeLabel(QLabel):
     def __init__(self, text, parent):

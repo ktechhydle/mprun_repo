@@ -1629,7 +1629,16 @@ Date:""")
         self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
 
         for item in self.canvas.items():
+            self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
+
             if isinstance(item, CanvasItem):
+                brush = QBrush(QColor('white'))
+                pen = QPen(QColor('white'), 2, Qt.SolidLine)
+                pen.setWidthF(0)
+                pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+                item.setBrush(brush)
+                item.setPen(pen)
+
                 for items in item.childItems():
                     items.setVisible(False)
                     items.parentItem().setSelected(False)
@@ -1831,6 +1840,9 @@ Date:""")
             QMessageBox.critical(self, "Export Error", f"Failed to export canvas to file: {e}")
 
     def choose_export(self):
+        # Exit add canvas tool if active
+        self.use_exit_add_canvas()
+
         # Create a custom dialog to with a dropdown to select which canvas to export
         selector = CanvasItemSelector(self.canvas, self)
         selector.show()
@@ -1988,18 +2000,7 @@ Date:""")
                 except Exception as e:
                     print(e)
 
-            for item in self.canvas.items():
-                self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
-
-                if isinstance(item, CanvasItem):
-                    brush = QBrush(QColor('white'))
-                    pen = QPen(QColor('white'), 2, Qt.SolidLine)
-                    pen.setWidthF(0)
-                    pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
-                    item.setBrush(brush)
-                    item.setPen(pen)
-
-            self.use_add_canvas()
+            self.use_exit_add_canvas()
 
     def create_group(self):
         for item in self.canvas.selectedItems():
