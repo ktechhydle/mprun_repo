@@ -362,31 +362,36 @@ class MPRUN(QMainWindow):
         self.x_pos_spin.setMaximum(10000)
         self.x_pos_spin.setMinimum(-10000)
         self.x_pos_spin.setSuffix(' pt')
+        self.x_pos_spin.setToolTip('Change the x position')
         self.y_pos_spin = QSpinBox(self)
         self.y_pos_spin.setMaximum(10000)
         self.y_pos_spin.setMinimum(-10000)
         self.y_pos_spin.setSuffix(' pt')
+        self.y_pos_spin.setToolTip('Change the y position')
         self.width_scale_spin = QDoubleSpinBox(self)
         self.width_scale_spin.setValue(0.0)
         self.width_scale_spin.setDecimals(2)
         self.width_scale_spin.setRange(-10000.00, 10000.00)
         self.width_scale_spin.setSingleStep(0.1)
         self.width_scale_spin.setSuffix(' pt')
+        self.width_scale_spin.setToolTip('Change the width')
         self.height_scale_spin = QDoubleSpinBox(self)
         self.height_scale_spin.setValue(0.0)
         self.height_scale_spin.setDecimals(2)
         self.height_scale_spin.setRange(-10000.00, 10000.00)
         self.height_scale_spin.setSingleStep(0.1)
         self.height_scale_spin.setSuffix(' pt')
+        self.height_scale_spin.setToolTip('Change the height')
         self.rotate_item_spin = QSpinBox(self)
         self.rotate_item_spin.setRange(-360, 360)
         self.rotate_item_spin.setSuffix('°')
+        self.rotate_item_spin.setToolTip('Change the rotation')
         flip_horizontal_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_horizontal_icon.png'), '')
-        flip_horizontal_btn.setToolTip('Flip Horizontal')
+        flip_horizontal_btn.setToolTip('Flip horizontal')
         flip_horizontal_btn.setStyleSheet('border: none;')
         flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
         flip_vertical_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_vertical_icon.png'), '')
-        flip_vertical_btn.setToolTip('Flip Vertical')
+        flip_vertical_btn.setToolTip('Flip vertical')
         flip_vertical_btn.setStyleSheet('border: none;')
         flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
         widget7 = ToolbarHorizontalLayout()
@@ -408,6 +413,7 @@ class MPRUN(QMainWindow):
         self.outline_color_btn = QPushButton('', self)
         self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
         self.outline_color_btn.setFixedWidth(28)
+        self.outline_color_btn.setToolTip('Change the stroke color')
         self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
         self.outline_color_btn.clicked.connect(self.update_pen)
@@ -416,6 +422,7 @@ class MPRUN(QMainWindow):
         self.stroke_size_spin.setMaximum(1000)
         self.stroke_size_spin.setMinimum(1)
         self.stroke_size_spin.setSuffix(' pt')
+        self.stroke_size_spin.setToolTip('Change the stroke width')
         stroke_label = StrokeLabel('Stroke', self)
         self.stroke_style_combo = stroke_label.stroke_combo
         self.stroke_style_options = stroke_label.stroke_options
@@ -433,11 +440,13 @@ class MPRUN(QMainWindow):
         self.fill_color_btn = QPushButton('', self)
         self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
         self.fill_color_btn.setFixedWidth(28)
+        self.fill_color_btn.setToolTip('Change the fill color')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
         self.fill_color.set('#00ff00')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
         self.fill_transparent_btn = QPushButton('Fill Transparent', self)
+        self.fill_transparent_btn.setToolTip('Fill the fill color transparent')
         self.fill_transparent_btn.clicked.connect(self.use_fill_transparent)
         widget5 = ToolbarHorizontalLayout()
         widget5.layout.addWidget(self.fill_color_btn)
@@ -455,6 +464,7 @@ class MPRUN(QMainWindow):
         self.opacity_spin.setRange(0, 100)
         self.opacity_spin.setValue(100)
         self.opacity_spin.setSuffix('%')
+        self.opacity_spin.setToolTip('Change the opacity')
         self.opacity_spin.valueChanged.connect(self.use_change_opacity)
         opacity_hlayout = ToolbarHorizontalLayout()
         opacity_hlayout.layout.addWidget(self.opacity_btn)
@@ -482,25 +492,32 @@ class MPRUN(QMainWindow):
         text_options_label.setAlignment(Qt.AlignLeft)
 
         self.font_choice_combo = QFontComboBox(self)
+        self.font_choice_combo.setToolTip('Change the font style')
         self.font_size_spin = QSpinBox(self)
         self.font_size_spin.setValue(20)
         self.font_size_spin.setMaximum(1000)
         self.font_size_spin.setMinimum(1)
         self.font_size_spin.setSuffix(' pt')
+        self.font_size_spin.setToolTip('Change the font size')
         self.font_letter_spacing_spin = QSpinBox(self)
         self.font_letter_spacing_spin.setValue(1)
         self.font_letter_spacing_spin.setMaximum(1000)
         self.font_letter_spacing_spin.setMinimum(-10)
         self.font_letter_spacing_spin.setSuffix(' pt')
+        self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
         self.font_color_btn = QPushButton('', self)
+        self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
         self.font_color_btn.clicked.connect(self.update_font)
         self.bold_btn = QPushButton('B', self)
+        self.bold_btn.setToolTip('Set the font bold')
         self.bold_btn.setStyleSheet('font-weight: bold; font-size: 15px;')
         self.italic_btn = QPushButton('I', self)
+        self.italic_btn.setToolTip('Set the font italic')
         self.italic_btn.setStyleSheet('font-style: italic; font-size: 15px;')
         self.underline_btn = QPushButton('U', self)
+        self.underline_btn.setToolTip('Set the font underlined')
         self.underline_btn.setStyleSheet('text-decoration: underline; font-size: 15px;')
         self.bold_btn.setCheckable(True)
         self.italic_btn.setCheckable(True)
@@ -529,9 +546,11 @@ class MPRUN(QMainWindow):
         path_precision_label = QLabel('Path Precision (More Accurate):', self)
 
         self.colormode_combo = QComboBox(self)
+        self.colormode_combo.setToolTip('Change the color mode')
         self.colormode_combo.addItem('Color', 'color')
         self.colormode_combo.addItem('Black and White', 'binary')
         self.mode_combo = QComboBox(self)
+        self.mode_combo.setToolTip('Change the geometry mode')
         self.mode_combo.addItem('Spline', 'spline')
         self.mode_combo.addItem('Polygon', 'polygon')
         self.mode_combo.addItem('None', 'none')
@@ -540,15 +559,18 @@ class MPRUN(QMainWindow):
         self.color_precision_spin.setMaximum(8)
         self.color_precision_spin.setMinimum(1)
         self.color_precision_spin.setValue(6)
+        self.color_precision_spin.setToolTip('Change the color precision')
         self.corner_threshold_spin = QSpinBox(self)
         self.corner_threshold_spin.setMaximum(180)
         self.corner_threshold_spin.setMinimum(1)
         self.corner_threshold_spin.setValue(60)
+        self.corner_threshold_spin.setToolTip('Change the corner threshold')
         self.path_precision_spin = QSlider(self)
         self.path_precision_spin.setOrientation(Qt.Horizontal)
         self.path_precision_spin.setMaximum(10)
         self.path_precision_spin.setMinimum(1)
         self.path_precision_spin.setSliderPosition(3)
+        self.path_precision_spin.setToolTip('Change the path precision')
 
         image_tracehlayout1 = ToolbarHorizontalLayout()
         image_tracehlayout1.layout.addWidget(colormode_label)
@@ -1587,6 +1609,8 @@ Date:""")
                     self.canvas.addCommand(command)
 
     def use_add_canvas(self):
+        self.add_canvas_btn.setChecked(True)
+        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
         self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
 
         for item in self.canvas.items():
@@ -1597,6 +1621,20 @@ Date:""")
 
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+
+    def use_exit_add_canvas(self):
+        # Deactivate the add canvas tool
+        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+        self.select_btn.setChecked(True)
+        self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
+
+        for item in self.canvas.items():
+            if isinstance(item, CanvasItem):
+                for items in item.childItems():
+                    items.setVisible(False)
+                    items.parentItem().setSelected(False)
+                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
+                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():
@@ -1722,17 +1760,8 @@ Date:""")
                     self.update_appearance_ui()
 
     def insert_image(self):
-        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.select_btn.setChecked(True)
-        self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
-
-        for item in self.canvas.items():
-            if isinstance(item, CanvasItem):
-                for items in item.childItems():
-                    items.setVisible(False)
-                    items.parentItem().setSelected(False)
-                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
-                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
+        # Deactivate the add canvas tool
+        self.use_exit_add_canvas()
 
         # Create Options
         options = QFileDialog.Options()
@@ -1803,7 +1832,7 @@ Date:""")
 
     def choose_export(self):
         # Create a custom dialog to with a dropdown to select which canvas to export
-        selector = CanvasItemSelector(self)
+        selector = CanvasItemSelector(self.canvas, self)
         selector.show()
 
         for item in self.canvas.items():
@@ -1813,25 +1842,42 @@ Date:""")
 
         # Create a function to choose the selected item
         def export():
-            index = selector.comboBox.currentIndex()
-            data = selector.comboBox.itemData(index)
-            selected_item = selector.comboBox.itemData(index)
+            index = selector.canvas_chooser_combo.currentIndex()
+            data = selector.canvas_chooser_combo.itemData(index)
+            selected_item = selector.canvas_chooser_combo.itemData(index)
 
             if selected_item:
+                if selector.transparent_check_btn.isChecked():
+                    self.canvas.setBackgroundBrush(QBrush(QColor(Qt.transparent)))
+
+                    for item in self.canvas.items():
+                        if isinstance(item, CanvasItem):
+                            b = item.brush()
+                            p = item.pen()
+                            b.setColor(QColor(Qt.transparent))
+                            p.setColor(QColor(Qt.transparent))
+
+                            item.setBrush(b)
+                            item.setPen(p)
+
                 self.export_selected_canvas(selected_item)
 
-        selector.exportButton.clicked.connect(export)
+        selector.export_btn.clicked.connect(export)
 
     def export_selected_canvas(self, selected_item):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-
         # File dialog, filepath
         file_dialog = QFileDialog()
 
-        file_path, selected_filter = file_dialog.getSaveFileName(self, 'Export Canvas', 'C:/Users/kelle/Downloads',
-                                                                 'SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;PDF files (*.pdf);;WEBP files (*.webp);;HEIC files (*.heic);;ICO files (*.ico)',
-                                                                 options=options)
+        file_path, selected_filter = file_dialog.getSaveFileName(self, 'Export Canvas', '',
+                                                                 'SVG files (*.svg);;'
+                                                                 'PNG files (*.png);;'
+                                                                 'JPG files (*.jpg);;'
+                                                                 'JPEG files (*.jpeg);;'
+                                                                 'TIFF files (*.tiff);;'
+                                                                 'PDF files (*.pdf);;'
+                                                                 'WEBP files (*.webp);;'
+                                                                 'HEIC files (*.heic);;'
+                                                                 'ICO files (*.ico)')
 
         if file_path:
             # Get the selected filter's extension
@@ -1941,6 +1987,19 @@ Date:""")
 
                 except Exception as e:
                     print(e)
+
+            for item in self.canvas.items():
+                self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
+
+                if isinstance(item, CanvasItem):
+                    brush = QBrush(QColor('white'))
+                    pen = QPen(QColor('white'), 2, Qt.SolidLine)
+                    pen.setWidthF(0)
+                    pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+                    item.setBrush(brush)
+                    item.setPen(pen)
+
+            self.use_add_canvas()
 
     def create_group(self):
         for item in self.canvas.selectedItems():

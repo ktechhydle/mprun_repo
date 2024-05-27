@@ -7,27 +7,73 @@ from custom_widgets import *
 from undo_commands import *
 
 class CanvasItemSelector(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, canvas, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Select Canvas To Export")
+        self.setWindowTitle("Select Canvas")
         self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
-        self.setFixedWidth(250)
+        self.setFixedWidth(700)
+        self.setFixedHeight(500)
 
-        layout = QVBoxLayout(self)
-        self.comboBox = QComboBox()
-        layout.addWidget(self.comboBox)
+        # Activate add canvas tool
+        self.parent().use_add_canvas()
+        self.canvas = canvas
 
-        self.exportButton = QPushButton("Export")
-        layout.addWidget(self.exportButton)
+        # Create the layout
+        self.layout = QVBoxLayout()
+        self.hlayout = QHBoxLayout()
+        self.setLayout(self.hlayout)
+
+        self.createUI()
+
+    def createUI(self):
+        # Scene and View
+        self.view = ViewWidget()
+        self.view.setScene(self.canvas)
+        self.view.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.view.scale(0.25, 0.25)
+
+        # Labels
+        selected_canvas_label = QLabel('Selected Canvas:')
+        export_options_label = QLabel('Export Options:')
+
+        # Canvas selector
+        self.canvas_chooser_combo = QComboBox()
+        self.canvas_chooser_combo.setToolTip('Select a canvas to export')
+
+        # Transparent option checkbox
+        self.transparent_check_btn = QCheckBox()
+        self.transparent_check_btn.setChecked(False)
+        self.transparent_check_btn.setText('Transparent Background')
+        self.transparent_check_btn.setToolTip('Export the selected canvas with a transparent background')
+
+        # Export button
+        self.export_btn = QPushButton("Export")
+        self.export_btn.setToolTip('Export the selected canvas')
+
+        # Add widgets
+        self.layout.addWidget(HorizontalSeparator())
+        self.hlayout.addWidget(self.view)
+        self.layout.addWidget(selected_canvas_label)
+        self.layout.addWidget(self.canvas_chooser_combo)
+        self.layout.addWidget(export_options_label)
+        self.layout.addWidget(self.transparent_check_btn)
+        self.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        self.layout.addWidget(self.export_btn)
+        self.hlayout.addLayout(self.layout)
+
 
     def add_canvas_item(self, itemName, itemKey):
         if isinstance(itemKey, CanvasItem):
             values = {itemName: itemKey}
             for name, key in values.items():
-                self.comboBox.addItem(name, key)
+                self.canvas_chooser_combo.addItem(name, key)
 
         else:
             pass
+
+    def closeEvent(self, e):
+        self.parent().use_exit_add_canvas()
+
 
 class TextAlongPathPanel(QWidget):
     def __init__(self, canvas, parent=None):
@@ -48,17 +94,21 @@ class TextAlongPathPanel(QWidget):
         spacing_label.setStyleSheet("QLabel { font-size: 12px; }")
 
         self.text_along_path_check_btn = QCheckBox(self)
+        self.text_along_path_check_btn.setToolTip('Add text along the path')
         self.text_along_path_check_btn.setText('Add Text Along Path')
 
         self.distrubute_evenly_check_btn = QCheckBox(self)
+        self.distrubute_evenly_check_btn.setToolTip('Distribute the text along the path evenly')
         self.distrubute_evenly_check_btn.setText('Distribute Text Evenly')
 
         self.spacing_spin = QSpinBox(self)
         self.spacing_spin.setRange(-1000, 10000)
         self.spacing_spin.setSuffix(' pt')
+        self.spacing_spin.setToolTip('Text spacing from path')
 
         self.text_entry = QLineEdit(self)
         self.text_entry.setPlaceholderText('Enter Text')
+        self.text_entry.setToolTip('Enter text along the path')
 
         self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(main_label)

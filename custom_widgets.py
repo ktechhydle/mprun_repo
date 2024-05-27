@@ -154,6 +154,31 @@ class CanvasEditorPanel(QWidget):
                 except Exception:
                     pass
 
+class ViewWidget(QGraphicsView):
+    def __init__(self):
+        super().__init__()
+
+    def mousePressEvent(self, event):
+        for item in self.scene().items():
+            item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+            item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        for item in self.scene().items():
+            item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+            item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        for item in self.scene().items():
+            item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+            item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
+        super().mouseReleaseEvent(event)
+
 class StrokeLabel(QLabel):
     def __init__(self, text, parent):
         super().__init__(parent)
