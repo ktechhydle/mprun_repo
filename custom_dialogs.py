@@ -11,7 +11,7 @@ class CanvasItemSelector(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Export Canvas")
         self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
-        self.setFixedWidth(700)
+        self.setFixedWidth(750)
         self.setFixedHeight(500)
 
         self.canvas = canvas
@@ -27,6 +27,7 @@ class CanvasItemSelector(QDialog):
     def createUI(self):
         # Scene and View
         self.view = ViewWidget()
+        self.view.setFixedWidth(500)
         self.view.setScene(self.canvas)
         self.view.setDragMode(QGraphicsView.NoDrag)
         self.view.fitInView(self.canvas.itemsBoundingRect())
@@ -123,7 +124,7 @@ class MultiCanvasItemSelector(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Export All")
         self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
-        self.setFixedWidth(700)
+        self.setFixedWidth(750)
         self.setFixedHeight(500)
 
         self.parent().use_exit_add_canvas()
@@ -140,6 +141,7 @@ class MultiCanvasItemSelector(QDialog):
     def createUI(self):
         # Scene and View
         self.view = ViewWidget()
+        self.view.setFixedWidth(500)
         self.view.setScene(self.canvas)
         self.view.setDragMode(QGraphicsView.ScrollHandDrag)
         self.view.fitInView(self.canvas.itemsBoundingRect(), Qt.KeepAspectRatio)

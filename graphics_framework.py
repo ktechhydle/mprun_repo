@@ -48,13 +48,12 @@ class CustomGraphicsView(QGraphicsView):
         # Items
         self.canvas = canvas
         self.temp_path_item = None
+        self.temp_canvas = None
         self.pen = None
         self.stroke_fill = None
         self.font = None
-        self.font = None
         self.layer_height = None
         self.path = None
-        self.temp_path_item = None
         self.last_point = None
 
         # Add methods for zooming
@@ -614,63 +613,43 @@ y: {int(p.y())}''')
         if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
             self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
             self.setDragMode(QGraphicsView.NoDrag)
-
             self.clicked_canvas_point = self.mapToScene(event.pos())
-            self.added_click = event.pos()
-            self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
-                                          0)  # Initialize with zero width and height
+            self.canvas_item = CanvasItem(0, 0, 1, 1)
+            self.canvas_item.setPos(self.clicked_canvas_point)
+            self.scene().addItem(self.canvas_item)
             self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
-
-            self.scene().addItem(self.canvas_item)  # Add canvas item to the scene
-            self.scene().addItem(self.canvas_item_text)  # Add canvas text item to the scene
+            command = AddItemCommand(self.scene(), self.canvas_item)
+            self.canvas.addCommand(command)
 
     def on_add_canvas_drag(self, event):
-        if self.canvas_item is not None:
-            if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
-                if not hasattr(self, 'canvas_item'):
-                    self.clicked_canvas_point = self.mapToScene(event.pos())
-                    self.canvas_item = CanvasItem(self.clicked_canvas_point.x(), self.clicked_canvas_point.y(), 0,
-                                                  0)  # Initialize with zero width and height
-                    self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
-
-                current_pos = self.mapToScene(event.pos())
-                self.canvas_item.setRect(0,
-                                         0,
-                                         current_pos.x() - self.clicked_canvas_point.x(),
-                                         current_pos.y() - self.clicked_canvas_point.y())
+        if self.canvas_item is not None and event.buttons() & Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
+            current_pos = self.mapToScene(event.pos())
+            self.canvas_item.setRect(0,
+                                     0,
+                                     current_pos.x() - self.clicked_canvas_point.x(),
+                                     current_pos.y() - self.clicked_canvas_point.y())
 
     def on_add_canvas_end(self, event):
-        if self.canvas_item is not None:
-            if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
-                try:
-                    self.setDragMode(QGraphicsView.RubberBandDrag)
-                    current_pos = self.mapToScene(event.pos())
-                    self.canvas_item.setRect(0, 0,
-                                             current_pos.x() - self.clicked_canvas_point.x(),
-                                             current_pos.y() - self.clicked_canvas_point.y())
+        if self.canvas_item is not None and event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
+            self.setDragMode(QGraphicsView.RubberBandDrag)
+            current_pos = self.mapToScene(event.pos())
+            self.canvas_item.setRect(0,
+                                     0,
+                                     current_pos.x() - self.clicked_canvas_point.x(),
+                                     current_pos.y() - self.clicked_canvas_point.y())
 
-                    command = AddItemCommand(self.scene(), self.canvas_item)  # Assuming AddItemCommand is defined elsewhere
-                    self.canvas.addCommand(command)
+            self.canvas_item.setPos(self.clicked_canvas_point)
+            self.canvas_item.setToolTip('Canvas')
+            self.canvas_item.setZValue(-1)
 
-                    self.canvas_item.setPos(self.clicked_canvas_point)
-                    self.canvas_item_text.setPos(self.canvas_item.boundingRect().x(), self.canvas_item.boundingRect().y())
-                    self.canvas_item.setToolTip('Canvas')
-                    self.canvas_item.setZValue(-1)
+            if self.canvas_item.rect().isEmpty():
+                self.scene().removeItem(self.canvas_item)
+                self.scene().removeItem(self.canvas_item_text)
 
-                    if self.canvas_item.rect().isEmpty():
-                        self.scene().removeItem(self.canvas_item)
+            self.canvas_item = None
+            self.clicked_canvas_point = None
 
-                    self.clicked_canvas_point = None
-
-                    self.canvas.update()
-
-                except Exception:
-                    pass
-
-        else:
-            if self.canvas_item is not None:
-                if self.canvas_item.rect().isEmpty():
-                    self.scene().removeItem(self.canvas_item)
+            self.canvas.update()
 
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
