@@ -77,22 +77,27 @@ class CanvasItemSelector(QDialog):
             pass
 
     def add_watermark(self):
-        if self.watermark_check_btn.isChecked():
-            if self.watermark_item is not None:
-                self.canvas.removeItem(self.watermark_item)
+        try:
+            if self.watermark_check_btn.isChecked():
+                if self.watermark_item is not None:
+                    self.canvas.removeItem(self.watermark_item)
 
-            self.watermark_item = QGraphicsPixmapItem(QPixmap('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
-            self.canvas.addItem(self.watermark_item)
+                self.watermark_item = QGraphicsPixmapItem(QPixmap('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
+                self.canvas.addItem(self.watermark_item)
 
-            selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
+                selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
 
-            self.watermark_item.setScale(0.1)
-            self.watermark_item.setZValue(10000)
-            self.watermark_item.setPos(selected_item.sceneBoundingRect().bottomRight().x() - 65, selected_item.sceneBoundingRect().bottomRight().y() - 65)
+                self.watermark_item.setScale(0.1)
+                self.watermark_item.setZValue(10000)
+                self.watermark_item.setToolTip('MPRUN Watermark')
+                self.watermark_item.setPos(selected_item.sceneBoundingRect().bottomRight().x() - 65, selected_item.sceneBoundingRect().bottomRight().y() - 65)
 
-        else:
-            if self.watermark_item is not None:
-                self.canvas.removeItem(self.watermark_item)
+            else:
+                if self.watermark_item is not None:
+                    self.canvas.removeItem(self.watermark_item)
+
+        except Exception:
+            pass
 
     def canvas_changed(self):
         selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
@@ -105,6 +110,9 @@ class CanvasItemSelector(QDialog):
 
     def closeEvent(self, e):
         self.parent().use_exit_add_canvas()
+
+        if self.watermark_item is not None:
+            self.canvas.removeItem(self.watermark_item)
 
 class TextAlongPathPanel(QWidget):
     def __init__(self, canvas, parent=None):

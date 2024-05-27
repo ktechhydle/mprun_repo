@@ -1808,7 +1808,7 @@ Date:""")
 
                 self.create_item_attributes(image2)
 
-    def export_canvas(self, filename, selected_item):
+    def export_canvas_as_bitmap(self, filename, selected_item):
         # Create a QImage with the size of the selected item (QGraphicsRectItem)
         rect = selected_item.sceneBoundingRect()
         image = QImage(rect.size().toSize(), QImage.Format_ARGB32)
@@ -1870,11 +1870,18 @@ Date:""")
                             item.setBrush(b)
                             item.setPen(p)
 
-                self.export_selected_canvas(selected_item)
+                self.filter_selected_canvas_for_export(selected_item)
+
+            else:
+                QMessageBox.warning(self,
+                                    'Export Selected Canvas',
+                                    'No canvas elements found within the scene. '
+                                    'Please create a canvas element to export.',
+                                    QMessageBox.Ok)
 
         selector.export_btn.clicked.connect(export)
 
-    def export_selected_canvas(self, selected_item):
+    def filter_selected_canvas_for_export(self, selected_item):
         # File dialog, filepath
         file_dialog = QFileDialog()
 
@@ -1993,7 +2000,7 @@ Date:""")
             else:
                 try:
                     self.canvas.clearSelection()
-                    self.export_canvas(file_path, selected_item)
+                    self.export_canvas_as_bitmap(file_path, selected_item)
 
                 except Exception as e:
                     print(e)
