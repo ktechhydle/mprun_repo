@@ -1609,6 +1609,7 @@ Date:""")
                     self.canvas.addCommand(command)
 
     def use_add_canvas(self):
+        self.display_choosen_tab('Canvas')
         self.add_canvas_btn.setChecked(True)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
         self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
