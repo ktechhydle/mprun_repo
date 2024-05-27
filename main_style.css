@@ -324,3 +324,16 @@ QListWidget::item:selected {
 QListWidget::item:hover {
     border: 2px solid #636363;
 }
+
+/* Custom widgets */
+#modernLineEdit {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid gray;
+    padding: 5px;
+    font-size: 16px;
+}
+
+#modernLineEdit:focus {
+    border-bottom: 2px solid #0078d7;
+}

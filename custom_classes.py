@@ -541,4 +541,8 @@ class ControlPoint(QGraphicsEllipseItem):
             self.positionChanged.emit()
         return super().itemChange(change, value)
 
+class WaterMarkItem(QGraphicsPixmapItem):
+    def __init__(self, pixmap):
+        super().__init__(pixmap)
+
 

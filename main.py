@@ -97,9 +97,13 @@ class MPRUN(QMainWindow):
         open_action = QAction('Open', self)
         open_action.triggered.connect(lambda: self.canvas.open(self))
 
-        export_action = QAction('Export', self)
+        export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
         export_action.triggered.connect(self.choose_export)
+
+        export_multiple_action = QAction('Export All', self)
+        export_multiple_action.setShortcut(QKeySequence('Ctrl+Shift+E'))
+        export_multiple_action.triggered.connect(self.choose_multiple_export)
 
         close_action = QAction('Close', self)
         close_action.triggered.connect(lambda: self.close())
@@ -152,11 +156,11 @@ class MPRUN(QMainWindow):
 
         group_action = QAction('Group Selected', self)
         group_action.setShortcut(QKeySequence('G'))
-        group_action.triggered.connect(self.create_group)
+        group_action.triggered.connect(self.use_create_group)
 
         ungroup_action = QAction('Ungroup Selected', self)
         ungroup_action.setShortcut(QKeySequence('Ctrl+G'))
-        ungroup_action.triggered.connect(self.ungroup_group)
+        ungroup_action.triggered.connect(self.use_ungroup_group)
 
         image_trace_action = QAction('Trace Image', self)
         image_trace_action.triggered.connect(self.use_vectorize)
@@ -218,6 +222,7 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(open_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
+        self.file_menu.addAction(export_multiple_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(close_action)
 
@@ -836,9 +841,9 @@ class MPRUN(QMainWindow):
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.triggered.connect(self.use_duplicate)
         group_action = QAction('Group Selected', self)
-        group_action.triggered.connect(self.create_group)
+        group_action.triggered.connect(self.use_create_group)
         ungroup_action = QAction('Ungroup Selected', self)
-        ungroup_action.triggered.connect(self.ungroup_group)
+        ungroup_action.triggered.connect(self.use_ungroup_group)
         vectorize_action = QAction('Vectorize', self)
         vectorize_action.triggered.connect(self.use_vectorize)
         raise_layer_action = QAction('Raise Layer', self)
@@ -1772,6 +1777,82 @@ Date:""")
 
                     self.update_appearance_ui()
 
+    def use_create_group(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CanvasItem):
+                pass
+
+            elif isinstance(item, LeaderLineItem):
+                if item.childItems():
+                    pass
+
+                pass
+
+            elif isinstance(item, EditableTextBlock):
+                if item.parentItem():
+                    pass
+
+                else:
+                    group = CustomGraphicsItemGroup(self.gsnap_check_btn)
+                    group.set_grid_size(self.gsnap_grid_size)
+
+                    item = self.canvas.selectedItems()
+
+                    if len(item) > 1:
+                        # Set flags for group
+                        group.setFlag(QGraphicsItem.ItemIsMovable)
+                        group.setFlag(QGraphicsItem.ItemIsSelectable)
+
+                        # Add group
+                        self.canvas.addItem(group)
+
+                        for items in item:
+                            # Set flag
+                            items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+
+                            # Add items to group
+                            group.addToGroup(items)
+                            group.setToolTip('Group')
+
+                    else:
+                        pass
+
+            else:
+                group = CustomGraphicsItemGroup(self.gsnap_check_btn)
+                group.set_grid_size(self.gsnap_grid_size)
+
+                item = self.canvas.selectedItems()
+
+                if len(item) > 1:
+                    # Set flags for group
+                    group.setFlag(QGraphicsItem.ItemIsMovable)
+                    group.setFlag(QGraphicsItem.ItemIsSelectable)
+
+                    # Add group
+                    self.canvas.addItem(group)
+
+                    for items in item:
+                        # Set flag
+                        items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+
+                        # Add items to group
+                        group.addToGroup(items)
+                        group.setToolTip('Group')
+
+                else:
+                    pass
+
+    def use_ungroup_group(self):
+        for group in self.canvas.selectedItems():
+            if isinstance(group, CustomGraphicsItemGroup):
+                if group.childItems():
+                    for child in group.childItems():
+                        child.setFlag(QGraphicsItem.ItemIsSelectable)
+                        child.setToolTip(child.toolTip())
+                        child.setParentItem(child)
+
+                self.canvas.destroyItemGroup(group)
+
     def insert_image(self):
         # Deactivate the add canvas tool
         self.use_exit_add_canvas()
@@ -2008,81 +2089,9 @@ Date:""")
 
             self.use_exit_add_canvas()
 
-    def create_group(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                pass
-
-            elif isinstance(item, LeaderLineItem):
-                if item.childItems():
-                    pass
-
-                pass
-
-            elif isinstance(item, EditableTextBlock):
-                if item.parentItem():
-                    pass
-
-                else:
-                    group = CustomGraphicsItemGroup(self.gsnap_check_btn)
-                    group.set_grid_size(self.gsnap_grid_size)
-
-                    item = self.canvas.selectedItems()
-
-                    if len(item) > 1:
-                        # Set flags for group
-                        group.setFlag(QGraphicsItem.ItemIsMovable)
-                        group.setFlag(QGraphicsItem.ItemIsSelectable)
-
-                        # Add group
-                        self.canvas.addItem(group)
-
-                        for items in item:
-                            # Set flag
-                            items.setFlag(QGraphicsItem.ItemIsSelectable, False)
-
-                            # Add items to group
-                            group.addToGroup(items)
-                            group.setToolTip('Group')
-
-                    else:
-                        pass
-
-            else:
-                group = CustomGraphicsItemGroup(self.gsnap_check_btn)
-                group.set_grid_size(self.gsnap_grid_size)
-
-                item = self.canvas.selectedItems()
-
-                if len(item) > 1:
-                    # Set flags for group
-                    group.setFlag(QGraphicsItem.ItemIsMovable)
-                    group.setFlag(QGraphicsItem.ItemIsSelectable)
-
-                    # Add group
-                    self.canvas.addItem(group)
-
-                    for items in item:
-                        # Set flag
-                        items.setFlag(QGraphicsItem.ItemIsSelectable, False)
-
-                        # Add items to group
-                        group.addToGroup(items)
-                        group.setToolTip('Group')
-
-                else:
-                    pass
-
-    def ungroup_group(self):
-        for group in self.canvas.selectedItems():
-            if isinstance(group, CustomGraphicsItemGroup):
-                if group.childItems():
-                    for child in group.childItems():
-                        child.setFlag(QGraphicsItem.ItemIsSelectable)
-                        child.setToolTip(child.toolTip())
-                        child.setParentItem(child)
-
-                self.canvas.destroyItemGroup(group)
+    def choose_multiple_export(self):
+        selector = MultiCanvasItemSelector(self.canvas, self)
+        selector.show()
 
     def create_item_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
