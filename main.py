@@ -367,13 +367,13 @@ class MPRUN(QMainWindow):
         self.y_pos_spin.setMinimum(-10000)
         self.y_pos_spin.setSuffix(' pt')
         self.width_scale_spin = QDoubleSpinBox(self)
-        self.width_scale_spin.setValue(10.0)
+        self.width_scale_spin.setValue(0.0)
         self.width_scale_spin.setDecimals(2)
         self.width_scale_spin.setRange(-10000.00, 10000.00)
         self.width_scale_spin.setSingleStep(0.1)
         self.width_scale_spin.setSuffix(' pt')
         self.height_scale_spin = QDoubleSpinBox(self)
-        self.height_scale_spin.setValue(10.0)
+        self.height_scale_spin.setValue(0.0)
         self.height_scale_spin.setDecimals(2)
         self.height_scale_spin.setRange(-10000.00, 10000.00)
         self.height_scale_spin.setSingleStep(0.1)
@@ -1072,8 +1072,8 @@ Date:""")
             self.y_pos_spin.setValue(0)
             self.rotate_item_spin.setValue(0)
             self.opacity_spin.setValue(100)
-            self.width_scale_spin.setValue(10.0)
-            self.height_scale_spin.setValue(10.0)
+            self.width_scale_spin.setValue(0.0)
+            self.height_scale_spin.setValue(0.0)
             self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
             self.text_along_path_tab.text_entry.clear()
             self.text_along_path_tab.spacing_spin.setValue(0)
@@ -1083,8 +1083,8 @@ Date:""")
             self.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
             self.rotate_item_spin.setValue(int(item.rotation()))
             self.opacity_spin.setValue(int(item.opacity() * 100))
-            self.width_scale_spin.setValue(float(item.transform().m11() * 10))
-            self.height_scale_spin.setValue(float(item.transform().m22() * 10))
+            self.width_scale_spin.setValue(float(item.sceneBoundingRect().width()))
+            self.height_scale_spin.setValue(float(item.sceneBoundingRect().height()))
 
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
@@ -1504,17 +1504,20 @@ Date:""")
 
     def use_scale(self, x_value, y_value):
         try:
-            x_value = float(x_value / 10)
-            y_value = float(y_value / 10)
             items = self.canvas.selectedItems()
             for item in items:
                 if isinstance(item, CanvasItem):
                     pass
 
                 else:
-                    item.setTransformOriginPoint(item.boundingRect().center())
+                    x_value = x_value / item.boundingRect().width()
+                    y_value = y_value / item.boundingRect().height()
+
                     command = TransformScaleCommand(item, x_value, y_value, item.transform().m11(), item.transform().m22())
                     self.canvas.addCommand(command)
+
+                    item.boundingRect().setWidth(x_value)
+                    item.boundingRect().setHeight(y_value)
 
         except Exception as e:
             pass
