@@ -1645,6 +1645,9 @@ Date:""")
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
+            elif isinstance(item, EditableTextBlock):
+                item.locked = False
+
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):

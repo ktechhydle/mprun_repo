@@ -166,6 +166,9 @@ class ViewWidget(QGraphicsView):
             item.setFlag(QGraphicsItem.ItemIsSelectable, False)
             item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
+            if isinstance(item, EditableTextBlock):
+                item.set_locked()
+
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
