@@ -44,7 +44,7 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
-        self.undo_stack.setUndoLimit(15)
+        self.undo_stack.setUndoLimit(35)
 
         # Create GUI
         self.create_initial_canvas()
