@@ -2140,10 +2140,19 @@ Date:""")
 
 if __name__ == '__main__':
     app = QApplication([])
+    app.setAttribute(Qt.AA_EnableHighDpiScaling)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-    sshFile = "main_style.css"
-    with open(sshFile, "r") as fh:
-        app.setStyleSheet(fh.read())
+    windowSSH = "windows_style.css"
+    macSSH = 'mac_style.css'
+
+    if sys.platform == 'Darwin':
+        with open(macSSH, "r") as fh:
+            app.setStyleSheet(fh.read())
+
+    else:
+        with open(windowSSH, "r") as fh:
+            app.setStyleSheet(fh.read())
 
     window = MPRUN()
     sys.exit(app.exec_())
