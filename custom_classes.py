@@ -497,8 +497,8 @@ class LeaderLineItem(QGraphicsPathItem):
         return item
 
 class CanvasItem(QGraphicsRectItem):
-    def __init__(self, *coords):
-        super().__init__(*coords)
+    def __init__(self, coords: QRectF, name):
+        super().__init__(coords)
 
         brush = QBrush(QColor('white'))
         pen = QPen(QColor('white'), 2, Qt.SolidLine)
@@ -506,6 +506,9 @@ class CanvasItem(QGraphicsRectItem):
         pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
         self.setBrush(brush)
         self.setPen(pen)
+        self.setToolTip(name)
+        self.text = CanvasTextItem(name, self)
+        self.text.setVisible(False)
 
 class CanvasTextItem(QGraphicsSimpleTextItem):
     def __init__(self, text, parent):

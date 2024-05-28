@@ -29,7 +29,6 @@ class MPRUN(QMainWindow):
         # File
         self.file_name = None
         self.last_paper = None
-        self.stored_center_item = None
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -890,12 +889,10 @@ class MPRUN(QMainWindow):
         font.setUnderline(True if self.underline_btn.isChecked() else False)
 
         # Drawing paper
-        self.paper = CanvasItem(0, 0, 1000, 700)
+        self.paper = CanvasItem(QRectF(0, 0, 1000, 700), 'Canvas 1')
         self.paper.setZValue(-1)
-        self.paper.setToolTip('Canvas 1')
         self.canvas.addItem(self.paper)
         self.last_paper = self.paper
-        self.stored_center_item = self.paper.boundingRect()
 
         # Text on paper
         self.paper_text = EditableTextBlock("""Run #:
@@ -910,9 +907,6 @@ Date:""")
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(0)
         self.canvas.addItem(self.paper_text)
-
-        self.text_item = CanvasTextItem('Canvas 1', self.paper)
-        self.text_item.setVisible(False)
 
         self.use_refit_screen()
 

@@ -174,7 +174,8 @@ QDialogButtonBox QPushButton {
     min-width: 100px;
     font-size: 15px;}
     QDialogButtonBox QPushButton:hover {
-      background-color: #c8c8c8;
+      background-color: #ffffff;
+      color: #535353;
     }
 
 QSlider {

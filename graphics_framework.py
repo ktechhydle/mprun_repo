@@ -245,7 +245,8 @@ y: {int(p.y())}''')
         if not clamped or self.zoomClamp is False:
             self.scale(zoomFactor, zoomFactor)
 
-        self.zoom_spin.setValue(int(zoomFactor * 100))
+        current_zoom_percentage = self.transform().m11() * 100
+        self.zoom_spin.setValue(int(current_zoom_percentage))
         self.zoom_spin.blockSignals(False)
 
     def dragEnterEvent(self, event):
@@ -613,11 +614,12 @@ y: {int(p.y())}''')
         if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
             self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
             self.setDragMode(QGraphicsView.NoDrag)
+
             self.clicked_canvas_point = self.mapToScene(event.pos())
-            self.canvas_item = CanvasItem(0, 0, 1, 1)
+            self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), 'Canvas')
             self.canvas_item.setPos(self.clicked_canvas_point)
+
             self.scene().addItem(self.canvas_item)
-            self.canvas_item_text = CanvasTextItem('Canvas', self.canvas_item)
             command = AddItemCommand(self.scene(), self.canvas_item)
             self.canvas.addCommand(command)
 
@@ -641,10 +643,11 @@ y: {int(p.y())}''')
             self.canvas_item.setPos(self.clicked_canvas_point)
             self.canvas_item.setToolTip('Canvas')
             self.canvas_item.setZValue(-1)
+            self.scene().addItem(self.canvas_item.text)
 
             if self.canvas_item.rect().isEmpty():
                 self.scene().removeItem(self.canvas_item)
-                self.scene().removeItem(self.canvas_item_text)
+                self.scene().removeItem(self.canvas_item.text)
 
             self.canvas_item = None
             self.clicked_canvas_point = None
