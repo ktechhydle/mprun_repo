@@ -2146,7 +2146,7 @@ if __name__ == '__main__':
     windowSSH = "windows_style.css"
     macSSH = 'mac_style.css'
 
-    if sys.platform == 'Darwin':
+    if sys.platform == 'darwin':
         with open(macSSH, "r") as fh:
             app.setStyleSheet(fh.read())
 
