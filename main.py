@@ -591,6 +591,7 @@ class MPRUN(QMainWindow):
         self.font_size_spin.valueChanged.connect(self.update_font)
         self.font_letter_spacing_spin.valueChanged.connect(self.update_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_font)
+        self.font_choice_combo.currentTextChanged.connect(self.update_font)
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid_size)
         self.x_pos_spin.valueChanged.connect(self.use_set_item_pos)
         self.y_pos_spin.valueChanged.connect(self.use_set_item_pos)
