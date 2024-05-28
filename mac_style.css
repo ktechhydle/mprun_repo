@@ -1,7 +1,7 @@
 QMainWindow {
   background-color: #535353;
   color: white;
-  font-family: Segoe UI;
+  font-family: Lucida Grande;
 }
 
 #centralwidget {
@@ -10,8 +10,7 @@ QMainWindow {
 QWidget {
   background-color: #535353;
   color: #2a2a2a;
-  font-family: Segoe UI;
-  font-color: white;}
+  font-family: Lucida Grande;}
 
 QGraphicsView {
     border: 2px solid #383838;
@@ -75,13 +74,13 @@ QToolButton:checked {
 QLabel {
   color: #c7c7c7;
   background-color: transparent;
-  font-family: Segoe UI;
+  font-family: Lucida Grande;
 }
 
 #strokeLabel {
   color: white;
   background-color: transparent;
-  font-family: Segoe UI;
+  font-family: Lucida Grande;
   text-decoration: underline;
 }
 

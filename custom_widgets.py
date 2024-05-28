@@ -15,7 +15,7 @@ class ToolbarHorizontalLayout(QWidget):
 class HorizontalSeparator(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.color = QColor('#4b4b4b')
+        self.color = '#4b4b4b'
         self.setFrameShape(QFrame.HLine)
         self.setFrameShadow(QFrame.Plain)
         self.setStyleSheet(f'background-color: {self.color}; ')

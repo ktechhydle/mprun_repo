@@ -1079,7 +1079,7 @@ Date:""")
         self.text_along_path_tab.spacing_spin.blockSignals(True)
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
-        if self.canvas.selectedItems():
+        if len(self.canvas.selectedItems()) > 0:
             for item in self.canvas.selectedItems():
                 self.selection_label.setText(item.toolTip())
 
@@ -2139,11 +2139,12 @@ Date:""")
 
 
 if __name__ == '__main__':
-    app = QApplication([])
-    app.setAttribute(Qt.AA_EnableHighDpiScaling)
-    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-    windowSSH = "windows_style.css"
+    app = QApplication([])
+
+    windowsSSH = "windows_style.css"
     macSSH = 'mac_style.css'
 
     if sys.platform == 'darwin':
@@ -2151,7 +2152,7 @@ if __name__ == '__main__':
             app.setStyleSheet(fh.read())
 
     else:
-        with open(windowSSH, "r") as fh:
+        with open(windowsSSH, "r") as fh:
             app.setStyleSheet(fh.read())
 
     window = MPRUN()
