@@ -17,6 +17,7 @@ from custom_dialogs import *
 from app_screens import *
 from libraries import *
 
+
 class MPRUN(QMainWindow):
     def __init__(self):
         super(MPRUN, self).__init__()
@@ -999,7 +1000,7 @@ Date:""")
                         item.setBrush(brush)
 
                     except Exception:
-                        print(e)
+                        pass
 
                 elif isinstance(item, LeaderLineItem):
                     try:
@@ -1007,7 +1008,7 @@ Date:""")
                         item.setBrush(brush)
 
                     except Exception:
-                        print(e)
+                        pass
 
                 elif isinstance(item, CustomRectangleItem):
                     try:
@@ -1015,7 +1016,7 @@ Date:""")
                         item.setBrush(brush)
 
                     except Exception:
-                        print(e)
+                        pass
 
     def update_font(self):
         font = QFont()
@@ -1854,9 +1855,9 @@ Date:""")
 
         # File Dialog, file path
         file_dialog = QFileDialog()
-        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico);;(Beta) Python files (*.py)")
+        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)")
 
-        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico);;(Beta) Python files (*.py)")
+        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)")
 
         if file_path:
             if file_path.endswith('.svg'):
@@ -1868,11 +1869,6 @@ Date:""")
                 svg_item.setToolTip('Imported SVG')
 
                 self.create_item_attributes(svg_item)
-
-            elif file_path.endswith('.py'):
-                with open(file_path, 'r') as f:
-                    contents = f.read()
-                    exec(contents)
 
             else:
                 image1 = QPixmap(file_path)
@@ -2140,10 +2136,13 @@ Date:""")
 
 
 if __name__ == '__main__':
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-    app = QApplication([])
+    app = QApplication(sys.argv)
+    app.setApplicationDisplayName('MPRUN 2024 Edition')
+    app.setApplicationName('MPRUN')
+    app.setApplicationVersion('1.0.0')
 
     windowsSSH = "windows_style.css"
     macSSH = 'mac_style.css'
