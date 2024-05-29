@@ -20,18 +20,67 @@ class HorizontalSeparator(QFrame):
         self.setFrameShadow(QFrame.Plain)
         self.setStyleSheet(f'background-color: {self.color}; ')
 
+class QColorButton(QPushButton):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.transparent = False
+
+    def setTransparent(self, enabled: bool):
+        self.transparent = enabled
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+
+        if self.transparent:
+            self.setStyleSheet('background-color: transparent;')
+            painter = QPainter(self)
+            painter.setRenderHints(QPainter.HighQualityAntialiasing)
+            pen = painter.pen()
+            pen.setColor(QColor('red'))
+            pen.setWidth(2)
+            painter.setPen(pen)
+            painter.begin(self)
+            painter.drawLine(self.rect().topLeft(), self.rect().bottomRight())
+            painter.end()
+
 class CustomColorPicker(QColorDialog):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
         self.setOptions(self.options() | QColorDialog.DontUseNativeDialog)
 
-        '''for children in self.findChildren(QWidget):
+        for children in self.findChildren(QWidget):
             classname = children.metaObject().className()
             if classname not in ("QColorPicker", "QColorLuminancePicker"):
-                children.hide()'''
+                children.hide()
 
         self.setOption(QColorDialog.ShowAlphaChannel, True)
+
+        # Custom widgets
+        self.swatch_hlayout = ToolbarHorizontalLayout()
+        self.hex_spin = QLineEdit(self)
+        self.hex_spin.setText(self.currentColor().name())
+        self.fill_transparent_btn = QColorButton(self)
+        self.fill_transparent_btn.setTransparent(True)
+        self.fill_transparent_btn.setFixedWidth(28)
+        self.fill_transparent_btn.setToolTip('Fill the current color transparent')
+
+        # Update
+        self.fill_transparent_btn.clicked.connect(self.set_transparent)
+        self.currentColorChanged.connect(lambda: self.hex_spin.setText(self.currentColor().name()))
+        self.hex_spin.textChanged.connect(self.update_color)
+
+        self.layout().insertWidget(1, self.hex_spin)
+        self.layout().insertWidget(1, self.fill_transparent_btn)
+
+    def update_color(self):
+        self.hex_spin.blockSignals(True)
+        self.setCurrentColor(QColor(self.hex_spin.text()))
+        self.hex_spin.blockSignals(False)
+
+    def set_transparent(self):
+        self.setCurrentColor(QColor(Qt.transparent))
 
 class ViewWidget(QGraphicsView):
     def __init__(self):
@@ -65,6 +114,9 @@ class ViewWidget(QGraphicsView):
         super().mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
+        pass
+
+    def keyPressEvent(self, event):
         pass
 
 class StrokeLabel(QLabel):

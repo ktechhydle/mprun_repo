@@ -73,7 +73,7 @@ class MPRUN(QMainWindow):
         self.file_menu = self.menu_bar.addMenu('&File')
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
-        self.item_menu = self.menu_bar.addMenu('&Item')
+        self.object_menu = self.menu_bar.addMenu('&Object')
         self.effects_menu = self.menu_bar.addMenu('&Effects')
         self.window_menu = self.menu_bar.addMenu('&Window')
 
@@ -167,9 +167,11 @@ class MPRUN(QMainWindow):
 
         # Create item actions
         raise_layer_action = QAction('Raise Layer', self)
+        raise_layer_action.setShortcut(QKeySequence('Up'))
         raise_layer_action.triggered.connect(self.use_raise_layer)
 
         lower_layer_action = QAction('Lower Layer', self)
+        lower_layer_action.setShortcut(QKeySequence('Down'))
         lower_layer_action.triggered.connect(self.use_lower_layer)
 
         bring_to_front_action = QAction('Bring to Front', self)
@@ -235,37 +237,39 @@ class MPRUN(QMainWindow):
         self.tool_menu.addAction(smooth_action)
         self.tool_menu.addAction(close_subpath_action)
         self.tool_menu.addAction(add_text_along_path_action)
+        self.tool_menu.addSeparator()
+        self.tool_menu.addAction(image_trace_action)
 
         self.edit_menu.addAction(undo_action)
         self.edit_menu.addAction(redo_action)
         self.edit_menu.addSeparator()
         self.edit_menu.addAction(name_action)
-        self.edit_menu.addSeparator()
         self.edit_menu.addAction(scale_action)
-        self.edit_menu.addAction(duplicate_action)
-        self.edit_menu.addAction(group_action)
-        self.edit_menu.addAction(ungroup_action)
-        self.edit_menu.addSeparator()
-        self.edit_menu.addAction(image_trace_action)
         self.edit_menu.addSeparator()
 
-        self.item_menu.addAction(raise_layer_action)
-        self.item_menu.addAction(lower_layer_action)
-        self.item_menu.addAction(bring_to_front_action)
-        self.item_menu.addSeparator()
-        self.item_menu.addAction(hide_action)
-        self.item_menu.addAction(unhide_action)
-        self.item_menu.addSeparator()
-        self.item_menu.addAction(select_all_action)
+        self.object_menu.addAction(raise_layer_action)
+        self.object_menu.addAction(lower_layer_action)
+        self.object_menu.addAction(bring_to_front_action)
+        self.object_menu.addSeparator()
+        self.object_menu.addAction(duplicate_action)
+        self.object_menu.addAction(group_action)
+        self.object_menu.addAction(ungroup_action)
+        self.object_menu.addSeparator()
+        self.object_menu.addAction(hide_action)
+        self.object_menu.addAction(unhide_action)
+        self.object_menu.addSeparator()
+        self.object_menu.addAction(select_all_action)
 
         self.effects_menu.addAction(drop_shadow_action)
         self.effects_menu.addAction(blur_action)
 
         self.window_menu.addAction(properties_action)
         self.window_menu.addAction(libraries_action)
+        self.window_menu.addSeparator()
         self.window_menu.addAction(characters_action)
-        self.window_menu.addAction(vectorizing_action)
         self.window_menu.addAction(text_along_path_action)
+        self.window_menu.addSeparator()
+        self.window_menu.addAction(vectorizing_action)
         self.window_menu.addAction(canvas_action)
 
     def init_toolbars(self):
@@ -415,7 +419,7 @@ class MPRUN(QMainWindow):
         widget9.layout.addWidget(rotation_label)
         widget9.layout.addWidget(self.rotate_item_spin)
 
-        self.outline_color_btn = QPushButton('', self)
+        self.outline_color_btn = QColorButton(self)
         self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
         self.outline_color_btn.setFixedWidth(28)
         self.outline_color_btn.setToolTip('Change the stroke color')
@@ -442,7 +446,7 @@ class MPRUN(QMainWindow):
 
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
-        self.fill_color_btn = QPushButton('', self)
+        self.fill_color_btn = QColorButton(self)
         self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
         self.fill_color_btn.setFixedWidth(28)
         self.fill_color_btn.setToolTip('Change the fill color')
@@ -510,9 +514,10 @@ class MPRUN(QMainWindow):
         self.font_letter_spacing_spin.setMinimum(-10)
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
-        self.font_color_btn = QPushButton('', self)
+        self.font_color_btn = QColorButton(self)
+        self.font_color_btn.setFixedWidth(28)
         self.font_color_btn.setToolTip('Change the font color')
-        self.font_color_btn.setStyleSheet(f'background-color: black; border: None')
+        self.font_color_btn.setStyleSheet(f'background-color: black;')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
         self.font_color_btn.clicked.connect(self.update_font)
         self.bold_btn = QPushButton('B', self)
@@ -530,6 +535,9 @@ class MPRUN(QMainWindow):
         self.bold_btn.clicked.connect(self.update_font)
         self.italic_btn.clicked.connect(self.update_font)
         self.underline_btn.clicked.connect(self.update_font)
+        font_color_and_style_hlayout = ToolbarHorizontalLayout()
+        font_color_and_style_hlayout.layout.addWidget(self.font_choice_combo)
+        font_color_and_style_hlayout.layout.addWidget(self.font_color_btn)
         widget4 = ToolbarHorizontalLayout()
         widget4.layout.addWidget(self.font_size_spin)
         widget4.layout.addWidget(self.bold_btn)
@@ -625,9 +633,7 @@ class MPRUN(QMainWindow):
         self.characters_tab_layout.addWidget(HorizontalSeparator())
         self.characters_tab_layout.addWidget(text_options_label)
         self.characters_tab_layout.addWidget(font_choice_label)
-        self.characters_tab_layout.addWidget(self.font_choice_combo)
-        self.characters_tab_layout.addWidget(font_color_label)
-        self.characters_tab_layout.addWidget(self.font_color_btn)
+        self.characters_tab_layout.addWidget(font_color_and_style_hlayout)
         self.characters_tab_layout.addWidget(font_size_label)
         self.characters_tab_layout.addWidget(widget4)
         self.characters_tab_layout.addWidget(font_spacing_label)
@@ -1114,10 +1120,27 @@ Date:""")
                 brush = item.brush()
 
                 # Set Colors
-                self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                self.outline_color.set(pen.color().name())
-                self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+                if pen.color().alpha() != 0:
+                    self.outline_color_btn.setTransparent(False)
+                    self.outline_color_btn.repaint()
+                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.outline_color.set(pen.color().name())
+
+                else:
+                    self.outline_color_btn.setTransparent(True)
+                    self.outline_color_btn.repaint()
+                    self.outline_color.set(Qt.transparent)
+
+                if brush.color().alpha() != 0:
+                    self.fill_color_btn.setTransparent(False)
+                    self.fill_color_btn.repaint()
+                    self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                    self.fill_color.set(brush.color().name())
+
+                else:
+                    self.fill_color_btn.setTransparent(True)
+                    self.fill_color_btn.repaint()
+                    self.fill_color.set(Qt.transparent)
 
                 # Set Values
                 self.stroke_size_spin.setValue(pen.width())
@@ -1235,11 +1258,27 @@ Date:""")
                 brush = item.brush()
 
                 # Set Colors
-                self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                self.outline_color.set(pen.color().name())
-                self.fill_color_btn.setStyleSheet(
-                    f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
+                if pen.color().alpha() != 0:
+                    self.outline_color_btn.setTransparent(False)
+                    self.outline_color_btn.repaint()
+                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.outline_color.set(pen.color().name())
+
+                else:
+                    self.outline_color_btn.setTransparent(True)
+                    self.outline_color_btn.repaint()
+                    self.outline_color.set(Qt.transparent)
+
+                if brush.color().alpha() != 0:
+                    self.fill_color_btn.setTransparent(False)
+                    self.fill_color_btn.repaint()
+                    self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                    self.fill_color.set(brush.color().name())
+
+                else:
+                    self.fill_color_btn.setTransparent(True)
+                    self.fill_color_btn.repaint()
+                    self.fill_color.set(Qt.transparent)
 
                 # Set Values
                 self.stroke_size_spin.setValue(pen.width())
@@ -1258,9 +1297,19 @@ Date:""")
 
             elif isinstance(item, EditableTextBlock):
                 font = item.font()
-                color = item.defaultTextColor().name()
+                color = item.defaultTextColor()
 
-                self.font_color_btn.setStyleSheet(f'background-color: {color};')
+                if color.alpha() != 0:
+                    self.font_color_btn.setTransparent(False)
+                    self.font_color_btn.repaint()
+                    self.font_color_btn.setStyleSheet(f'background-color: {color.name()};')
+                    self.font_color.set(color.name())
+
+                else:
+                    self.font_color_btn.setTransparent(True)
+                    self.font_color_btn.repaint()
+                    self.font_color.set(Qt.transparent)
+
                 self.font_choice_combo.setCurrentText(font.family())
                 self.font_size_spin.setValue(font.pixelSize())
                 self.font_letter_spacing_spin.setValue(int(font.letterSpacing()))
@@ -1297,34 +1346,58 @@ Date:""")
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(False)
 
     def stroke_color_chooser(self):
-        color_dialog = CustomColorPicker()
+        color_dialog = CustomColorPicker(self)
         color_dialog.setWindowTitle('Stroke Color')
         color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         if color_dialog.exec_():
-            color = color_dialog.selectedColor()
-            self.outline_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
-            self.outline_color.set(color.name())
+            color = color_dialog.currentColor()
+            if color.alpha() != 0:
+                self.outline_color_btn.setTransparent(False)
+                self.outline_color_btn.setStyleSheet(
+                    f'background-color: {color.name()};')
+            else:
+                self.outline_color_btn.setTransparent(True)
+
+            self.outline_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def fill_color_chooser(self):
-        color_dialog = QColorDialog(self)
+        color_dialog = CustomColorPicker(self)
         color_dialog.setWindowTitle('Fill Color')
         color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         if color_dialog.exec_():
-            color = color_dialog.selectedColor()
-            self.fill_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
-            self.fill_color.set(color.name())
+            color = color_dialog.currentColor()
+            if color.alpha() != 0:
+                self.fill_color_btn.setTransparent(False)
+                self.fill_color_btn.setStyleSheet(
+                    f'background-color: {color.name()};')
+                self.fill_color_btn.repaint()
+
+            else:
+                self.fill_color_btn.setTransparent(True)
+                self.fill_color_btn.repaint()
+
+            self.fill_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def font_color_chooser(self):
-        color_dialog = QColorDialog(self)
+        color_dialog = CustomColorPicker(self)
         color_dialog.setWindowTitle('Font Color')
         color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
         if color_dialog.exec_():
-            color = color_dialog.selectedColor()
-            self.font_color_btn.setStyleSheet(f'background-color: {color.name()}; border: None')
-            self.font_color.set(color.name())
+            color = color_dialog.currentColor()
+            if color.alpha() != 0:
+                self.font_color_btn.setTransparent(False)
+                self.font_color_btn.setStyleSheet(
+                    f'background-color: {color.name()};')
+                self.font_color_btn.repaint()
+
+            else:
+                self.font_color_btn.setTransparent(True)
+                self.font_color_btn.repaint()
+
+            self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def use_select(self):
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
@@ -1695,7 +1768,8 @@ Date:""")
             pass
 
     def use_fill_transparent(self):
-        self.fill_color_btn.setStyleSheet('background-color: transparent')
+        self.fill_color_btn.setTransparent(True)
+        self.fill_color_btn.repaint()
         self.fill_color.set(Qt.transparent)
         self.update_pen()
 
