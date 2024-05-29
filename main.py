@@ -298,7 +298,12 @@ class MPRUN(QMainWindow):
         #----action toolbar widgets----#
 
         # Tabview
-        self.tab_view = DetachableTabWidget(self)
+        if sys.platform.lower() == 'darwin':
+            self.tab_view = QTabWidget(self)
+
+        else:
+            self.tab_view = DetachableTabWidget(self)
+
         self.tab_view.setMovable(True)
         self.tab_view.setDocumentMode(True)
         self.tab_view.setTabsClosable(True)
@@ -933,11 +938,7 @@ Date:""")
         super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        print('quit')
-
-        event.accept()
-
-        '''# Display a confirmation dialog
+        # Display a confirmation dialog
         confirmation_dialog = QMessageBox(self)
         confirmation_dialog.setWindowTitle('Close Project')
         confirmation_dialog.setIcon(QMessageBox.Warning)
@@ -951,13 +952,7 @@ Date:""")
         # If the user clicked Yes, close the window
         if result == QMessageBox.Yes:
             try:
-                self.properties_tab.close()
-                self.libraries_tab.close()
-                self.layers_tab.close()
-                self.characters_tab.close()
-                self.image_trace.close()
-                self.canvas_tab.close()
-                self.add_canvas_dialog.close()
+                self.tab_view.closeEvent(event)
                 self.undo_stack.clear()
 
             except Exception:
@@ -967,18 +962,13 @@ Date:""")
             
         else:
             try:
-                self.properties_tab.close()
-                self.libraries_tab.close()
-                self.layers_tab.close()
-                self.characters_tab.close()
-                self.image_trace.close()
-                self.canvas_tab.close()
-                self.add_canvas_dialog.close()
+                self.tab_view.closeEvent(event)
+                self.undo_stack.clear()
 
             except Exception:
                 pass
 
-            event.accept()'''
+            event.accept()
 
     def update_pen(self):
         index1 = self.stroke_style_combo.currentIndex()

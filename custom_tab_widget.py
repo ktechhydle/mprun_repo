@@ -22,9 +22,10 @@ class DetachableTabWidget(QtWidgets.QTabWidget):
         # Close all detached tabs if the application is closed explicitly
         QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs)  # @UndefinedVariable
 
-        # Connect the parent window's close event to closeDetachedTabs method
+        # This methond messes with our main window close event
+        """# Connect the parent window's close event to closeDetachedTabs method
         if parent is not None:
-            parent.closeEvent = self.closeEvent
+            parent.closeEvent = self.closeEvent"""
 
         # Add this method to handle the close event of the parent window
 
