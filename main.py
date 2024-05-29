@@ -938,36 +938,42 @@ Date:""")
         super().keyPressEvent(event)
 
     def closeEvent(self, event):
-        # Display a confirmation dialog
-        confirmation_dialog = QMessageBox(self)
-        confirmation_dialog.setWindowTitle('Close Project')
-        confirmation_dialog.setIcon(QMessageBox.Warning)
-        confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
-        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        confirmation_dialog.setDefaultButton(QMessageBox.No)
+        if self.canvas.modified:
+            # Display a confirmation dialog
+            confirmation_dialog = QMessageBox(self)
+            confirmation_dialog.setWindowTitle('Close Project')
+            confirmation_dialog.setIcon(QMessageBox.Warning)
+            confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
+            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            confirmation_dialog.setDefaultButton(QMessageBox.No)
 
-        # Get the result of the confirmation dialog
-        result = confirmation_dialog.exec_()
+            # Get the result of the confirmation dialog
+            result = confirmation_dialog.exec_()
 
-        # If the user clicked Yes, close the window
-        if result == QMessageBox.Yes:
-            try:
-                self.tab_view.closeEvent(event)
-                self.undo_stack.clear()
+            # If the user clicked Yes, close the window
+            if result == QMessageBox.Yes:
+                try:
+                    self.tab_view.closeEvent(event)
+                    self.undo_stack.clear()
 
-            except Exception:
-                pass
+                except Exception:
+                    pass
 
-            event.accept()
-            
+                event.accept()
+
+            else:
+                try:
+                    self.tab_view.closeEvent(event)
+                    self.undo_stack.clear()
+
+                except Exception:
+                    pass
+
+                event.accept()
+
         else:
-            try:
-                self.tab_view.closeEvent(event)
-                self.undo_stack.clear()
-
-            except Exception:
-                pass
-
+            self.tab_view.closeEvent(event)
+            self.undo_stack.clear()
             event.accept()
 
     def update_pen(self):

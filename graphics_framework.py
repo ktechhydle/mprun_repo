@@ -678,6 +678,7 @@ class CustomGraphicsScene(QGraphicsScene):
         self.mpversion = '1.0.0'
         self.undo_stack = undoStack
         self.scale_btn = None
+        self.modified = False
 
         width = 64000
         height = 64000
@@ -740,6 +741,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def addCommand(self, command):
         self.undo_stack.push(command)
+        self.modified = True
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
@@ -798,6 +800,8 @@ class CustomGraphicsScene(QGraphicsScene):
             self.file_name = fileName
 
     def save(self, parent):
+        self.modified = False
+
         if self.file_name is not None:
             svgGenerator = QSvgGenerator()
             svgGenerator.setFileName(self.file_name)
