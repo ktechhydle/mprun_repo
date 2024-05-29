@@ -23,7 +23,7 @@ class MPRUN(QMainWindow):
         super(MPRUN, self).__init__()
         # Creating the main window
         self.setWindowTitle('MPRUN - *Untitled')
-        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
+        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logoV3.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
 
@@ -1494,19 +1494,8 @@ Date:""")
 
             selected_items = self.canvas.selectedItems()
             if len(selected_items) > 1:
-                # Calculate the average position of all selected items
-                total_x = sum(item.pos().x() for item in selected_items)
-                total_y = sum(item.pos().y() for item in selected_items)
-                avg_x = total_x / len(selected_items)
-                avg_y = total_y / len(selected_items)
+                pass
 
-                # Calculate the offset from the average position to the new position
-                offset_x = x - avg_x
-                offset_y = y - avg_y
-
-                # Move each selected item by the calculated offset
-                for item in selected_items:
-                    item.moveBy(offset_x, offset_y)
             else:
                 # Move each selected item to the new position
                 for item in selected_items:

@@ -10,7 +10,7 @@ class CanvasItemSelector(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Export Canvas")
-        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
+        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logoV3.png'))
         self.setFixedWidth(750)
         self.setFixedHeight(500)
 
@@ -83,7 +83,7 @@ class CanvasItemSelector(QDialog):
                 if self.watermark_item is not None:
                     self.canvas.removeItem(self.watermark_item)
 
-                self.watermark_item = WaterMarkItem(QPixmap('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
+                self.watermark_item = WaterMarkItem(QPixmap('logos and icons/Main Logos/MPRUN_logoV3.png'))
                 self.canvas.addItem(self.watermark_item)
 
                 selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
@@ -123,7 +123,7 @@ class MultiCanvasItemSelector(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Export All")
-        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
+        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logoV3.png'))
         self.setFixedWidth(750)
         self.setFixedHeight(500)
 
@@ -201,7 +201,7 @@ class MultiCanvasItemSelector(QDialog):
             if self.watermark_check_btn.isChecked():
                 for item in self.canvas.items():
                     if isinstance(item, CanvasItem):
-                        self.watermark_item = WaterMarkItem(QPixmap('logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png'))
+                        self.watermark_item = WaterMarkItem(QPixmap('logos and icons/Main Logos/MPRUN_logoV3.png'))
                         self.canvas.addItem(self.watermark_item)
         
                         self.watermark_item.setScale(0.1)

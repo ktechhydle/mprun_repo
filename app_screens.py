@@ -23,7 +23,7 @@ class AboutWin(QtWidgets.QWidget):
 
         # App image and label
         mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png").scaled(80, 80,
+        pixmap = QtGui.QPixmap("logos and icons/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
                                                                                                            QtCore.Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
@@ -93,7 +93,7 @@ class VersionWin(QtWidgets.QWidget):
 
         # App image and label
         mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("logos and icons/Main Logos/MPRUN_logo_rounded_corners_version.png").scaled(80, 80,
+        pixmap = QtGui.QPixmap("logos and icons/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
                                                                                                            QtCore.Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)

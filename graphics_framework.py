@@ -744,6 +744,12 @@ class CustomGraphicsScene(QGraphicsScene):
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
         for item in self.selectedItems():
+            bounding_rect = bounding_rect.united(item.boundingRect())
+        return bounding_rect
+
+    def selectedItemsSceneBoundingRect(self):
+        bounding_rect = QRectF()
+        for item in self.selectedItems():
             bounding_rect = bounding_rect.united(item.sceneBoundingRect())
         return bounding_rect
 
