@@ -2140,9 +2140,6 @@ if __name__ == '__main__':
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv)
-    app.setApplicationDisplayName('MPRUN 2024 Edition')
-    app.setApplicationName('MPRUN')
-    app.setApplicationVersion('1.0.0')
 
     windowsSSH = "windows_style.css"
     macSSH = 'mac_style.css'
