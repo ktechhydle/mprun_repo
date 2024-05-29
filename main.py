@@ -183,6 +183,9 @@ class MPRUN(QMainWindow):
         unhide_action = QAction('Unhide All', self)
         unhide_action.triggered.connect(self.use_unhide_all)
 
+        reset_action = QAction('Reset Item', self)
+        reset_action.triggered.connect(self.use_reset_item)
+
         select_all_action = QAction('Select All', self)
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
@@ -257,6 +260,7 @@ class MPRUN(QMainWindow):
         self.object_menu.addSeparator()
         self.object_menu.addAction(hide_action)
         self.object_menu.addAction(unhide_action)
+        self.object_menu.addAction(reset_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(select_all_action)
 
@@ -1666,6 +1670,11 @@ Date:""")
                 if True:
                     command = GraphicsEffectCommand(item, 10, og_effect, 'blur')
                     self.canvas.addCommand(command)
+
+    def use_reset_item(self):
+        for item in self.canvas.selectedItems():
+            command = ResetItemCommand(item)
+            self.canvas.addCommand(command)
 
     def use_add_canvas(self):
         self.display_choosen_tab('Canvas')

@@ -276,3 +276,58 @@ class FontChangeCommand(QUndoCommand):
     def undo(self):
         self.item.setFont(self.old)
         self.item.update()
+
+class ResetItemCommand(QUndoCommand):
+    def __init__(self, item):
+        super().__init__()
+
+        self.item = item
+        self.effect_type, self.effect_params = self._get_effect_params(self.item.graphicsEffect())
+        self.rotation = self.item.rotation()
+        self.scale = self.item.scale()
+        self.x_scale = self.item.transform().m11()
+        self.y_scale = self.item.transform().m22()
+        self.opacity = self.item.opacity()
+
+    def _get_effect_params(self, effect):
+        if isinstance(effect, QGraphicsDropShadowEffect):
+            return 'drop_shadow', {
+                'offset': effect.offset(),
+                'blur_radius': effect.blurRadius(),
+                'color': effect.color()
+            }
+        elif isinstance(effect, QGraphicsBlurEffect):
+            return 'blur', {
+                'blur_radius': effect.blurRadius()
+            }
+        return None, None
+
+    def _set_effect(self, effect_type, params):
+        if effect_type == 'drop_shadow':
+            effect = QGraphicsDropShadowEffect()
+            effect.setOffset(params['offset'])
+            effect.setBlurRadius(params['blur_radius'])
+            effect.setColor(params['color'])
+            return effect
+        elif effect_type == 'blur':
+            effect = QGraphicsBlurEffect()
+            effect.setBlurRadius(params['blur_radius'])
+            return effect
+        return None
+
+    def redo(self):
+        self.item.setGraphicsEffect(None)
+        self.item.resetTransform()
+        self.item.setScale(1)
+        self.item.setRotation(0)
+        self.item.setOpacity(100)
+
+    def undo(self):
+        self.item.resetTransform()
+        transform = QTransform()
+        transform.scale(self.x_scale, self.y_scale)
+        self.item.setTransform(transform)
+        self.item.setScale(self.scale)
+        self.item.setRotation(self.rotation)
+        self.item.setGraphicsEffect(self._set_effect(self.effect_type, self.effect_params))
+        self.item.setOpacity(self.opacity)
