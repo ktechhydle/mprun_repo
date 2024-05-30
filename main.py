@@ -63,6 +63,7 @@ class MPRUN(QMainWindow):
         # Canvas, canvas color
         self.canvas = CustomGraphicsScene(self.undo_stack)
         self.canvas.selectionChanged.connect(self.update_appearance_ui)
+        self.canvas.selectionChanged.connect(self.update_transform_ui)
         self.canvas.itemMoved.connect(self.update_appearance_ui)
 
     def create_menu(self):
@@ -318,7 +319,7 @@ class MPRUN(QMainWindow):
         # Properties Tab
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.properties_tab.setMaximumHeight(650)
+        self.properties_tab.setFixedHeight(475)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
@@ -356,9 +357,10 @@ class MPRUN(QMainWindow):
         # _____ Properties tab widgets _____
         self.selection_label = QLabel('No Selection')
         self.selection_label.setStyleSheet("QLabel { font-size: 12px; }")
-        properties_label = QLabel('Transform', self)
-        properties_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
-        properties_label.setAlignment(Qt.AlignLeft)
+        self.transform_separator = HorizontalSeparator()
+        self.transform_label = QLabel('Transform', self)
+        self.transform_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
+        self.transform_label.setAlignment(Qt.AlignLeft)
         appearence_label = QLabel('Appearance', self)
         appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
@@ -366,16 +368,14 @@ class MPRUN(QMainWindow):
         quick_actions_label.setStyleSheet("QLabel {font-size: 12px; alignment: center; }")
         quick_actions_label.setAlignment(Qt.AlignLeft)
 
-        rotation_label = QIconWidget('', 'logos and icons/Tool Icons/rotate_icon.png', 28, 28)
-        rotation_label.setAlignment(Qt.AlignRight)
-        rotation_label.setStyleSheet('font-size: 10px;')
-        scale_label = QLabel('Scaling:')
-        scale_label.setStyleSheet('font-size: 10px;')
+        self.rotation_label = QIconWidget('', 'logos and icons/Tool Icons/rotate_icon.png', 28, 28)
+        self.rotation_label.setAlignment(Qt.AlignRight)
+        self.rotation_label.setStyleSheet('font-size: 10px;')
 
-        x_pos_label = QLabel('X:')
-        y_pos_label = QLabel('Y:')
-        width_transform_label = QLabel('W:')
-        height_transform_label = QLabel('H:')
+        self.x_pos_label = QLabel('X:')
+        self.y_pos_label = QLabel('Y:')
+        self.width_transform_label = QLabel('W:')
+        self.height_transform_label = QLabel('H:')
         self.x_pos_spin = QSpinBox(self)
         self.x_pos_spin.setMaximum(10000)
         self.x_pos_spin.setMinimum(-10000)
@@ -404,28 +404,28 @@ class MPRUN(QMainWindow):
         self.rotate_item_spin.setRange(-360, 360)
         self.rotate_item_spin.setSuffix('°')
         self.rotate_item_spin.setToolTip('Change the rotation')
-        flip_horizontal_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_horizontal_icon.png'), '')
-        flip_horizontal_btn.setToolTip('Flip horizontal')
-        flip_horizontal_btn.setStyleSheet('border: none;')
-        flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
-        flip_vertical_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_vertical_icon.png'), '')
-        flip_vertical_btn.setToolTip('Flip vertical')
-        flip_vertical_btn.setStyleSheet('border: none;')
-        flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
+        self.flip_horizontal_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_horizontal_icon.png'), '')
+        self.flip_horizontal_btn.setToolTip('Flip horizontal')
+        self.flip_horizontal_btn.setStyleSheet('border: none;')
+        self.flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
+        self.flip_vertical_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_vertical_icon.png'), '')
+        self.flip_vertical_btn.setToolTip('Flip vertical')
+        self.flip_vertical_btn.setStyleSheet('border: none;')
+        self.flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
         widget7 = ToolbarHorizontalLayout()
-        widget7.layout.addWidget(x_pos_label)
+        widget7.layout.addWidget(self.x_pos_label)
         widget7.layout.addWidget(self.x_pos_spin)
-        widget7.layout.addWidget(width_transform_label)
+        widget7.layout.addWidget(self.width_transform_label)
         widget7.layout.addWidget(self.width_scale_spin)
-        widget7.layout.addWidget(flip_horizontal_btn)
+        widget7.layout.addWidget(self.flip_horizontal_btn)
         widget8 = ToolbarHorizontalLayout()
-        widget8.layout.addWidget(y_pos_label)
+        widget8.layout.addWidget(self.y_pos_label)
         widget8.layout.addWidget(self.y_pos_spin)
-        widget8.layout.addWidget(height_transform_label)
+        widget8.layout.addWidget(self.height_transform_label)
         widget8.layout.addWidget(self.height_scale_spin)
-        widget8.layout.addWidget(flip_vertical_btn)
+        widget8.layout.addWidget(self.flip_vertical_btn)
         widget9 = ToolbarHorizontalLayout()
-        widget9.layout.addWidget(rotation_label)
+        widget9.layout.addWidget(self.rotation_label)
         widget9.layout.addWidget(self.rotate_item_spin)
 
         self.outline_color_btn = QColorButton(self)
@@ -622,8 +622,8 @@ class MPRUN(QMainWindow):
 
         # Properties Tab Widgets
         self.properties_tab_layout.addWidget(self.selection_label)
-        self.properties_tab_layout.addWidget(HorizontalSeparator())
-        self.properties_tab_layout.addWidget(properties_label)
+        self.properties_tab_layout.addWidget(self.transform_separator)
+        self.properties_tab_layout.addWidget(self.transform_label)
         self.properties_tab_layout.addWidget(widget7)
         self.properties_tab_layout.addWidget(widget8)
         self.properties_tab_layout.addWidget(widget9)
@@ -660,6 +660,22 @@ class MPRUN(QMainWindow):
         self.image_trace_layout.addWidget(self.color_precision_spin)
         self.image_trace_layout.addWidget(corner_threshold_label)
         self.image_trace_layout.addWidget(self.corner_threshold_spin)
+
+        # Default widget settings
+        self.transform_separator.setHidden(True)
+        self.transform_label.setHidden(True)
+        self.x_pos_label.setHidden(True)
+        self.x_pos_spin.setHidden(True)
+        self.y_pos_label.setHidden(True)
+        self.y_pos_spin.setHidden(True)
+        self.width_transform_label.setHidden(True)
+        self.height_transform_label.setHidden(True)
+        self.width_scale_spin.setHidden(True)
+        self.height_scale_spin.setHidden(True)
+        self.flip_horizontal_btn.setHidden(True)
+        self.flip_vertical_btn.setHidden(True)
+        self.rotation_label.setHidden(True)
+        self.rotate_item_spin.setHidden(True)
 
     def create_toolbar2(self):
         self.action_group = QActionGroup(self)
@@ -966,14 +982,7 @@ Date:""")
                 event.accept()
 
             else:
-                try:
-                    self.tab_view.closeEvent(event)
-                    self.undo_stack.clear()
-
-                except Exception:
-                    pass
-
-                event.accept()
+                event.ignore()
 
         else:
             self.tab_view.closeEvent(event)
@@ -1058,13 +1067,89 @@ Date:""")
             else:
                 self.gsnap_grid_size = value
 
-    def update_appearance_ui(self):
+    def update_transform_ui(self):
         self.x_pos_spin.blockSignals(True)
         self.y_pos_spin.blockSignals(True)
         self.width_scale_spin.blockSignals(True)
         self.height_scale_spin.blockSignals(True)
         self.rotate_item_spin.blockSignals(True)
         self.opacity_spin.blockSignals(True)
+        self.text_along_path_tab.text_entry.blockSignals(True)
+        self.text_along_path_tab.text_along_path_check_btn.blockSignals(True)
+        self.text_along_path_tab.spacing_spin.blockSignals(True)
+        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
+
+        if len(self.canvas.selectedItems()) > 0:
+            self.properties_tab.setFixedHeight(600)
+
+            self.transform_separator.setHidden(False)
+            self.transform_label.setHidden(False)
+            self.x_pos_label.setHidden(False)
+            self.x_pos_spin.setHidden(False)
+            self.y_pos_label.setHidden(False)
+            self.y_pos_spin.setHidden(False)
+            self.width_transform_label.setHidden(False)
+            self.height_transform_label.setHidden(False)
+            self.width_scale_spin.setHidden(False)
+            self.height_scale_spin.setHidden(False)
+            self.flip_horizontal_btn.setHidden(False)
+            self.flip_vertical_btn.setHidden(False)
+            self.rotation_label.setHidden(False)
+            self.rotate_item_spin.setHidden(False)
+
+            for item in self.canvas.selectedItems():
+                self.x_pos_spin.setValue(int(item.sceneBoundingRect().x()))
+                self.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
+                self.rotate_item_spin.setValue(int(item.rotation()))
+                self.opacity_spin.setValue(int(item.opacity() * 100))
+                self.width_scale_spin.setValue(float(item.sceneBoundingRect().width()))
+                self.height_scale_spin.setValue(float(item.sceneBoundingRect().height()))
+                self.selection_label.setText(item.toolTip())
+
+                if len(self.canvas.selectedItems()) > 1:
+                    self.selection_label.setText('Combined Selection')
+
+        else:
+            self.properties_tab.setFixedHeight(475)
+
+            self.transform_separator.setHidden(True)
+            self.transform_label.setHidden(True)
+            self.x_pos_label.setHidden(True)
+            self.x_pos_spin.setHidden(True)
+            self.y_pos_label.setHidden(True)
+            self.y_pos_spin.setHidden(True)
+            self.width_transform_label.setHidden(True)
+            self.height_transform_label.setHidden(True)
+            self.width_scale_spin.setHidden(True)
+            self.height_scale_spin.setHidden(True)
+            self.flip_horizontal_btn.setHidden(True)
+            self.flip_vertical_btn.setHidden(True)
+            self.rotation_label.setHidden(True)
+            self.rotate_item_spin.setHidden(True)
+
+            self.selection_label.setText('No Selection')
+            self.x_pos_spin.setValue(0)
+            self.y_pos_spin.setValue(0)
+            self.rotate_item_spin.setValue(0)
+            self.opacity_spin.setValue(100)
+            self.width_scale_spin.setValue(0.0)
+            self.height_scale_spin.setValue(0.0)
+            self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
+            self.text_along_path_tab.text_entry.clear()
+            self.text_along_path_tab.spacing_spin.setValue(0)
+
+        self.x_pos_spin.blockSignals(False)
+        self.y_pos_spin.blockSignals(False)
+        self.rotate_item_spin.blockSignals(False)
+        self.opacity_spin.blockSignals(False)
+        self.width_scale_spin.blockSignals(False)
+        self.height_scale_spin.blockSignals(False)
+        self.text_along_path_tab.text_entry.blockSignals(False)
+        self.text_along_path_tab.text_along_path_check_btn.blockSignals(False)
+        self.text_along_path_tab.spacing_spin.blockSignals(False)
+        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(False)
+
+    def update_appearance_ui(self):
         self.canvas_tab.canvas_x_entry.blockSignals(True)
         self.canvas_tab.canvas_y_entry.blockSignals(True)
         self.canvas_tab.canvas_name_entry.blockSignals(True)
@@ -1087,34 +1172,7 @@ Date:""")
         self.text_along_path_tab.spacing_spin.blockSignals(True)
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
-        if len(self.canvas.selectedItems()) > 0:
-            for item in self.canvas.selectedItems():
-                self.selection_label.setText(item.toolTip())
-
-                if len(self.canvas.selectedItems()) > 1:
-                    self.selection_label.setText('Combined Selection')
-
-
-        else:
-            self.selection_label.setText('No Selection')
-            self.x_pos_spin.setValue(0)
-            self.y_pos_spin.setValue(0)
-            self.rotate_item_spin.setValue(0)
-            self.opacity_spin.setValue(100)
-            self.width_scale_spin.setValue(0.0)
-            self.height_scale_spin.setValue(0.0)
-            self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
-            self.text_along_path_tab.text_entry.clear()
-            self.text_along_path_tab.spacing_spin.setValue(0)
-
         for item in self.canvas.selectedItems():
-            self.x_pos_spin.setValue(int(item.sceneBoundingRect().x()))
-            self.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
-            self.rotate_item_spin.setValue(int(item.rotation()))
-            self.opacity_spin.setValue(int(item.opacity() * 100))
-            self.width_scale_spin.setValue(float(item.sceneBoundingRect().width()))
-            self.height_scale_spin.setValue(float(item.sceneBoundingRect().height()))
-
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
                 brush = item.brush()
@@ -1307,12 +1365,6 @@ Date:""")
                 self.italic_btn.setChecked(True if font.italic() else False)
                 self.underline_btn.setChecked(True if font.underline() else False)
 
-        self.x_pos_spin.blockSignals(False)
-        self.y_pos_spin.blockSignals(False)
-        self.rotate_item_spin.blockSignals(False)
-        self.opacity_spin.blockSignals(False)
-        self.width_scale_spin.blockSignals(False)
-        self.height_scale_spin.blockSignals(False)
         self.canvas_tab.canvas_x_entry.blockSignals(False)
         self.canvas_tab.canvas_y_entry.blockSignals(False)
         self.canvas_tab.canvas_name_entry.blockSignals(False)
@@ -1330,10 +1382,6 @@ Date:""")
         self.bold_btn.blockSignals(False)
         self.italic_btn.blockSignals(False)
         self.underline_btn.blockSignals(False)
-        self.text_along_path_tab.text_entry.blockSignals(False)
-        self.text_along_path_tab.text_along_path_check_btn.blockSignals(False)
-        self.text_along_path_tab.spacing_spin.blockSignals(False)
-        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(False)
 
     def stroke_color_chooser(self):
         color_dialog = CustomColorPicker(self)
