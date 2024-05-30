@@ -236,6 +236,8 @@ class QLinkLabel(QLabel):
         self.setFont(self.font)
         self.link = link
 
+        self.setOpenExternalLinks(True)
+
     def mousePressEvent(self, e):
         super().mousePressEvent(e)
 

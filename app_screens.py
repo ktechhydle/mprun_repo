@@ -1,4 +1,3 @@
-import customtkinter as ctk
 from PIL import Image
 from PyQt5 import QtWidgets, QtGui, QtCore
 from custom_widgets import *
@@ -10,7 +9,7 @@ class AboutWin(QtWidgets.QWidget):
 
         self.setWindowTitle('About MPRUN')
         self.setWindowIcon(QtGui.QIcon('logos and icons/Main Logos/MPRUN_icon.ico'))
-        self.setFixedSize(500, 850)
+        self.setFixedSize(500, 900)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet('border-radius: 5px;')
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
@@ -63,11 +62,13 @@ You are responsible for publishing your work under a license of your choosing an
         label.move(20, 190)
 
         credits_label = QLinkLabel('Credits', 'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
+        contact_label = QLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
 
         # Add widgets to layout
         layout.addWidget(mprun_img_label)
         layout.addWidget(label)
         layout.addWidget(credits_label)
+        layout.addWidget(contact_label)
 
         # Set layout to the main window
         self.setLayout(layout)
@@ -81,7 +82,7 @@ class VersionWin(QtWidgets.QWidget):
 
         self.setWindowTitle('MPRUN Version')
         self.setWindowIcon(QtGui.QIcon('logos and icons/Main Logos/MPRUN_icon.ico'))
-        self.setFixedSize(500, 300)
+        self.setFixedSize(500, 250)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
@@ -105,20 +106,18 @@ class VersionWin(QtWidgets.QWidget):
 Copyright © K-TECH Industries 2024, All rights reserved.
 
 If you encounter any issues or have suggestions for improvements, contact us at:
-ktechindustries2019@gmail.com
-
-Your input helps us make MPRUN even better.
-
-Thank you for using MPRUN!
         '''
         label = QtWidgets.QLabel(text, self)
         label.setWordWrap(True)
         label.setAlignment(QtCore.Qt.AlignLeft)
         label.move(20, 190)
 
+        email_label = QLinkLabel('K-TECH Industries', 'mailto:ktechindustries2019@gmail.com')
+
         # Add widgets to layout
         layout.addWidget(mprun_img_label)
         layout.addWidget(label)
+        layout.addWidget(email_label)
 
         # Set layout to the main window
         self.setLayout(layout)
