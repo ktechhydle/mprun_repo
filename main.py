@@ -1122,24 +1122,20 @@ Date:""")
                 # Set Colors
                 if pen.color().alpha() != 0:
                     self.outline_color_btn.setTransparent(False)
-                    self.outline_color_btn.repaint()
                     self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                     self.outline_color.set(pen.color().name())
 
                 else:
                     self.outline_color_btn.setTransparent(True)
-                    self.outline_color_btn.repaint()
                     self.outline_color.set(Qt.transparent)
 
                 if brush.color().alpha() != 0:
                     self.fill_color_btn.setTransparent(False)
-                    self.fill_color_btn.repaint()
                     self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
                     self.fill_color.set(brush.color().name())
 
                 else:
                     self.fill_color_btn.setTransparent(True)
-                    self.fill_color_btn.repaint()
                     self.fill_color.set(Qt.transparent)
 
                 # Set Values
@@ -1260,24 +1256,20 @@ Date:""")
                 # Set Colors
                 if pen.color().alpha() != 0:
                     self.outline_color_btn.setTransparent(False)
-                    self.outline_color_btn.repaint()
                     self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                     self.outline_color.set(pen.color().name())
 
                 else:
                     self.outline_color_btn.setTransparent(True)
-                    self.outline_color_btn.repaint()
                     self.outline_color.set(Qt.transparent)
 
                 if brush.color().alpha() != 0:
                     self.fill_color_btn.setTransparent(False)
-                    self.fill_color_btn.repaint()
                     self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
                     self.fill_color.set(brush.color().name())
 
                 else:
                     self.fill_color_btn.setTransparent(True)
-                    self.fill_color_btn.repaint()
                     self.fill_color.set(Qt.transparent)
 
                 # Set Values
@@ -1301,13 +1293,11 @@ Date:""")
 
                 if color.alpha() != 0:
                     self.font_color_btn.setTransparent(False)
-                    self.font_color_btn.repaint()
                     self.font_color_btn.setStyleSheet(f'background-color: {color.name()};')
                     self.font_color.set(color.name())
 
                 else:
                     self.font_color_btn.setTransparent(True)
-                    self.font_color_btn.repaint()
                     self.font_color.set(Qt.transparent)
 
                 self.font_choice_combo.setCurrentText(font.family())
@@ -1376,7 +1366,6 @@ Date:""")
 
             else:
                 self.fill_color_btn.setTransparent(True)
-                self.fill_color_btn.repaint()
 
             self.fill_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
@@ -1391,11 +1380,9 @@ Date:""")
                 self.font_color_btn.setTransparent(False)
                 self.font_color_btn.setStyleSheet(
                     f'background-color: {color.name()};')
-                self.font_color_btn.repaint()
 
             else:
                 self.font_color_btn.setTransparent(True)
-                self.font_color_btn.repaint()
 
             self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 

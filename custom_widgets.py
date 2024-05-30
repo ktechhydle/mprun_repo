@@ -28,6 +28,7 @@ class QColorButton(QPushButton):
 
     def setTransparent(self, enabled: bool):
         self.transparent = enabled
+        self.repaint()
 
     def paintEvent(self, event):
         super().paintEvent(event)
