@@ -63,7 +63,7 @@ class CustomGraphicsView(QGraphicsView):
         # Add methods for zooming
         self.zoomInFactor = 1.25
         self.zoomClamp = True
-        self.zoom = 10
+        self.zoom = 20
         self.zoomStep = 1
         self.zoomRange = [0, 100]
         self.zoom_spin = zoom_spin

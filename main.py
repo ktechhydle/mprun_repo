@@ -1767,8 +1767,7 @@ Date:""")
 
     def use_exit_add_canvas(self):
         # Deactivate the add canvas tool
-        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.select_btn.setChecked(True)
+        self.select_btn.trigger()
         self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
 
         for item in self.canvas.items():
