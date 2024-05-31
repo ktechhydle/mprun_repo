@@ -54,6 +54,7 @@ class MPRUN(QMainWindow):
         self.create_toolbar1()
         self.create_toolbar2()
         self.create_toolbar3()
+        self.create_toolbar4()
         self.create_view()
         self.create_default_objects()
 
@@ -822,6 +823,40 @@ class MPRUN(QMainWindow):
         # Add widgets
         self.view_toolbar.addWidget(self.view_zoom_spin)
         self.view_toolbar.addWidget(self.rotate_sceen_spin)
+
+    def create_toolbar4(self):
+        #----item toolbar widgets----#
+        align_left_btn = QAction('Align Left', self)
+        align_left_btn.setToolTip('Align the selected elements to the left')
+        align_left_btn.triggered.connect(self.use_align_left)
+
+        align_right_btn = QAction('Align Right', self)
+        align_right_btn.setToolTip('Align the selected elements to the right')
+        align_right_btn.triggered.connect(self.use_align_right)
+
+        align_center_btn = QAction('Align Center', self)
+        align_center_btn.setToolTip('Align the selected elements to the center')
+        align_center_btn.triggered.connect(self.use_align_center)
+
+        align_middle_btn = QAction('Align Middle', self)
+        align_middle_btn.setToolTip('Align the selected elements to the middle')
+        align_middle_btn.triggered.connect(self.use_align_middle)
+
+        align_top_btn = QAction('Align Top', self)
+        align_top_btn.setToolTip('Align the selected elements to the top')
+        align_top_btn.triggered.connect(self.use_align_top)
+
+        align_bottom_btn = QAction('Align Bottom', self)
+        align_bottom_btn.setToolTip('Align the selected elements to the center')
+        align_bottom_btn.triggered.connect(self.use_align_bottom)
+
+        # Add widgets
+        self.item_toolbar.addAction(align_left_btn)
+        self.item_toolbar.addAction(align_right_btn)
+        self.item_toolbar.addAction(align_center_btn)
+        self.item_toolbar.addAction(align_middle_btn)
+        self.item_toolbar.addAction(align_top_btn)
+        self.item_toolbar.addAction(align_bottom_btn)
 
     def create_view(self):
         # QGraphicsView Logic
@@ -1955,6 +1990,83 @@ Date:""")
                         child.setParentItem(child)
 
                 self.canvas.destroyItemGroup(group)
+
+    def use_align_left(self):
+        if not self.canvas.selectedItems():
+            return
+        FirstSelItem = self.canvas.selectedItems()[0]
+        sel = self.canvas.selectedItems()
+        for selItem in sel:
+            dx, dy = 0, 0
+            dx = (FirstSelItem.mapToScene(FirstSelItem.boundingRect().topLeft()).x()) - \
+                 (selItem.mapToScene(selItem.boundingRect().topLeft()).x())
+            selItem.moveBy(dx, dy)
+
+        self.update_transform_ui()
+
+    def use_align_right(self):
+        if not self.canvas.selectedItems():
+            return
+        last_sel_item = self.canvas.selectedItems()[0]
+        sel = self.canvas.selectedItems()
+        for sel_item in sel:
+            dx = (last_sel_item.mapToScene(last_sel_item.boundingRect().topRight()).x()) - \
+                 (sel_item.mapToScene(sel_item.boundingRect().topRight()).x())
+            sel_item.moveBy(dx, 0)
+
+        self.update_transform_ui()
+
+    def use_align_center(self):
+        if not self.canvas.selectedItems():
+            return
+        selected_items = self.canvas.selectedItems()
+        # Find the average x-coordinate of the center of all selected items
+        center_x = sum(item.sceneBoundingRect().center().x() for item in selected_items) / len(selected_items)
+        for item in selected_items:
+            # Calculate the displacement needed to move the item's center to the calculated center_x
+            dx = center_x - item.sceneBoundingRect().center().x()
+            item.moveBy(dx, 0)
+
+        self.update_transform_ui()
+
+    def use_align_top(self):
+        if not self.canvas.selectedItems():
+            return
+        selected_items = self.canvas.selectedItems()
+        # Find the minimum y-coordinate of the top edge of all selected items
+        top_y = min(item.sceneBoundingRect().top() for item in selected_items)
+        for item in selected_items:
+            # Calculate the displacement needed to move the item's top edge to the calculated top_y
+            dy = top_y - item.sceneBoundingRect().top()
+            item.moveBy(0, dy)
+
+        self.update_transform_ui()
+
+    def use_align_bottom(self):
+        if not self.canvas.selectedItems():
+            return
+        selected_items = self.canvas.selectedItems()
+        # Find the maximum y-coordinate of the bottom edge of all selected items
+        bottom_y = max(item.sceneBoundingRect().bottom() for item in selected_items)
+        for item in selected_items:
+            # Calculate the displacement needed to move the item's bottom edge to the calculated bottom_y
+            dy = bottom_y - item.sceneBoundingRect().bottom()
+            item.moveBy(0, dy)
+
+        self.update_transform_ui()
+
+    def use_align_middle(self):
+        if not self.canvas.selectedItems():
+            return
+        selected_items = self.canvas.selectedItems()
+        # Find the average y-coordinate of the center of all selected items
+        middle_y = sum(item.sceneBoundingRect().center().y() for item in selected_items) / len(selected_items)
+        for item in selected_items:
+            # Calculate the displacement needed to move the item's center to the calculated middle_y
+            dy = middle_y - item.sceneBoundingRect().center().y()
+            item.moveBy(0, dy)
+
+        self.update_transform_ui()
 
     def insert_image(self):
         # Deactivate the add canvas tool
