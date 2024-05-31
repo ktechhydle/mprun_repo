@@ -77,7 +77,7 @@ You are responsible for publishing your work under a license of your choosing an
         self.close()
 
 class VersionWin(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, version):
         super().__init__()
 
         self.setWindowTitle('MPRUN Version')
@@ -85,6 +85,8 @@ class VersionWin(QtWidgets.QWidget):
         self.setFixedSize(500, 250)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
+        self.version = version
 
         self.create_ui()
 
@@ -100,8 +102,8 @@ class VersionWin(QtWidgets.QWidget):
         mprun_img_label.move(20, 20)
 
         # Text label
-        text = '''
-1.0.0
+        text = f'''
+{self.version}
 
 Copyright © K-TECH Industries 2024, All rights reserved.
 

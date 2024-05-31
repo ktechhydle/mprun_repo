@@ -26,6 +26,7 @@ class MPRUN(QMainWindow):
         self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logoV3.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
+        self.version = '1.0.0'
 
         # File
         self.file_name = None
@@ -2309,7 +2310,7 @@ Date:""")
         item.setZValue(0)
 
     def show_version(self):
-        self.w = VersionWin()
+        self.w = VersionWin(self.version)
         self.w.show()
 
     def show_about(self):
