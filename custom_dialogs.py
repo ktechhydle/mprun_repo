@@ -474,8 +474,20 @@ class TextAlongPathPanel(QWidget):
 
         self.text_along_path_check_btn.clicked.connect(self.update_path)
         self.distrubute_evenly_check_btn.clicked.connect(self.update_path)
-        self.spacing_spin.valueChanged.connect(self.update_path)
-        self.text_entry.textChanged.connect(self.update_path)
+        self.spacing_spin.valueChanged.connect(self.update_spacing)
+        self.text_entry.textChanged.connect(self.update_text)
+
+    def update_text(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CustomPathItem):
+                command2 = PathTextChangedCommand(item, item.text_along_path, self.text_entry.text())
+                self.canvas.addCommand(command2)
+
+    def update_spacing(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CustomPathItem):
+                command3 = PathTextSpacingChangedCommand(item, item.text_along_path_spacing, self.spacing_spin.value())
+                self.canvas.addCommand(command3)
 
     def update_path(self):
         for item in self.canvas.selectedItems():
@@ -483,10 +495,6 @@ class TextAlongPathPanel(QWidget):
                 if self.text_along_path_check_btn.isChecked():
                     command = AddTextToPathCommand(item, self.text_along_path_check_btn, False, True)
                     self.canvas.addCommand(command)
-                    command2 = PathTextChangedCommand(item, item.text_along_path, self.text_entry.text())
-                    self.canvas.addCommand(command2)
-                    command3 = PathTextSpacingChangedCommand(item, item.text_along_path_spacing, self.spacing_spin.value())
-                    self.canvas.addCommand(command3)
 
                     if self.distrubute_evenly_check_btn.isChecked():
                         item.setTextAlongPathFromBeginning(False)
