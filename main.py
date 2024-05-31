@@ -1816,12 +1816,13 @@ Date:""")
 
     def use_add_text_along_path(self):
         try:
-            self.canvas_view.on_add_canvas()
+            self.use_exit_add_canvas()
             self.display_choosen_tab('Text Along Path')
             for i in range(self.tab_view.count()):
                 if self.tab_view.tabText(i) == 'Text Along Path':
                     self.tab_view.setCurrentIndex(i)
-                    self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
+                    self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
+                    self.text_along_path_tab.text_along_path_check_btn.click()
                     self.text_along_path_tab.text_entry.setFocus()
                     self.text_along_path_tab.text_entry.clear()
 
