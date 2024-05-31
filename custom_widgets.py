@@ -243,6 +243,19 @@ class QLinkLabel(QLabel):
 
         webbrowser.open_new(self.link)
 
+class QDockWidgetTitleBar(QWidget):
+    def __init__(self, title: str):
+        super().__init__()
+
+        self.setLayout(QHBoxLayout())
+
+        label = QLabel(title)
+        undock_btn = QPushButton(self)
+        undock_btn.setStyleSheet('border: none;')
+
+        self.layout().addWidget(label)
+        self.layout().addWidget(undock_btn)
+
 
 
 

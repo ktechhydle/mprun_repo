@@ -93,10 +93,8 @@ class MPRUN(QMainWindow):
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
         save_action = QAction('Save', self)
-        save_action.triggered.connect(lambda: self.canvas.save(self))
 
         open_action = QAction('Open', self)
-        open_action.triggered.connect(lambda: self.canvas.open(self))
 
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
@@ -285,12 +283,19 @@ class MPRUN(QMainWindow):
         self.toolbar.setFloatable(False)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
-        # Action toolbar
+        # Item toolbar
+        self.item_toolbar = QToolBar('MPRUN Item Bar')
+        self.item_toolbar.setIconSize(QSize(32, 32))
+        self.item_toolbar.setMovable(False)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
+
+        '''# Action toolbar
         self.action_toolbar = QToolBar('MPRUN Action Bar')
         self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 1px;}')
         self.action_toolbar.setFixedWidth(300)
         self.action_toolbar.setMovable(False)
-        self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)
+        self.action_toolbar.setObjectName('customToolBar')
+        self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)'''
 
         # View Toolbar
         self.view_toolbar = QToolBar('MPRUN View Toolbar')
@@ -301,6 +306,15 @@ class MPRUN(QMainWindow):
 
     def create_toolbar1(self):
         #----action toolbar widgets----#
+
+        # Dock widget
+        self.tab_view_dock = QDockWidget(self)
+        self.tab_view_dock.setWindowTitle('MPRUN Panel Manager')
+        self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea)
+        label = QLabel('')
+        self.tab_view_dock.setTitleBarWidget(label)
+        self.tab_view_dock.titleBarWidget().setStyleSheet('background: #424242;'
+                                                          'corner-radius: 5px;')
 
         # Tabview
         if sys.platform.lower() == 'darwin':
@@ -618,7 +632,8 @@ class MPRUN(QMainWindow):
         self.rotate_item_spin.valueChanged.connect(self.use_rotate)
 
         # Add action toolbar actions
-        self.action_toolbar.addWidget(self.tab_view)
+        self.tab_view_dock.setWidget(self.tab_view)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
 
         # Properties Tab Widgets
         self.properties_tab_layout.addWidget(self.selection_label)

@@ -44,8 +44,13 @@ QMenu {
 
 QToolBar {
     background-color: #535353; /* Background color */
-    border: 2px solid #434343; /* Border */
-    padding: 4px; /* Padding */
+    border: 1px solid #434343; /* Border */
+    padding: 1px; /* Padding */
+}
+
+#customToolBar {
+    background-color: #535353;
+    border: none;
 }
 
 QToolBar::handle {
@@ -228,37 +233,48 @@ QScrollBar {
       background: #747474; }
 
 QTabBar {
-  background-color: #424242;}
-  QTabBar::tab {
-    background-color: transparent;
-    padding: 10px;
+  background-color: #424242;
+}
+
+QTabBar::tab {
+    background: #424242;
+    padding: 8px;
     border-top: 1px solid #383838;
     border-right: 1px solid #383838;
     border-left: 1px solid #383838;}
-    QTabBar::tab:vertical:right {
-      border-top-right-radius: 3px;
-      border-bottom-right-radius: 3px; }
-    QTabBar::tab:vertical:left {
-      border-top-left-radius: 3px;
-      border-bottom-left-radius: 3px; }
-    QTabBar::tab:bottom,
-    QTabBar::tab:top {
-      color: white;
-      min-width: 40px; }
-    QTabBar::tab:left,
-    QTabBar::tab:right {
-      min-height: 60px;
-      padding: 10px; }
-    QTabBar::tab:hover {
-      background-color: #4f4f4f; }
-    QTabBar::tab:selected {
-      background-color: #535353; }
-  QTabBar::indicator {
+
+QTabBar::tab:vertical:right {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px; }
+
+QTabBar::tab:vertical:left {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px; }
+
+QTabBar::tab:bottom,
+QTabBar::tab:top {
+    color: #a0a0a0;
+    min-width: 40px; }
+
+QTabBar::tab:left,
+QTabBar::tab:right {
+    min-height: 60px;
+    padding: 10px; }
+
+QTabBar::tab:hover {
+    background-color: #4f4f4f; }
+
+QTabBar::tab:selected {
+    color: white;
+    font-weight: bold;
+    background-color: #535353; }
+
+QTabBar::indicator {
     width: 5px;
     height: 5px; }
 
 QTabBar::scroller {
-  width: 0px; /* Set the width of the scroller */
+    width: 0px; /* Set the width of the scroller */
 }
 
 QTabBar::close-button {
@@ -270,29 +286,33 @@ QTabBar::close-button:hover {
 }
 
 QTabBar::scroller:next, QTabBar::scroller:prev {
-  width: 0px;
+    width: 0px;
 }
 
 QTabWidget {
-  border: 5px solid #2a2a2a; }
-  QTabWidget:pane {
-    color: white;
+    border: 1px solid #2a2a2a; }
+
+QTabWidget:pane {
     border: none; }
 
 QDockWidget {
-  background-color: #2f2f2f;
-  font-weight: bold;
-  color: #c0c0c0;
-  border-radius: 3px;
-  titlebar-close-icon: url(:/icons/cross.svg);
-  titlebar-normal-icon: url(); }
-  QDockWidget::close-button {
-    image: url(:/icons/cross.svg);
-    background: none;
+    background: #424242;
+    color: white;
+}
+
+QDockWidget::title {
+    background: #424242;
+    color: white;
+}
+
+QDockWidget::close-button {
+    background: #424242;
     border: none;
-    icon-size: 5px; }
-    QDockWidget::close-button:hover {
-      image: url(:/icons/cross-white.svg); }
+}
+
+QDockWidget::close-button:hover {
+    background: #474747;
+}
 
 QToolBox::tab {
   background-color: #2f2f2f;
