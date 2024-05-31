@@ -243,18 +243,35 @@ class QLinkLabel(QLabel):
 
         webbrowser.open_new(self.link)
 
-class QDockWidgetTitleBar(QWidget):
-    def __init__(self, title: str):
-        super().__init__()
+class CustomDockWidget(QDockWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
-        self.setLayout(QHBoxLayout())
+        self.setLayout(QVBoxLayout())
+        self.setFeatures(QDockWidget.AllDockWidgetFeatures)
 
-        label = QLabel(title)
-        undock_btn = QPushButton(self)
-        undock_btn.setStyleSheet('border: none;')
+        self.close_btn = QPushButton('', self)
+        self.close_btn.setIcon(QIcon('logos and icons/UI Icons/close-button-qdockwidget.svg'))
+        self.close_btn.setIconSize(QSize(12, 12))
+        self.close_btn.clicked.connect(self.close)
+        self.close_btn.setStyleSheet('QPushButton { background: #424242;'
+                            'border: none; }'
+                            'QPushButton:hover {'
+                            'background: #494949; }')
+        self.close_btn.setFixedSize(QSize(14, 14))
 
-        self.layout().addWidget(label)
-        self.layout().addWidget(undock_btn)
+        self.title_bar = QWidget(self)
+        self.title_bar.setFixedHeight(20)
+        self.title_bar.setLayout(QHBoxLayout())
+        self.title_bar.setStyleSheet('background: #424242;')
+        self.title_bar.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        self.title_bar.layout().addWidget(self.close_btn)
+        self.title_bar.layout().setContentsMargins(0, 0, 0, 0)
+        self.title_bar.layout().setSpacing(0)
+
+        self.setTitleBarWidget(self.title_bar)
+
+
 
 
 

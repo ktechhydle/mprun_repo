@@ -14,7 +14,7 @@ QWidget {
   font-color: white;}
 
 QGraphicsView {
-    border: 2px solid #383838;
+    border: 1px solid #424242;
 }
 
 QMenuBar {
@@ -232,8 +232,17 @@ QScrollBar {
     QScrollBar::handle:hover {
       background: #747474; }
 
+QTabWidget {
+    border: 1px solid #2a2a2a;
+}
+
+QTabWidget::pane {
+    border: none;
+}
+
 QTabBar {
-  background-color: #424242;
+    background-color: #424242;
+    border: none; /* Remove any border that might be causing the gap */
 }
 
 QTabBar::tab {
@@ -241,40 +250,49 @@ QTabBar::tab {
     padding: 8px;
     border-top: 1px solid #383838;
     border-right: 1px solid #383838;
-    border-left: 1px solid #383838;}
+    border-left: 1px solid #383838;
+    margin: 0px; /* Ensure no margin that might cause the gap */
+}
 
 QTabBar::tab:vertical:right {
     border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px; }
+    border-bottom-right-radius: 3px;
+}
 
 QTabBar::tab:vertical:left {
     border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px; }
+    border-bottom-left-radius: 3px;
+}
 
 QTabBar::tab:bottom,
 QTabBar::tab:top {
     color: #a0a0a0;
-    min-width: 40px; }
+    min-width: 40px;
+}
 
 QTabBar::tab:left,
 QTabBar::tab:right {
     min-height: 60px;
-    padding: 10px; }
+    padding: 10px;
+}
 
 QTabBar::tab:hover {
-    background-color: #4f4f4f; }
+    background-color: #4f4f4f;
+}
 
 QTabBar::tab:selected {
     color: white;
     font-weight: bold;
-    background-color: #535353; }
+    background-color: #535353;
+}
 
 QTabBar::indicator {
     width: 5px;
-    height: 5px; }
+    height: 5px;
+}
 
 QTabBar::scroller {
-    width: 0px; /* Set the width of the scroller */
+    width: 0px;
 }
 
 QTabBar::close-button {
@@ -289,30 +307,11 @@ QTabBar::scroller:next, QTabBar::scroller:prev {
     width: 0px;
 }
 
-QTabWidget {
-    border: 1px solid #2a2a2a; }
-
-QTabWidget:pane {
-    border: none; }
-
 QDockWidget {
     background: #424242;
     color: white;
 }
 
-QDockWidget::title {
-    background: #424242;
-    color: white;
-}
-
-QDockWidget::close-button {
-    background: #424242;
-    border: none;
-}
-
-QDockWidget::close-button:hover {
-    background: #474747;
-}
 
 QToolBox::tab {
   background-color: #2f2f2f;

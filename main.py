@@ -289,14 +289,6 @@ class MPRUN(QMainWindow):
         self.item_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
 
-        '''# Action toolbar
-        self.action_toolbar = QToolBar('MPRUN Action Bar')
-        self.action_toolbar.setStyleSheet('QToolBar{spacing: 8px; padding: 1px;}')
-        self.action_toolbar.setFixedWidth(300)
-        self.action_toolbar.setMovable(False)
-        self.action_toolbar.setObjectName('customToolBar')
-        self.addToolBar(Qt.ToolBarArea.RightToolBarArea, self.action_toolbar)'''
-
         # View Toolbar
         self.view_toolbar = QToolBar('MPRUN View Toolbar')
         self.view_toolbar.setMovable(False)
@@ -308,13 +300,9 @@ class MPRUN(QMainWindow):
         #----action toolbar widgets----#
 
         # Dock widget
-        self.tab_view_dock = QDockWidget(self)
+        self.tab_view_dock = CustomDockWidget(self)
         self.tab_view_dock.setWindowTitle('MPRUN Panel Manager')
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea)
-        label = QLabel('')
-        self.tab_view_dock.setTitleBarWidget(label)
-        self.tab_view_dock.titleBarWidget().setStyleSheet('background: #424242;'
-                                                          'corner-radius: 5px;')
 
         # Tabview
         if sys.platform.lower() == 'darwin':
@@ -329,6 +317,7 @@ class MPRUN(QMainWindow):
         self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
         self.tab_view.tabCloseRequested.connect(self.close_tab)
+        self.tab_view.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
 
         # Properties Tab
         self.properties_tab = QWidget(self)
