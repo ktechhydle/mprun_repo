@@ -1691,6 +1691,8 @@ Date:""")
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
 
+        self.use_exit_grid()
+
     def use_rotate(self, value):
         items = self.canvas.selectedItems()
         for item in items:
@@ -1797,6 +1799,10 @@ Date:""")
             elif isinstance(item, EditableTextBlock):
                 item.locked = False
 
+        if self.gsnap_check_btn.isChecked():
+            self.gsnap_check_btn.click()
+
+    def use_exit_grid(self):
         if self.gsnap_check_btn.isChecked():
             self.gsnap_check_btn.click()
 

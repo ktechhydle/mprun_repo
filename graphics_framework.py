@@ -807,3 +807,14 @@ class CustomGraphicsScene(QGraphicsScene):
 
             painter.setPen(self._pen_dark)
             painter.drawLines(*lines_dark)
+
+    def addItem(self, item):
+        super().addItem(item)
+
+        if self.gridEnabled:
+            for item in self.items():
+                if isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.gridEnabled = True
