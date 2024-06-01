@@ -1113,14 +1113,6 @@ Date:""")
     def update_grid_size(self, value):
         self.canvas.setGridSize(value)
 
-        for item in self.canvas.items():
-            if isinstance(item, CustomGraphicsItemGroup):
-                item.set_grid_size(value)
-                self.gsnap_grid_size = value
-
-            else:
-                self.gsnap_grid_size = value
-
     def update_transform_ui(self):
         self.x_pos_spin.blockSignals(True)
         self.y_pos_spin.blockSignals(True)
@@ -1805,6 +1797,9 @@ Date:""")
             elif isinstance(item, EditableTextBlock):
                 item.locked = False
 
+        if self.gsnap_check_btn.isChecked():
+            self.gsnap_check_btn.click()
+
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
@@ -2088,9 +2083,23 @@ Date:""")
             self.canvas.setGridEnabled(True)
             self.canvas.update()
 
+            for item in self.canvas.items():
+                if isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.gridEnabled = True
+
         else:
             self.canvas.setGridEnabled(False)
             self.canvas.update()
+
+            for item in self.canvas.items():
+                if isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.gridEnabled = False
 
     def insert_image(self):
         # Deactivate the add canvas tool

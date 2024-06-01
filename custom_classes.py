@@ -34,41 +34,25 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         self.locked = False
         self.stored_items = None
 
+        self.gridEnabled = False
+
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             self.mouse_offset = event.pos()
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self.locked == False:
-            if self.widget.isChecked():
-                if self.isSelected():
-                    # Calculate the position relative to the scene's coordinate system
-                    scene_pos = event.scenePos()
-                    x = (
-                        int(scene_pos.x() / self.block_size) * self.block_size
-                        - self.mouse_offset.x()
-                    )
-                    y = (
-                        int(scene_pos.y() / self.block_size) * self.block_size
-                        - self.mouse_offset.y()
-                    )
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
 
-                    # Set the position relative to the scene's coordinate system
-                    self.setPos(x, y)
-                else:
-                    # Call the superclasses mouseMoveEvent to move the item as normal
-                    super().mouseMoveEvent(event)
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
 
-            else:
-                # Call the superclasses mouseMoveEvent to move the item as normal
-                super().mouseMoveEvent(event)
         else:
-            # Call the superclasses mouseMoveEvent to move the item as normal
             super().mouseMoveEvent(event)
-            
-    def set_grid_size(self, size):
-        self.block_size = size
 
     def set_locked(self):
         self.locked = True
@@ -180,6 +164,26 @@ class CustomPathItem(QGraphicsPathItem):
         self.text_along_path_color = QColor('black')
         self.text_along_path_spacing = 3
         self.start_text_from_beginning = False
+
+        self.gridEnabled = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
+
+        else:
+            super().mouseMoveEvent(event)
 
     def duplicate(self):
         path = self.path()
@@ -312,6 +316,26 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         self.filename = None
 
+        self.gridEnabled = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
+
+        else:
+            super().mouseMoveEvent(event)
+
     def store_filename(self, file):
         self.filename = file
 
@@ -343,6 +367,26 @@ class CustomSvgItem(QGraphicsSvgItem):
 
         self.filename = None
         self.render = QSvgRenderer(file)
+
+        self.gridEnabled = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
+
+        else:
+            super().mouseMoveEvent(event)
 
     def store_filename(self, file):
         self.filename = file
@@ -381,6 +425,26 @@ class EditableTextBlock(QGraphicsTextItem):
         self.old_text = self.toPlainText()
 
         self.setAcceptHoverEvents(True)
+
+        self.gridEnabled = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
+
+        else:
+            super().mouseMoveEvent(event)
 
     def mouseDoubleClickEvent(self, event):
         if self.locked == False:
@@ -436,6 +500,26 @@ class EditableTextBlock(QGraphicsTextItem):
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)
+
+        self.gridEnabled = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
+
+        else:
+            super().mouseMoveEvent(event)
 
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
@@ -510,6 +594,26 @@ class CanvasItem(QGraphicsRectItem):
         self.text = CanvasTextItem(name, self)
         self.text.setVisible(False)
 
+        self.gridEnabled = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
+
+        else:
+            super().mouseMoveEvent(event)
+
 class CanvasTextItem(QGraphicsSimpleTextItem):
     def __init__(self, text, parent):
         super().__init__()
@@ -547,5 +651,25 @@ class ControlPoint(QGraphicsEllipseItem):
 class WaterMarkItem(QGraphicsPixmapItem):
     def __init__(self, pixmap):
         super().__init__(pixmap)
+
+        self.gridEnabled = False
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.gridEnabled:
+            # Calculate the position relative to the scene's coordinate system
+            scene_pos = event.scenePos()
+            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+            # Set the position relative to the scene's coordinate system
+            self.setPos(x, y)
+
+        else:
+            super().mouseMoveEvent(event)
 
 

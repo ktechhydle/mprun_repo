@@ -152,9 +152,6 @@ class CustomGraphicsView(QGraphicsView):
             self.disable_item_flags()
             super().mousePressEvent(event)
 
-        elif self.select_btn.isChecked():
-            self.on_grid_move_start(event)
-
         else:
             super().mousePressEvent(event)
 
@@ -200,9 +197,6 @@ y: {int(p.y())}''')
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
-        elif self.select_btn.isChecked():
-            self.on_grid_move(event)
-
         else:
             super().mouseMoveEvent(event)
 
@@ -230,9 +224,6 @@ y: {int(p.y())}''')
         elif self.pan_btn.isChecked():
             self.on_pan_end(event)
             super().mouseReleaseEvent(event)
-
-        elif self.select_btn.isChecked():
-            self.on_grid_move_end(event)
 
         else:
             super().mouseReleaseEvent(event)
@@ -305,58 +296,6 @@ y: {int(p.y())}''')
         self.resetTransform()
         zoomFactor = self.zoomInFactor ** (self.zoom - 10)  # 15 is the initial zoom level
         self.scale(zoomFactor, zoomFactor)
-
-    def on_grid_move_start(self, event):
-        if self.canvas.gridEnabled:
-            if event.button() == Qt.LeftButton:
-                self.mouse_offset = self.mapToScene(event.pos())
-            super().mousePressEvent(event)
-
-        else:
-            super().mousePressEvent(event)
-
-    def on_grid_move(self, event):
-        if self.scene().selectedItems():
-            if self.canvas.gridEnabled:
-                super().mouseMoveEvent(event)
-
-                for item in self.canvas.selectedItems():
-                    if self.mouse_offset is not None:
-                        # Calculate the position relative to the scene's coordinate system
-                        scene_pos = self.mapToScene(event.pos())
-                        x = (int(scene_pos.x() / self.canvas.gridSize) * self.canvas.gridSize)
-                        y = (int(scene_pos.y() / self.canvas.gridSize) * self.canvas.gridSize)
-
-                        # Set the position relative to the scene's coordinate system
-                        item.setPos(x, y)
-
-            else:
-                super().mouseMoveEvent(event)
-
-        else:
-            super().mouseMoveEvent(event)
-
-    def on_grid_move_end(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.mouse_offset = None
-            super().mouseReleaseEvent(event)
-
-        else:
-            super().mouseReleaseEvent(event)
-
-    def on_path_draw_start(self, event):
-        # Check the button being pressed
-        if event.button() == Qt.LeftButton:
-            # Create a new path
-            self.path = QPainterPath()
-            self.path.setFillRule(Qt.WindingFill)
-            self.path.moveTo(self.mapToScene(event.pos()))
-            self.last_point = self.mapToScene(event.pos())
-
-            # Set drag mode
-            self.setDragMode(QGraphicsView.NoDrag)
-
-        super().mousePressEvent(event)
 
     def on_path_draw(self, event):
         # Check the buttons
