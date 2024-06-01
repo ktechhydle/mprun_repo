@@ -9,6 +9,7 @@ from OpenGL.GLU import *
 import xml.etree.ElementTree as ET
 import time
 import json
+import math
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas,
@@ -51,6 +52,8 @@ class CustomGraphicsView(QGraphicsView):
 
         # Items
         self.canvas = canvas
+        self.mouse_offset = None
+        self.is_dragging = False
         self.temp_path_item = None
         self.temp_canvas = None
         self.pen = None
@@ -149,6 +152,9 @@ class CustomGraphicsView(QGraphicsView):
             self.disable_item_flags()
             super().mousePressEvent(event)
 
+        elif self.select_btn.isChecked():
+            self.on_grid_move_start(event)
+
         else:
             super().mousePressEvent(event)
 
@@ -194,6 +200,9 @@ y: {int(p.y())}''')
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
+        elif self.select_btn.isChecked():
+            self.on_grid_move(event)
+
         else:
             super().mouseMoveEvent(event)
 
@@ -221,6 +230,9 @@ y: {int(p.y())}''')
         elif self.pan_btn.isChecked():
             self.on_pan_end(event)
             super().mouseReleaseEvent(event)
+
+        elif self.select_btn.isChecked():
+            self.on_grid_move_end(event)
 
         else:
             super().mouseReleaseEvent(event)
@@ -293,6 +305,44 @@ y: {int(p.y())}''')
         self.resetTransform()
         zoomFactor = self.zoomInFactor ** (self.zoom - 10)  # 15 is the initial zoom level
         self.scale(zoomFactor, zoomFactor)
+
+    def on_grid_move_start(self, event):
+        if self.canvas.gridEnabled:
+            if event.button() == Qt.LeftButton:
+                self.mouse_offset = self.mapToScene(event.pos())
+            super().mousePressEvent(event)
+
+        else:
+            super().mousePressEvent(event)
+
+    def on_grid_move(self, event):
+        if self.scene().selectedItems():
+            if self.canvas.gridEnabled:
+                super().mouseMoveEvent(event)
+
+                for item in self.canvas.selectedItems():
+                    if self.mouse_offset is not None:
+                        # Calculate the position relative to the scene's coordinate system
+                        scene_pos = self.mapToScene(event.pos())
+                        x = (int(scene_pos.x() / self.canvas.gridSize) * self.canvas.gridSize)
+                        y = (int(scene_pos.y() / self.canvas.gridSize) * self.canvas.gridSize)
+
+                        # Set the position relative to the scene's coordinate system
+                        item.setPos(x, y)
+
+            else:
+                super().mouseMoveEvent(event)
+
+        else:
+            super().mouseMoveEvent(event)
+
+    def on_grid_move_end(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.mouse_offset = None
+            super().mouseReleaseEvent(event)
+
+        else:
+            super().mouseReleaseEvent(event)
 
     def on_path_draw_start(self, event):
         # Check the button being pressed
@@ -457,18 +507,17 @@ y: {int(p.y())}''')
             # Create the label text
             self.label_text = EditableTextBlock('An Editable Text Block')
             self.label_text.setFont(self.font)
-            self.label_text.setPos(self.mapToScene(event.pos()))
+            self.label_text.setPos(self.mapToScene(event.pos()) - QPointF(0, self.label_text.sceneBoundingRect().height()))
             self.label_text.setDefaultTextColor(QColor('black'))
             self.label_text.setToolTip("Text")
 
             # Create path item
             self.pathg_item = LeaderLineItem(self.leader_line)
             self.pathg_item.setBrush(QBrush(QColor(Qt.transparent)))
+            self.label_text.setParentItem(self.pathg_item)
 
-            add_command2 = AddItemCommand(self.canvas, self.label_text)
-            self.canvas.addCommand(add_command2)
-            add_command3 = AddItemCommand(self.canvas, self.pathg_item)
-            self.canvas.addCommand(add_command3)
+            add_command = AddItemCommand(self.canvas, self.pathg_item)
+            self.canvas.addCommand(add_command)
 
             self.canvas.update()
 
@@ -689,6 +738,11 @@ class CustomGraphicsScene(QGraphicsScene):
         self.setSceneRect(-width // 2, -height // 2, width, height)
         self.setBackgroundBrush(QBrush(QColor('#606060')))
 
+        # Grid
+        self.gridEnabled = False
+        self.gridSize = 10
+        self.gridSquares = 5
+
         self.movingItem = None
         self.oldPos = QPointF()
         self.itemMoved.connect(self.on_move_item)
@@ -764,3 +818,53 @@ class CustomGraphicsScene(QGraphicsScene):
 
         for item in self.items():
             item.update()
+
+    def setGridEnabled(self, enabled: bool):
+        self.gridEnabled = enabled
+
+    def setGridSize(self, grid_size: int):
+        self.gridSize = grid_size
+        self.update()
+
+    def drawBackground(self, painter, rect):
+        super().drawBackground(painter, rect)
+
+        if self.gridEnabled:
+            # settings
+            self._color_light = QColor("#a3a3a3")
+            self._color_dark = QColor("#b8b8b8")
+
+            self._pen_light = QPen(self._color_light)
+            self._pen_light.setWidth(1)
+            self._pen_dark = QPen(self._color_dark)
+            self._pen_dark.setWidth(1)
+
+            # here we create our grid
+            left = int(math.floor(rect.left()))
+            right = int(math.ceil(rect.right()))
+            top = int(math.floor(rect.top()))
+            bottom = int(math.ceil(rect.bottom()))
+
+            first_left = left - (left % self.gridSize)
+            first_top = top - (top % self.gridSize)
+
+            # compute all lines to be drawn
+            lines_light, lines_dark = [], []
+            for x in range(first_left, right, self.gridSize):
+                if (x % (self.gridSize * self.gridSquares) != 0):
+                    lines_light.append(QLine(x, top, x, bottom))
+                else:
+                    lines_dark.append(QLine(x, top, x, bottom))
+
+            for y in range(first_top, bottom, self.gridSize):
+                if (y % (self.gridSize * self.gridSquares) != 0):
+                    lines_light.append(QLine(left, y, right, y))
+                else:
+                    lines_dark.append(QLine(left, y, right, y))
+
+            # draw the lines
+            painter.setPen(self._pen_light)
+            painter.drawLines(*lines_light)
+
+            painter.setPen(self._pen_dark)
+            painter.drawLines(*lines_dark)

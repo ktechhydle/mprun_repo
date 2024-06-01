@@ -496,6 +496,7 @@ class MPRUN(QMainWindow):
 
         self.gsnap_check_btn = QCheckBox(self)
         self.gsnap_check_btn.setText('Grid Enabled')
+        self.gsnap_check_btn.clicked.connect(self.use_enable_grid)
         self.gsnap_grid_spin = QSpinBox(self)
         self.gsnap_grid_spin.setFixedWidth(80)
         self.gsnap_grid_spin.setSuffix(' pt')
@@ -851,6 +852,14 @@ class MPRUN(QMainWindow):
         align_bottom_btn.setToolTip('Align the selected elements to the center')
         align_bottom_btn.triggered.connect(self.use_align_bottom)
 
+        raise_layer_action = QAction('Raise Layer', self)
+        raise_layer_action.setToolTip('Raise the selected elements a layer up')
+        raise_layer_action.triggered.connect(self.use_raise_layer)
+
+        lower_layer_action = QAction('Lower Layer', self)
+        lower_layer_action.setToolTip('Lower the selected elements a layer down')
+        lower_layer_action.triggered.connect(self.use_lower_layer)
+
         # Add widgets
         self.item_toolbar.addAction(align_left_btn)
         self.item_toolbar.addAction(align_right_btn)
@@ -858,6 +867,9 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addAction(align_middle_btn)
         self.item_toolbar.addAction(align_top_btn)
         self.item_toolbar.addAction(align_bottom_btn)
+        self.item_toolbar.addSeparator()
+        self.item_toolbar.addAction(raise_layer_action)
+        self.item_toolbar.addAction(lower_layer_action)
 
     def create_view(self):
         # QGraphicsView Logic
@@ -1099,6 +1111,8 @@ Date:""")
                         item.update()
 
     def update_grid_size(self, value):
+        self.canvas.setGridSize(value)
+
         for item in self.canvas.items():
             if isinstance(item, CustomGraphicsItemGroup):
                 item.set_grid_size(value)
@@ -2068,6 +2082,15 @@ Date:""")
             item.moveBy(0, dy)
 
         self.update_transform_ui()
+
+    def use_enable_grid(self):
+        if self.gsnap_check_btn.isChecked():
+            self.canvas.setGridEnabled(True)
+            self.canvas.update()
+
+        else:
+            self.canvas.setGridEnabled(False)
+            self.canvas.update()
 
     def insert_image(self):
         # Deactivate the add canvas tool
