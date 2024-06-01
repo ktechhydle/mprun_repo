@@ -1946,8 +1946,7 @@ Date:""")
                     pass
 
                 else:
-                    group = CustomGraphicsItemGroup(self.gsnap_check_btn)
-                    group.set_grid_size(self.gsnap_grid_size)
+                    group = CustomGraphicsItemGroup()
 
                     item = self.canvas.selectedItems()
 
@@ -1966,6 +1965,8 @@ Date:""")
                             # Add items to group
                             group.addToGroup(items)
                             group.setToolTip('Group')
+
+                        self.undo_stack.clear()
 
                     else:
                         pass
@@ -1991,6 +1992,8 @@ Date:""")
                         group.addToGroup(items)
                         group.setToolTip('Group')
 
+                    self.undo_stack.clear()
+
                 else:
                     pass
 
@@ -2004,6 +2007,7 @@ Date:""")
                         child.setParentItem(child)
 
                 self.canvas.destroyItemGroup(group)
+                self.undo_stack.clear()
 
     def use_align_left(self):
         if not self.canvas.selectedItems():
