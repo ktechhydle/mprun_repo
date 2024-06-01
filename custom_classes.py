@@ -25,11 +25,10 @@ class item_stack:
         return self._value
 
 class CustomGraphicsItemGroup(QGraphicsItemGroup):
-    def __init__(self, widget, parent=None):
-        super().__init__(parent)
+    def __init__(self):
+        super().__init__()
         self.mouse_offset = QPoint(0, 0)
         self.block_size = 10
-        self.widget = widget
 
         self.locked = False
         self.stored_items = None
@@ -54,24 +53,17 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         else:
             super().mouseMoveEvent(event)
 
-    def set_locked(self):
-        self.locked = True
-
-    def set_unlocked(self):
-        self.locked = False
-
     def store_items(self, items):
         self.stored_items = items
 
     def duplicate(self):
         # Create a new instance of CustomGraphicsItemGroup
-        group = CustomGraphicsItemGroup(self.widget)
+        group = CustomGraphicsItemGroup()
 
         # Set position, scale, and rotation
         group.setPos(self.pos())
         group.setScale(self.scale())
         group.setRotation(self.rotation())
-        group.set_grid_size(self.block_size)
 
         # Set flags and tooltip
         group.setFlag(QGraphicsItem.ItemIsSelectable)

@@ -319,12 +319,13 @@ class MPRUN(QMainWindow):
         self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
         self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
         self.tab_view.tabCloseRequested.connect(self.close_tab)
-        self.tab_view.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
+        self.tab_view.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         # Properties Tab
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.properties_tab.setFixedHeight(475)
+        self.properties_tab.setFixedWidth(275)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
@@ -1940,8 +1941,6 @@ Date:""")
                 if item.childItems():
                     pass
 
-                pass
-
             elif isinstance(item, EditableTextBlock):
                 if item.parentItem():
                     pass
@@ -1972,8 +1971,7 @@ Date:""")
                         pass
 
             else:
-                group = CustomGraphicsItemGroup(self.gsnap_check_btn)
-                group.set_grid_size(self.gsnap_grid_size)
+                group = CustomGraphicsItemGroup()
 
                 item = self.canvas.selectedItems()
 

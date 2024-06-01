@@ -297,6 +297,20 @@ y: {int(p.y())}''')
         zoomFactor = self.zoomInFactor ** (self.zoom - 10)  # 15 is the initial zoom level
         self.scale(zoomFactor, zoomFactor)
 
+    def on_path_draw_start(self, event):
+        # Check the button being pressed
+        if event.button() == Qt.LeftButton:
+            # Create a new path
+            self.path = QPainterPath()
+            self.path.setFillRule(Qt.WindingFill)
+            self.path.moveTo(self.mapToScene(event.pos()))
+            self.last_point = self.mapToScene(event.pos())
+
+            # Set drag mode
+            self.setDragMode(QGraphicsView.NoDrag)
+
+        super().mousePressEvent(event)
+
     def on_path_draw(self, event):
         # Check the buttons
         if event.buttons() == Qt.LeftButton:
