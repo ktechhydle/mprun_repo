@@ -229,32 +229,36 @@ y: {int(p.y())}''')
             super().mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
-        self.zoom_spin.blockSignals(True)
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        try:
+            self.zoom_spin.blockSignals(True)
+            self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+            self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
 
-        # Calculate zoom Factor
-        zoomOutFactor = 1 / self.zoomInFactor
+            # Calculate zoom Factor
+            zoomOutFactor = 1 / self.zoomInFactor
 
-        # Calculate zoom
-        if event.angleDelta().y() > 0:
-            zoomFactor = self.zoomInFactor
-            self.zoom += self.zoomStep
-        else:
-            zoomFactor = zoomOutFactor
-            self.zoom -= self.zoomStep
+            # Calculate zoom
+            if event.angleDelta().y() > 0:
+                zoomFactor = self.zoomInFactor
+                self.zoom += self.zoomStep
+            else:
+                zoomFactor = zoomOutFactor
+                self.zoom -= self.zoomStep
 
-        # Deal with clamping!
-        clamped = False
-        if self.zoom < self.zoomRange[0]: self.zoom, clamped = self.zoomRange[0], True
-        if self.zoom > self.zoomRange[1]: self.zoom, clamped = self.zoomRange[1], True
+            # Deal with clamping!
+            clamped = False
+            if self.zoom < self.zoomRange[0]: self.zoom, clamped = self.zoomRange[0], True
+            if self.zoom > self.zoomRange[1]: self.zoom, clamped = self.zoomRange[1], True
 
-        if not clamped or self.zoomClamp is False:
-            self.scale(zoomFactor, zoomFactor)
+            if not clamped or self.zoomClamp is False:
+                self.scale(zoomFactor, zoomFactor)
 
-        current_zoom_percentage = self.transform().m11() * 100
-        self.zoom_spin.setValue(int(current_zoom_percentage))
-        self.zoom_spin.blockSignals(False)
+            current_zoom_percentage = self.transform().m11() * 100
+            self.zoom_spin.setValue(int(current_zoom_percentage))
+            self.zoom_spin.blockSignals(False)
+
+        except Exception:
+            pass
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
@@ -780,47 +784,51 @@ class CustomGraphicsScene(QGraphicsScene):
         self.update()
 
     def drawBackground(self, painter, rect):
-        super().drawBackground(painter, rect)
+        try:
+            super().drawBackground(painter, rect)
 
-        if self.gridEnabled:
-            # settings
-            self._color_light = QColor("#a3a3a3")
-            self._color_dark = QColor("#b8b8b8")
+            if self.gridEnabled:
+                # settings
+                self._color_light = QColor("#a3a3a3")
+                self._color_dark = QColor("#b8b8b8")
 
-            self._pen_light = QPen(self._color_light)
-            self._pen_light.setWidth(1)
-            self._pen_dark = QPen(self._color_dark)
-            self._pen_dark.setWidth(1)
+                self._pen_light = QPen(self._color_light)
+                self._pen_light.setWidth(1)
+                self._pen_dark = QPen(self._color_dark)
+                self._pen_dark.setWidth(1)
 
-            # here we create our grid
-            left = int(math.floor(rect.left()))
-            right = int(math.ceil(rect.right()))
-            top = int(math.floor(rect.top()))
-            bottom = int(math.ceil(rect.bottom()))
+                # here we create our grid
+                left = int(math.floor(rect.left()))
+                right = int(math.ceil(rect.right()))
+                top = int(math.floor(rect.top()))
+                bottom = int(math.ceil(rect.bottom()))
 
-            first_left = left - (left % self.gridSize)
-            first_top = top - (top % self.gridSize)
+                first_left = left - (left % self.gridSize)
+                first_top = top - (top % self.gridSize)
 
-            # compute all lines to be drawn
-            lines_light, lines_dark = [], []
-            for x in range(first_left, right, self.gridSize):
-                if (x % (self.gridSize * self.gridSquares) != 0):
-                    lines_light.append(QLine(x, top, x, bottom))
-                else:
-                    lines_dark.append(QLine(x, top, x, bottom))
+                # compute all lines to be drawn
+                lines_light, lines_dark = [], []
+                for x in range(first_left, right, self.gridSize):
+                    if (x % (self.gridSize * self.gridSquares) != 0):
+                        lines_light.append(QLine(x, top, x, bottom))
+                    else:
+                        lines_dark.append(QLine(x, top, x, bottom))
 
-            for y in range(first_top, bottom, self.gridSize):
-                if (y % (self.gridSize * self.gridSquares) != 0):
-                    lines_light.append(QLine(left, y, right, y))
-                else:
-                    lines_dark.append(QLine(left, y, right, y))
+                for y in range(first_top, bottom, self.gridSize):
+                    if (y % (self.gridSize * self.gridSquares) != 0):
+                        lines_light.append(QLine(left, y, right, y))
+                    else:
+                        lines_dark.append(QLine(left, y, right, y))
 
-            # draw the lines
-            painter.setPen(self._pen_light)
-            painter.drawLines(*lines_light)
+                # draw the lines
+                painter.setPen(self._pen_light)
+                painter.drawLines(*lines_light)
 
-            painter.setPen(self._pen_dark)
-            painter.drawLines(*lines_dark)
+                painter.setPen(self._pen_dark)
+                painter.drawLines(*lines_dark)
+
+        except Exception:
+            pass
 
     def addItem(self, item):
         super().addItem(item)
