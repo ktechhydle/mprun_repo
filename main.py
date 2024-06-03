@@ -50,6 +50,7 @@ class MPRUN(QMainWindow):
         self.undo_stack.setUndoLimit(35)
 
         # Create GUI
+        self.create_actions_dict()
         self.create_initial_canvas()
         self.create_menu()
         self.init_toolbars()
@@ -61,6 +62,9 @@ class MPRUN(QMainWindow):
         self.create_default_objects()
 
         self.show()
+
+    def create_actions_dict(self):
+        self.actions = {}
 
     def create_initial_canvas(self):
         # Canvas, canvas color
@@ -761,18 +765,18 @@ class MPRUN(QMainWindow):
         self.scale_btn.triggered.connect(self.use_scale_tool)
 
         # Hide Button
-        hide_btn = QAction(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
-        hide_btn.setToolTip('''Hide Element Tool: 
+        self.hide_btn = QAction(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
+        self.hide_btn.setToolTip('''Hide Element Tool: 
         Key-H''')
-        hide_btn.setShortcut(QKeySequence('H'))
-        hide_btn.triggered.connect(self.use_hide_item)
+        self.hide_btn.setShortcut(QKeySequence('H'))
+        self.hide_btn.triggered.connect(self.use_hide_item)
 
         # Unhide Button
-        unhide_btn = QAction(QIcon('logos and icons/Tool Icons/unhide_icon.png'), '', self)
-        unhide_btn.setToolTip('''Unhide All Tool: 
+        self.unhide_btn = QAction(QIcon('logos and icons/Tool Icons/unhide_icon.png'), '', self)
+        self.unhide_btn.setToolTip('''Unhide All Tool: 
         Command+H (MacOS) or Control+H (Windows)''')
-        unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
-        unhide_btn.triggered.connect(self.use_unhide_all)
+        self.unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
+        self.unhide_btn.triggered.connect(self.use_unhide_all)
 
         # Add Canvas Button
         self.add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/add_canvas_icon.png'), '', self)
@@ -783,11 +787,11 @@ class MPRUN(QMainWindow):
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
         # Insert Image Button
-        insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_image_icon2.png'), '', self)
-        insert_btn.setToolTip('''Insert Image Tool: 
+        self.insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_image_icon2.png'), '', self)
+        self.insert_btn.setToolTip('''Insert Image Tool: 
         Key-I''')
-        insert_btn.setShortcut(QKeySequence('I'))
-        insert_btn.triggered.connect(self.insert_image)
+        self.insert_btn.setShortcut(QKeySequence('I'))
+        self.insert_btn.triggered.connect(self.insert_image)
 
         # ----add actions----#
 
@@ -799,10 +803,10 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addAction(self.scale_btn)
-        self.toolbar.addAction(hide_btn)
-        self.toolbar.addAction(unhide_btn)
+        self.toolbar.addAction(self.hide_btn)
+        self.toolbar.addAction(self.unhide_btn)
         self.toolbar.addAction(self.add_canvas_btn)
-        self.toolbar.addAction(insert_btn)
+        self.toolbar.addAction(self.insert_btn)
 
         # Action Group
         self.action_group.addAction(self.select_btn)
@@ -812,9 +816,22 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
         self.action_group.addAction(self.scale_btn)
-        self.action_group.addAction(hide_btn)
-        self.action_group.addAction(unhide_btn)
+        self.action_group.addAction(self.hide_btn)
+        self.action_group.addAction(self.unhide_btn)
         self.action_group.addAction(self.add_canvas_btn)
+
+        # Add to actions dict
+        self.actions['''Select'''] = self.select_btn
+        self.actions['Pan'] = self.pan_btn
+        self.actions['Path Draw'] = self.path_btn
+        self.actions['Pen Draw'] = self.pen_btn
+        self.actions['Line and Label'] = self.label_btn
+        self.actions['Add Text'] = self.add_text_btn
+        self.actions['Scale'] = self.scale_btn
+        self.actions['Hide'] = self.hide_btn
+        self.actions['Unhide'] = self.unhide_btn
+        self.actions['Add Canvas'] = self.add_canvas_btn
+        self.actions['Insert Image'] = self.insert_btn
 
     def create_toolbar3(self):
         #----toolbar widgets----#
@@ -880,6 +897,16 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addSeparator()
         self.item_toolbar.addAction(raise_layer_action)
         self.item_toolbar.addAction(lower_layer_action)
+
+        # Add to actions dict
+        self.actions['Align Left'] = align_left_btn
+        self.actions['Align Right'] = align_right_btn
+        self.actions['Align Middle'] = align_middle_btn
+        self.actions['Align Center'] = align_center_btn
+        self.actions['Align Top'] = align_top_btn
+        self.actions['Align Bottom'] = align_bottom_btn
+        self.actions['Raise Layer'] = raise_layer_action
+        self.actions['Lower Layer'] = lower_layer_action
 
     def create_view(self):
         # QGraphicsView Logic
@@ -1035,20 +1062,23 @@ Date:""")
                     self.tab_view.closeEvent(event)
                     self.undo_stack.clear()
                     self.w.close()
+                    event.accept()
 
                 except Exception:
                     pass
-
-                event.accept()
 
             else:
                 event.ignore()
 
         else:
-            self.tab_view.closeEvent(event)
-            self.undo_stack.clear()
-            self.w.close()
-            event.accept()
+            try:
+                self.tab_view.closeEvent(event)
+                self.undo_stack.clear()
+                self.w.close()
+                event.accept()
+
+            except Exception:
+                pass
 
     def update_pen(self):
         index1 = self.stroke_style_combo.currentIndex()
@@ -2368,7 +2398,7 @@ Date:""")
         self.w.show()
 
     def show_find_action(self):
-        self.w = FindActionWin()
+        self.w = FindActionWin(self.actions)
         self.w.show()
 
     def display_choosen_tab(self, tab_name):

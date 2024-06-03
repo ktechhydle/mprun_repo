@@ -128,7 +128,7 @@ If you encounter any issues or have suggestions for improvements, contact us at:
         self.close()
 
 class FindActionWin(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, actions, parent=None):
         super().__init__(parent)
 
         self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_icon.ico'))
@@ -149,7 +149,7 @@ class FindActionWin(QtWidgets.QWidget):
         self.listWidget = QtWidgets.QListWidget()
 
         # Add some items to the QListWidget
-        self.actions = ['Action 1', 'Action 2', 'Action 3', 'Action 4']
+        self.actions = actions
         self.listWidget.addItems(self.actions)
 
         # Add the search input and the QListWidget to the layout
@@ -158,6 +158,9 @@ class FindActionWin(QtWidgets.QWidget):
 
         # Connect the textChanged signal of the search input to the search method
         self.searchInput.textChanged.connect(self.searchActions)
+
+        # Connect itemClicked signal of the listWidget to a method
+        self.listWidget.itemClicked.connect(self.performAction)
 
     def searchActions(self):
         # Get the search text
@@ -169,6 +172,28 @@ class FindActionWin(QtWidgets.QWidget):
         # Filter actions based on search text and add them back to the QListWidget
         filteredActions = [action for action in self.actions if searchText in action.lower()]
         self.listWidget.addItems(filteredActions)
+
+    def performAction(self, item):
+        action_name = item.text()
+        widget = self.actions.get(action_name)
+        if widget:
+            # Example action: toggling visibility of the widget
+            if isinstance(widget, QAction):
+                widget.trigger()
+
+            elif isinstance(widget, (QPushButton, QCheckBox, QColorButton)):
+                if widget.isCheckable():
+                    if widget.isChecked():
+                        widget.setChecked(False)
+                        widget.click()
+
+                    else:
+                        widget.click()
+
+                else:
+                    widget.click()
+
+            self.close()
 
 
 
