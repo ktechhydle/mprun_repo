@@ -127,7 +127,7 @@ class CustomCircleItem(QGraphicsEllipseItem):
             for child in self.childItems():
                 copy = child.duplicate()
 
-                if isinstance(copy, EditableTextBlock):
+                if isinstance(copy, CustomTextItem):
                     pass
 
                 else:
@@ -408,7 +408,7 @@ class CustomSvgItem(QGraphicsSvgItem):
     def mouseDoubleClickEvent(self, event):
         print('Logic not implemented')
 
-class EditableTextBlock(QGraphicsTextItem):
+class CustomTextItem(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
 
@@ -450,6 +450,12 @@ class EditableTextBlock(QGraphicsTextItem):
         else:
             super().mouseDoubleClickEvent(event)
 
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+
+        if event.key() == Qt.Key_Escape:
+            self.clearFocus()
+
     def focusOutEvent(self, event):
         new_text = self.toPlainText()
         if self.old_text != new_text:
@@ -471,7 +477,7 @@ class EditableTextBlock(QGraphicsTextItem):
         self.locked = True
 
     def duplicate(self):
-        item = EditableTextBlock()
+        item = CustomTextItem()
         item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
         item.setPlainText(self.toPlainText())
@@ -566,7 +572,7 @@ class LeaderLineItem(QGraphicsPathItem):
             for child in self.childItems():
                 copy = child.duplicate()
 
-                if isinstance(copy, EditableTextBlock):
+                if isinstance(copy, CustomTextItem):
                     pass
 
                 else:

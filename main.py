@@ -465,7 +465,7 @@ class MPRUN(QMainWindow):
         self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
         self.fill_color_btn.setFixedWidth(28)
         self.fill_color_btn.setToolTip('Change the fill color')
-        self.fill_color_btn.setShortcut(QKeySequence('Ctrl+4'))
+        self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
         self.fill_color.set('#00ff00')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
         self.fill_color_btn.clicked.connect(self.update_pen)
@@ -497,6 +497,7 @@ class MPRUN(QMainWindow):
 
         self.gsnap_check_btn = QCheckBox(self)
         self.gsnap_check_btn.setText('Grid Enabled')
+        self.gsnap_check_btn.setShortcut(QKeySequence('Z'))
         self.gsnap_check_btn.clicked.connect(self.use_enable_grid)
         self.gsnap_grid_spin = QSpinBox(self)
         self.gsnap_grid_spin.setFixedWidth(80)
@@ -981,7 +982,7 @@ class MPRUN(QMainWindow):
         self.last_paper = self.paper
 
         # Text on paper
-        self.paper_text = EditableTextBlock("""Run #:
+        self.paper_text = CustomTextItem("""Run #:
 Page #:
 Competition:
 Athlete:
@@ -1004,9 +1005,6 @@ Date:""")
 
         elif event.key() == QKeySequence('Escape'):
             self.canvas.clearSelection()
-
-        elif event.key() == QKeySequence('Z'):
-            self.gsnap_check_btn.setChecked(False) if self.gsnap_check_btn.isChecked() else self.gsnap_check_btn.setChecked(True)
 
         super().keyPressEvent(event)
 
@@ -1099,7 +1097,7 @@ Date:""")
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
-                if isinstance(item, EditableTextBlock):
+                if isinstance(item, CustomTextItem):
                     command = FontChangeCommand(item, item.font(), font)
                     self.canvas.addCommand(command)
                     item.setDefaultTextColor(QColor(self.font_color.get()))
@@ -1392,7 +1390,7 @@ Date:""")
                     if pen.joinStyle() == v:
                         self.join_style_combo.setCurrentIndex(i)
 
-            elif isinstance(item, EditableTextBlock):
+            elif isinstance(item, CustomTextItem):
                 font = item.font()
                 color = item.defaultTextColor()
 
@@ -1617,7 +1615,7 @@ Date:""")
         selected_items = self.canvas.selectedItems()
 
         for item in selected_items:
-            if isinstance(item, EditableTextBlock):
+            if isinstance(item, CustomTextItem):
                 item.duplicate()
 
             elif isinstance(item, CustomPathItem):
@@ -1797,7 +1795,7 @@ Date:""")
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
-            elif isinstance(item, EditableTextBlock):
+            elif isinstance(item, CustomTextItem):
                 item.locked = False
 
         if self.gsnap_check_btn.isChecked():
@@ -1870,7 +1868,7 @@ Date:""")
         self.update_pen()
 
         for item in self.canvas.selectedItems():
-            if isinstance(item, EditableTextBlock):
+            if isinstance(item, CustomTextItem):
                 pass
 
             elif isinstance(item, CustomPixmapItem):
@@ -1941,7 +1939,7 @@ Date:""")
                 if item.childItems():
                     pass
 
-            elif isinstance(item, EditableTextBlock):
+            elif isinstance(item, CustomTextItem):
                 if item.parentItem():
                     pass
 

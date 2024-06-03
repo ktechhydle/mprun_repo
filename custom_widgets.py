@@ -139,7 +139,7 @@ class ViewWidget(QGraphicsView):
             item.setFlag(QGraphicsItem.ItemIsSelectable, False)
             item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
-            if isinstance(item, EditableTextBlock):
+            if isinstance(item, CustomTextItem):
                 item.set_locked()
 
         super().mousePressEvent(event)

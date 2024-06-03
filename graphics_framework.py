@@ -462,7 +462,7 @@ y: {int(p.y())}''')
             self.clicked_label_point = self.mapToScene(event.pos())
 
             # Create the label text
-            self.label_text = EditableTextBlock('An Editable Text Block')
+            self.label_text = CustomTextItem('An Editable Text Block')
             self.label_text.setFont(self.font)
             self.label_text.setPos(self.mapToScene(event.pos()) - QPointF(0, self.label_text.sceneBoundingRect().height()))
             self.label_text.setDefaultTextColor(QColor('black'))
@@ -505,6 +505,7 @@ y: {int(p.y())}''')
             self.pathg_item.setPen(self.pen)
             self.pathg_item.setZValue(0)
             self.label_text.setParentItem(self.pathg_item)
+            self.label_text.select_text_and_set_cursor()
 
             if self.leader_line.isEmpty():
                 self.scene().removeItem(self.pathg_item)
@@ -525,7 +526,7 @@ y: {int(p.y())}''')
         if event.button() == Qt.LeftButton:
             pos = self.mapToScene(event.pos())
 
-            self.text = EditableTextBlock('Lorem Ipsum')
+            self.text = CustomTextItem('Lorem Ipsum')
             self.text.setFont(self.font)
             self.text.setDefaultTextColor(self.font_color)
 
