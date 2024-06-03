@@ -80,6 +80,7 @@ class MPRUN(QMainWindow):
         self.object_menu = self.menu_bar.addMenu('&Object')
         self.effects_menu = self.menu_bar.addMenu('&Effects')
         self.window_menu = self.menu_bar.addMenu('&Window')
+        self.help_menu = self.menu_bar.addMenu('&Help')
 
         # Create MPRUN actions
         about_action = QAction('About', self)
@@ -218,6 +219,10 @@ class MPRUN(QMainWindow):
         canvas_action = QAction('Canvas', self)
         canvas_action.triggered.connect(lambda: self.display_choosen_tab('Canvas'))
 
+        # Create help menu actions
+        find_action_action = QAction('Find Action', self)
+        find_action_action.triggered.connect(self.show_find_action)
+
         # Add actions
         self.mprun_menu.addAction(about_action)
         self.mprun_menu.addAction(show_version_action)
@@ -277,6 +282,8 @@ class MPRUN(QMainWindow):
         self.window_menu.addSeparator()
         self.window_menu.addAction(vectorizing_action)
         self.window_menu.addAction(canvas_action)
+
+        self.help_menu.addAction(find_action_action)
 
     def init_toolbars(self):
         # Toolbar
@@ -1027,6 +1034,7 @@ Date:""")
                 try:
                     self.tab_view.closeEvent(event)
                     self.undo_stack.clear()
+                    self.w.close()
 
                 except Exception:
                     pass
@@ -1039,6 +1047,7 @@ Date:""")
         else:
             self.tab_view.closeEvent(event)
             self.undo_stack.clear()
+            self.w.close()
             event.accept()
 
     def update_pen(self):
@@ -2355,6 +2364,10 @@ Date:""")
 
     def show_about(self):
         self.w = AboutWin()
+        self.w.show()
+
+    def show_find_action(self):
+        self.w = FindActionWin()
         self.w.show()
 
     def display_choosen_tab(self, tab_name):

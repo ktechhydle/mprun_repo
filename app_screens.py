@@ -127,6 +127,49 @@ If you encounter any issues or have suggestions for improvements, contact us at:
     def mousePressEvent(self, e):
         self.close()
 
+class FindActionWin(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_icon.ico'))
+        self.setWindowTitle('Find Action')
+        self.setFixedHeight(500)
+        self.setFixedWidth(300)
+
+        # Create a QVBoxLayout and set it as the layout for the QWidget
+        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(layout)
+
+        # Create a QLineEdit for searching
+        self.searchInput = QtWidgets.QLineEdit()
+        self.searchInput.setObjectName('modernLineEdit')
+        self.searchInput.setPlaceholderText("Search actions...")
+
+        # Create a QListWidget
+        self.listWidget = QtWidgets.QListWidget()
+
+        # Add some items to the QListWidget
+        self.actions = ['Action 1', 'Action 2', 'Action 3', 'Action 4']
+        self.listWidget.addItems(self.actions)
+
+        # Add the search input and the QListWidget to the layout
+        layout.addWidget(self.searchInput)
+        layout.addWidget(self.listWidget)
+
+        # Connect the textChanged signal of the search input to the search method
+        self.searchInput.textChanged.connect(self.searchActions)
+
+    def searchActions(self):
+        # Get the search text
+        searchText = self.searchInput.text().lower()
+
+        # Clear the QListWidget
+        self.listWidget.clear()
+
+        # Filter actions based on search text and add them back to the QListWidget
+        filteredActions = [action for action in self.actions if searchText in action.lower()]
+        self.listWidget.addItems(filteredActions)
+
 
 
 if __name__ == '__main__':
