@@ -16,6 +16,7 @@ from custom_tab_widget import *
 from custom_dialogs import *
 from app_screens import *
 from libraries import *
+from styles import *
 
 
 class MPRUN(QMainWindow):
@@ -287,7 +288,7 @@ class MPRUN(QMainWindow):
 
         # Item toolbar
         self.item_toolbar = QToolBar('MPRUN Item Bar')
-        self.item_toolbar.setIconSize(QSize(32, 32))
+        self.item_toolbar.setIconSize(QSize(16, 16))
         self.item_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
 
@@ -2399,16 +2400,11 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
-    windowsSSH = "windows_style.css"
-    macSSH = 'mac_style.css'
-
     if sys.platform == 'darwin':
-        with open(macSSH, "r") as fh:
-            app.setStyleSheet(fh.read())
+        app.setStyleSheet(mac_style)
 
     else:
-        with open(windowsSSH, "r") as fh:
-            app.setStyleSheet(fh.read())
+        app.setStyleSheet(windows_style)
 
     window = MPRUN()
     sys.exit(app.exec_())
