@@ -829,35 +829,35 @@ class MPRUN(QMainWindow):
 
     def create_toolbar4(self):
         #----item toolbar widgets----#
-        align_left_btn = QAction('Align Left', self)
+        align_left_btn = QAction(QIcon('logos and icons/Tool Icons/align_left_icon.png'), '', self)
         align_left_btn.setToolTip('Align the selected elements to the left')
         align_left_btn.triggered.connect(self.use_align_left)
 
-        align_right_btn = QAction('Align Right', self)
+        align_right_btn = QAction(QIcon('logos and icons/Tool Icons/align_right_icon.png'), '', self)
         align_right_btn.setToolTip('Align the selected elements to the right')
         align_right_btn.triggered.connect(self.use_align_right)
 
-        align_center_btn = QAction('Align Center', self)
+        align_center_btn = QAction(QIcon('logos and icons/Tool Icons/align_center_icon.png'), '', self)
         align_center_btn.setToolTip('Align the selected elements to the center')
         align_center_btn.triggered.connect(self.use_align_center)
 
-        align_middle_btn = QAction('Align Middle', self)
+        align_middle_btn = QAction(QIcon('logos and icons/Tool Icons/align_middle_icon.png'), '', self)
         align_middle_btn.setToolTip('Align the selected elements to the middle')
         align_middle_btn.triggered.connect(self.use_align_middle)
 
-        align_top_btn = QAction('Align Top', self)
+        align_top_btn = QAction(QIcon('logos and icons/Tool Icons/align_top_icon.png'), '', self)
         align_top_btn.setToolTip('Align the selected elements to the top')
         align_top_btn.triggered.connect(self.use_align_top)
 
-        align_bottom_btn = QAction('Align Bottom', self)
+        align_bottom_btn = QAction(QIcon('logos and icons/Tool Icons/align_bottom_icon.png'), '', self)
         align_bottom_btn.setToolTip('Align the selected elements to the center')
         align_bottom_btn.triggered.connect(self.use_align_bottom)
 
-        raise_layer_action = QAction('Raise Layer', self)
+        raise_layer_action = QAction(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
         raise_layer_action.setToolTip('Raise the selected elements a layer up')
         raise_layer_action.triggered.connect(self.use_raise_layer)
 
-        lower_layer_action = QAction('Lower Layer', self)
+        lower_layer_action = QAction(QIcon('logos and icons/Tool Icons/lower_layer_icon.png'), '', self)
         lower_layer_action.setToolTip('Lower the selected elements a layer down')
         lower_layer_action.triggered.connect(self.use_lower_layer)
 

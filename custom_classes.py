@@ -489,6 +489,14 @@ class EditableTextBlock(QGraphicsTextItem):
 
         return item
 
+    def select_text_and_set_cursor(self):
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.setFocus(Qt.MouseFocusReason)
+        cursor = self.textCursor()
+        cursor.movePosition(QTextCursor.End)
+        cursor.select(QTextCursor.SelectionType.Document)
+        self.setTextCursor(cursor)
+
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)

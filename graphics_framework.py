@@ -535,6 +535,7 @@ y: {int(p.y())}''')
             self.text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
             self.text.setZValue(0)
             self.text.setPos(pos)
+            self.text.select_text_and_set_cursor()
 
     def on_scale_start(self, event):
         try:
