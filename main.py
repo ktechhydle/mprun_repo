@@ -345,7 +345,7 @@ class MPRUN(QMainWindow):
         # Characters Tab
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.characters_tab.setMaximumHeight(325)
+        self.characters_tab.setMaximumHeight(250)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
@@ -446,13 +446,13 @@ class MPRUN(QMainWindow):
         widget9.layout.addWidget(self.rotation_label)
         widget9.layout.addWidget(self.rotate_item_spin)
 
-        self.outline_color_btn = QColorButton(self)
-        self.outline_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
-        self.outline_color_btn.setFixedWidth(28)
-        self.outline_color_btn.setToolTip('Change the stroke color')
-        self.outline_color_btn.setShortcut(QKeySequence('Ctrl+1'))
-        self.outline_color_btn.clicked.connect(self.stroke_color_chooser)
-        self.outline_color_btn.clicked.connect(self.update_pen)
+        self.stroke_color_btn = QColorButton(self)
+        self.stroke_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
+        self.stroke_color_btn.setFixedWidth(28)
+        self.stroke_color_btn.setToolTip('Change the stroke color')
+        self.stroke_color_btn.setShortcut(QKeySequence('Ctrl+1'))
+        self.stroke_color_btn.clicked.connect(self.stroke_color_chooser)
+        self.stroke_color_btn.clicked.connect(self.update_pen)
         self.stroke_size_spin = QSpinBox(self)
         self.stroke_size_spin.setValue(3)
         self.stroke_size_spin.setMaximum(1000)
@@ -467,7 +467,7 @@ class MPRUN(QMainWindow):
         self.join_style_combo = stroke_label.join_style_combo
         self.join_style_options = stroke_label.join_style_options
         widget6 = ToolbarHorizontalLayout()
-        widget6.layout.addWidget(self.outline_color_btn)
+        widget6.layout.addWidget(self.stroke_color_btn)
         widget6.layout.addWidget(stroke_label)
         widget6.layout.addWidget(self.stroke_size_spin)
 
@@ -682,6 +682,13 @@ class MPRUN(QMainWindow):
         self.image_trace_layout.addWidget(corner_threshold_label)
         self.image_trace_layout.addWidget(self.corner_threshold_spin)
 
+        # Add to actions dict
+        self.actions['Change Stroke Color'] = self.stroke_color_btn
+        self.actions['Change Fill Color'] = self.fill_color_btn
+        self.actions['Change Font Color'] = self.font_color_btn
+        self.actions['Open Library'] = self.libraries_tab.open_library_button
+        self.actions['Reload Library'] = self.libraries_tab.reload_library_button
+
         # Default widget settings
         self.transform_separator.setHidden(True)
         self.transform_label.setHidden(True)
@@ -836,7 +843,7 @@ class MPRUN(QMainWindow):
     def create_toolbar3(self):
         #----toolbar widgets----#
         self.view_zoom_spin = QSpinBox(self)
-        self.view_zoom_spin.setRange(1, 1000)
+        self.view_zoom_spin.setRange(1, 5000)
         self.view_zoom_spin.setFixedHeight(20)
         self.view_zoom_spin.setSuffix('%')
         self.view_zoom_spin.setValue(100)
@@ -852,6 +859,10 @@ class MPRUN(QMainWindow):
         # Add widgets
         self.view_toolbar.addWidget(self.view_zoom_spin)
         self.view_toolbar.addWidget(self.rotate_sceen_spin)
+
+        # Add to actions dict
+        self.actions['Zoom View'] = self.view_zoom_spin
+        self.actions['Rotate View'] = self.rotate_sceen_spin
 
     def create_toolbar4(self):
         #----item toolbar widgets----#
@@ -1244,7 +1255,7 @@ Date:""")
         self.stroke_pencap_combo.blockSignals(True)
         self.join_style_combo.blockSignals(True)
         self.fill_color_btn.blockSignals(True)
-        self.outline_color_btn.blockSignals(True)
+        self.stroke_color_btn.blockSignals(True)
         self.font_choice_combo.blockSignals(True)
         self.font_color_btn.blockSignals(True)
         self.font_size_spin.blockSignals(True)
@@ -1264,12 +1275,12 @@ Date:""")
 
                 # Set Colors
                 if pen.color().alpha() != 0:
-                    self.outline_color_btn.setTransparent(False)
-                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.stroke_color_btn.setTransparent(False)
+                    self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                     self.outline_color.set(pen.color().name())
 
                 else:
-                    self.outline_color_btn.setTransparent(True)
+                    self.stroke_color_btn.setTransparent(True)
                     self.outline_color.set(Qt.transparent)
 
                 if brush.color().alpha() != 0:
@@ -1338,7 +1349,7 @@ Date:""")
                             brush = child.brush()
 
                             # Set Colors
-                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                            self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                             self.outline_color.set(pen.color().name())
                             self.fill_color_btn.setStyleSheet(
                                 f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
@@ -1349,7 +1360,7 @@ Date:""")
                             brush = item.brush()
 
                             # Set Colors
-                            self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                            self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                             self.outline_color.set(pen.color().name())
                             self.fill_color_btn.setStyleSheet(
                                 f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
@@ -1371,7 +1382,7 @@ Date:""")
                     brush = item.brush()
 
                     # Set Colors
-                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                     self.outline_color.set(pen.color().name())
                     self.fill_color_btn.setStyleSheet(
                         f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
@@ -1398,12 +1409,12 @@ Date:""")
 
                 # Set Colors
                 if pen.color().alpha() != 0:
-                    self.outline_color_btn.setTransparent(False)
-                    self.outline_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.stroke_color_btn.setTransparent(False)
+                    self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
                     self.outline_color.set(pen.color().name())
 
                 else:
-                    self.outline_color_btn.setTransparent(True)
+                    self.stroke_color_btn.setTransparent(True)
                     self.outline_color.set(Qt.transparent)
 
                 if brush.color().alpha() != 0:
@@ -1459,7 +1470,7 @@ Date:""")
         self.stroke_pencap_combo.blockSignals(False)
         self.join_style_combo.blockSignals(False)
         self.fill_color_btn.blockSignals(False)
-        self.outline_color_btn.blockSignals(False)
+        self.stroke_color_btn.blockSignals(False)
         self.font_choice_combo.blockSignals(False)
         self.font_color_btn.blockSignals(False)
         self.font_size_spin.blockSignals(False)
@@ -1476,11 +1487,11 @@ Date:""")
         if color_dialog.exec_():
             color = color_dialog.currentColor()
             if color.alpha() != 0:
-                self.outline_color_btn.setTransparent(False)
-                self.outline_color_btn.setStyleSheet(
+                self.stroke_color_btn.setTransparent(False)
+                self.stroke_color_btn.setStyleSheet(
                     f'background-color: {color.name()};')
             else:
-                self.outline_color_btn.setTransparent(True)
+                self.stroke_color_btn.setTransparent(True)
 
             self.outline_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 

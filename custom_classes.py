@@ -460,7 +460,8 @@ class CustomTextItem(QGraphicsTextItem):
         new_text = self.toPlainText()
         if self.old_text != new_text:
             if new_text == '':
-                self.scene().removeItem(self)
+                command = RemoveItemCommand(self.scene(), self)
+                self.scene().addCommand(command)
 
             else:
                 edit_command = EditTextCommand(self, self.old_text, new_text)

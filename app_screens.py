@@ -193,6 +193,9 @@ class FindActionWin(QtWidgets.QWidget):
                 else:
                     widget.click()
 
+            elif isinstance(widget, (QSpinBox, QDoubleSpinBox, QComboBox)):
+                widget.setFocus(Qt.FocusReason.MouseFocusReason)
+
             self.close()
 
 
