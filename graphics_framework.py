@@ -568,7 +568,14 @@ y: {int(p.y())}''')
                         pass
                     else:
                         item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
-                        item.setTransformOriginPoint(item.boundingRect().center())
+
+                        # Check if Shift key is pressed
+                        modifiers = event.modifiers()
+                        if modifiers & Qt.ShiftModifier:
+                            item.setTransformOriginPoint(item.boundingRect().center())
+                        else:
+                            item.setTransformOriginPoint(item.boundingRect().topLeft())
+
                         item.setScale(self.initialScale * scale)  # Update the scale directly
 
                         # Update the new scale in the command
