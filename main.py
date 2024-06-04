@@ -1030,7 +1030,6 @@ class MPRUN(QMainWindow):
 
         # Drawing paper
         self.paper = CanvasItem(QRectF(0, 0, 1000, 700), 'Canvas 1')
-        self.paper.setZValue(-1)
         self.canvas.addItem(self.paper)
         self.last_paper = self.paper
 

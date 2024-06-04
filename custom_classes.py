@@ -599,8 +599,10 @@ class CanvasItem(QGraphicsRectItem):
         self.setToolTip(name)
         self.text = CanvasTextItem(name, self)
         self.text.setVisible(False)
+        self.text.setZValue(10000)
 
         self.gridEnabled = False
+        self.setZValue(-1)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
