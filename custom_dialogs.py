@@ -490,9 +490,9 @@ class TextAlongPathPanel(QWidget):
                 self.canvas.addCommand(command3)
 
     def update_path(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CustomPathItem):
-                if self.text_along_path_check_btn.isChecked():
+        if self.text_along_path_check_btn.isChecked():
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CustomPathItem):
                     command = AddTextToPathCommand(item, self.text_along_path_check_btn, False, True)
                     self.canvas.addCommand(command)
 
@@ -504,7 +504,9 @@ class TextAlongPathPanel(QWidget):
 
                     item.update()
 
-                else:
+        else:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CustomPathItem):
                     command = AddTextToPathCommand(item, self.text_along_path_check_btn, True, False)
                     self.canvas.addCommand(command)
                     item.update()
