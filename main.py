@@ -290,8 +290,6 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(find_action_action)
 
         # Add to actions dict
-        self.actions['About MPRUN'] = about_action
-        self.actions['MPRUN Version'] = show_version_action
         self.actions['Trace Image'] = image_trace_action
         self.actions['Select All'] = select_all_action
         self.actions['Smooth Path'] = smooth_action
