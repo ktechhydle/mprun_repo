@@ -968,27 +968,7 @@ class MPRUN(QMainWindow):
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas)
 
         # Update default fonts, colors, etc.
-        font = QFont()
-        font.setFamily(self.font_choice_combo.currentText())
-        font.setPixelSize(self.font_size_spin.value())
-        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
-        font.setBold(True if self.bold_btn.isChecked() else False)
-        font.setItalic(True if self.italic_btn.isChecked() else False)
-        font.setUnderline(True if self.underline_btn.isChecked() else False)
-        index1 = self.stroke_style_combo.currentIndex()
-        data1 = self.stroke_style_combo.itemData(index1)
-        index2 = self.stroke_pencap_combo.currentIndex()
-        data2 = self.stroke_pencap_combo.itemData(index2)
-        pen = QPen()
-        pen.setColor(QColor(self.outline_color.get()))
-        pen.setWidth(self.stroke_size_spin.value())
-        pen.setJoinStyle(self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
-        pen.setStyle(data1)
-        pen.setCapStyle(data2)
-        brush = QBrush(QColor(self.fill_color.get()))
-        self.canvas_view.update_pen(pen)
-        self.canvas_view.update_stroke_fill_color(brush)
-        self.canvas_view.update_font(font, QColor(self.font_color.get()))
+        self.update('ui_update')
 
         # Use default tools, set central widget
         self.use_select()
