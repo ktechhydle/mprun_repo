@@ -289,6 +289,27 @@ class MPRUN(QMainWindow):
 
         self.help_menu.addAction(find_action_action)
 
+        # Add to actions dict
+        self.actions['About MPRUN'] = about_action
+        self.actions['MPRUN Version'] = show_version_action
+        self.actions['Trace Image'] = image_trace_action
+        self.actions['Select All'] = select_all_action
+        self.actions['Smooth Path'] = smooth_action
+        self.actions['Add Text Along Path'] = add_text_along_path_action
+        self.actions['Close Path'] = close_subpath_action
+        self.actions['Duplicate'] = duplicate_action
+        self.actions['Reset Item'] = reset_action
+        self.actions['Apply Drop Shadow'] = drop_shadow_action
+        self.actions['Apply Blur'] = blur_action
+        self.actions['Group Selection'] = group_action
+        self.actions['Ungroup Selection'] = ungroup_action
+        self.actions['Name Item'] = name_action
+        self.actions['Bring to Front'] = bring_to_front_action
+        self.actions['Undo'] = undo_action
+        self.actions['Redo'] = redo_action
+        self.actions['Export Canvas'] = export_action
+        self.actions['Export All'] = export_multiple_action
+
     def init_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('MPRUN Toolset')
