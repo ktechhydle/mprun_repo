@@ -87,6 +87,7 @@ QLabel {
 QLineEdit,
 QSpinBox,
 QDoubleSpinBox {
+    height: 21px;
     color: white;
     background-color: #454545;
     border: 2px solid #5f5f5f;

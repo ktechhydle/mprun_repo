@@ -370,7 +370,7 @@ class MPRUN(QMainWindow):
         # Characters Tab
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.characters_tab.setMaximumHeight(250)
+        self.characters_tab.setMaximumHeight(275)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
