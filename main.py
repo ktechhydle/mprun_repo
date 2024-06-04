@@ -307,6 +307,12 @@ class MPRUN(QMainWindow):
         self.actions['Redo'] = redo_action
         self.actions['Export Canvas'] = export_action
         self.actions['Export All'] = export_multiple_action
+        self.actions['Characters Panel'] = characters_action
+        self.actions['Properties Panel'] = properties_action
+        self.actions['Libraries Panel'] = libraries_action
+        self.actions['Text Along Path Panel'] = text_along_path_action
+        self.actions['Canvas Panel'] = canvas_action
+        self.actions['Image Trace Panel'] = vectorizing_action
 
     def init_toolbars(self):
         # Toolbar
