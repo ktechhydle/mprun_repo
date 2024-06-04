@@ -444,11 +444,11 @@ class MPRUN(QMainWindow):
         self.flip_horizontal_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_horizontal_icon.png'), '')
         self.flip_horizontal_btn.setToolTip('Flip horizontal')
         self.flip_horizontal_btn.setStyleSheet('border: none;')
-        self.flip_horizontal_btn.clicked.connect(lambda: self.width_scale_spin.setValue(-self.width_scale_spin.value()))
+        self.flip_horizontal_btn.clicked.connect(self.use_flip_horizontal)
         self.flip_vertical_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_vertical_icon.png'), '')
         self.flip_vertical_btn.setToolTip('Flip vertical')
         self.flip_vertical_btn.setStyleSheet('border: none;')
-        self.flip_vertical_btn.clicked.connect(lambda: self.height_scale_spin.setValue(-self.height_scale_spin.value()))
+        self.flip_vertical_btn.clicked.connect(self.use_flip_vertical)
         widget7 = ToolbarHorizontalLayout()
         widget7.layout.addWidget(self.x_pos_label)
         widget7.layout.addWidget(self.x_pos_spin)
@@ -1778,6 +1778,26 @@ Date:""")
                 # Rotate the item
                 command = RotateCommand(item, item.rotation(), value)
                 self.canvas.addCommand(command)
+
+    def use_flip_horizontal(self):
+        for item in self.canvas.selectedItems():
+            if self.width_scale_spin.value() > 0:
+                item.setPos(item.scenePos().x() + item.sceneBoundingRect().width(), item.scenePos().y())
+
+            else:
+                item.setPos(item.scenePos().x() - item.sceneBoundingRect().width(), item.scenePos().y())
+
+        self.width_scale_spin.setValue(-self.width_scale_spin.value())
+
+    def use_flip_vertical(self):
+        for item in self.canvas.selectedItems():
+            if self.height_scale_spin.value() > 0:
+                item.setPos(item.scenePos().x(), item.scenePos().y() + item.sceneBoundingRect().height())
+
+            else:
+                item.setPos(item.scenePos().x(), item.scenePos().y() - item.sceneBoundingRect().height())
+
+        self.height_scale_spin.setValue(-self.height_scale_spin.value())
 
     def use_change_opacity(self, value):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)

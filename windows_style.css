@@ -83,39 +83,53 @@ QLabel {
   font-family: Segoe UI;
 }
 
-#strokeLabel {
-  color: white;
-  background-color: transparent;
-  font-family: Segoe UI;
-  text-decoration: underline;
-}
-
+/* Line edits, spin boxes, combo boxes */
 QLineEdit,
 QSpinBox,
-QComboBox,
 QDoubleSpinBox {
-  color: white;
-  background-color: #454545;
-  border: 3px solid #5f5f5f; }
+    color: white;
+    background-color: #454545;
+    border: 2px solid #5f5f5f;
+    border-radius: 3px;}
 
 QLineEdit:hover,
+QDoubleSpinBox:hover,
 QSpinBox:hover {
-  background-color: #454545;}
+    background-color: #454545;}
+
+QLineEdit:focus,
+QDoubleSpinBox:focus,
+QSpinBox:focus {
+    color: black;
+    background-color: white;
+    border: 2px solid #0078d7; }
+
+QComboBox {
+    color: white;
+    background-color: #454545;
+    border: 2px solid #5f5f5f;
+    border-radius: 3px;
+    height: 23px;
+}
 
 
 QComboBox:hover {
-  background-color: #4b4b4b;
+    background-color: #454545;
 }
 
 QComboBox::drop-down {
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 15px;
     color: white;
     border: 1px solid #595959;
 }
 
 QComboBox::down-arrow {
+    image: url(logos and icons/UI Icons/down_arrow_combo.png);
+    width: 22px;
+    height: 20px;
+    background: #4b4b4b;
+}
+
+QComboBox::down-arrow:hover {
     image: url(logos and icons/UI Icons/down_arrow_combo.png);
     width: 22px;
     height: 20px;
@@ -131,7 +145,7 @@ QComboBox::down-arrow:on { /* shift the arrow when popup is open */
 QComboBox QAbstractItemView {
     color: white;
     background: #535353;
-    selection-background-color: #5f5f5f;
+    selection-background-color: #606060;
 }
 
 QAbstractSpinBox::up-button {
@@ -153,11 +167,42 @@ QAbstractSpinBox::down-button:hover {
 }
 
 
+/* Checkbox */
 QCheckBox {
     spacing: 5px; /* Spacing between the checkbox and text */
-    color: white;
+    color: #c7c7c7; /* Text color */
 }
 
+QCheckBox::indicator {
+    width: 15px;
+    height: 15px;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/images/checkbox_unchecked.png); /* Path to your unchecked image */
+}
+
+QCheckBox::indicator:unchecked:hover {
+    image: url(:/images/checkbox_unchecked_hover.png); /* Path to your unchecked hover image */
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/images/checkbox_checked.png); /* Path to your checked image */
+}
+
+QCheckBox::indicator:checked:hover {
+    image: url(:/images/checkbox_checked_hover.png); /* Path to your checked hover image */
+}
+
+QCheckBox::indicator:indeterminate {
+    image: url(:/images/checkbox_indeterminate.png); /* Path to your indeterminate image */
+}
+
+QCheckBox::indicator:indeterminate:hover {
+    image: url(:/images/checkbox_indeterminate_hover.png); /* Path to your indeterminate hover image */
+}
+
+/* Buttons for dialogs */
 QPushButton {
   background-color: #535353;
   height: 20px;
@@ -183,6 +228,7 @@ QDialogButtonBox QPushButton {
       color: #535353;
     }
 
+/* Sliders and scrollbars */
 QSlider {
   border: None; }
   QSlider:horizontal {
@@ -232,6 +278,7 @@ QScrollBar {
     QScrollBar::handle:hover {
       background: #747474; }
 
+/* Tabs and tab widgets */
 QTabWidget {
     border: 1px solid #2a2a2a;
 }
@@ -307,22 +354,11 @@ QTabBar::scroller:next, QTabBar::scroller:prev {
     width: 0px;
 }
 
+/* Dockwidget and listwidget */
 QDockWidget {
     background: #424242;
     color: white;
 }
-
-
-QToolBox::tab {
-  background-color: #2f2f2f;
-  font-weight: bold;
-  color: #c0c0c0;
-  border-radius: 3px;
-  image: url(:/icons/triangle-right.svg);
-  image-position: left; }
-  QToolBox::tab:selected {
-    image: url(:/icons/triangle-down.svg); }
-
 
 QListWidget {
     background-color: #535353;
@@ -360,4 +396,11 @@ QListWidget::item:hover {
 
 #modernLineEdit:focus {
     border-bottom: 2px solid #0078d7;
+}
+
+#strokeLabel {
+  color: white;
+  background-color: transparent;
+  font-family: Segoe UI;
+  text-decoration: underline;
 }
