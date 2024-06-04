@@ -119,6 +119,19 @@ class TransformScaleCommand(QUndoCommand):
         transform.scale(self.old_scaley, self.old_scalex)
         self.item.setTransform(transform)
 
+class MouseTransformScaleCommand(QUndoCommand):
+    def __init__(self, item, old_scale, new_scale):
+        super().__init__()
+        self.item = item
+        self.old_scale = old_scale
+        self.new_scale = new_scale
+
+    def undo(self):
+        self.item.setTransform(QTransform().scale(self.old_scale.x(), self.old_scale.y()))
+
+    def redo(self):
+        self.item.setTransform(QTransform().scale(self.new_scale.x(), self.new_scale.y()))
+
 class RotateCommand(QUndoCommand):
     def __init__(self, item, old_rotation, new_rotation):
         super().__init__()

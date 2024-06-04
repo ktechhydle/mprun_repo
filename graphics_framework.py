@@ -23,6 +23,7 @@ class CustomGraphicsView(QGraphicsView):
                  pan_btn,
                  zoom_spin):
         super().__init__()
+        self.scalingCommand = None
         self.points = []
 
         # Set flags
@@ -547,9 +548,8 @@ y: {int(p.y())}''')
                 selected_items = self.scene().selectedItems()
                 if selected_items:
                     item = selected_items[0]
-                    self.initialScale = item.scale()
-                    # Create the ScaleCommand with the initial scale
-                    self.scalingCommand = ScaleCommand(item, self.initialScale, self.initialScale)
+                    self.initialScale = item.transform().m11(), item.transform().m22()  # Get initial scale factors
+                    self.scalingCommand = MouseTransformScaleCommand(item, QPointF(*self.initialScale), QPointF(*self.initialScale))
 
         except Exception as e:
             pass
@@ -560,7 +560,8 @@ y: {int(p.y())}''')
 
             if event.buttons() == Qt.LeftButton and self.scalingCommand:
                 delta = self.mapToScene(event.pos()) - self.startPos
-                scale = 1 + delta.y() / 100.0
+                scale_x = 1 + delta.x() / 100.0
+                scale_y = 1 + delta.y() / 100.0
 
                 item = self.scalingCommand.item
                 if self.initialScale is not None:
@@ -572,14 +573,16 @@ y: {int(p.y())}''')
                         # Check if Shift key is pressed
                         modifiers = event.modifiers()
                         if modifiers & Qt.ShiftModifier:
-                            item.setTransformOriginPoint(item.boundingRect().center())
-                        else:
-                            item.setTransformOriginPoint(item.boundingRect().topLeft())
+                            uniform_scale = 1 + max(delta.x(), delta.y()) / 100.0
+                            scale_x = scale_y = uniform_scale
 
-                        item.setScale(self.initialScale * scale)  # Update the scale directly
+                        item.setTransformOriginPoint(item.boundingRect().center())
+
+                        transform = QTransform().scale(self.initialScale[0] * scale_x, self.initialScale[1] * scale_y)
+                        item.setTransform(transform)
 
                         # Update the new scale in the command
-                        self.scalingCommand.new_scale = self.initialScale * scale
+                        self.scalingCommand.new_scale = QPointF(self.initialScale[0] * scale_x, self.initialScale[1] * scale_y)
 
         except Exception as e:
             pass
@@ -592,7 +595,6 @@ y: {int(p.y())}''')
                 item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
 
             if self.scalingCommand and self.scalingCommand.new_scale != self.scalingCommand.old_scale:
-                # Push the command to the undo stack
                 self.canvas.addCommand(self.scalingCommand)
                 self.scalingCommand = None
 
