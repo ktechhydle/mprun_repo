@@ -1042,8 +1042,6 @@ Date:""")
         self.paper_text.setZValue(0)
         self.canvas.addItem(self.paper_text)
 
-        self.use_refit_screen()
-
     def update(self, *args):
         super().update()
 
@@ -1571,10 +1569,6 @@ Date:""")
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
-
-    def use_refit_screen(self):
-        self.canvas_view.fitInView(self.canvas.itemsBoundingRect(), Qt.KeepAspectRatio)
-        self.canvas_view.resetTransform()
 
     def use_change_view(self):
         value = self.view_zoom_spin.value() / 100
