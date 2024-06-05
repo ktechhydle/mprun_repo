@@ -560,7 +560,8 @@ y: {int(p.y())}''')
                 if selected_items:
                     item = selected_items[0]
                     self.initialScale = item.transform().m11(), item.transform().m22()  # Get initial scale factors
-                    self.scalingCommand = MouseTransformScaleCommand(item, QPointF(*self.initialScale), QPointF(*self.initialScale))
+                    self.oldTransform = item.transform()  # Store the original transform
+                    self.scalingCommand = MouseTransformScaleCommand(item, self.oldTransform, self.oldTransform)
 
         except Exception as e:
             pass
@@ -570,7 +571,11 @@ y: {int(p.y())}''')
             self.setDragMode(QGraphicsView.NoDrag)
 
             if event.buttons() == Qt.LeftButton and self.scalingCommand:
-                delta = self.mapToScene(event.pos()) - self.startPos
+                # Calculate delta relative to the center of the item
+                item_center = self.scalingCommand.item.boundingRect().center()
+                delta = self.mapToScene(event.pos()) - item_center
+
+                # Calculate scaling factors
                 scale_x = 1 + delta.x() / 100.0
                 scale_y = 1 + delta.y() / 100.0
 
@@ -587,13 +592,24 @@ y: {int(p.y())}''')
                             uniform_scale = 1 + max(delta.x(), delta.y()) / 100.0
                             scale_x = scale_y = uniform_scale
 
-                        item.setTransformOriginPoint(item.boundingRect().center())
+                        # Store original position
+                        old_pos = item.pos()
 
-                        transform = QTransform().scale(self.initialScale[0] * scale_x, self.initialScale[1] * scale_y)
+                        # Set transform origin point to center
+                        item.setTransformOriginPoint(item_center)
+
+                        # Apply scaling transformation
+                        transform = QTransform().translate(item_center.x(), item_center.y()) \
+                            .scale(scale_x, scale_y) \
+                            .translate(-item_center.x(), -item_center.y())
                         item.setTransform(transform)
 
+                        # Update position to keep the item centered
+                        new_pos = item.pos()
+                        item.setPos(new_pos + old_pos - item.pos())
+
                         # Update the new scale in the command
-                        self.scalingCommand.new_scale = QPointF(self.initialScale[0] * scale_x, self.initialScale[1] * scale_y)
+                        self.scalingCommand.new_transform = transform
 
         except Exception as e:
             pass
@@ -605,7 +621,7 @@ y: {int(p.y())}''')
             for item in self.scene().selectedItems():
                 item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
 
-            if self.scalingCommand and self.scalingCommand.new_scale != self.scalingCommand.old_scale:
+            if self.scalingCommand and self.scalingCommand.new_transform != self.scalingCommand.old_transform:
                 self.canvas.addCommand(self.scalingCommand)
                 self.scalingCommand = None
 
