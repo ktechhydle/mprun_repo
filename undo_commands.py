@@ -344,3 +344,35 @@ class ResetItemCommand(QUndoCommand):
         self.item.setRotation(self.rotation)
         self.item.setGraphicsEffect(self._set_effect(self.effect_type, self.effect_params))
         self.item.setOpacity(self.opacity)
+
+class CanvasSizeEditCommand(QUndoCommand):
+    def __init__(self, item, og_w, og_h, new_w, new_h):
+        super().__init__()
+
+        self.item = item
+        self.og_w = og_w
+        self.og_h = og_h
+        self.new_w = new_w
+        self.new_h = new_h
+
+    def redo(self):
+        self.item.setRect(0, 0, self.new_w, self.new_h)
+
+    def undo(self):
+        self.item.setRect(0, 0, self.og_w, self.og_h)
+
+class CanvasNameEditCommand(QUndoCommand):
+    def __init__(self, item, og, new):
+        super().__init__()
+
+        self.item = item
+        self.og = og
+        self.new = new
+
+    def redo(self):
+        self.item.setName(self.new)
+        self.item.setToolTip(self.new)
+
+    def undo(self):
+        self.item.setName(self.og)
+        self.item.setToolTip(self.og)

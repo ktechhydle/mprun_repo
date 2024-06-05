@@ -328,13 +328,13 @@ class CanvasEditorPanel(QWidget):
         self.canvas_x_entry.setFixedWidth(85)
         self.canvas_x_entry.setAlignment(Qt.AlignLeft)
         self.canvas_x_entry.setToolTip('Change the width of the canvas')
-        self.canvas_x_entry.valueChanged.connect(self.update_canvas)
+        self.canvas_x_entry.valueChanged.connect(self.update_canvas_size)
         self.canvas_y_entry = QSpinBox(self)
         self.canvas_y_entry.setMaximum(5000)
         self.canvas_y_entry.setFixedWidth(85)
         self.canvas_y_entry.setAlignment(Qt.AlignLeft)
         self.canvas_y_entry.setToolTip('Change the height of the canvas')
-        self.canvas_y_entry.valueChanged.connect(self.update_canvas)
+        self.canvas_y_entry.valueChanged.connect(self.update_canvas_size)
 
         self.canvas_preset_dropdown = QComboBox(self)
         self.canvas_preset_dropdown.setFixedWidth(200)
@@ -353,12 +353,12 @@ class CanvasEditorPanel(QWidget):
         for canvas, key in self.canvas_presets.items():
             self.canvas_preset_dropdown.addItem(canvas, key)
         self.canvas_preset_dropdown.setCurrentText('Custom')
-        self.canvas_preset_dropdown.currentIndexChanged.connect(self.update_canvas)
+        self.canvas_preset_dropdown.currentIndexChanged.connect(self.update_canvas_size)
 
         self.canvas_name_entry = QLineEdit(self)
         self.canvas_name_entry.setPlaceholderText('Canvas Name')
         self.canvas_name_entry.setToolTip('Change the name of the canvas')
-        self.canvas_name_entry.textChanged.connect(self.update_canvas)
+        self.canvas_name_entry.textChanged.connect(self.update_canvas_name)
 
         widget1 = ToolbarHorizontalLayout()
         widget1.layout.addWidget(canvas_x_size_label)
@@ -379,7 +379,7 @@ class CanvasEditorPanel(QWidget):
         self.layout.addWidget(widget2)
         self.layout.addWidget(widget3)
 
-    def update_canvas(self):
+    def update_canvas_size(self):
         choice = self.canvas_preset_dropdown.itemData(self.canvas_preset_dropdown.currentIndex())
 
         if choice == 'c':
@@ -415,18 +415,23 @@ class CanvasEditorPanel(QWidget):
 
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
-                for self.child in item.childItems():
-                    if isinstance(self.child, CanvasTextItem):
-                        self.child.setText(self.canvas_name_entry.text())
-
-                item.setToolTip(self.canvas_name_entry.text())
-
                 try:
-                    item.setRect(0, 0, self.canvas_x_entry.value(), self.canvas_y_entry.value())
+                    command = CanvasSizeEditCommand(item,
+                                                    item.rect().width(),
+                                                    item.rect().height(),
+                                                    self.canvas_x_entry.value(),
+                                                    self.canvas_y_entry.value())
+                    self.canvas.addCommand(command)
                     self.child.setPos(item.boundingRect().x(), item.boundingRect().y())
 
                 except Exception:
                     pass
+
+    def update_canvas_name(self):
+        for item in self.canvas.selectedItems():
+            if isinstance(item, CanvasItem):
+                command = CanvasNameEditCommand(item, item.name(), self.canvas_name_entry.text())
+                self.canvas.addCommand(command)
 
 class TextAlongPathPanel(QWidget):
     def __init__(self, canvas, parent=None):

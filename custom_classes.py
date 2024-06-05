@@ -616,6 +616,13 @@ class CanvasItem(QGraphicsRectItem):
         else:
             super().mouseMoveEvent(event)
 
+    def setName(self, name):
+        self.text.setText(name)
+        self.update()
+
+    def name(self):
+        return self.text.text()
+
 class CanvasTextItem(QGraphicsSimpleTextItem):
     def __init__(self, text, parent):
         super().__init__()
