@@ -64,6 +64,9 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         group.setPos(self.pos())
         group.setScale(self.scale())
         group.setRotation(self.rotation())
+        group.setZValue(self.zValue())
+        group.setTransform(self.transform())
+        group.setTransformOriginPoint(self.transformOriginPoint())
 
         # Set flags and tooltip
         group.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -181,7 +184,9 @@ class CustomPathItem(QGraphicsPathItem):
         item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
-        item.setZValue(0)
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+        item.setTransformOriginPoint(self.transformOriginPoint())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -335,7 +340,9 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
-        item.setZValue(0)
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+        item.setTransformOriginPoint(self.transformOriginPoint())
         item.store_filename(self.return_filename())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -387,7 +394,9 @@ class CustomSvgItem(QGraphicsSvgItem):
         item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
-        item.setZValue(0)
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+        item.setTransformOriginPoint(self.transformOriginPoint())
         item.store_filename(svg)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -478,7 +487,9 @@ class CustomTextItem(QGraphicsTextItem):
         item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
-        item.setZValue(0)
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+        item.setTransformOriginPoint(self.transformOriginPoint())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -556,7 +567,9 @@ class LeaderLineItem(QGraphicsPathItem):
         item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
-        item.setZValue(0)
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+        item.setTransformOriginPoint(self.transformOriginPoint())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -565,13 +578,6 @@ class LeaderLineItem(QGraphicsPathItem):
         if self.childItems():
             for child in self.childItems():
                 copy = child.duplicate()
-
-                if isinstance(copy, CustomTextItem):
-                    pass
-
-                else:
-                    copy.setFlag(QGraphicsItem.ItemIsMovable, False)
-                    copy.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
                 copy.setParentItem(item)
 
