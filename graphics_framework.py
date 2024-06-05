@@ -21,7 +21,8 @@ class CustomGraphicsView(QGraphicsView):
                  select_btn,
                  scale_btn,
                  pan_btn,
-                 zoom_spin):
+                 zoom_spin,
+                 grid_checkbtn):
         super().__init__()
         self.scalingCommand = None
         self.points = []
@@ -50,6 +51,7 @@ class CustomGraphicsView(QGraphicsView):
         self.select_btn = select_btn
         self.scale_btn = scale_btn
         self.pan_btn = pan_btn
+        self.grid_checkbtn = grid_checkbtn
 
         # Items
         self.canvas = canvas
@@ -546,6 +548,9 @@ y: {int(p.y())}''')
             self.text.select_text_and_set_cursor()
 
     def on_scale_start(self, event):
+        if self.canvas.gridEnabled:
+            self.grid_checkbtn.click()
+
         try:
             self.initialScale = None
             if event.buttons() == Qt.LeftButton:

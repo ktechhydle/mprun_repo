@@ -952,7 +952,8 @@ class MPRUN(QMainWindow):
                                               self.select_btn,
                                               self.scale_btn,
                                               self.pan_btn,
-                                              self.view_zoom_spin)
+                                              self.view_zoom_spin,
+                                              self.gsnap_check_btn)
         format = QSurfaceFormat()
         format.setSamples(4)
         self.opengl_widget = QOpenGLWidget()
