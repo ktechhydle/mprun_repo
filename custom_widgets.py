@@ -46,6 +46,17 @@ class QColorButton(QPushButton):
             painter.drawLine(self.rect().topLeft(), self.rect().bottomRight())
             painter.end()
 
+class CustomLineEdit(QLineEdit):
+    focusChanged = pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+
+    def focusOutEvent(self, event):
+        super().focusOutEvent(event)
+
+        self.focusChanged.emit()
+
 class CustomColorPicker(QColorDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -66,17 +77,26 @@ class CustomColorPicker(QColorDialog):
         self.rgb_layout = QVBoxLayout()
 
         self.r_slider = QSlider(Qt.Horizontal)
+        self.r_slider.setToolTip('Change the red value')
         self.r_slider.setRange(0, 225)
         self.g_slider = QSlider(Qt.Horizontal)
+        self.g_slider.setToolTip('Change the green value')
         self.g_slider.setRange(0, 225)
         self.b_slider = QSlider(Qt.Horizontal)
+        self.b_slider.setToolTip('Change the blue value')
         self.b_slider.setRange(0, 225)
-        self.hex_spin = QLineEdit()
-        self.hex_spin.setText(self.currentColor().name())
+        hex_label = QLabel('#')
+        hex_label.setStyleSheet('font-size: 15px;')
+        self.hex_spin = CustomLineEdit()
+        self.hex_spin.setText(self.currentColor().name()[1:])
+        self.hex_spin.setToolTip('Change the hex value')
         self.fill_transparent_btn = QColorButton()
         self.fill_transparent_btn.setTransparent(True)
         self.fill_transparent_btn.setFixedWidth(28)
         self.fill_transparent_btn.setToolTip('Fill the current color transparent')
+        self.hex_hlayout = ToolbarHorizontalLayout()
+        self.hex_hlayout.layout.addWidget(hex_label)
+        self.hex_hlayout.layout.addWidget(self.hex_spin)
 
         # RGB Labels
         self.r_label = QLabel("R:")
@@ -84,8 +104,8 @@ class CustomColorPicker(QColorDialog):
         self.b_label = QLabel("B:")
 
         # Update
+        self.hex_spin.focusChanged.connect(self.set_hex_color)
         self.fill_transparent_btn.clicked.connect(self.set_transparent)
-        self.hex_spin.textChanged.connect(self.set_hex_color)
         self.currentColorChanged.connect(self.color_changed)
         self.r_slider.valueChanged.connect(self.update_color)
         self.g_slider.valueChanged.connect(self.update_color)
@@ -103,30 +123,31 @@ class CustomColorPicker(QColorDialog):
         self.rgb_layout.addWidget(self.b_hlayout)
 
         self.layout().insertLayout(1, self.rgb_layout)
-        self.layout().insertWidget(1, self.hex_spin)
+        self.layout().insertWidget(1, self.hex_hlayout)
         self.layout().insertWidget(1, self.fill_transparent_btn)
 
     def set_hex_color(self):
-        self.setCurrentColor(QColor(self.hex_spin.text()))
+        self.setCurrentColor(QColor(f'#{self.hex_spin.text()}'))
 
     def update_color(self):
         r = self.r_slider.value()
         g = self.g_slider.value()
         b = self.b_slider.value()
         self.hex_spin.blockSignals(True)
-        self.hex_spin.setText("#{:02X}{:02X}{:02X}".format(r, g, b))
+        self.hex_spin.setText(self.currentColor().name()[1:])
         self.setCurrentColor(QColor(r, g, b))
         self.hex_spin.blockSignals(False)
 
     def color_changed(self):
         color = self.currentColor()
-        self.hex_spin.setText(color.name())
+        self.hex_spin.setText(color.name()[1:])
         self.r_slider.setValue(color.red())
         self.g_slider.setValue(color.green())
         self.b_slider.setValue(color.blue())
 
     def set_transparent(self):
         self.setCurrentColor(QColor(Qt.transparent))
+        self.hex_spin.setText('transparent')
 
 class ViewWidget(QGraphicsView):
     def __init__(self):
