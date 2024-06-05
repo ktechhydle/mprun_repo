@@ -131,7 +131,7 @@ QComboBox::drop-down {
 QComboBox::down-arrow {
     image: url("logos and icons/UI Icons/down_arrow_combo.png");
     width: 20px; /* Adjust width to fit better */
-    height: 28px; /* Adjust height to fit better */
+    height: 27px; /* Adjust height to fit better */
     margin: 6px; /* Adjust margin to align center */
 }
 
