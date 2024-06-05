@@ -44,9 +44,6 @@ class LibraryWidget(QWidget):
 
         self.canvas = canvas
 
-        # Label
-        label = QLabel('Libraries')
-
         # List widget for the library
         self.library_list_widget = DragDropListWidget()
         self.library_list_widget.setStyleSheet('border: none')
@@ -68,7 +65,6 @@ class LibraryWidget(QWidget):
         self.open_library_button.clicked.connect(self.open_library)
         self.reload_library_button.clicked.connect(self.reload_library)
 
-        self.layout.addWidget(label)
         self.layout.addWidget(library_btn_hlayout)
         self.layout.addWidget(self.library_list_widget)
 
