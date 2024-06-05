@@ -345,12 +345,7 @@ class MPRUN(QMainWindow):
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea)
 
         # Tabview
-        if sys.platform.lower() == 'darwin':
-            self.tab_view = QTabWidget(self)
-
-        else:
-            self.tab_view = DetachableTabWidget(self)
-
+        self.tab_view = DetachableTabWidget(self)
         self.tab_view.setMovable(True)
         self.tab_view.setDocumentMode(True)
         self.tab_view.setTabsClosable(True)
@@ -1554,6 +1549,8 @@ Date:""")
         self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
 
     def use_select_all(self):
+        self.select_btn.trigger()
+
         for item in self.canvas.items():
             if item.flags() & QGraphicsItem.ItemIsSelectable:
                 item.setSelected(True)
