@@ -412,7 +412,3 @@ QListWidget::item:hover {
     font-family: Segoe UI;
     text-decoration: underline;
 }
-
-#colorButton {
-    border: 1px solid #2e2e2e;
-}
