@@ -412,3 +412,7 @@ QListWidget::item:hover {
     font-family: Segoe UI;
     text-decoration: underline;
 }
+
+#dockWidgetTitleBar {
+    background: #424242;
+}

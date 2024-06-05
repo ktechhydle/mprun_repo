@@ -335,9 +335,9 @@ class CustomDockWidget(QDockWidget):
         self.close_btn.setFixedSize(QSize(14, 14))
 
         self.title_bar = QWidget(self)
+        self.title_bar.setObjectName('dockWidgetTitleBar')
         self.title_bar.setFixedHeight(20)
         self.title_bar.setLayout(QHBoxLayout())
-        self.title_bar.setStyleSheet('background: #424242;')
         self.title_bar.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
         self.title_bar.layout().addWidget(self.close_btn)
         self.title_bar.layout().setContentsMargins(0, 0, 0, 0)
