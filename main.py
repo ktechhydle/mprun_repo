@@ -47,7 +47,7 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
-        self.undo_stack.setUndoLimit(35)
+        self.undo_stack.setUndoLimit(75)
 
         # Create GUI
         self.create_actions_dict()
@@ -366,7 +366,8 @@ class MPRUN(QMainWindow):
         # Characters Tab
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.characters_tab.setMaximumHeight(275)
+        self.characters_tab.setFixedHeight(175)
+        self.characters_tab.setFixedWidth(275)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
@@ -374,6 +375,7 @@ class MPRUN(QMainWindow):
         self.image_trace = QWidget()
         self.image_trace.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.image_trace.setMaximumHeight(375)
+        self.image_trace.setFixedWidth(275)
         self.image_trace_layout = QVBoxLayout()
         self.image_trace.setLayout(self.image_trace_layout)
 
@@ -381,6 +383,7 @@ class MPRUN(QMainWindow):
         self.libraries_tab = LibraryWidget(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setMaximumHeight(400)
+        self.libraries_tab.setFixedWidth(275)
         self.libraries_tab.load_svg_library('Course Element')
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
 
@@ -547,22 +550,20 @@ class MPRUN(QMainWindow):
         gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
 
         #_____ Characters tab widgets _____
-        text_options_label = QLabel('Characters', self)
-        text_options_label.setStyleSheet("QLabel { font-size: 12px;}")
-        text_options_label.setAlignment(Qt.AlignLeft)
-
         self.font_choice_combo = QFontComboBox(self)
         self.font_choice_combo.setToolTip('Change the font style')
         self.font_size_spin = QSpinBox(self)
         self.font_size_spin.setValue(20)
         self.font_size_spin.setMaximum(1000)
         self.font_size_spin.setMinimum(1)
+        self.font_size_spin.setFixedWidth(90)
         self.font_size_spin.setSuffix(' pt')
         self.font_size_spin.setToolTip('Change the font size')
         self.font_letter_spacing_spin = QSpinBox(self)
         self.font_letter_spacing_spin.setValue(1)
         self.font_letter_spacing_spin.setMaximum(1000)
         self.font_letter_spacing_spin.setMinimum(-10)
+        self.font_letter_spacing_spin.setFixedWidth(90)
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
         self.font_color_btn = QColorButton(self)
@@ -586,18 +587,20 @@ class MPRUN(QMainWindow):
         self.bold_btn.clicked.connect(self.update)
         self.italic_btn.clicked.connect(self.update)
         self.underline_btn.clicked.connect(self.update)
-        font_color_and_style_hlayout = ToolbarHorizontalLayout()
-        font_color_and_style_hlayout.layout.addWidget(self.font_choice_combo)
-        font_color_and_style_hlayout.layout.addWidget(self.font_color_btn)
-        widget4 = ToolbarHorizontalLayout()
-        widget4.layout.addWidget(self.font_size_spin)
-        widget4.layout.addWidget(self.bold_btn)
-        widget4.layout.addWidget(self.italic_btn)
-        widget4.layout.addWidget(self.underline_btn)
-        font_choice_label = QLabel('Font:', self)
-        font_size_label = QLabel('Font Size:', self)
-        font_spacing_label = QLabel('Font Spacing:', self)
-        font_color_label = QLabel('Font Color:')
+        font_size_and_spacing_hlayout = ToolbarHorizontalLayout()
+        font_size_and_spacing_hlayout.layout.addWidget(
+            QIconWidget('', 'logos and icons/UI Icons/Major/font_size_icon.svg', 20, 20))
+        font_size_and_spacing_hlayout.layout.addWidget(self.font_size_spin)
+        font_size_and_spacing_hlayout.layout.addWidget(
+            QIconWidget('', 'logos and icons/UI Icons/Major/font_spacing_icon.svg', 20, 20))
+        font_size_and_spacing_hlayout.layout.addWidget(self.font_letter_spacing_spin)
+        font_size_and_spacing_hlayout.layout.setContentsMargins(0, 0, 0, 0)
+        font_style_hlayout = ToolbarHorizontalLayout()
+        font_style_hlayout.layout.addWidget(self.font_color_btn)
+        font_style_hlayout.layout.addWidget(self.bold_btn)
+        font_style_hlayout.layout.addWidget(self.italic_btn)
+        font_style_hlayout.layout.addWidget(self.underline_btn)
+        font_style_hlayout.layout.setContentsMargins(0, 0, 0, 0)
 
         #_____ Image Trace tab widgets _____
         vector_options_label = QLabel('Image Trace', self)
@@ -684,13 +687,9 @@ class MPRUN(QMainWindow):
 
         # Elements Tab Widgets
         self.characters_tab_layout.addWidget(HorizontalSeparator())
-        self.characters_tab_layout.addWidget(text_options_label)
-        self.characters_tab_layout.addWidget(font_choice_label)
-        self.characters_tab_layout.addWidget(font_color_and_style_hlayout)
-        self.characters_tab_layout.addWidget(font_size_label)
-        self.characters_tab_layout.addWidget(widget4)
-        self.characters_tab_layout.addWidget(font_spacing_label)
-        self.characters_tab_layout.addWidget(self.font_letter_spacing_spin)
+        self.characters_tab_layout.addWidget(self.font_choice_combo)
+        self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
+        self.characters_tab_layout.addWidget(font_style_hlayout)
 
         # Vectorize Tab Widgets
         self.image_trace_layout.addWidget(HorizontalSeparator())
