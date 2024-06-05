@@ -10,7 +10,6 @@ class ToolbarHorizontalLayout(QWidget):
         super().__init__()
 
         self.layout = QHBoxLayout()
-        self.layout.setContentsMargins(0, 14, 0, 0)
         self.setLayout(self.layout)
 
 class HorizontalSeparator(QFrame):
