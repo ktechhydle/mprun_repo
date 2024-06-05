@@ -145,7 +145,7 @@ class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)
 
-        path.setFillRule(Qt.FillRule.WindingFill)
+        path.setFillRule(Qt.WindingFill)
 
         self.smooth = False
 
@@ -160,26 +160,21 @@ class CustomPathItem(QGraphicsPathItem):
         self.gridEnabled = False
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == Qt.LeftButton:
             self.mouse_offset = event.pos()
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
         if self.gridEnabled:
-            # Calculate the position relative to the scene's coordinate system
             scene_pos = event.scenePos()
             x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
             y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
-
-            # Set the position relative to the scene's coordinate system
             self.setPos(x, y)
-
         else:
             super().mouseMoveEvent(event)
 
     def duplicate(self):
         path = self.path()
-
         item = CustomPathItem(path)
         item.setPen(self.pen())
         item.setBrush(self.brush())
@@ -192,9 +187,9 @@ class CustomPathItem(QGraphicsPathItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Path')
 
-        if self.add_text == True:
+        if self.add_text:
             item.add_text = True
-            item.setTextAlongPathFromBeginning(True if self.start_text_from_beginning else False)
+            item.setTextAlongPathFromBeginning(self.start_text_from_beginning)
             item.setTextAlongPath(self.text_along_path)
             item.setTextAlongPathSpacingFromPath(self.text_along_path_spacing)
             item.setTextAlongPathFont(self.text_along_path_font)
@@ -255,26 +250,26 @@ class CustomPathItem(QGraphicsPathItem):
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
 
-        if self.add_text == True:
+        if self.add_text:
             path = self.path()
-            hw = self.text_along_path
-            drawWidth = self.text_along_path_spacing
+            text = self.text_along_path
             pen = painter.pen()
-            pen.setWidth(drawWidth)
+            pen.setWidth(self.text_along_path_spacing)
             pen.setColor(self.text_along_path_color)
             painter.setPen(pen)
             font = self.text_along_path_font
             painter.setFont(font)
 
-            if self.start_text_from_beginning == True:
+            font_metrics = QFontMetricsF(font)
+            total_length = path.length()
+            current_length = 0
 
-                font_metrics = QFontMetricsF(font)
-                total_length = path.length()
-
-                current_length = 0
-
-                for char in hw:
+            if self.start_text_from_beginning:
+                for char in text:
                     char_width = font_metrics.width(char)
+                    if current_length + char_width > total_length:
+                        break  # Stop adding more text if the current length exceeds the path length
+
                     percent = current_length / total_length
                     point = path.pointAtPercent(percent)
                     angle = path.angleAtPercent(percent)
@@ -286,20 +281,19 @@ class CustomPathItem(QGraphicsPathItem):
                     painter.restore()
 
                     current_length += char_width
-
             else:
-                percentIncrease = 1 / (len(hw) + 1)
+                percent_increase = 1 / (len(text) + 1)
                 percent = 0
 
-                for i in range(len(hw)):
-                    percent += percentIncrease
+                for char in text:
+                    percent += percent_increase
                     point = path.pointAtPercent(percent)
                     angle = path.angleAtPercent(percent)
 
                     painter.save()
                     painter.translate(point)
                     painter.rotate(-angle)
-                    painter.drawText(QPointF(0, -pen.width()), hw[i])
+                    painter.drawText(QPointF(0, -pen.width()), char)
                     painter.restore()
 
 class CustomPixmapItem(QGraphicsPixmapItem):
