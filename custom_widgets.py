@@ -78,13 +78,13 @@ class CustomColorPicker(QColorDialog):
 
         self.r_slider = QSlider(Qt.Horizontal)
         self.r_slider.setToolTip('Change the red value')
-        self.r_slider.setRange(0, 225)
+        self.r_slider.setRange(0, 255)
         self.g_slider = QSlider(Qt.Horizontal)
         self.g_slider.setToolTip('Change the green value')
-        self.g_slider.setRange(0, 225)
+        self.g_slider.setRange(0, 255)
         self.b_slider = QSlider(Qt.Horizontal)
         self.b_slider.setToolTip('Change the blue value')
-        self.b_slider.setRange(0, 225)
+        self.b_slider.setRange(0, 255)
         hex_label = QLabel('#')
         hex_label.setStyleSheet('font-size: 15px;')
         self.hex_spin = CustomLineEdit()
@@ -127,7 +127,7 @@ class CustomColorPicker(QColorDialog):
         self.layout().insertWidget(1, self.fill_transparent_btn)
 
     def set_hex_color(self):
-        if self.hex_spin.text() == 'transparent':
+        if self.hex_spin.text().lower() == 'transparent':
             self.setCurrentColor(QColor(Qt.transparent))
 
         else:
