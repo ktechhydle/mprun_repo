@@ -1498,6 +1498,7 @@ Date:""")
         color_dialog = CustomColorPicker(self)
         color_dialog.setWindowTitle('Stroke Color')
         color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+        color_dialog.hex_spin.setText(QColor(self.outline_color.get()).name()[1:])
 
         if color_dialog.exec_():
             color = color_dialog.currentColor()
@@ -1514,6 +1515,7 @@ Date:""")
         color_dialog = CustomColorPicker(self)
         color_dialog.setWindowTitle('Fill Color')
         color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+        color_dialog.hex_spin.setText(QColor(self.fill_color.get()).name()[1:])
 
         if color_dialog.exec_():
             color = color_dialog.currentColor()
@@ -1532,6 +1534,7 @@ Date:""")
         color_dialog = CustomColorPicker(self)
         color_dialog.setWindowTitle('Font Color')
         color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+        color_dialog.hex_spin.setText(QColor(self.font_color.get()).name()[1:])
 
         if color_dialog.exec_():
             color = color_dialog.currentColor()

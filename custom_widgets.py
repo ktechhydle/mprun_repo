@@ -26,6 +26,7 @@ class QColorButton(QPushButton):
         super().__init__(parent)
 
         self.transparent = False
+        self.setObjectName('colorButton')
 
     def setTransparent(self, enabled: bool):
         self.transparent = enabled
@@ -127,7 +128,15 @@ class CustomColorPicker(QColorDialog):
         self.layout().insertWidget(1, self.fill_transparent_btn)
 
     def set_hex_color(self):
-        self.setCurrentColor(QColor(f'#{self.hex_spin.text()}'))
+        if self.hex_spin.text() == 'transparent':
+            self.setCurrentColor(QColor(Qt.transparent))
+
+        else:
+            try:
+                self.setCurrentColor(QColor(f'#{self.hex_spin.text()}'))
+
+            except Exception:
+                pass
 
     def update_color(self):
         r = self.r_slider.value()

@@ -407,8 +407,12 @@ QListWidget::item:hover {
 }
 
 #strokeLabel {
-  color: white;
-  background-color: transparent;
-  font-family: Segoe UI;
-  text-decoration: underline;
+    color: white;
+    background-color: transparent;
+    font-family: Segoe UI;
+    text-decoration: underline;
+}
+
+#colorButton {
+    border: 1px solid #2e2e2e;
 }
