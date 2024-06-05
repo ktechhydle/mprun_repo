@@ -1344,10 +1344,17 @@ Date:""")
             elif isinstance(item, CanvasItem):
                 self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
                 self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
+                self.canvas_tab.canvas_name_entry.setText(item.name())
 
-                for child in item.childItems():
-                    if isinstance(child, CanvasTextItem):
-                        self.canvas_tab.canvas_name_entry.setText(child.text())
+                # Update the canvas preset dropdown
+                for index, (preset, size) in enumerate(self.canvas_tab.canvas_presets.items()):
+                    if (item.boundingRect().width(), item.boundingRect().height()) == size:
+                        self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(index)
+                        break  # Exit the loop once the matching preset is found
+                else:
+                    # If no matching preset is found, set to 'Custom'
+                    custom_index = self.canvas_tab.canvas_preset_dropdown.findText('Custom')
+                    self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(custom_index)
 
             elif isinstance(item, CustomCircleItem):
                 if item.childItems():

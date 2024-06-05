@@ -340,13 +340,13 @@ class CanvasEditorPanel(QWidget):
         self.canvas_preset_dropdown.setFixedWidth(200)
         self.canvas_preset_dropdown.setToolTip('Change the preset of the canvas')
         self.canvas_presets = {
-            'MPRUN Standard (1000 x 700)': 1,
-            'Web (1920 x 1080)': 2,
-            'Letter (797 x 612)': 3,
-            'Legal (1008 x 612)': 4,
-            'A4 (595 x 842)': 5,
-            'A6 (828 x 1169)': 6,
-            'Phone (1080 x 1920)': 7,
+            'MPRUN Standard (1000 x 700)': (1000, 700),
+            'Web (1920 x 1080)': (1920, 1080),
+            'Letter (797 x 612)': (797, 612),
+            'Legal (1008 x 612)': (1008, 612),
+            'A4 (595 x 842)': (595, 842),
+            'A6 (828 x 1169)': (828, 1169),
+            'Phone (1080 x 1920)': (1080, 1920),
             'Custom': 'c',
 
         }
@@ -380,38 +380,18 @@ class CanvasEditorPanel(QWidget):
         self.layout.addWidget(widget3)
 
     def update_canvas_size(self):
-        choice = self.canvas_preset_dropdown.itemData(self.canvas_preset_dropdown.currentIndex())
+        try:
+            choice = self.canvas_preset_dropdown.itemData(self.canvas_preset_dropdown.currentIndex())
 
-        if choice == 'c':
-            pass
+            if choice == 'c':
+                pass
 
-        elif choice == 1:
-            self.canvas_x_entry.setValue(1000)
-            self.canvas_y_entry.setValue(700)
+            else:
+                self.canvas_x_entry.setValue(choice[0])
+                self.canvas_y_entry.setValue(choice[1])
 
-        elif choice == 2:
-            self.canvas_x_entry.setValue(1920)
-            self.canvas_y_entry.setValue(1080)
-
-        elif choice == 3:
-            self.canvas_x_entry.setValue(792)
-            self.canvas_y_entry.setValue(612)
-
-        elif choice == 4:
-            self.canvas_x_entry.setValue(1008)
-            self.canvas_y_entry.setValue(792)
-
-        elif choice == 5:
-            self.canvas_x_entry.setValue(595)
-            self.canvas_y_entry.setValue(842)
-
-        elif choice == 6:
-            self.canvas_x_entry.setValue(828)
-            self.canvas_y_entry.setValue(1169)
-
-        elif choice == 7:
-            self.canvas_x_entry.setValue(1080)
-            self.canvas_y_entry.setValue(1920)
+        except Exception as e:
+            print(e)
 
         for item in self.canvas.selectedItems():
             if isinstance(item, CanvasItem):
