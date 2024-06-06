@@ -883,19 +883,20 @@ class SceneManager:
         self.scene = scene
 
     def save(self):
-        with open('scene.mp', 'wb') as f:
-            pickle.dump(self.serialize_items(), f)
+        try:
+            with open('scene.mp', 'wb') as f:
+                pickle.dump(self.serialize_items(), f)
+        except Exception as e:
+            print(f"Error saving scene: {e}")
 
     def load(self):
         try:
             self.scene.clear()
-
             with open('scene.mp', 'rb') as f:
                 items_data = pickle.load(f)
                 self.deserialize_items(items_data)
-
         except Exception as e:
-            print(e)
+            print(f"Error loading scene: {e}")
 
     def serialize_items(self):
         items_data = []
@@ -913,7 +914,33 @@ class SceneManager:
                     'transform': self.serialize_transform(item.transform()),
                     'x': item.pos().x(),
                     'y': item.pos().y(),
+                    'name': item.toolTip(),
                 })
+
+            elif isinstance(item, CustomPathItem):
+                path_data = {
+                    'type': 'CustomPathItem',
+                    'pen': self.serialize_pen(item.pen()),
+                    'brush': self.serialize_brush(item.brush()),
+                    'rotation': item.rotation(),
+                    'transform': self.serialize_transform(item.transform()),
+                    'x': item.pos().x(),
+                    'y': item.pos().y(),
+                    'name': item.toolTip(),
+                    'elements': self.serialize_path(item.path()),
+                }
+
+                if item.add_text:
+                    path_data.update({
+                        'addtext': item.add_text,
+                        'text': item.text_along_path,
+                        'textfont': self.serialize_font(item.text_along_path_font),
+                        'textcolor': self.serialize_color(item.text_along_path_color),
+                        'textspacing': item.text_along_path_spacing,
+                        'starttextfrombeginning': item.start_text_from_beginning,
+                    })
+
+                items_data.append(path_data)
             # Add other item types as needed
         return items_data
 
@@ -922,6 +949,7 @@ class SceneManager:
 
     def serialize_pen(self, pen: QPen):
         return {
+            'width': pen.width(),
             'color': self.serialize_color(pen.color()),
             'style': pen.style(),
             'capstyle': pen.capStyle(),
@@ -960,11 +988,23 @@ class SceneManager:
     def serialize_canvas(self, canvas: CanvasItem):
         return {
             'type': 'CanvasItem',
-            'rect': [0, 0, canvas.boundingRect().width(), canvas.boundingRect().height()],
+            'rect': [0, 0, canvas.rect().width(), canvas.rect().height()],
             'name': canvas.name(),
             'x': canvas.pos().x(),
             'y': canvas.pos().y(),
         }
+
+    def serialize_path(self, path: QPainterPath):
+        elements = []
+        for i in range(path.elementCount()):
+            element = path.elementAt(i)
+            if element.isMoveTo():
+                elements.append({'type': 'moveTo', 'x': element.x, 'y': element.y})
+            elif element.isLineTo():
+                elements.append({'type': 'lineTo', 'x': element.x, 'y': element.y})
+            elif element.isCurveTo():
+                elements.append({'type': 'curveTo', 'x': element.x, 'y': element.y})
+        return elements
 
     def deserialize_items(self, items_data):
         for item_data in items_data:
@@ -972,6 +1012,9 @@ class SceneManager:
                 item = self.deserialize_canvas(item_data)
             elif item_data['type'] == 'CustomTextItem':
                 item = self.deserialize_custom_text_item(item_data)
+            elif item_data['type'] == 'CustomPathItem':
+                item = self.deserialize_custom_path_item(item_data)
+
             # Add other item types as needed
             self.scene.addItem(item)
 
@@ -980,6 +1023,7 @@ class SceneManager:
 
     def deserialize_pen(self, data):
         pen = QPen()
+        pen.setWidth(data['width'])
         pen.setColor(self.deserialize_color(data['color']))
         pen.setStyle(data['style'])
         pen.setCapStyle(data['capstyle'])
@@ -1023,4 +1067,38 @@ class SceneManager:
         text_item.setRotation(data['rotation'])
         text_item.setTransform(self.deserialize_transform(data['transform']))
         text_item.setPos(data['x'], data['y'])
+        text_item.setToolTip(data['name'])
         return text_item
+
+    def deserialize_custom_path_item(self, data):
+        sub_path = QPainterPath()
+        for element in data['elements']:
+            if element['type'] == 'moveTo':
+                sub_path.moveTo(element['x'], element['y'])
+            elif element['type'] == 'lineTo':
+                sub_path.lineTo(element['x'], element['y'])
+            elif element['type'] == 'curveTo':
+                sub_path.cubicTo(element['x'],
+                                 element['y'],
+                                 element['x'],
+                                 element['y'],
+                                 element['x'],
+                                 element['y'])
+
+        path_item = CustomPathItem(sub_path)
+        path_item.setPen(self.deserialize_pen(data['pen']))
+        path_item.setBrush(self.deserialize_brush(data['brush']))
+        path_item.setRotation(data['rotation'])
+        path_item.setTransform(self.deserialize_transform(data['transform']))
+        path_item.setPos(data['x'], data['y'])
+        path_item.setToolTip(data['name'])
+
+        if data.get('addtext', False):
+            path_item.add_text = True
+            path_item.setTextAlongPath(data['text'])
+            path_item.setTextAlongPathColor(self.deserialize_color(data['textcolor']))
+            path_item.setTextAlongPathFont(self.deserialize_font(data['textfont']))
+            path_item.setTextAlongPathSpacingFromPath(data['textspacing'])
+            path_item.setTextAlongPathFromBeginning(data['starttextfrombeginning'])
+
+        return path_item
