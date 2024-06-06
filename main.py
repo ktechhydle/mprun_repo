@@ -1741,7 +1741,8 @@ Date:""")
                     bounding_rect = item.boundingRect()
                     offset = bounding_rect.topLeft()
                     new_pos = QPointF(x - offset.x(), y - offset.y())
-                    item.setPos(new_pos)
+                    command = PositionChangeCommand(item, item.pos(), new_pos)
+                    self.canvas.addCommand(command)
 
         finally:
             self.canvas.blockSignals(False)
@@ -2016,30 +2017,10 @@ Date:""")
                         pass
 
                     else:
-                        group = CustomGraphicsItemGroup()
-
                         item = self.canvas.selectedItems()
 
-                        if len(item) > 1:
-                            # Set flags for group
-                            group.setFlag(QGraphicsItem.ItemIsMovable)
-                            group.setFlag(QGraphicsItem.ItemIsSelectable)
-
-                            # Add group
-                            self.canvas.addItem(group)
-
-                            for items in item:
-                                # Set flag
-                                items.setFlag(QGraphicsItem.ItemIsSelectable, False)
-
-                                # Add items to group
-                                group.addToGroup(items)
-                                group.setToolTip('Group')
-
-                            self.undo_stack.clear()
-
-                        else:
-                            pass
+                        command = GroupItemsCommand(self.canvas, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
+                        self.canvas.addCommand(command)
 
                 else:
                     item = self.canvas.selectedItems()

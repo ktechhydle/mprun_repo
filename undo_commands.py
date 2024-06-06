@@ -15,6 +15,19 @@ class AddItemCommand(QUndoCommand):
     def undo(self):
         self.scene.removeItem(self.item)
 
+class PositionChangeCommand(QUndoCommand):
+    def __init__(self, item, old, new):
+        super().__init__()
+        self.item = item
+        self.old = old
+        self.new = new
+
+    def redo(self):
+        self.item.setPos(self.new)
+
+    def undo(self):
+        self.item.setPos(self.old)
+
 class EditTextCommand(QUndoCommand):
     def __init__(self, item, old_text, new_text):
         super().__init__()
@@ -426,6 +439,7 @@ class GroupItemsCommand(QUndoCommand):
         try:
             if len(self.children) == 0:
                 self.group = self.GroupItem()
+                self.group.setToolTip('Group')
                 self.group.setFlag(QGraphicsItem.ItemIsMovable)
                 self.group.setFlag(QGraphicsItem.ItemIsSelectable)
 

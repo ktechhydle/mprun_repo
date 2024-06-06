@@ -746,26 +746,19 @@ class CustomGraphicsScene(QGraphicsScene):
         self.scale_btn = w
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
-        if event.button() == Qt.RightButton:
-            mousePos = event.buttonDownScenePos(Qt.RightButton)
-            list = self.items(mousePos)
-            for item in list:
-                item.setSelected(True)
+        if self.scale_btn is not None:
+            if self.scale_btn.isChecked():
+                pass
 
-        else:
-            if self.scale_btn is not None:
-                if self.scale_btn.isChecked():
-                    pass
+            else:
+                mousePos = event.buttonDownScenePos(Qt.LeftButton)
+                itemList = self.items(mousePos)
+                self.movingItem = None if not itemList else itemList[0]
 
-                else:
-                    mousePos = event.buttonDownScenePos(Qt.LeftButton)
-                    itemList = self.items(mousePos)
-                    self.movingItem = None if not itemList else itemList[0]
+                if self.movingItem and event.button() == Qt.LeftButton:
+                    self.oldPos = self.movingItem.pos()
 
-                    if self.movingItem and event.button() == Qt.LeftButton:
-                        self.oldPos = self.movingItem.pos()
-
-                self.clearSelection()
+            self.clearSelection()
 
         super().mousePressEvent(event)
 
