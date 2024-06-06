@@ -2006,67 +2006,46 @@ Date:""")
                     self.update_appearance_ui()
 
     def use_create_group(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                pass
-
-            elif isinstance(item, LeaderLineItem):
-                if item.childItems():
+        if len(self.canvas.selectedItems()) > 1:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, (CanvasItem, LeaderLineItem)):
                     pass
 
-            elif isinstance(item, CustomTextItem):
-                if item.parentItem():
-                    pass
-
-                else:
-                    group = CustomGraphicsItemGroup()
-
-                    item = self.canvas.selectedItems()
-
-                    if len(item) > 1:
-                        # Set flags for group
-                        group.setFlag(QGraphicsItem.ItemIsMovable)
-                        group.setFlag(QGraphicsItem.ItemIsSelectable)
-
-                        # Add group
-                        self.canvas.addItem(group)
-
-                        for items in item:
-                            # Set flag
-                            items.setFlag(QGraphicsItem.ItemIsSelectable, False)
-
-                            # Add items to group
-                            group.addToGroup(items)
-                            group.setToolTip('Group')
-
-                        self.undo_stack.clear()
-
-                    else:
+                elif isinstance(item, CustomTextItem):
+                    if item.parentItem():
                         pass
 
-            else:
-                group = CustomGraphicsItemGroup()
+                    else:
+                        group = CustomGraphicsItemGroup()
 
-                item = self.canvas.selectedItems()
+                        item = self.canvas.selectedItems()
 
-                if len(item) > 1:
-                    # Set flags for group
-                    group.setFlag(QGraphicsItem.ItemIsMovable)
-                    group.setFlag(QGraphicsItem.ItemIsSelectable)
+                        if len(item) > 1:
+                            # Set flags for group
+                            group.setFlag(QGraphicsItem.ItemIsMovable)
+                            group.setFlag(QGraphicsItem.ItemIsSelectable)
 
-                    # Add group
-                    self.canvas.addItem(group)
+                            # Add group
+                            self.canvas.addItem(group)
 
-                    for items in item:
-                        # Set flag
-                        items.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                            for items in item:
+                                # Set flag
+                                items.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
-                        # Add items to group
-                        group.addToGroup(items)
-                        group.setToolTip('Group')
+                                # Add items to group
+                                group.addToGroup(items)
+                                group.setToolTip('Group')
+
+                            self.undo_stack.clear()
+
+                        else:
+                            pass
 
                 else:
-                    pass
+                    item = self.canvas.selectedItems()
+
+                    command = GroupItemsCommand(self.canvas, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
+                    self.canvas.addCommand(command)
 
     def use_ungroup_group(self):
         for group in self.canvas.selectedItems():

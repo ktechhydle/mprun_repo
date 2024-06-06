@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
-from custom_classes import *
 
 class AddItemCommand(QUndoCommand):
     def __init__(self, scene, item):
@@ -414,17 +413,47 @@ class CanvasNameEditCommand(QUndoCommand):
         self.item.setToolTip(self.og)
 
 class GroupItemsCommand(QUndoCommand):
-    def __init__(self, item, oldf, newf):
+    def __init__(self, canvas, group, leaderlint, canvasint):
         super().__init__()
 
-        self.item = item
-        self.old = oldf
-        self.new = newf
+        self.canvas = canvas
+        self.GroupItem = group
+        self.leaderline_instance = leaderlint
+        self.canvas_instance = canvasint
+        self.children = []
 
     def redo(self):
-        self.item.setFont(self.new)
-        self.item.update()
+        try:
+            if len(self.children) == 0:
+                self.group = self.GroupItem()
+                self.group.setFlag(QGraphicsItem.ItemIsMovable)
+                self.group.setFlag(QGraphicsItem.ItemIsSelectable)
+
+                for items in self.canvas.selectedItems():
+                    if isinstance(items, (self.canvas_instance, self.leaderline_instance)):
+                        pass
+
+                    else:
+                        child = items
+                        child.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                        self.group.addToGroup(child)
+                        self.children.append(child)
+
+                self.canvas.addItem(self.group)
+
+            else:
+                self.canvas.addItem(self.group)
+
+                for child in self.children:
+                    child.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                    self.group.addToGroup(child)
+
+        except Exception as e:
+            print(e)
 
     def undo(self):
-        self.item.setFont(self.old)
-        self.item.update()
+        for child in self.group.childItems():
+            child.setFlag(QGraphicsItem.ItemIsSelectable, True)
+            self.group.removeFromGroup(child)
+
+        self.canvas.removeItem(self.group)
