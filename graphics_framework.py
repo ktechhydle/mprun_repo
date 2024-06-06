@@ -887,11 +887,15 @@ class SceneManager:
             pickle.dump(self.serialize_items(), f)
 
     def load(self):
-        self.scene.clear()
+        try:
+            self.scene.clear()
 
-        with open('scene.mp', 'rb') as f:
-            items_data = pickle.load(f)
-            self.deserialize_items(items_data)
+            with open('scene.mp', 'rb') as f:
+                items_data = pickle.load(f)
+                self.deserialize_items(items_data)
+
+        except Exception as e:
+            print(e)
 
     def serialize_items(self):
         items_data = []
@@ -931,15 +935,32 @@ class SceneManager:
         }
 
     def serialize_font(self, font: QFont):
-        pass
+        return {
+            'family': font.family(),
+            'pointsize': font.pixelSize(),
+            'letterspacing': font.letterSpacing(),
+            'bold': font.bold(),
+            'italic': font.italic(),
+            'underline': font.underline(),
+        }
 
     def serialize_transform(self, transform: QTransform):
-        pass
+        return {
+            'm11': transform.m11(),
+            'm12': transform.m12(),
+            'm13': transform.m13(),
+            'm21': transform.m21(),
+            'm22': transform.m22(),
+            'm23': transform.m23(),
+            'm31': transform.m31(),
+            'm32': transform.m32(),
+            'm33': transform.m33()
+        }
 
     def serialize_canvas(self, canvas: CanvasItem):
         return {
             'type': 'CanvasItem',
-            'rect': [0, 0, canvas.rect().width(), canvas.rect().height()],
+            'rect': [0, 0, canvas.boundingRect().width(), canvas.boundingRect().height()],
             'name': canvas.name(),
             'x': canvas.pos().x(),
             'y': canvas.pos().y(),
@@ -948,7 +969,11 @@ class SceneManager:
     def deserialize_items(self, items_data):
         for item_data in items_data:
             if item_data['type'] == 'CanvasItem':
-                self.scene.addItem(self.deserialize_canvas(item_data))
+                item = self.deserialize_canvas(item_data)
+            elif item_data['type'] == 'CustomTextItem':
+                item = self.deserialize_custom_text_item(item_data)
+            # Add other item types as needed
+            self.scene.addItem(item)
 
     def deserialize_color(self, color):
         return QColor(color)
@@ -967,8 +992,35 @@ class SceneManager:
         brush.setStyle(data['style'])
         return brush
 
+    def deserialize_font(self, data):
+        font = QFont()
+        font.setFamily(data['family'])
+        font.setPixelSize(data['pointsize'])
+        font.setLetterSpacing(QFont.AbsoluteSpacing, data['letterspacing'])
+        font.setBold(data['bold'])
+        font.setItalic(data['italic'])
+        font.setUnderline(data['underline'])
+        return font
+
+    def deserialize_transform(self, data):
+        transform = QTransform(
+            data['m11'], data['m12'], data['m13'],
+            data['m21'], data['m22'], data['m23'],
+            data['m31'], data['m32'], data['m33']
+        )
+        return transform
+
     def deserialize_canvas(self, data):
         rect = QRectF(*data['rect'])
         canvas = CanvasItem(rect, data['name'])
         canvas.setPos(data['x'], data['y'])
         return canvas
+
+    def deserialize_custom_text_item(self, data):
+        text_item = CustomTextItem(text=data['text'])
+        text_item.setFont(self.deserialize_font(data['font']))
+        text_item.setDefaultTextColor(self.deserialize_color(data['color']))
+        text_item.setRotation(data['rotation'])
+        text_item.setTransform(self.deserialize_transform(data['transform']))
+        text_item.setPos(data['x'], data['y'])
+        return text_item
