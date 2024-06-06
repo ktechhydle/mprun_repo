@@ -881,20 +881,56 @@ class CustomGraphicsScene(QGraphicsScene):
 class SceneManager:
     def __init__(self, scene: QGraphicsScene):
         self.scene = scene
+        self.filename = None
+        self.parent = None
 
     def save(self):
         try:
-            with open('scene.mp', 'wb') as f:
-                pickle.dump(self.serialize_items(), f)
-        except Exception as e:
-            print(f"Error saving scene: {e}")
+            if self.filename is not None:
+                with open(f'{self.filename}.mp', 'wb') as f:
+                    pickle.dump(self.serialize_items(), f)
 
-    def load(self):
+            else:
+                self.saveas(self.parent)
+
+        except Exception as e:
+            QMessageBox.critical(self.scene.parent(), 'Open File Error', f"Error saving scene: {e}", QMessageBox.Ok)
+
+    def load(self, parent):
         try:
-            self.scene.clear()
-            with open('scene.mp', 'rb') as f:
-                items_data = pickle.load(f)
-                self.deserialize_items(items_data)
+            if self.scene.modified:
+                ok = QMessageBox.critical(self.scene.parent(),
+                                          'Open File',
+                                          'Are you sure you want to open a different file? (This will destroy any progress made on the current file)',
+                                          QMessageBox.Ok | QMessageBox.Cancel)
+
+                if ok:
+                    self.scene.clear()
+
+                    filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open MPRUN File', '', 'MPRUN files (*.mp)')
+
+                    if filename:
+                        with open(filename, 'rb') as f:
+                            items_data = pickle.load(f)
+                            self.deserialize_items(items_data)
+
+                            self.filename = filename
+                            parent.setWindowTitle(f'MPRUN - *{self.filename}')
+
+            else:
+                self.scene.clear()
+
+                filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open MPRUN File', '',
+                                                          'MPRUN files (*.mp)')
+
+                if filename:
+                    with open(filename, 'rb') as f:
+                        items_data = pickle.load(f)
+                        self.deserialize_items(items_data)
+
+                        self.filename = filename
+                        parent.setWindowTitle(f'MPRUN - *{self.filename}')
+
         except Exception as e:
             print(f"Error loading scene: {e}")
 

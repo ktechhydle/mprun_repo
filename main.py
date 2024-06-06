@@ -102,10 +102,13 @@ class MPRUN(QMainWindow):
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
         save_action = QAction('Save', self)
-        save_action.triggered.connect(lambda: self.canvas.manager.save())
+        save_action.triggered.connect(self.save)
+
+        saveas_action = QAction('Save As', self)
+        saveas_action.triggered.connect(self.saveas)
 
         open_action = QAction('Open', self)
-        open_action.triggered.connect(lambda: self.canvas.manager.load())
+        open_action.triggered.connect(self.open)
 
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
@@ -238,6 +241,7 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(insert_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(save_action)
+        self.file_menu.addAction(saveas_action)
         self.file_menu.addAction(open_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
@@ -2430,6 +2434,36 @@ Date:""")
 
         else:
             pass
+
+    def save(self):
+        try:
+            if self.canvas.manager.filename is not None:
+                with open(self.canvas.manager.filename, 'wb') as f:
+                    pickle.dump(self.canvas.manager.serialize_items(), f)
+
+                    self.canvas.modified = False
+
+            else:
+                self.saveas()
+
+        except Exception as e:
+            QMessageBox.critical(self.scene.parent(), 'Open File Error', f"Error saving scene: {e}", QMessageBox.Ok)
+
+    def saveas(self):
+        filename, _ = QFileDialog.getSaveFileName(self, 'Save As', '', 'MPRUN files (*.mp)')
+
+        if filename:
+            try:
+                with open(filename, 'wb') as f:
+                    pickle.dump(self.canvas.manager.serialize_items(), f)
+
+                    self.canvas.manager.filename = filename
+                    self.setWindowTitle(f'MPRUN - *{self.canvas.manager.filename}')
+            except Exception as e:
+                print(e)
+
+    def open(self):
+        self.canvas.manager.load(self)
 
 
 if __name__ == '__main__':
