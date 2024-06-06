@@ -231,6 +231,8 @@ y: {int(p.y())}''')
         else:
             super().mouseReleaseEvent(event)
 
+        self.parent().update_transform_ui()
+
     def wheelEvent(self, event):
         try:
             self.zoom_spin.blockSignals(True)
