@@ -969,6 +969,32 @@ class SceneManager:
 
                 items_data.append(data)
 
+            elif isinstance(item, CustomSvgItem):
+                data = {
+                    'type': 'CustomSvgItem',
+                    'rotation': item.rotation(),
+                    'transform': self.serialize_transform(item.transform()),
+                    'x': item.pos().x(),
+                    'y': item.pos().y(),
+                    'name': item.toolTip(),
+                    'filename': item.return_filename(),
+                }
+
+                items_data.append(data)
+
+            elif isinstance(item, CustomPixmapItem):
+                data = {
+                    'type': 'CustomPixmapItem',
+                    'rotation': item.rotation(),
+                    'transform': self.serialize_transform(item.transform()),
+                    'x': item.pos().x(),
+                    'y': item.pos().y(),
+                    'name': item.toolTip(),
+                    'filename': item.return_filename(),
+                }
+
+                items_data.append(data)
+
         return items_data
 
     def serialize_color(self, color: QColor):
@@ -1111,8 +1137,12 @@ class SceneManager:
                 item = self.deserialize_custom_group_item(item_data)
             elif item_data['type'] == 'LeaderLineItem':
                 item = self.deserialize_leader_line_item(item_data)
+            elif item_data['type'] == 'CustomSvgItem':
+                item = self.deserialize_custom_svg_item(item_data)
+            elif item_data['type'] == 'CustomPixmapItem':
+                item = self.deserialize_custom_pixmap_item(item_data)
 
-            # Add other item types as needed
+            # Add item
             self.scene.addItem(item)
 
     def deserialize_color(self, color):
@@ -1246,3 +1276,21 @@ class SceneManager:
                 child.setParentItem(path_item)
 
         return path_item
+
+    def deserialize_custom_svg_item(self, data):
+        svg_item = CustomSvgItem(data['filename'])
+        svg_item.setRotation(data['rotation'])
+        svg_item.setTransform(self.deserialize_transform(data['transform']))
+        svg_item.setPos(data['x'], data['y'])
+        svg_item.setToolTip(data['name'])
+
+        return svg_item
+
+    def deserialize_custom_pixmap_item(self, data):
+        pixmap_item = CustomPixmapItem(data['filename'])
+        pixmap_item.setRotation(data['rotation'])
+        pixmap_item.setTransform(self.deserialize_transform(data['transform']))
+        pixmap_item.setPos(data['x'], data['y'])
+        pixmap_item.setToolTip(data['name'])
+
+        return pixmap_item
