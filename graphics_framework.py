@@ -9,6 +9,7 @@ from OpenGL.GLU import *
 import xml.etree.ElementTree as ET
 import time
 import json
+import pickle
 import math
 
 class CustomGraphicsView(QGraphicsView):
@@ -744,6 +745,9 @@ class CustomGraphicsScene(QGraphicsScene):
         self.oldPos = QPointF()
         self.itemMoved.connect(self.on_move_item)
 
+        # File
+        self.manager = SceneManager(self)
+
     def set_widget(self, w):
         self.scale_btn = w
 
@@ -873,3 +877,98 @@ class CustomGraphicsScene(QGraphicsScene):
 
                 else:
                     item.gridEnabled = True
+
+class SceneManager:
+    def __init__(self, scene: QGraphicsScene):
+        self.scene = scene
+
+    def save(self):
+        with open('scene.mp', 'wb') as f:
+            pickle.dump(self.serialize_items(), f)
+
+    def load(self):
+        self.scene.clear()
+
+        with open('scene.mp', 'rb') as f:
+            items_data = pickle.load(f)
+            self.deserialize_items(items_data)
+
+    def serialize_items(self):
+        items_data = []
+        for item in self.scene.items():
+            if isinstance(item, CanvasItem):
+                items_data.append(self.serialize_canvas(item))
+
+            elif isinstance(item, CustomTextItem):
+                items_data.append({
+                    'type': 'CustomTextItem',
+                    'text': item.toPlainText(),
+                    'font': self.serialize_font(item.font()),
+                    'color': self.serialize_color(item.defaultTextColor()),
+                    'rotation': item.rotation(),
+                    'transform': self.serialize_transform(item.transform()),
+                    'x': item.pos().x(),
+                    'y': item.pos().y(),
+                })
+            # Add other item types as needed
+        return items_data
+
+    def serialize_color(self, color: QColor):
+        return color.name()
+
+    def serialize_pen(self, pen: QPen):
+        return {
+            'color': self.serialize_color(pen.color()),
+            'style': pen.style(),
+            'capstyle': pen.capStyle(),
+            'joinstyle': pen.joinStyle()
+        }
+
+    def serialize_brush(self, brush: QBrush):
+        return {
+            'color': self.serialize_color(brush.color()),
+            'style': brush.style()
+        }
+
+    def serialize_font(self, font: QFont):
+        pass
+
+    def serialize_transform(self, transform: QTransform):
+        pass
+
+    def serialize_canvas(self, canvas: CanvasItem):
+        return {
+            'type': 'CanvasItem',
+            'rect': [0, 0, canvas.rect().width(), canvas.rect().height()],
+            'name': canvas.name(),
+            'x': canvas.pos().x(),
+            'y': canvas.pos().y(),
+        }
+
+    def deserialize_items(self, items_data):
+        for item_data in items_data:
+            if item_data['type'] == 'CanvasItem':
+                self.scene.addItem(self.deserialize_canvas(item_data))
+
+    def deserialize_color(self, color):
+        return QColor(color)
+
+    def deserialize_pen(self, data):
+        pen = QPen()
+        pen.setColor(self.deserialize_color(data['color']))
+        pen.setStyle(data['style'])
+        pen.setCapStyle(data['capstyle'])
+        pen.setJoinStyle(data['joinstyle'])
+        return pen
+
+    def deserialize_brush(self, data):
+        brush = QBrush()
+        brush.setColor(self.deserialize_color(data['color']))
+        brush.setStyle(data['style'])
+        return brush
+
+    def deserialize_canvas(self, data):
+        rect = QRectF(*data['rect'])
+        canvas = CanvasItem(rect, data['name'])
+        canvas.setPos(data['x'], data['y'])
+        return canvas

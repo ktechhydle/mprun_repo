@@ -102,8 +102,10 @@ class MPRUN(QMainWindow):
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
         save_action = QAction('Save', self)
+        save_action.triggered.connect(lambda: self.canvas.manager.save())
 
         open_action = QAction('Open', self)
+        open_action.triggered.connect(lambda: self.canvas.manager.load())
 
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
