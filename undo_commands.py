@@ -275,19 +275,55 @@ class PathTextSpacingChangedCommand(QUndoCommand):
         self.item.update()
 
 class FontChangeCommand(QUndoCommand):
-    def __init__(self, item, oldf, newf):
+    def __init__(self, item, oldf, newf, oldcolor, newcolor):
         super().__init__()
 
         self.item = item
         self.old = oldf
         self.new = newf
+        self.oldc = oldcolor
+        self.newc = newcolor
 
     def redo(self):
         self.item.setFont(self.new)
+        self.item.setDefaultTextColor(self.newc)
         self.item.update()
 
     def undo(self):
         self.item.setFont(self.old)
+        self.item.setDefaultTextColor(self.oldc)
+        self.item.update()
+
+class PenChangeCommand(QUndoCommand):
+    def __init__(self, item, old, new):
+        super().__init__()
+
+        self.item = item
+        self.old = old
+        self.new = new
+
+    def redo(self):
+        self.item.setPen(self.new)
+        self.item.update()
+
+    def undo(self):
+        self.item.setPen(self.old)
+        self.item.update()
+
+class BrushChangeCommand(QUndoCommand):
+    def __init__(self, item, old, new):
+        super().__init__()
+
+        self.item = item
+        self.old = old
+        self.new = new
+
+    def redo(self):
+        self.item.setBrush(self.new)
+        self.item.update()
+
+    def undo(self):
+        self.item.setBrush(self.old)
         self.item.update()
 
 class ResetItemCommand(QUndoCommand):
@@ -376,3 +412,19 @@ class CanvasNameEditCommand(QUndoCommand):
     def undo(self):
         self.item.setName(self.og)
         self.item.setToolTip(self.og)
+
+class GroupItemsCommand(QUndoCommand):
+    def __init__(self, item, oldf, newf):
+        super().__init__()
+
+        self.item = item
+        self.old = oldf
+        self.new = newf
+
+    def redo(self):
+        self.item.setFont(self.new)
+        self.item.update()
+
+    def undo(self):
+        self.item.setFont(self.old)
+        self.item.update()

@@ -479,7 +479,7 @@ class MPRUN(QMainWindow):
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
         self.fill_color.set('#00ff00')
         self.fill_color_btn.clicked.connect(self.fill_color_chooser)
-        self.fill_color_btn.clicked.connect(self.update)
+        self.fill_color_btn.clicked.connect(self.update_item_fill)
         widget5 = ToolbarHorizontalLayout()
         widget5.layout.addWidget(self.fill_color_btn)
         widget5.layout.addWidget(fill_label)
@@ -511,7 +511,7 @@ class MPRUN(QMainWindow):
         self.stroke_color_btn.setToolTip('Change the stroke color')
         self.stroke_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.stroke_color_btn.clicked.connect(self.stroke_color_chooser)
-        self.stroke_color_btn.clicked.connect(self.update)
+        self.stroke_color_btn.clicked.connect(self.update_item_pen)
         self.stroke_size_spin = QSpinBox(self)
         self.stroke_size_spin.setValue(3)
         self.stroke_size_spin.setMaximum(1000)
@@ -647,14 +647,14 @@ class MPRUN(QMainWindow):
         image_tracehlayout2.layout.addWidget(self.mode_combo)
 
         # If any changes are made, update them
-        self.stroke_size_spin.valueChanged.connect(self.update)
-        self.stroke_style_combo.currentIndexChanged.connect(self.update)
-        self.stroke_pencap_combo.currentIndexChanged.connect(self.update)
-        self.join_style_combo.currentIndexChanged.connect(self.update)
-        self.font_size_spin.valueChanged.connect(self.update)
-        self.font_letter_spacing_spin.valueChanged.connect(self.update)
-        self.font_choice_combo.currentFontChanged.connect(self.update)
-        self.font_choice_combo.currentTextChanged.connect(self.update)
+        self.stroke_size_spin.valueChanged.connect(self.update_item_pen)
+        self.stroke_style_combo.currentIndexChanged.connect(self.update_item_pen)
+        self.stroke_pencap_combo.currentIndexChanged.connect(self.update_item_pen)
+        self.join_style_combo.currentIndexChanged.connect(self.update_item_pen)
+        self.font_size_spin.valueChanged.connect(self.update_item_font)
+        self.font_letter_spacing_spin.valueChanged.connect(self.update_item_font)
+        self.font_choice_combo.currentFontChanged.connect(self.update_item_font)
+        self.font_choice_combo.currentTextChanged.connect(self.update_item_font)
         self.gsnap_grid_spin.valueChanged.connect(self.update)
         self.x_pos_spin.valueChanged.connect(self.use_set_item_pos)
         self.y_pos_spin.valueChanged.connect(self.use_set_item_pos)
@@ -965,6 +965,9 @@ class MPRUN(QMainWindow):
 
         # Update default fonts, colors, etc.
         self.update('ui_update')
+        self.update_item_pen()
+        self.update_item_font()
+        self.update_item_fill()
 
         # Use default tools, set central widget
         self.use_select()
@@ -1046,6 +1049,16 @@ Date:""")
     def update(self, *args):
         super().update()
 
+        # Update grid
+        self.canvas.setGridSize(self.gsnap_grid_spin.value())
+
+        for mode in args:
+            if mode == 'ui_update':
+                self.update_transform_ui()
+                self.update_appearance_ui()
+                self.repaint()
+
+    def update_item_pen(self):
         # Update pen and brush
         index1 = self.stroke_style_combo.currentIndex()
         data1 = self.stroke_style_combo.itemData(index1)
@@ -1059,37 +1072,50 @@ Date:""")
         pen.setStyle(data1)
         pen.setCapStyle(data2)
 
-        brush = QBrush(QColor(self.fill_color.get()))
-
         self.canvas_view.update_pen(pen)
-        self.canvas_view.update_stroke_fill_color(brush)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 if isinstance(item, CustomPathItem):
                     try:
-                        item.setPen(pen)
-                        item.setBrush(brush)
+                        command = PenChangeCommand(item, item.pen(), pen)
+                        self.canvas.addCommand(command)
 
                     except Exception:
                         pass
 
                 elif isinstance(item, LeaderLineItem):
                     try:
-                        item.setPen(pen)
-                        item.setBrush(brush)
+                        command = PenChangeCommand(item, item.pen(), pen)
+                        self.canvas.addCommand(command)
 
                     except Exception:
                         pass
 
-                elif isinstance(item, CustomRectangleItem):
+    def update_item_fill(self):
+        brush = QBrush(QColor(self.fill_color.get()))
+
+        self.canvas_view.update_stroke_fill_color(brush)
+
+        if self.canvas.selectedItems():
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CustomPathItem):
                     try:
-                        item.setPen(pen)
-                        item.setBrush(brush)
+                        command = BrushChangeCommand(item, item.brush(), brush)
+                        self.canvas.addCommand(command)
 
                     except Exception:
                         pass
 
+                elif isinstance(item, LeaderLineItem):
+                    try:
+                        command = BrushChangeCommand(item, item.brush(), brush)
+                        self.canvas.addCommand(command)
+
+                    except Exception:
+                        pass
+
+    def update_item_font(self):
         # Update font
         font = QFont()
         font.setFamily(self.font_choice_combo.currentText())
@@ -1104,9 +1130,9 @@ Date:""")
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
                 if isinstance(item, CustomTextItem):
-                    command = FontChangeCommand(item, item.font(), font)
+                    command = FontChangeCommand(item, item.font(), font, item.defaultTextColor(),
+                                                QColor(self.font_color.get()))
                     self.canvas.addCommand(command)
-                    item.setDefaultTextColor(QColor(self.font_color.get()))
 
                 elif isinstance(item, CustomPathItem):
                     if item.add_text == True:
@@ -1114,15 +1140,6 @@ Date:""")
                         item.setTextAlongPathFont(font)
                         item.setTextAlongPathColor(QColor(self.font_color.get()))
                         item.update()
-
-        # Update grid
-        self.canvas.setGridSize(self.gsnap_grid_spin.value())
-
-        for mode in args:
-            if mode == 'ui_update':
-                self.update_transform_ui()
-                self.update_appearance_ui()
-                self.repaint()
 
     def keyPressEvent(self, event):
         if event.key() == QKeySequence('Backspace'):
@@ -2047,8 +2064,6 @@ Date:""")
                         # Add items to group
                         group.addToGroup(items)
                         group.setToolTip('Group')
-
-                    self.undo_stack.clear()
 
                 else:
                     pass
