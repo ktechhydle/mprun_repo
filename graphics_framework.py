@@ -928,17 +928,14 @@ class SceneManager:
                     'y': item.pos().y(),
                     'name': item.toolTip(),
                     'elements': self.serialize_path(item.path()),
+                    'smooth': item.smooth,
+                    'addtext': True if item.add_text else False,
+                    'textalongpath': item.text_along_path if item.add_text else None,
+                    'textfont': self.serialize_font(item.text_along_path_font) if item.add_text else None,
+                    'textcolor': self.serialize_color(item.text_along_path_color) if item.add_text else None,
+                    'textspacing': item.text_along_path_spacing if item.add_text else None,
+                    'starttextfrombeginning': item.start_text_from_beginning if item.add_text else None,
                 }
-
-                if item.add_text:
-                    path_data.update({
-                        'addtext': item.add_text,
-                        'textalongpath': item.text_along_path,
-                        'textfont': self.serialize_font(item.text_along_path_font),
-                        'textcolor': self.serialize_color(item.text_along_path_color),
-                        'textspacing': item.text_along_path_spacing,
-                        'starttextfrombeginning': item.start_text_from_beginning,
-                    })
 
                 items_data.append(path_data)
 
@@ -1219,6 +1216,7 @@ class SceneManager:
         path_item.setTransform(self.deserialize_transform(data['transform']))
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
+        path_item.smooth = data['smooth']
 
         if data.get('addtext', True):
             path_item.add_text = True
