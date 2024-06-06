@@ -933,7 +933,7 @@ class SceneManager:
                 if item.add_text:
                     path_data.update({
                         'addtext': item.add_text,
-                        'text': item.text_along_path,
+                        'textalongpath': item.text_along_path,
                         'textfont': self.serialize_font(item.text_along_path_font),
                         'textcolor': self.serialize_color(item.text_along_path_color),
                         'textspacing': item.text_along_path_spacing,
@@ -952,11 +952,32 @@ class SceneManager:
                     'name': item.toolTip(),
                     'children': self.serialize_group(item)
                 })
-            # Add other item types as needed
+
+            elif isinstance(item, LeaderLineItem):
+                data = {
+                    'type': 'LeaderLineItem',
+                    'pen': self.serialize_pen(item.pen()),
+                    'brush': self.serialize_brush(item.brush()),
+                    'rotation': item.rotation(),
+                    'transform': self.serialize_transform(item.transform()),
+                    'x': item.pos().x(),
+                    'y': item.pos().y(),
+                    'name': item.toolTip(),
+                    'elements': self.serialize_path(item.path()),
+                    'children': self.serialize_child_items(item.childItems())
+                }
+
+                items_data.append(data)
+
         return items_data
 
     def serialize_color(self, color: QColor):
-        return color.name()
+        return {
+            'red': color.red(),
+            'green': color.green(),
+            'blue': color.blue(),
+            'alpha': color.alpha(),
+        }
 
     def serialize_pen(self, pen: QPen):
         return {
@@ -1059,6 +1080,24 @@ class SceneManager:
 
         return children
 
+    def serialize_child_items(self, children):
+        data = []
+
+        for child in children:
+            if isinstance(child, CustomTextItem):
+                data.append({
+                    'type': 'CustomTextItem',
+                    'text': child.toPlainText(),
+                    'font': self.serialize_font(child.font()),
+                    'color': self.serialize_color(child.defaultTextColor()),
+                    'rotation': child.rotation(),
+                    'transform': self.serialize_transform(child.transform()),
+                    'x': child.pos().x(),
+                    'y': child.pos().y(),
+                    'name': child.toolTip(),
+                })
+
+        return data
 
     def deserialize_items(self, items_data):
         for item_data in items_data:
@@ -1070,12 +1109,14 @@ class SceneManager:
                 item = self.deserialize_custom_path_item(item_data)
             elif item_data['type'] == 'CustomGraphicsItemGroup':
                 item = self.deserialize_custom_group_item(item_data)
+            elif item_data['type'] == 'LeaderLineItem':
+                item = self.deserialize_leader_line_item(item_data)
 
             # Add other item types as needed
             self.scene.addItem(item)
 
     def deserialize_color(self, color):
-        return QColor(color)
+        return QColor(color['red'], color['green'], color['blue'], color['alpha'])
 
     def deserialize_pen(self, data):
         pen = QPen()
@@ -1117,7 +1158,7 @@ class SceneManager:
         return canvas
 
     def deserialize_custom_text_item(self, data):
-        text_item = CustomTextItem(text=data['text'])
+        text_item = CustomTextItem(data['text'])
         text_item.setFont(self.deserialize_font(data['font']))
         text_item.setDefaultTextColor(self.deserialize_color(data['color']))
         text_item.setRotation(data['rotation'])
@@ -1149,9 +1190,9 @@ class SceneManager:
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
 
-        if data.get('addtext', False):
+        if data.get('addtext', True):
             path_item.add_text = True
-            path_item.setTextAlongPath(data['text'])
+            path_item.setTextAlongPath(data['textalongpath'])
             path_item.setTextAlongPathColor(self.deserialize_color(data['textcolor']))
             path_item.setTextAlongPathFont(self.deserialize_font(data['textfont']))
             path_item.setTextAlongPathSpacingFromPath(data['textspacing'])
@@ -1175,3 +1216,33 @@ class SceneManager:
             group_item.addToGroup(child)
 
         return group_item
+
+    def deserialize_leader_line_item(self, data):
+        sub_path = QPainterPath()
+        for element in data['elements']:
+            if element['type'] == 'moveTo':
+                sub_path.moveTo(element['x'], element['y'])
+            elif element['type'] == 'lineTo':
+                sub_path.lineTo(element['x'], element['y'])
+            elif element['type'] == 'curveTo':
+                sub_path.cubicTo(element['x'],
+                                 element['y'],
+                                 element['x'],
+                                 element['y'],
+                                 element['x'],
+                                 element['y'])
+
+        path_item = LeaderLineItem(sub_path)
+        path_item.setPen(self.deserialize_pen(data['pen']))
+        path_item.setBrush(self.deserialize_brush(data['brush']))
+        path_item.setRotation(data['rotation'])
+        path_item.setTransform(self.deserialize_transform(data['transform']))
+        path_item.setPos(data['x'], data['y'])
+        path_item.setToolTip(data['name'])
+
+        for child_data in data['children']:
+            if child_data['type'] == 'CustomTextItem':
+                child = self.deserialize_custom_text_item(child_data)
+                child.setParentItem(path_item)
+
+        return path_item
