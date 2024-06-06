@@ -199,6 +199,7 @@ class StrokeLabel(QLabel):
         super().__init__(parent)
 
         self.setText(text)
+        self.setToolTip('Change the stroke style')
         self.setObjectName('strokeLabel')
 
         self.pencap_combo = None
