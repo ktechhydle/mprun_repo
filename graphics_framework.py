@@ -941,6 +941,17 @@ class SceneManager:
                     })
 
                 items_data.append(path_data)
+
+            elif isinstance(item, CustomGraphicsItemGroup):
+                items_data.append({
+                    'type': 'CustomGraphicsItemGroup',
+                    'rotation': item.rotation(),
+                    'transform': self.serialize_transform(item.transform()),
+                    'x': item.pos().x(),
+                    'y': item.pos().y(),
+                    'name': item.toolTip(),
+                    'children': self.serialize_group(item)
+                })
             # Add other item types as needed
         return items_data
 
@@ -1006,6 +1017,49 @@ class SceneManager:
                 elements.append({'type': 'curveTo', 'x': element.x, 'y': element.y})
         return elements
 
+    def serialize_group(self, group: CustomGraphicsItemGroup):
+        children = []
+        for child in group.childItems():
+            if isinstance(child, CustomTextItem):
+                children.append({
+                    'type': 'CustomTextItem',
+                    'text': child.toPlainText(),
+                    'font': self.serialize_font(child.font()),
+                    'color': self.serialize_color(child.defaultTextColor()),
+                    'rotation': child.rotation(),
+                    'transform': self.serialize_transform(child.transform()),
+                    'x': child.pos().x(),
+                    'y': child.pos().y(),
+                    'name': child.toolTip(),
+                })
+            elif isinstance(child, CustomPathItem):
+                path_data = {
+                    'type': 'CustomPathItem',
+                    'pen': self.serialize_pen(child.pen()),
+                    'brush': self.serialize_brush(child.brush()),
+                    'rotation': child.rotation(),
+                    'transform': self.serialize_transform(child.transform()),
+                    'x': child.pos().x(),
+                    'y': child.pos().y(),
+                    'name': child.toolTip(),
+                    'elements': self.serialize_path(child.path()),
+                }
+
+                if child.add_text:
+                    path_data.update({
+                        'addtext': child.add_text,
+                        'text': child.text_along_path,
+                        'textfont': self.serialize_font(child.text_along_path_font),
+                        'textcolor': self.serialize_color(child.text_along_path_color),
+                        'textspacing': child.text_along_path_spacing,
+                        'starttextfrombeginning': child.start_text_from_beginning,
+                    })
+
+                children.append(path_data)
+
+        return children
+
+
     def deserialize_items(self, items_data):
         for item_data in items_data:
             if item_data['type'] == 'CanvasItem':
@@ -1014,6 +1068,8 @@ class SceneManager:
                 item = self.deserialize_custom_text_item(item_data)
             elif item_data['type'] == 'CustomPathItem':
                 item = self.deserialize_custom_path_item(item_data)
+            elif item_data['type'] == 'CustomGraphicsItemGroup':
+                item = self.deserialize_custom_group_item(item_data)
 
             # Add other item types as needed
             self.scene.addItem(item)
@@ -1102,3 +1158,20 @@ class SceneManager:
             path_item.setTextAlongPathFromBeginning(data['starttextfrombeginning'])
 
         return path_item
+
+    def deserialize_custom_group_item(self, data):
+        group_item = CustomGraphicsItemGroup()
+        group_item.setRotation(data['rotation'])
+        group_item.setTransform(self.deserialize_transform(data['transform']))
+        group_item.setPos(data['x'], data['y'])
+        group_item.setToolTip(data['name'])
+
+        for child_data in data['children']:
+            if child_data['type'] == 'CustomTextItem':
+                child = self.deserialize_custom_text_item(child_data)
+            elif child_data['type'] == 'CustomPathItem':
+                child = self.deserialize_custom_path_item(child_data)
+            # Add other child types as needed
+            group_item.addToGroup(child)
+
+        return group_item
