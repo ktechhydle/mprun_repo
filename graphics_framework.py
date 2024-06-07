@@ -896,7 +896,7 @@ class SceneManager:
         try:
             if self.scene.modified:
                 # Display a confirmation dialog
-                confirmation_dialog = QMessageBox(self)
+                confirmation_dialog = QMessageBox(self.scene.parentWindow)
                 confirmation_dialog.setWindowTitle('Close Document')
                 confirmation_dialog.setIcon(QMessageBox.Warning)
                 confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
