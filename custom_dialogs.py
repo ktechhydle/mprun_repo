@@ -309,7 +309,7 @@ class CanvasEditorPanel(QWidget):
         super().__init__()
 
         self.setFixedHeight(200)
-        self.setFixedWidth(275)
+        self.setFixedWidth(285)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.canvas = canvas
@@ -422,7 +422,7 @@ class TextAlongPathPanel(QWidget):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
         self.setFixedHeight(175)
-        self.setFixedWidth(275)
+        self.setFixedWidth(285)
 
         self.createUi()
 

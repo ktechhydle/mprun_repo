@@ -952,6 +952,7 @@ class SceneManager:
                     'x': item.pos().x(),
                     'y': item.pos().y(),
                     'name': item.toolTip(),
+                    'zval': item.zValue(),
                 })
 
             elif isinstance(item, CustomPathItem):
@@ -964,6 +965,7 @@ class SceneManager:
                     'x': item.pos().x(),
                     'y': item.pos().y(),
                     'name': item.toolTip(),
+                    'zval': item.zValue(),
                     'elements': self.serialize_path(item.path()),
                     'smooth': item.smooth,
                     'addtext': True if item.add_text else False,
@@ -984,6 +986,7 @@ class SceneManager:
                     'x': item.pos().x(),
                     'y': item.pos().y(),
                     'name': item.toolTip(),
+                    'zval': item.zValue(),
                     'children': self.serialize_group(item)
                 })
 
@@ -997,6 +1000,7 @@ class SceneManager:
                     'x': item.pos().x(),
                     'y': item.pos().y(),
                     'name': item.toolTip(),
+                    'zval': item.zValue(),
                     'elements': self.serialize_path(item.path()),
                     'children': self.serialize_child_items(item.childItems())
                 }
@@ -1011,6 +1015,7 @@ class SceneManager:
                     'x': item.pos().x(),
                     'y': item.pos().y(),
                     'name': item.toolTip(),
+                    'zval': item.zValue(),
                     'filename': item.return_filename(),
                 }
 
@@ -1024,6 +1029,7 @@ class SceneManager:
                     'x': item.pos().x(),
                     'y': item.pos().y(),
                     'name': item.toolTip(),
+                    'zval': item.zValue(),
                     'filename': item.return_filename(),
                 }
 
@@ -1229,6 +1235,7 @@ class SceneManager:
         text_item.setTransform(self.deserialize_transform(data['transform']))
         text_item.setPos(data['x'], data['y'])
         text_item.setToolTip(data['name'])
+        text_item.setZValue(data['zval'])
         return text_item
 
     def deserialize_custom_path_item(self, data):
@@ -1253,6 +1260,7 @@ class SceneManager:
         path_item.setTransform(self.deserialize_transform(data['transform']))
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
+        path_item.setZValue(data['zval'])
         path_item.smooth = data['smooth']
 
         if data.get('addtext', True):
@@ -1271,6 +1279,7 @@ class SceneManager:
         group_item.setTransform(self.deserialize_transform(data['transform']))
         group_item.setPos(data['x'], data['y'])
         group_item.setToolTip(data['name'])
+        group_item.setZValue(data['zval'])
 
         for child_data in data['children']:
             if child_data['type'] == 'CustomTextItem':
@@ -1304,6 +1313,7 @@ class SceneManager:
         path_item.setTransform(self.deserialize_transform(data['transform']))
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
+        path_item.setZValue(data['zval'])
 
         for child_data in data['children']:
             if child_data['type'] == 'CustomTextItem':
@@ -1318,6 +1328,7 @@ class SceneManager:
         svg_item.setTransform(self.deserialize_transform(data['transform']))
         svg_item.setPos(data['x'], data['y'])
         svg_item.setToolTip(data['name'])
+        svg_item.setZValue(data['zval'])
 
         return svg_item
 
@@ -1327,5 +1338,6 @@ class SceneManager:
         pixmap_item.setTransform(self.deserialize_transform(data['transform']))
         pixmap_item.setPos(data['x'], data['y'])
         pixmap_item.setToolTip(data['name'])
+        pixmap_item.setZValue(data['zval'])
 
         return pixmap_item

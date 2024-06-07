@@ -364,7 +364,7 @@ class MPRUN(QMainWindow):
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.properties_tab.setFixedHeight(475)
-        self.properties_tab.setFixedWidth(275)
+        self.properties_tab.setFixedWidth(285)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
@@ -373,23 +373,23 @@ class MPRUN(QMainWindow):
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.characters_tab.setFixedHeight(175)
-        self.characters_tab.setFixedWidth(275)
+        self.characters_tab.setFixedWidth(285)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
         # Vectorize Tab
         self.image_trace = QWidget()
         self.image_trace.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.image_trace.setMaximumHeight(375)
-        self.image_trace.setFixedWidth(275)
+        self.image_trace.setFixedHeight(375)
+        self.image_trace.setFixedWidth(285)
         self.image_trace_layout = QVBoxLayout()
         self.image_trace.setLayout(self.image_trace_layout)
 
         # Libraries Tab
         self.libraries_tab = LibraryWidget(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.setMaximumHeight(400)
-        self.libraries_tab.setFixedWidth(275)
+        self.libraries_tab.setFixedHeight(400)
+        self.libraries_tab.setFixedWidth(285)
         self.libraries_tab.load_svg_library('Course Element')
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
 
