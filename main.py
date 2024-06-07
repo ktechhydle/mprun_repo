@@ -2470,6 +2470,7 @@ Date:""")
                     pickle.dump(self.canvas.manager.serialize_items(), f)
 
                     self.canvas.manager.filename = filename
+                    self.canvas.modified = False
                     self.setWindowTitle(f'MPRUN - {self.canvas.manager.filename}')
             except Exception as e:
                 print(e)
