@@ -907,7 +907,7 @@ class SceneManager:
                 )
 
                 if response == QMessageBox.Ok:
-                    filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open MPRUN File', '',
+                    filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open File', '',
                                                               'MPRUN files (*.mp)')
 
                     if filename:
@@ -919,7 +919,7 @@ class SceneManager:
                             self.filename = filename
                             parent.setWindowTitle(f'MPRUN - *{self.filename}')
             else:
-                filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open MPRUN File', '',
+                filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open File', '',
                                                           'MPRUN files (*.mp)')
 
                 if filename:
