@@ -23,7 +23,6 @@ class MPRUN(QMainWindow):
     def __init__(self):
         super(MPRUN, self).__init__()
         # Creating the main window
-        self.setWindowTitle('MPRUN - *Untitled')
         self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logoV3.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
@@ -70,9 +69,11 @@ class MPRUN(QMainWindow):
     def create_initial_canvas(self):
         # Canvas, canvas color
         self.canvas = CustomGraphicsScene(self.undo_stack)
+        self.canvas.setParentWindow(self)
         self.canvas.selectionChanged.connect(self.update_appearance_ui)
         self.canvas.selectionChanged.connect(self.update_transform_ui)
         self.canvas.itemMoved.connect(self.update_appearance_ui)
+        self.setWindowTitle(f'MPRUN - {self.canvas.manager.filename}')
 
     def create_menu(self):
         # Create menus
@@ -1151,9 +1152,9 @@ Date:""")
             confirmation_dialog = QMessageBox(self)
             confirmation_dialog.setWindowTitle('Close Project')
             confirmation_dialog.setIcon(QMessageBox.Warning)
-            confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
+            confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
             confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
-            confirmation_dialog.setDefaultButton(QMessageBox.No)
+            confirmation_dialog.setDefaultButton(QMessageBox.Save)
 
             # Get the result of the confirmation dialog
             result = confirmation_dialog.exec_()
@@ -1170,16 +1171,17 @@ Date:""")
                     pass
 
             elif result == QMessageBox.Save:
-                self.save()
+                success = self.save()
 
-                try:
-                    self.tab_view.closeEvent(event)
-                    self.undo_stack.clear()
-                    self.w.close()
-                    event.accept()
+                if success:
+                    try:
+                        self.tab_view.closeEvent(event)
+                        self.undo_stack.clear()
+                        self.w.close()
+                        event.accept()
 
-                except Exception:
-                    pass
+                    except Exception:
+                        pass
 
             else:
                 event.ignore()
@@ -1730,24 +1732,13 @@ Date:""")
                 item.duplicate()
 
     def use_set_item_pos(self):
-        self.canvas.blockSignals(True)  # Block signals to prevent recursive updates
+        self.canvas.blockSignals(True)
         try:
             x = self.x_pos_spin.value()
             y = self.y_pos_spin.value()
 
-            selected_items = self.canvas.selectedItems()
-            if len(selected_items) > 1:
+            for item in self.canvas.selectedItems():
                 pass
-
-            else:
-                # Move each selected item to the new position
-                for item in selected_items:
-                    # Calculate the new position for each item based on its bounding rect's top left corner
-                    bounding_rect = item.boundingRect()
-                    offset = bounding_rect.topLeft()
-                    new_pos = QPointF(x - offset.x(), y - offset.y())
-                    command = PositionChangeCommand(item, item.pos(), new_pos)
-                    self.canvas.addCommand(command)
 
         finally:
             self.canvas.blockSignals(False)
@@ -2412,9 +2403,11 @@ Date:""")
 
     def save(self):
         try:
-            if self.canvas.manager.filename is not None:
+            if self.canvas.manager.filename != 'Untitled':
                 with open(self.canvas.manager.filename, 'wb') as f:
                     pickle.dump(self.canvas.manager.serialize_items(), f)
+
+                    self.setWindowTitle(f'MPRUN - {self.canvas.manager.filename}')
 
                     self.canvas.modified = False
 

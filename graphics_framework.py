@@ -730,6 +730,7 @@ class CustomGraphicsScene(QGraphicsScene):
         self.undo_stack = undoStack
         self.scale_btn = None
         self.modified = False
+        self.parentWindow = None
 
         width = 64000
         height = 64000
@@ -750,6 +751,9 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def set_widget(self, w):
         self.scale_btn = w
+
+    def setParentWindow(self, parent: QMainWindow):
+        self.parentWindow = parent
 
     def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
         if self.scale_btn is not None:
@@ -794,6 +798,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def addCommand(self, command):
         self.undo_stack.push(command)
         self.modified = True
+        self.parentWindow.setWindowTitle(f'MPRUN - *{self.manager.filename}')
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
@@ -881,32 +886,24 @@ class CustomGraphicsScene(QGraphicsScene):
 class SceneManager:
     def __init__(self, scene: QGraphicsScene):
         self.scene = scene
-        self.filename = None
+        self.filename = 'Untitled'
         self.parent = None
-
-    def save(self):
-        try:
-            if self.filename is not None:
-                with open(f'{self.filename}.mp', 'wb') as f:
-                    pickle.dump(self.serialize_items(), f)
-
-            else:
-                self.saveas(self.parent)
-
-        except Exception as e:
-            QMessageBox.critical(self.scene.parent(), 'Open File Error', f"Error saving scene: {e}", QMessageBox.Ok)
 
     def load(self, parent):
         try:
             if self.scene.modified:
-                response = QMessageBox.warning(
-                    self.scene.parent(),
-                    'Open File',
-                    'Are you sure you want to open a different file? (This will destroy any progress made on the current file)',
-                    QMessageBox.Ok | QMessageBox.Cancel
-                )
+                # Display a confirmation dialog
+                confirmation_dialog = QMessageBox(self)
+                confirmation_dialog.setWindowTitle('Close Project')
+                confirmation_dialog.setIcon(QMessageBox.Warning)
+                confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
+                confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
+                confirmation_dialog.setDefaultButton(QMessageBox.Save)
 
-                if response == QMessageBox.Ok:
+                # Get the result of the confirmation dialog
+                result = confirmation_dialog.exec_()
+
+                if result == QMessageBox.Discard:
                     filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open File', '',
                                                               'MPRUN files (*.mp)')
 
@@ -917,7 +914,11 @@ class SceneManager:
                             self.deserialize_items(items_data)
 
                             self.filename = filename
-                            parent.setWindowTitle(f'MPRUN - *{self.filename}')
+                            parent.setWindowTitle(f'MPRUN - {self.filename}')
+
+                elif result == QMessageBox.Save:
+                    parent.save()
+
             else:
                 filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open File', '',
                                                           'MPRUN files (*.mp)')
@@ -930,7 +931,7 @@ class SceneManager:
                         self.deserialize_items(items_data)
 
                         self.filename = filename
-                        parent.setWindowTitle(f'MPRUN - *{self.filename}')
+                        parent.setWindowTitle(f'MPRUN - {self.filename}')
 
         except Exception as e:
             print(f"Error loading scene: {e}")
