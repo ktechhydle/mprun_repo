@@ -1,3 +1,5 @@
+import os.path
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -1324,21 +1326,78 @@ class SceneManager:
         return path_item
 
     def deserialize_custom_svg_item(self, data):
-        svg_item = CustomSvgItem(data['filename'])
-        svg_item.setRotation(data['rotation'])
-        svg_item.setTransform(self.deserialize_transform(data['transform']))
-        svg_item.setPos(data['x'], data['y'])
-        svg_item.setToolTip(data['name'])
-        svg_item.setZValue(data['zval'])
+        if os.path.exists(data['filename']):
+            svg_item = CustomSvgItem(data['filename'])
+            svg_item.setRotation(data['rotation'])
+            svg_item.setTransform(self.deserialize_transform(data['transform']))
+            svg_item.setPos(data['x'], data['y'])
+            svg_item.setToolTip(data['name'])
+            svg_item.setZValue(data['zval'])
 
-        return svg_item
+            return svg_item
+
+        else:
+            # Display a confirmation dialog
+            confirmation_dialog = QMessageBox(self.scene.parentWindow)
+            confirmation_dialog.setWindowTitle('Open Document Error')
+            confirmation_dialog.setIcon(QMessageBox.Warning)
+            confirmation_dialog.setText("The document has file directories that could not be found. Do you want to do a file repair?")
+            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+            # Get the result of the confirmation dialog
+            result = confirmation_dialog.exec_()
+
+            if result == QMessageBox.Yes:
+                self.repair_file(self.filename)
+
+            else:
+                return None
 
     def deserialize_custom_pixmap_item(self, data):
-        pixmap_item = CustomPixmapItem(data['filename'])
-        pixmap_item.setRotation(data['rotation'])
-        pixmap_item.setTransform(self.deserialize_transform(data['transform']))
-        pixmap_item.setPos(data['x'], data['y'])
-        pixmap_item.setToolTip(data['name'])
-        pixmap_item.setZValue(data['zval'])
+        if os.path.exists(data['filename']):
+            pixmap = QPixmap(data['filename'])
+            pixmap_item = CustomPixmapItem(pixmap)
+            pixmap_item.setRotation(data['rotation'])
+            pixmap_item.setTransform(self.deserialize_transform(data['transform']))
+            pixmap_item.setPos(data['x'], data['y'])
+            pixmap_item.setToolTip(data['name'])
+            pixmap_item.setZValue(data['zval'])
 
-        return pixmap_item
+            return pixmap_item
+
+        else:
+            # Display a confirmation dialog
+            confirmation_dialog = QMessageBox(self.scene.parentWindow)
+            confirmation_dialog.setWindowTitle('Open Document Error')
+            confirmation_dialog.setIcon(QMessageBox.Warning)
+            confirmation_dialog.setText("The document has file directories that could not be found. Do you want to do a file repair?")
+            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+            # Get the result of the confirmation dialog
+            result = confirmation_dialog.exec_()
+
+            if result == QMessageBox.Yes:
+                self.repair_file(self.filename)
+
+            else:
+                return None
+
+    def repair_file(self, file):
+        try:
+            with open(self.filename, 'rb') as f:
+                items_data = pickle.load(f)
+
+            repaired_items_data = []
+            for item_data in items_data:
+                if item_data['type'] in ('CustomPixmapItem', 'CustomSvgItem') and not os.path.exists(item_data['filename']):
+                    QMessageBox.information(self.scene.parentWindow, 'File Repair', f"Removed missing item(s) with filename: {item_data['filename']}")
+                else:
+                    repaired_items_data.append(item_data)
+
+            with open(self.filename, 'wb') as f:
+                pickle.dump(repaired_items_data, f)
+
+        except Exception as e:
+            print(f"Error repairing file: {e}")

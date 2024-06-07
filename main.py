@@ -1150,7 +1150,7 @@ Date:""")
         if self.canvas.modified:
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox(self)
-            confirmation_dialog.setWindowTitle('Close Project')
+            confirmation_dialog.setWindowTitle('Close Document')
             confirmation_dialog.setIcon(QMessageBox.Warning)
             confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
             confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
