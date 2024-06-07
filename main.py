@@ -1761,19 +1761,23 @@ Date:""")
     def use_scale(self, x_value, y_value):
         try:
             items = self.canvas.selectedItems()
-            for item in items:
-                if isinstance(item, CanvasItem):
-                    pass
+            if len(items) > 1:
+                pass
 
-                else:
-                    x_value = x_value / item.boundingRect().width()
-                    y_value = y_value / item.boundingRect().height()
+            else:
+                for item in items:
+                    if isinstance(item, CanvasItem):
+                        pass
 
-                    command = TransformScaleCommand(item, x_value, y_value, item.transform().m11(), item.transform().m22())
-                    self.canvas.addCommand(command)
+                    else:
+                        x_value = x_value / item.boundingRect().width()
+                        y_value = y_value / item.boundingRect().height()
 
-                    item.boundingRect().setWidth(x_value)
-                    item.boundingRect().setHeight(y_value)
+                        command = TransformScaleCommand(item, x_value, y_value, item.transform().m11(), item.transform().m22())
+                        self.canvas.addCommand(command)
+
+                        item.boundingRect().setWidth(x_value)
+                        item.boundingRect().setHeight(y_value)
 
         except Exception as e:
             pass
