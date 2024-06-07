@@ -83,7 +83,6 @@ class MPRUN(QMainWindow):
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.object_menu = self.menu_bar.addMenu('&Object')
-        self.effects_menu = self.menu_bar.addMenu('&Effects')
         self.window_menu = self.menu_bar.addMenu('&Window')
         self.help_menu = self.menu_bar.addMenu('&Help')
 
@@ -203,13 +202,6 @@ class MPRUN(QMainWindow):
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
 
-        # Create effects menu actions
-        drop_shadow_action = QAction('Drop Shadow', self)
-        drop_shadow_action.triggered.connect(self.use_drop_shadow)
-
-        blur_action = QAction('Blur', self)
-        blur_action.triggered.connect(self.use_blur)
-
         # Create window menu actions
         properties_action = QAction('Properties', self)
         properties_action.triggered.connect(lambda: self.display_choosen_tab('Properties'))
@@ -282,9 +274,6 @@ class MPRUN(QMainWindow):
         self.object_menu.addSeparator()
         self.object_menu.addAction(select_all_action)
 
-        self.effects_menu.addAction(drop_shadow_action)
-        self.effects_menu.addAction(blur_action)
-
         self.window_menu.addAction(properties_action)
         self.window_menu.addAction(libraries_action)
         self.window_menu.addSeparator()
@@ -304,8 +293,6 @@ class MPRUN(QMainWindow):
         self.actions['Close Path'] = close_subpath_action
         self.actions['Duplicate'] = duplicate_action
         self.actions['Reset Item'] = reset_action
-        self.actions['Apply Drop Shadow'] = drop_shadow_action
-        self.actions['Apply Blur'] = blur_action
         self.actions['Group Selection'] = group_action
         self.actions['Ungroup Selection'] = ungroup_action
         self.actions['Name Item'] = name_action
@@ -562,14 +549,14 @@ class MPRUN(QMainWindow):
         self.font_size_spin.setValue(20)
         self.font_size_spin.setMaximum(1000)
         self.font_size_spin.setMinimum(1)
-        self.font_size_spin.setFixedWidth(90)
+        self.font_size_spin.setFixedWidth(100)
         self.font_size_spin.setSuffix(' pt')
         self.font_size_spin.setToolTip('Change the font size')
         self.font_letter_spacing_spin = QSpinBox(self)
         self.font_letter_spacing_spin.setValue(1)
         self.font_letter_spacing_spin.setMaximum(1000)
         self.font_letter_spacing_spin.setMinimum(-10)
-        self.font_letter_spacing_spin.setFixedWidth(90)
+        self.font_letter_spacing_spin.setFixedWidth(100)
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
         self.font_color_btn = QColorButton(self)
@@ -1848,34 +1835,6 @@ Date:""")
             else:
                 command = OpacityCommand(item, item.opacity(), opacity)
                 self.canvas.addCommand(command)
-
-    def use_drop_shadow(self):
-        # Apply the effect to selected items
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                pass
-
-            else:
-                item.setGraphicsEffect(None)
-                og_effect = item.graphicsEffect()
-
-                if True:
-                    command = GraphicsEffectCommand(item, 10, og_effect, 'dropShadow')
-                    self.canvas.addCommand(command)
-
-    def use_blur(self):
-        # Apply the effect to selected items
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                pass
-
-            else:
-                item.setGraphicsEffect(None)
-                og_effect = item.graphicsEffect()
-
-                if True:
-                    command = GraphicsEffectCommand(item, 10, og_effect, 'blur')
-                    self.canvas.addCommand(command)
 
     def use_reset_item(self):
         for item in self.canvas.selectedItems():
