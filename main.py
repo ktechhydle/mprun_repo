@@ -1165,14 +1165,26 @@ Date:""")
             confirmation_dialog.setWindowTitle('Close Project')
             confirmation_dialog.setIcon(QMessageBox.Warning)
             confirmation_dialog.setText("Are you sure you want to close the open project? (This will destroy any progress!)")
-            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
             confirmation_dialog.setDefaultButton(QMessageBox.No)
 
             # Get the result of the confirmation dialog
             result = confirmation_dialog.exec_()
 
             # If the user clicked Yes, close the window
-            if result == QMessageBox.Yes:
+            if result == QMessageBox.Discard:
+                try:
+                    self.tab_view.closeEvent(event)
+                    self.undo_stack.clear()
+                    self.w.close()
+                    event.accept()
+
+                except Exception:
+                    pass
+
+            elif result == QMessageBox.Save:
+                self.save()
+
                 try:
                     self.tab_view.closeEvent(event)
                     self.undo_stack.clear()
@@ -2458,7 +2470,7 @@ Date:""")
                     pickle.dump(self.canvas.manager.serialize_items(), f)
 
                     self.canvas.manager.filename = filename
-                    self.setWindowTitle(f'MPRUN - *{self.canvas.manager.filename}')
+                    self.setWindowTitle(f'MPRUN - {self.canvas.manager.filename}')
             except Exception as e:
                 print(e)
 

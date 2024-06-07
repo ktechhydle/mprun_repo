@@ -899,31 +899,32 @@ class SceneManager:
     def load(self, parent):
         try:
             if self.scene.modified:
-                ok = QMessageBox.critical(self.scene.parent(),
-                                          'Open File',
-                                          'Are you sure you want to open a different file? (This will destroy any progress made on the current file)',
-                                          QMessageBox.Ok | QMessageBox.Cancel)
+                response = QMessageBox.warning(
+                    self.scene.parent(),
+                    'Open File',
+                    'Are you sure you want to open a different file? (This will destroy any progress made on the current file)',
+                    QMessageBox.Ok | QMessageBox.Cancel
+                )
 
-                if ok:
-                    self.scene.clear()
-
-                    filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open MPRUN File', '', 'MPRUN files (*.mp)')
+                if response == QMessageBox.Ok:
+                    filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open MPRUN File', '',
+                                                              'MPRUN files (*.mp)')
 
                     if filename:
+                        self.scene.clear()
                         with open(filename, 'rb') as f:
                             items_data = pickle.load(f)
                             self.deserialize_items(items_data)
 
                             self.filename = filename
                             parent.setWindowTitle(f'MPRUN - *{self.filename}')
-
             else:
-                self.scene.clear()
-
                 filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open MPRUN File', '',
                                                           'MPRUN files (*.mp)')
 
                 if filename:
+                    self.scene.clear()
+
                     with open(filename, 'rb') as f:
                         items_data = pickle.load(f)
                         self.deserialize_items(items_data)
