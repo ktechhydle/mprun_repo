@@ -890,13 +890,14 @@ class SceneManager:
         self.scene = scene
         self.filename = 'Untitled'
         self.parent = None
+        self.repair_needed = False
 
     def load(self, parent):
         try:
             if self.scene.modified:
                 # Display a confirmation dialog
                 confirmation_dialog = QMessageBox(self)
-                confirmation_dialog.setWindowTitle('Close Project')
+                confirmation_dialog.setWindowTitle('Close Document')
                 confirmation_dialog.setIcon(QMessageBox.Warning)
                 confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
                 confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
@@ -918,11 +919,56 @@ class SceneManager:
                             self.filename = filename
                             parent.setWindowTitle(f'MPRUN - {self.filename}')
 
+                            if self.repair_needed:
+                                # Display a confirmation dialog
+                                confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                                confirmation_dialog.setWindowTitle('Open Document Error')
+                                confirmation_dialog.setIcon(QMessageBox.Warning)
+                                confirmation_dialog.setText(
+                                    f"The document has file directories that could not be found. Do you want to do a file repair?")
+                                confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                                confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                                # Get the result of the confirmation dialog
+                                result = confirmation_dialog.exec_()
+
+                                if result == QMessageBox.Yes:
+                                    self.repair_file()
+
                 elif result == QMessageBox.Save:
                     parent.save()
 
+                    filename, _ = QFileDialog.getOpenFileName(self.scene.parentWindow, 'Open File', '',
+                                                              'MPRUN files (*.mp)')
+
+                    if filename:
+                        self.scene.clear()
+
+                        with open(filename, 'rb') as f:
+                            items_data = pickle.load(f)
+                            self.deserialize_items(items_data)
+
+                            self.filename = filename
+                            parent.setWindowTitle(f'MPRUN - {self.filename}')
+
+                            if self.repair_needed:
+                                # Display a confirmation dialog
+                                confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                                confirmation_dialog.setWindowTitle('Open Document Error')
+                                confirmation_dialog.setIcon(QMessageBox.Warning)
+                                confirmation_dialog.setText(
+                                    f"The document has file directories that could not be found. Do you want to do a file repair?")
+                                confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                                confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                                # Get the result of the confirmation dialog
+                                result = confirmation_dialog.exec_()
+
+                                if result == QMessageBox.Yes:
+                                    self.repair_file()
+
             else:
-                filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open File', '',
+                filename, _ = QFileDialog.getOpenFileName(self.scene.parentWindow, 'Open File', '',
                                                           'MPRUN files (*.mp)')
 
                 if filename:
@@ -934,6 +980,22 @@ class SceneManager:
 
                         self.filename = filename
                         parent.setWindowTitle(f'MPRUN - {self.filename}')
+
+                        if self.repair_needed:
+                            # Display a confirmation dialog
+                            confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                            confirmation_dialog.setWindowTitle('Open Document Error')
+                            confirmation_dialog.setIcon(QMessageBox.Warning)
+                            confirmation_dialog.setText(
+                                f"The document has file directories that could not be found. Do you want to do a file repair?")
+                            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                            # Get the result of the confirmation dialog
+                            result = confirmation_dialog.exec_()
+
+                            if result == QMessageBox.Yes:
+                                self.repair_file()
 
         except Exception as e:
             print(f"Error loading scene: {e}")
@@ -1184,9 +1246,13 @@ class SceneManager:
                 item = self.deserialize_custom_svg_item(item_data)
             elif item_data['type'] == 'CustomPixmapItem':
                 item = self.deserialize_custom_pixmap_item(item_data)
+            else:
+                item = None
 
             # Add item
-            self.scene.addItem(item)
+            if item is not None:
+                self.scene.addItem(item)
+            self.scene.parentWindow.use_exit_add_canvas()
 
     def deserialize_color(self, color):
         return QColor(color['red'], color['green'], color['blue'], color['alpha'])
@@ -1333,26 +1399,10 @@ class SceneManager:
             svg_item.setPos(data['x'], data['y'])
             svg_item.setToolTip(data['name'])
             svg_item.setZValue(data['zval'])
-
             return svg_item
-
         else:
-            # Display a confirmation dialog
-            confirmation_dialog = QMessageBox(self.scene.parentWindow)
-            confirmation_dialog.setWindowTitle('Open Document Error')
-            confirmation_dialog.setIcon(QMessageBox.Warning)
-            confirmation_dialog.setText("The document has file directories that could not be found. Do you want to do a file repair?")
-            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
-
-            # Get the result of the confirmation dialog
-            result = confirmation_dialog.exec_()
-
-            if result == QMessageBox.Yes:
-                self.repair_file(self.filename)
-
-            else:
-                return None
+            self.repair_needed = True
+            return None
 
     def deserialize_custom_pixmap_item(self, data):
         if os.path.exists(data['filename']):
@@ -1363,41 +1413,30 @@ class SceneManager:
             pixmap_item.setPos(data['x'], data['y'])
             pixmap_item.setToolTip(data['name'])
             pixmap_item.setZValue(data['zval'])
-
             return pixmap_item
-
         else:
-            # Display a confirmation dialog
-            confirmation_dialog = QMessageBox(self.scene.parentWindow)
-            confirmation_dialog.setWindowTitle('Open Document Error')
-            confirmation_dialog.setIcon(QMessageBox.Warning)
-            confirmation_dialog.setText("The document has file directories that could not be found. Do you want to do a file repair?")
-            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+            self.repair_needed = True
+            return None
 
-            # Get the result of the confirmation dialog
-            result = confirmation_dialog.exec_()
-
-            if result == QMessageBox.Yes:
-                self.repair_file(self.filename)
-
-            else:
-                return None
-
-    def repair_file(self, file):
+    def repair_file(self):
         try:
             with open(self.filename, 'rb') as f:
                 items_data = pickle.load(f)
 
             repaired_items_data = []
+            removed_files = []
             for item_data in items_data:
-                if item_data['type'] in ('CustomPixmapItem', 'CustomSvgItem') and not os.path.exists(item_data['filename']):
-                    QMessageBox.information(self.scene.parentWindow, 'File Repair', f"Removed missing item(s) with filename: {item_data['filename']}")
+                if item_data['type'] in ('CustomPixmapItem', 'CustomSvgItem') and not os.path.exists(
+                        item_data['filename']):
+                    removed_files.append(os.path.basename(item_data['filename']))
                 else:
                     repaired_items_data.append(item_data)
 
             with open(self.filename, 'wb') as f:
                 pickle.dump(repaired_items_data, f)
+
+                QMessageBox.information(self.scene.parentWindow, 'File Repair', f"""File repair completed: 
+Removed missing items with filenames: {', '.join(removed_files)}""")
 
         except Exception as e:
             print(f"Error repairing file: {e}")
