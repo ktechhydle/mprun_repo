@@ -474,7 +474,7 @@ class MPRUN(QMainWindow):
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
         self.fill_color_btn = QColorButton(self)
-        self.fill_color_btn.setStyleSheet(f'background-color: #00ff00;')
+        self.fill_color_btn.setButtonColor('#00ff00')
         self.fill_color_btn.setFixedWidth(28)
         self.fill_color_btn.setToolTip('Change the fill color')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
@@ -486,28 +486,8 @@ class MPRUN(QMainWindow):
         widget5.layout.addWidget(fill_label)
         widget5.layout.setContentsMargins(0, 14, 0, 0)
 
-        opacity_label = QLabel('Opacity')
-        opacity_label.setStyleSheet('color: white;')
-        self.opacity_btn = QPushButton('')
-        self.opacity_btn.setFixedWidth(28)
-        self.opacity_btn.setIcon(QIcon('UI/UI Icons/opacity_icon.png'))
-        self.opacity_btn.setIconSize(QSize(24, 24))
-        self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
-        self.opacity_spin = QSpinBox()
-        self.opacity_spin.setRange(0, 100)
-        self.opacity_spin.setValue(100)
-        self.opacity_spin.setSuffix('%')
-        self.opacity_spin.setToolTip('Change the opacity')
-        self.opacity_spin.valueChanged.connect(self.use_change_opacity)
-        opacity_hlayout = ToolbarHorizontalLayout()
-        opacity_hlayout.layout.addWidget(self.opacity_btn)
-        opacity_hlayout.layout.addWidget(opacity_label)
-        opacity_hlayout.layout.addWidget(self.opacity_spin)
-        opacity_hlayout.layout.addSpacing(100)
-        opacity_hlayout.layout.setContentsMargins(0, 14, 0, 0)
-
         self.stroke_color_btn = QColorButton(self)
-        self.stroke_color_btn.setStyleSheet(f'background-color: {self.outline_color.get()};')
+        self.stroke_color_btn.setButtonColor(self.outline_color.get())
         self.stroke_color_btn.setFixedWidth(28)
         self.stroke_color_btn.setToolTip('Change the stroke color')
         self.stroke_color_btn.setShortcut(QKeySequence('Ctrl+1'))
@@ -532,6 +512,26 @@ class MPRUN(QMainWindow):
         widget6.layout.addWidget(self.stroke_size_spin)
         widget6.layout.addSpacing(100)
         widget6.layout.setContentsMargins(0, 14, 0, 0)
+
+        opacity_label = QLabel('Opacity')
+        opacity_label.setStyleSheet('color: white;')
+        self.opacity_btn = QPushButton('')
+        self.opacity_btn.setFixedWidth(28)
+        self.opacity_btn.setIcon(QIcon('UI/UI Icons/opacity_icon.png'))
+        self.opacity_btn.setIconSize(QSize(24, 24))
+        self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
+        self.opacity_spin = QSpinBox()
+        self.opacity_spin.setRange(0, 100)
+        self.opacity_spin.setValue(100)
+        self.opacity_spin.setSuffix('%')
+        self.opacity_spin.setToolTip('Change the opacity')
+        self.opacity_spin.valueChanged.connect(self.use_change_opacity)
+        opacity_hlayout = ToolbarHorizontalLayout()
+        opacity_hlayout.layout.addWidget(self.opacity_btn)
+        opacity_hlayout.layout.addWidget(opacity_label)
+        opacity_hlayout.layout.addWidget(self.opacity_spin)
+        opacity_hlayout.layout.addSpacing(100)
+        opacity_hlayout.layout.setContentsMargins(0, 14, 0, 0)
 
         self.gsnap_check_btn = QCheckBox(self)
         self.gsnap_check_btn.setText('Grid Enabled')
@@ -1319,8 +1319,7 @@ Date:""")
 
                 # Set Colors
                 if pen.color().alpha() != 0:
-                    self.stroke_color_btn.setTransparent(False)
-                    self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.stroke_color_btn.setButtonColor(pen.color().name())
                     self.outline_color.set(pen.color().name())
 
                 else:
@@ -1328,8 +1327,7 @@ Date:""")
                     self.outline_color.set(Qt.transparent)
 
                 if brush.color().alpha() != 0:
-                    self.fill_color_btn.setTransparent(False)
-                    self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                    self.fill_color_btn.setButtonColor(brush.color().name())
                     self.fill_color.set(brush.color().name())
 
                 else:
@@ -1392,76 +1390,13 @@ Date:""")
                     custom_index = self.canvas_tab.canvas_preset_dropdown.findText('Custom')
                     self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(custom_index)
 
-            elif isinstance(item, CustomCircleItem):
-                if item.childItems():
-                    for child in item.childItems():
-                        if isinstance(child, CustomRectangleItem):
-                            pen = child.pen()
-                            brush = child.brush()
-
-                            # Set Colors
-                            self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                            self.outline_color.set(pen.color().name())
-                            self.fill_color_btn.setStyleSheet(
-                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
-
-                        else:
-                            pen = item.pen()
-                            brush = item.brush()
-
-                            # Set Colors
-                            self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                            self.outline_color.set(pen.color().name())
-                            self.fill_color_btn.setStyleSheet(
-                                f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                            self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
-
-                            # Set Values
-                            self.stroke_size_spin.setValue(pen.width())
-
-                            for index, (style, value) in enumerate(self.stroke_style_options.items()):
-                                if pen.style() == value:
-                                    self.stroke_style_combo.setCurrentIndex(index)
-
-                            for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
-                                if pen.capStyle() == v:
-                                    self.stroke_pencap_combo.setCurrentIndex(i)
-
-                else:
-                    pen = item.pen()
-                    brush = item.brush()
-
-                    # Set Colors
-                    self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
-                    self.outline_color.set(pen.color().name())
-                    self.fill_color_btn.setStyleSheet(
-                        f'background-color: {brush.color().name() if brush.color().alpha() != 0 else Qt.transparent};')
-                    self.fill_color.set(brush.color().name() if brush.color().alpha() != 0 else Qt.transparent)
-
-                    # Set Values
-                    self.stroke_size_spin.setValue(pen.width())
-
-                    for index, (style, value) in enumerate(self.stroke_style_options.items()):
-                        if pen.style() == value:
-                            self.stroke_style_combo.setCurrentIndex(index)
-
-                    for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
-                        if pen.capStyle() == v:
-                            self.stroke_pencap_combo.setCurrentIndex(i)
-
-                    for index, (s, v) in enumerate(self.join_style_options.items()):
-                        if pen.joinStyle() == v:
-                            self.join_style_combo.setCurrentIndex(i)
-
             elif isinstance(item, LeaderLineItem):
                 pen = item.pen()
                 brush = item.brush()
 
                 # Set Colors
                 if pen.color().alpha() != 0:
-                    self.stroke_color_btn.setTransparent(False)
-                    self.stroke_color_btn.setStyleSheet(f'background-color: {pen.color().name()};')
+                    self.stroke_color_btn.setButtonColor(pen.color().name())
                     self.outline_color.set(pen.color().name())
 
                 else:
@@ -1469,8 +1404,7 @@ Date:""")
                     self.outline_color.set(Qt.transparent)
 
                 if brush.color().alpha() != 0:
-                    self.fill_color_btn.setTransparent(False)
-                    self.fill_color_btn.setStyleSheet(f'background-color: {brush.color().name()};')
+                    self.fill_color_btn.setButtonColor(brush.color().name())
                     self.fill_color.set(brush.color().name())
 
                 else:
@@ -1497,8 +1431,7 @@ Date:""")
                 color = item.defaultTextColor()
 
                 if color.alpha() != 0:
-                    self.font_color_btn.setTransparent(False)
-                    self.font_color_btn.setStyleSheet(f'background-color: {color.name()};')
+                    self.font_color_btn.setButtonColor(color.name())
                     self.font_color.set(color.name())
 
                 else:
