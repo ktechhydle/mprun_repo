@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
-import pickle
+import json
 import sys
 import os
 
@@ -11,6 +11,18 @@ Page #:
 Competition:
 Athlete:
 Date:"""
+
+data_use_disclaimer = '''This app collects user data, including...
+
+Content You Read in App:
+This app stores the content you read in app (like this dialog) so that you don't get popup after popup everytime you open the app. The content you read includes this dialog, the What's New Dialog, and the Tutorial Video Dialog.
+
+Computer Info:
+This app also stores the platform you are running for cross-platform differences.
+
+Any data you are curious about can be found in the user_data.mpdat file included with this distribution.
+
+Do you accept?'''
 
 copyright_message = '''
 
@@ -38,11 +50,23 @@ user_data = [{
     'disclaimer_read': False,
     'whatsnew_read': False,
     'tutorial_watched': False,
+    'platform': sys.platform
 }]
 
 if os.path.exists('Internal/user_data.mpdat'):
     pass
 
 else:
-    with open('Internal/user_data.mpdat', 'wb') as f:
-        pickle.dump(user_data, f)
+    with open('Internal/user_data.mpdat', 'w') as f:
+        json.dump(user_data, f)
+
+class DisclaimerWin(QMessageBox):
+    def __init__(self, data_file, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle('Disclaimer')
+        self.setIcon(QMessageBox.Warning)
+        self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        self.data_file = data_file
+        self.setText(data_use_disclaimer)

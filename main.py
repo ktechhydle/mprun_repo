@@ -1,3 +1,4 @@
+import json
 import os.path
 import sys
 import math
@@ -2310,6 +2311,25 @@ class MPRUN(QMainWindow):
         self.w = FindActionWin(self.actions)
         self.w.show()
 
+    def show_disclaimer(self):
+        w = DisclaimerWin('Internal/user_data.mpdat')
+
+        result = w.exec_()
+
+        if result == QMessageBox.Yes:
+            # Read existing data
+            with open('Internal/user_data.mpdat', 'r') as f:
+                existing_data = json.load(f)
+
+            # Update the data
+            existing_data[0]['disclaimer_read'] = True
+
+            # Write the updated data back to the file
+            with open('Internal/user_data.mpdat', 'w') as f:
+                json.dump(existing_data, f)
+        else:
+            self.close()
+
     def display_choosen_tab(self, tab_name):
         for i in range(self.tab_view.count()):
             if self.tab_view.tabText(i) == tab_name:
@@ -2383,10 +2403,9 @@ class MPRUN(QMainWindow):
         self.canvas.manager.load(self)
 
     def set_user_data(self, data):
-        self.user_data = {}
-
-        for key, value in self.user_data.items():
-            pass
+        for user_data in data:
+            if not user_data['disclaimer_read']:
+                self.show_disclaimer()
 
 
 if __name__ == '__main__':
@@ -2403,8 +2422,8 @@ if __name__ == '__main__':
 
     window = MPRUN()
 
-    with open('Internal/user_data.mpdat', 'rb') as f:
-        data = pickle.load(f)
+    with open('Internal/user_data.mpdat', 'r') as f:
+        data = json.load(f)
         window.set_user_data(data)
 
     sys.exit(app.exec_())
