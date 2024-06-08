@@ -313,6 +313,9 @@ class MPRUN(QMainWindow):
         self.actions['Text Along Path Panel'] = text_along_path_action
         self.actions['Canvas Panel'] = canvas_action
         self.actions['Image Trace Panel'] = vectorizing_action
+        self.actions['Save'] = save_action
+        self.actions['Save As'] = saveas_action
+        self.actions['Open'] = open_action
 
     def init_toolbars(self):
         # Toolbar
