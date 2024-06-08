@@ -623,23 +623,27 @@ class CanvasItem(QGraphicsRectItem):
             super().mouseMoveEvent(event)
 
     def setName(self, name):
-        self.text.setText(name)
+        self.text.setPlainText(name)
         self.update()
 
     def name(self):
-        return self.text.text()
+        return self.text.toPlainText()
 
-class CanvasTextItem(QGraphicsSimpleTextItem):
+class CanvasTextItem(QGraphicsTextItem):
     def __init__(self, text, parent):
         super().__init__()
 
-        self.setScale(1.5)
         self.setPos(parent.boundingRect().x(), parent.boundingRect().y())
         self.setParentItem(parent)
-        self.setBrush(QBrush(QColor('black')))
-        self.setText(text)
+        self.setPlainText(text)
         self.setFlag(QGraphicsItem.ItemIgnoresTransformations)
         self.setZValue(10000)
+
+        font = QFont()
+        font.setFamily('Helvetica')
+        font.setPixelSize(20)
+
+        self.setFont(font)
 
     def paint(self, painter, option, widget=None):
         painter.setBrush(QBrush(QColor('#dcdcdc')))
