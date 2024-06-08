@@ -509,10 +509,13 @@ class CustomTextItem(QGraphicsTextItem):
         self.setTextCursor(cursor)
 
 class LeaderLineItem(QGraphicsPathItem):
-    def __init__(self, path):
+    def __init__(self, path, text: str):
         super().__init__(path)
 
         self.gridEnabled = False
+        self.text_element = CustomTextItem(text)
+        self.text_element.setParentItem(self)
+        self.text_element.setToolTip("Text")
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -538,11 +541,8 @@ class LeaderLineItem(QGraphicsPathItem):
         painter.setPen(self.pen())
         painter.setBrush(self.brush())
 
-        if self.childItems():
-            for child in self.childItems():
-                # Map the child's bounding rect to the parent's coordinate system
-                mapped_rect = self.mapRectFromItem(child, child.boundingRect())
-                painter.drawRect(mapped_rect)
+        mapped_rect = self.mapRectFromItem(self.text_element, self.text_element.boundingRect())
+        painter.drawRect(mapped_rect)
 
         try:
             painter.setPen(self.pen())

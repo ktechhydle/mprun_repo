@@ -476,17 +476,12 @@ y: {int(p.y())}''')
             self.setDragMode(QGraphicsView.NoDrag)
             self.clicked_label_point = self.mapToScene(event.pos())
 
-            # Create the label text
-            self.label_text = CustomTextItem('An Editable Text Block')
-            self.label_text.setFont(self.font)
-            self.label_text.setPos(self.mapToScene(event.pos()) - QPointF(0, self.label_text.sceneBoundingRect().height()))
-            self.label_text.setDefaultTextColor(QColor('black'))
-            self.label_text.setToolTip("Text")
-
             # Create path item
-            self.pathg_item = LeaderLineItem(self.leader_line)
-            self.pathg_item.setBrush(QBrush(QColor(Qt.transparent)))
-            self.label_text.setParentItem(self.pathg_item)
+            self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
+            self.pathg_item.setBrush(self.stroke_fill)
+            self.pathg_item.text_element.setFont(self.font)
+            self.pathg_item.text_element.setPos(self.mapToScene(event.pos()) - QPointF(0, self.pathg_item.text_element.sceneBoundingRect().height()))
+
 
             add_command = AddItemCommand(self.canvas, self.pathg_item)
             self.canvas.addCommand(add_command)
@@ -511,28 +506,21 @@ y: {int(p.y())}''')
             self.pathg_item.setPath(self.leader_line)
             self.canvas.update()
 
-            # Draw circle at the end of path
-            scene_pos = self.mapToScene(event.pos())
-
-            self.canvas.update()
-
             # Load path as QGraphicsItem, set parent items
             self.pathg_item.setPen(self.pen)
             self.pathg_item.setZValue(0)
-            self.label_text.setParentItem(self.pathg_item)
-            self.label_text.select_text_and_set_cursor()
+            self.pathg_item.text_element.select_text_and_set_cursor()
 
             if self.leader_line.isEmpty():
                 self.scene().removeItem(self.pathg_item)
 
-            # Add items (no need to add rect, circle, and label because parent is path_item)
+            # Add item
             add_command = AddItemCommand(self.canvas, self.pathg_item)
             self.canvas.addCommand(add_command)
 
             # Set flags
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-            self.label_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
 
             # Set Tooltips for elements
             self.pathg_item.setToolTip('Leader Line')
@@ -1007,6 +995,8 @@ class SceneManager:
                                  'The document you are attempting to open has been corrupted. '
                                  'Please open a different document, or repair any changes.')
 
+            print(e)
+
     def serialize_items(self):
         items_data = []
 
@@ -1020,98 +1010,127 @@ class SceneManager:
                 items_data.append(self.serialize_canvas(item))
 
             elif isinstance(item, CustomTextItem):
-                items_data.append({
-                    'type': 'CustomTextItem',
-                    'text': item.toPlainText(),
-                    'font': self.serialize_font(item.font()),
-                    'color': self.serialize_color(item.defaultTextColor()),
-                    'rotation': item.rotation(),
-                    'transform': self.serialize_transform(item.transform()),
-                    'x': item.pos().x(),
-                    'y': item.pos().y(),
-                    'name': item.toolTip(),
-                    'zval': item.zValue(),
-                })
+                if item.parentItem():
+                    pass
+
+                else:
+                    items_data.append({
+                        'type': 'CustomTextItem',
+                        'text': item.toPlainText(),
+                        'font': self.serialize_font(item.font()),
+                        'color': self.serialize_color(item.defaultTextColor()),
+                        'rotation': item.rotation(),
+                        'transform': self.serialize_transform(item.transform()),
+                        'x': item.pos().x(),
+                        'y': item.pos().y(),
+                        'name': item.toolTip(),
+                        'zval': item.zValue(),
+                    })
 
             elif isinstance(item, CustomPathItem):
-                path_data = {
-                    'type': 'CustomPathItem',
-                    'pen': self.serialize_pen(item.pen()),
-                    'brush': self.serialize_brush(item.brush()),
-                    'rotation': item.rotation(),
-                    'transform': self.serialize_transform(item.transform()),
-                    'x': item.pos().x(),
-                    'y': item.pos().y(),
-                    'name': item.toolTip(),
-                    'zval': item.zValue(),
-                    'elements': self.serialize_path(item.path()),
-                    'smooth': item.smooth,
-                    'addtext': True if item.add_text else False,
-                    'textalongpath': item.text_along_path if item.add_text else None,
-                    'textfont': self.serialize_font(item.text_along_path_font) if item.add_text else None,
-                    'textcolor': self.serialize_color(item.text_along_path_color) if item.add_text else None,
-                    'textspacing': item.text_along_path_spacing if item.add_text else None,
-                    'starttextfrombeginning': item.start_text_from_beginning if item.add_text else None,
-                }
+                if item.parentItem():
+                    pass
 
-                items_data.append(path_data)
+                else:
+                    path_data = {
+                        'type': 'CustomPathItem',
+                        'pen': self.serialize_pen(item.pen()),
+                        'brush': self.serialize_brush(item.brush()),
+                        'rotation': item.rotation(),
+                        'transform': self.serialize_transform(item.transform()),
+                        'x': item.pos().x(),
+                        'y': item.pos().y(),
+                        'name': item.toolTip(),
+                        'zval': item.zValue(),
+                        'elements': self.serialize_path(item.path()),
+                        'smooth': True if item.smooth else False,
+                        'addtext': True if item.add_text else False,
+                        'textalongpath': item.text_along_path if item.add_text else '',
+                        'textfont': self.serialize_font(item.text_along_path_font) if item.add_text else self.serialize_font(QFont('Arial', 20)),
+                        'textcolor': self.serialize_color(item.text_along_path_color) if item.add_text else self.serialize_color(QColor('black')),
+                        'textspacing': item.text_along_path_spacing if item.add_text else 3,
+                        'starttextfrombeginning': item.start_text_from_beginning if item.add_text else False,
+                    }
+
+                    items_data.append(path_data)
 
             elif isinstance(item, CustomGraphicsItemGroup):
-                items_data.append({
-                    'type': 'CustomGraphicsItemGroup',
-                    'rotation': item.rotation(),
-                    'transform': self.serialize_transform(item.transform()),
-                    'x': item.pos().x(),
-                    'y': item.pos().y(),
-                    'name': item.toolTip(),
-                    'zval': item.zValue(),
-                    'children': self.serialize_group(item)
-                })
+                if item.parentItem():
+                    pass
+
+                else:
+                    items_data.append({
+                        'type': 'CustomGraphicsItemGroup',
+                        'rotation': item.rotation(),
+                        'transform': self.serialize_transform(item.transform()),
+                        'x': item.pos().x(),
+                        'y': item.pos().y(),
+                        'name': item.toolTip(),
+                        'zval': item.zValue(),
+                        'children': self.serialize_group(item)
+                    })
 
             elif isinstance(item, LeaderLineItem):
-                data = {
-                    'type': 'LeaderLineItem',
-                    'pen': self.serialize_pen(item.pen()),
-                    'brush': self.serialize_brush(item.brush()),
-                    'rotation': item.rotation(),
-                    'transform': self.serialize_transform(item.transform()),
-                    'x': item.pos().x(),
-                    'y': item.pos().y(),
-                    'name': item.toolTip(),
-                    'zval': item.zValue(),
-                    'elements': self.serialize_path(item.path()),
-                    'children': self.serialize_child_items(item.childItems())
-                }
+                if item.parentItem():
+                    pass
 
-                items_data.append(data)
+                else:
+                    data = {
+                        'type': 'LeaderLineItem',
+                        'pen': self.serialize_pen(item.pen()),
+                        'brush': self.serialize_brush(item.brush()),
+                        'rotation': item.rotation(),
+                        'transform': self.serialize_transform(item.transform()),
+                        'x': item.pos().x(),
+                        'y': item.pos().y(),
+                        'name': item.toolTip(),
+                        'zval': item.zValue(),
+                        'elements': self.serialize_path(item.path()),
+                        'text': item.text_element.toPlainText(),
+                        'textcolor': self.serialize_color(item.text_element.defaultTextColor()),
+                        'textfont': self.serialize_font(item.text_element.font()),
+                        'textposx': item.text_element.pos().x(),
+                        'textposy': item.text_element.pos().y(),
+                        'textzval': item.text_element.zValue(),
+                    }
+
+                    items_data.append(data)
 
             elif isinstance(item, CustomSvgItem):
-                data = {
-                    'type': 'CustomSvgItem',
-                    'rotation': item.rotation(),
-                    'transform': self.serialize_transform(item.transform()),
-                    'x': item.pos().x(),
-                    'y': item.pos().y(),
-                    'name': item.toolTip(),
-                    'zval': item.zValue(),
-                    'filename': item.return_filename(),
-                }
+                if item.parentItem():
+                    pass
 
-                items_data.append(data)
+                else:
+                    data = {
+                        'type': 'CustomSvgItem',
+                        'rotation': item.rotation(),
+                        'transform': self.serialize_transform(item.transform()),
+                        'x': item.pos().x(),
+                        'y': item.pos().y(),
+                        'name': item.toolTip(),
+                        'zval': item.zValue(),
+                        'filename': item.return_filename(),
+                    }
+
+                    items_data.append(data)
 
             elif isinstance(item, CustomPixmapItem):
-                data = {
-                    'type': 'CustomPixmapItem',
-                    'rotation': item.rotation(),
-                    'transform': self.serialize_transform(item.transform()),
-                    'x': item.pos().x(),
-                    'y': item.pos().y(),
-                    'name': item.toolTip(),
-                    'zval': item.zValue(),
-                    'filename': item.return_filename(),
-                }
+                if item.parentItem():
+                    pass
 
-                items_data.append(data)
+                else:
+                    data = {
+                        'type': 'CustomPixmapItem',
+                        'rotation': item.rotation(),
+                        'transform': self.serialize_transform(item.transform()),
+                        'x': item.pos().x(),
+                        'y': item.pos().y(),
+                        'name': item.toolTip(),
+                        'zval': item.zValue(),
+                        'filename': item.return_filename(),
+                    }
+
+                    items_data.append(data)
 
         return items_data
 
@@ -1196,6 +1215,7 @@ class SceneManager:
                     'x': child.pos().x(),
                     'y': child.pos().y(),
                     'name': child.toolTip(),
+                    'zval': child.zValue(),
                 })
             elif isinstance(child, CustomPathItem):
                 path_data = {
@@ -1207,6 +1227,7 @@ class SceneManager:
                     'x': child.pos().x(),
                     'y': child.pos().y(),
                     'name': child.toolTip(),
+                    'zval': child.zValue(),
                     'elements': self.serialize_path(child.path()),
                 }
 
@@ -1224,31 +1245,13 @@ class SceneManager:
 
         return children
 
-    def serialize_child_items(self, children):
-        data = []
-
-        for child in children:
-            if isinstance(child, CustomTextItem):
-                data.append({
-                    'type': 'CustomTextItem',
-                    'text': child.toPlainText(),
-                    'font': self.serialize_font(child.font()),
-                    'color': self.serialize_color(child.defaultTextColor()),
-                    'rotation': child.rotation(),
-                    'transform': self.serialize_transform(child.transform()),
-                    'x': child.pos().x(),
-                    'y': child.pos().y(),
-                    'name': child.toolTip(),
-                })
-
-        return data
-
     def deserialize_items(self, items_data):
         # Handle metadata
         metadata = items_data.pop(0)
         self.scene.mpversion = metadata.get('mpversion', 'unknown')
 
         for item_data in items_data:
+            item = None
             if item_data['type'] == 'CanvasItem':
                 item = self.deserialize_canvas(item_data)
             elif item_data['type'] == 'CustomTextItem':
@@ -1263,13 +1266,11 @@ class SceneManager:
                 item = self.deserialize_custom_svg_item(item_data)
             elif item_data['type'] == 'CustomPixmapItem':
                 item = self.deserialize_custom_pixmap_item(item_data)
-            else:
-                item = None
 
-            # Add item
             if item is not None:
                 self.scene.addItem(item)
-            self.scene.parentWindow.use_exit_add_canvas()
+
+        self.scene.parentWindow.use_exit_add_canvas()
 
     def deserialize_color(self, color):
         return QColor(color['red'], color['green'], color['blue'], color['alpha'])
@@ -1347,7 +1348,12 @@ class SceneManager:
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
         path_item.setZValue(data['zval'])
-        path_item.smooth = data['smooth']
+
+        if data.get('smooth', True):
+            path_item.smooth = True
+
+        else:
+            path_item.smooth = False
 
         if data.get('addtext', True):
             path_item.add_text = True
@@ -1356,6 +1362,9 @@ class SceneManager:
             path_item.setTextAlongPathFont(self.deserialize_font(data['textfont']))
             path_item.setTextAlongPathSpacingFromPath(data['textspacing'])
             path_item.setTextAlongPathFromBeginning(data['starttextfrombeginning'])
+
+        else:
+            path_item.add_text = False
 
         return path_item
 
@@ -1392,7 +1401,7 @@ class SceneManager:
                                  element['x'],
                                  element['y'])
 
-        path_item = LeaderLineItem(sub_path)
+        path_item = LeaderLineItem(sub_path, data['text'])
         path_item.setPen(self.deserialize_pen(data['pen']))
         path_item.setBrush(self.deserialize_brush(data['brush']))
         path_item.setRotation(data['rotation'])
@@ -1400,11 +1409,10 @@ class SceneManager:
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
         path_item.setZValue(data['zval'])
-
-        for child_data in data['children']:
-            if child_data['type'] == 'CustomTextItem':
-                child = self.deserialize_custom_text_item(child_data)
-                child.setParentItem(path_item)
+        path_item.text_element.setPos(data['textposx'], data['textposy'])
+        path_item.text_element.setZValue(data['textzval'])
+        path_item.text_element.setDefaultTextColor(self.deserialize_color(data['textcolor']))
+        path_item.text_element.setFont(self.deserialize_font(data['textfont']))
 
         return path_item
 
