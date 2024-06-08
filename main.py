@@ -823,7 +823,7 @@ class MPRUN(QMainWindow):
 
         # Insert Image Button
         self.insert_btn = QAction(QIcon('UI/Tool Icons/insert_image_icon2.png'), '', self)
-        self.insert_btn.setToolTip('''Insert Image Tool: 
+        self.insert_btn.setToolTip('''Insert Element Tool: 
         Key-I''')
         self.insert_btn.setShortcut(QKeySequence('I'))
         self.insert_btn.triggered.connect(self.insert_image)
@@ -2065,7 +2065,16 @@ class MPRUN(QMainWindow):
         file_dialog = QFileDialog()
         file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)")
 
-        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)")
+        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;"
+                                                                               "PNG files (*.png);;"
+                                                                               "JPG files (*.jpg);;"
+                                                                               "JPEG files (*.jpeg);;"
+                                                                               "TIFF files (*.tiff);;"
+                                                                               "BMP files (*.bmp);;"
+                                                                               "ICO files (*.ico);;"
+                                                                               "TXT files (*.txt);;"
+                                                                               "Markdown files (*.md);;"
+                                                                               "CSV files (*.csv)")
 
         if file_path:
             if file_path.endswith('.svg'):
@@ -2077,6 +2086,16 @@ class MPRUN(QMainWindow):
                 svg_item.setToolTip('Imported SVG')
 
                 self.create_item_attributes(svg_item)
+
+            elif file_path.endswith(('.txt', '.md', '.csv')):
+                with open(file_path, 'r') as f:
+                    item = CustomTextItem(f.read())
+                    item.setFileName(file_path)
+
+                    add_command = AddItemCommand(self.canvas, item)
+                    self.canvas.addCommand(add_command)
+
+                    self.create_item_attributes(item)
 
             else:
                 image1 = QPixmap(file_path)

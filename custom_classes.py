@@ -354,6 +354,10 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         return item
 
+    def mouseDoubleClickEvent(self, event):
+        super().mouseDoubleClickEvent(event)
+        QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
+
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, file):
         super().__init__(file)
@@ -409,7 +413,8 @@ class CustomSvgItem(QGraphicsSvgItem):
         return item
 
     def mouseDoubleClickEvent(self, event):
-        print('Logic not implemented')
+        super().mouseDoubleClickEvent(event)
+        QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
 
 class CustomTextItem(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
@@ -418,14 +423,20 @@ class CustomTextItem(QGraphicsTextItem):
         self.setToolTip('Text')
         self.locked = False
         self.old_text = self.toPlainText()
+        self.filename = None
 
         self.setAcceptHoverEvents(True)
 
         self.gridEnabled = False
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
+    def mousePressEvent(self, event: QMouseEvent):
+        if event.button() == Qt.LeftButton:
             self.mouse_offset = event.pos()
+
+            if event.modifiers() & Qt.ControlModifier:
+                if self.filename is not None:
+                    QDesktopServices.openUrl(QUrl.fromLocalFile(self.filename))
+
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
@@ -475,6 +486,12 @@ class CustomTextItem(QGraphicsTextItem):
         self.setTextCursor(cursor)
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         super().focusOutEvent(event)
+
+    def setFileName(self, filename):
+        self.filename = filename
+
+    def fileName(self):
+        return self.filename
 
     def set_locked(self):
         self.locked = True

@@ -287,6 +287,7 @@ y: {int(p.y())}''')
             elif url.toLocalFile().endswith(('.txt', '.md', '.csv')):
                 with open(url.toLocalFile(), 'r') as f:
                     item = CustomTextItem(f.read())
+                    item.setFileName(url.toLocalFile())
                     item.setFont(self.font)
                     item.setToolTip('Imported Text')
 

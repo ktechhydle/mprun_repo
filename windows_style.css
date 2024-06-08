@@ -399,6 +399,7 @@ QListWidget::item:hover {
 
 #modernLineEdit:hover {
     border-bottom: 2px solid #5a5a5a;
+    border-radius: 0px;
 }
 
 #modernLineEdit:focus {
