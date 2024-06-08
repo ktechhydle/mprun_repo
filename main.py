@@ -2299,7 +2299,7 @@ class MPRUN(QMainWindow):
         item.setZValue(0)
 
     def show_version(self):
-        self.w = VersionWin(self.version)
+        self.w = VersionWin(self.canvas.mpversion)
         self.w.show()
 
     def show_about(self):
