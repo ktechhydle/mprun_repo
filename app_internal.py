@@ -34,13 +34,15 @@ along with MPRUN. If not, see <http://www.gnu.org/licenses/>.
 
 '''
 
-user_data = []
-
-user_data.append({
+user_data = [{
     'disclaimer_read': False,
     'whatsnew_read': False,
     'tutorial_watched': False,
-})
+}]
 
-with open('Internal/user_data.mpdat', 'wb') as f:
-    pickle.dump(user_data, f)
+if os.path.exists('Internal/user_data.mpdat'):
+    pass
+
+else:
+    with open('Internal/user_data.mpdat', 'wb') as f:
+        pickle.dump(user_data, f)
