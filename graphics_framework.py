@@ -1002,15 +1002,18 @@ class SceneManager:
                                 self.repair_file()
 
         except Exception as e:
-            print(f"Error loading scene: {e}")
+            QMessageBox.critical(self.scene.parentWindow,
+                                 'Open File Error',
+                                 'The document you are attempting to open has been corrupted. '
+                                 'Please open a different document, or repair any changes.')
 
     def serialize_items(self):
         items_data = []
 
-        '''items_data.append({
+        items_data.append({
             'mpversion': self.scene.mpversion,
             'copyright': copyright_message,
-        })'''
+        })
 
         for item in self.scene.items():
             if isinstance(item, CanvasItem):
@@ -1241,6 +1244,10 @@ class SceneManager:
         return data
 
     def deserialize_items(self, items_data):
+        # Handle metadata
+        metadata = items_data.pop(0)
+        self.scene.mpversion = metadata.get('mpversion', 'unknown')
+
         for item_data in items_data:
             if item_data['type'] == 'CanvasItem':
                 item = self.deserialize_canvas(item_data)

@@ -7,8 +7,9 @@ import sys
 import os
 
 copyright_message = '''
+
 Copyright (C) 2023-2024 MPRUN Document
-<https://github.com/ktech_hydle/mprun_repo> All Rights Reserved.
+<https://github.com/ktechhydle/mprun_repo> All Rights Reserved.
 
 MPRUN is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,12 +23,16 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with MPRUN. If not, see <http://www.gnu.org/licenses/>.
+
+!DO NOT EDIT ANY INFORMATION FOUND IN THIS DOCUMENT!
+
 '''
 
 user_data = []
 
 user_data.append({
-    'platform': sys.platform,
+    'disclaimer_read': False,
+    'tutorial_watched': False,
 })
 
 with open('Internal/user_data.mpdat', 'wb') as f:

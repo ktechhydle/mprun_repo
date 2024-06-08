@@ -1244,6 +1244,10 @@ Date:""")
 
                 if len(self.canvas.selectedItems()) > 1:
                     self.selection_label.setText('Combined Selection')
+                    self.x_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().x()))
+                    self.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
+                    self.width_scale_spin.setValue(float(self.canvas.selectedItemsSceneBoundingRect().width()))
+                    self.height_scale_spin.setValue(float(self.canvas.selectedItemsSceneBoundingRect().height()))
 
         else:
             self.properties_tab.setFixedHeight(475)
