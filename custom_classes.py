@@ -13,6 +13,7 @@ from shapely.geometry import Polygon
 from shapely.geometry.polygon import orient
 from undo_commands import *
 import numpy as np
+import markdown
 
 class item_stack:
     def __init__(self, initial_value=""):
@@ -422,12 +423,14 @@ class CustomTextItem(QGraphicsTextItem):
 
         self.setToolTip('Text')
         self.locked = False
+        self.old_html = self.toHtml()
         self.old_text = self.toPlainText()
         self.filename = None
 
         self.setAcceptHoverEvents(True)
 
         self.gridEnabled = False
+        self.markdownEnabled = False
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
@@ -471,21 +474,31 @@ class CustomTextItem(QGraphicsTextItem):
             self.clearFocus()
 
     def focusOutEvent(self, event):
-        new_text = self.toPlainText()
-        if self.old_text != new_text:
-            if new_text == '':
-                self.scene().removeItem(self)
+        if self.markdownEnabled:
+            new_html = self.toHtml()
+            if self.old_html != new_html:
+                edit_command = EditMarkdownCommand(self, self.old_html, new_html)
+                self.scene().addCommand(edit_command)
+                self.old_html = new_html
 
-            else:
+            cursor = self.textCursor()
+            cursor.clearSelection()
+            self.setTextCursor(cursor)
+            self.setTextInteractionFlags(Qt.NoTextInteraction)
+            super().focusOutEvent(event)
+
+        else:
+            new_text = self.toPlainText()
+            if self.old_text != new_text:
                 edit_command = EditTextCommand(self, self.old_text, new_text)
                 self.scene().addCommand(edit_command)
                 self.old_text = new_text
 
-        cursor = self.textCursor()
-        cursor.clearSelection()
-        self.setTextCursor(cursor)
-        self.setTextInteractionFlags(Qt.NoTextInteraction)
-        super().focusOutEvent(event)
+            cursor = self.textCursor()
+            cursor.clearSelection()
+            self.setTextCursor(cursor)
+            self.setTextInteractionFlags(Qt.NoTextInteraction)
+            super().focusOutEvent(event)
 
     def setFileName(self, filename):
         self.filename = filename
@@ -524,6 +537,12 @@ class CustomTextItem(QGraphicsTextItem):
         cursor.movePosition(QTextCursor.End)
         cursor.select(QTextCursor.SelectionType.Document)
         self.setTextCursor(cursor)
+
+    def toMarkdown(self):
+        html_text = markdown.markdown(self.toPlainText())
+
+        self.setHtml(html_text)
+        self.markdownEnabled = True
 
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path, text: str):

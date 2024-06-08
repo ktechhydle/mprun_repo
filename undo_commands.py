@@ -41,6 +41,19 @@ class EditTextCommand(QUndoCommand):
     def undo(self):
         self.item.setPlainText(self.old_text)
 
+class EditMarkdownCommand(QUndoCommand):
+    def __init__(self, item, old_text, new_text):
+        super().__init__()
+        self.item = item
+        self.old_text = old_text
+        self.new_text = new_text
+
+    def redo(self):
+        self.item.setHtml(self.new_text)
+
+    def undo(self):
+        self.item.setHtml(self.old_text)
+
 class RemoveItemCommand(QUndoCommand):
     def __init__(self, scene, item):
         super().__init__()

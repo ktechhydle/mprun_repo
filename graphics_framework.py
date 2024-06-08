@@ -284,12 +284,18 @@ y: {int(p.y())}''')
                 item.store_filename(url.toLocalFile())
                 item.setToolTip('Imported SVG')
 
-            elif url.toLocalFile().endswith(('.txt', '.md', '.csv')):
+            elif url.toLocalFile().endswith(('.txt', '.csv')):
                 with open(url.toLocalFile(), 'r') as f:
                     item = CustomTextItem(f.read())
                     item.setFileName(url.toLocalFile())
-                    item.setFont(self.font)
                     item.setToolTip('Imported Text')
+
+            elif url.toLocalFile().endswith('.md'):
+                with open(url.toLocalFile(), 'r') as f:
+                    item = CustomTextItem(f.read())
+                    item.setFileName(url.toLocalFile())
+                    item.setToolTip('Imported Text')
+                    item.toMarkdown()
 
             else:
                 pixmap = QPixmap(url.toLocalFile())
