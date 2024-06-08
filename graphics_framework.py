@@ -800,7 +800,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def addCommand(self, command):
         self.undo_stack.push(command)
         self.modified = True
-        self.parentWindow.setWindowTitle(f'MPRUN - *{self.manager.filename}')
+        self.parentWindow.setWindowTitle(f'MPRUN - *{os.path.basename(self.manager.filename)}')
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
@@ -911,6 +911,7 @@ class SceneManager:
                                                               'MPRUN files (*.mp)')
 
                     if filename:
+                        self.scene.undo_stack.clear()
                         self.scene.clear()
                         with open(filename, 'rb') as f:
                             items_data = pickle.load(f)
@@ -942,6 +943,7 @@ class SceneManager:
                                                               'MPRUN files (*.mp)')
 
                     if filename:
+                        self.scene.undo_stack.clear()
                         self.scene.clear()
 
                         with open(filename, 'rb') as f:
@@ -972,6 +974,7 @@ class SceneManager:
                                                           'MPRUN files (*.mp)')
 
                 if filename:
+                    self.scene.undo_stack.clear()
                     self.scene.clear()
 
                     with open(filename, 'rb') as f:

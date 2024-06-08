@@ -2417,6 +2417,7 @@ Date:""")
                     self.setWindowTitle(f'MPRUN - {os.path.basename(self.canvas.manager.filename)}')
 
                     self.canvas.modified = False
+                    self.undo_stack.clear()
 
             else:
                 self.saveas()
@@ -2435,6 +2436,8 @@ Date:""")
                     self.canvas.manager.filename = filename
                     self.canvas.modified = False
                     self.setWindowTitle(f'MPRUN - {os.path.basename(self.canvas.manager.filename)}')
+                    self.undo_stack.clear()
+
             except Exception as e:
                 print(e)
 

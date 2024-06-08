@@ -26,7 +26,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 
 # Full Toolset
 - Select Tool:
-	> Select elements by dragging, or clicking on multiple elements with Control + Left Button.
+	> Select elements by dragging.
 - Pan Tool:
 	> Pan the canvas with the left mouse button with the tool active.
 - Path Draw Tool:
