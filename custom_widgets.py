@@ -225,13 +225,13 @@ class StrokeLabel(QLabel):
         for style, value in self.stroke_style_options.items():
             self.stroke_style_combo.addItem(style, value)
 
-        self.stroke_style_combo.setItemData(0, QPixmap('logos and icons/UI Icons/Combobox Images/solid_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(1, QPixmap('logos and icons/UI Icons/Combobox Images/dotted_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(2, QPixmap('logos and icons/UI Icons/Combobox Images/dashed_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(0, QPixmap('UI/UI Icons/Combobox Images/solid_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(1, QPixmap('UI/UI Icons/Combobox Images/dotted_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(2, QPixmap('UI/UI Icons/Combobox Images/dashed_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setItemData(3, QPixmap(
-            'logos and icons/UI Icons/Combobox Images/dashed_dotted_stroke.png'), Qt.DecorationRole)
+            'UI/UI Icons/Combobox Images/dashed_dotted_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setItemData(4, QPixmap(
-            'logos and icons/UI Icons/Combobox Images/dashed_dot_dot_stroke.png'), Qt.DecorationRole)
+            'UI/UI Icons/Combobox Images/dashed_dot_dot_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setIconSize(QSize(65, 20))
 
         self.stroke_pencap_options = {'Square Cap': Qt.SquareCap,
@@ -243,13 +243,13 @@ class StrokeLabel(QLabel):
             self.stroke_pencap_combo.addItem(pencap, value)
         self.stroke_pencap_combo.setIconSize(QSize(65, 20))
         self.stroke_pencap_combo.setItemData(0,
-                                             QIcon('logos and icons/UI Icons/Combobox Images/projecting_cap.svg'),
+                                             QIcon('UI/UI Icons/Combobox Images/projecting_cap.svg'),
                                              Qt.DecorationRole)
         self.stroke_pencap_combo.setItemData(1,
-                                             QIcon('logos and icons/UI Icons/Combobox Images/flat_cap.svg'),
+                                             QIcon('UI/UI Icons/Combobox Images/flat_cap.svg'),
                                              Qt.DecorationRole)
         self.stroke_pencap_combo.setItemData(2,
-                                             QIcon('logos and icons/UI Icons/Combobox Images/round_cap.svg'),
+                                             QIcon('UI/UI Icons/Combobox Images/round_cap.svg'),
                                              Qt.DecorationRole)
 
         self.join_style_options = {'Miter Join': Qt.MiterJoin,
@@ -326,7 +326,7 @@ class CustomDockWidget(QDockWidget):
         self.setFeatures(QDockWidget.AllDockWidgetFeatures)
 
         self.close_btn = QPushButton('', self)
-        self.close_btn.setIcon(QIcon('logos and icons/UI Icons/close-button-qdockwidget.svg'))
+        self.close_btn.setIcon(QIcon('UI/UI Icons/close-button-qdockwidget.svg'))
         self.close_btn.setIconSize(QSize(12, 12))
         self.close_btn.clicked.connect(self.close)
         self.close_btn.setStyleSheet('QPushButton { background: #424242;'

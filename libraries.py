@@ -55,7 +55,7 @@ class LibraryWidget(QWidget):
         self.reload_library_button = QPushButton("")
         self.reload_library_button.setFixedWidth(28)
         self.reload_library_button.setStyleSheet('border: none')
-        self.reload_library_button.setIcon(QIcon('logos and icons/UI Icons/refresh_icon.svg'))
+        self.reload_library_button.setIcon(QIcon('UI/UI Icons/refresh_icon.svg'))
         self.reload_library_button.setToolTip('Reload the current library')
         library_btn_hlayout = ToolbarHorizontalLayout()
         library_btn_hlayout.layout.addWidget(self.open_library_button)
@@ -90,7 +90,7 @@ class LibraryWidget(QWidget):
         # Check if no Combobox Images files are found
         if not svg_files:
             list_item = QListWidgetItem('No files found')
-            list_item.setIcon(QIcon('logos and icons/UI Icons/folder_failed_icon.svg'))
+            list_item.setIcon(QIcon('UI/UI Icons/folder_failed_icon.svg'))
             self.library_list_widget.setIconSize(QSize(40, 40))
             self.library_list_widget.addItem(list_item)
 

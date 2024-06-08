@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.view)
 
         # Load image
-        pixmap = QPixmap('logos and icons/Main Logos/mprun_splash_screen2.png')
+        pixmap = QPixmap('UI/Main Logos/mprun_splash_screen2.png')
         self.pixmapItem = QGraphicsPixmapItem(pixmap)
         self.scene.addItem(self.pixmapItem)
 

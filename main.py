@@ -17,13 +17,14 @@ from custom_dialogs import *
 from app_screens import *
 from libraries import *
 from styles import *
+from app_internal import *
 
 
 class MPRUN(QMainWindow):
     def __init__(self):
         super(MPRUN, self).__init__()
         # Creating the main window
-        self.setWindowIcon(QIcon('logos and icons/Main Logos/MPRUN_logoV3.png'))
+        self.setWindowIcon(QIcon('UI/Main Logos/MPRUN_logoV3.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
         self.version = '1.0.0'
@@ -404,7 +405,7 @@ class MPRUN(QMainWindow):
         quick_actions_label.setStyleSheet("QLabel {font-size: 12px; alignment: center; }")
         quick_actions_label.setAlignment(Qt.AlignLeft)
 
-        self.rotation_label = QIconWidget('', 'logos and icons/Tool Icons/rotate_icon.png', 28, 28)
+        self.rotation_label = QIconWidget('', 'UI/Tool Icons/rotate_icon.png', 28, 28)
         self.rotation_label.setAlignment(Qt.AlignRight)
         self.rotation_label.setStyleSheet('font-size: 10px;')
 
@@ -440,11 +441,11 @@ class MPRUN(QMainWindow):
         self.rotate_item_spin.setRange(-360, 360)
         self.rotate_item_spin.setSuffix('°')
         self.rotate_item_spin.setToolTip('Change the rotation')
-        self.flip_horizontal_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_horizontal_icon.png'), '')
+        self.flip_horizontal_btn = QPushButton(QIcon('UI/Tool Icons/flip_horizontal_icon.png'), '')
         self.flip_horizontal_btn.setToolTip('Flip horizontal')
         self.flip_horizontal_btn.setStyleSheet('border: none;')
         self.flip_horizontal_btn.clicked.connect(self.use_flip_horizontal)
-        self.flip_vertical_btn = QPushButton(QIcon('logos and icons/Tool Icons/flip_vertical_icon.png'), '')
+        self.flip_vertical_btn = QPushButton(QIcon('UI/Tool Icons/flip_vertical_icon.png'), '')
         self.flip_vertical_btn.setToolTip('Flip vertical')
         self.flip_vertical_btn.setStyleSheet('border: none;')
         self.flip_vertical_btn.clicked.connect(self.use_flip_vertical)
@@ -483,7 +484,7 @@ class MPRUN(QMainWindow):
         opacity_label.setStyleSheet('color: white;')
         self.opacity_btn = QPushButton('')
         self.opacity_btn.setFixedWidth(28)
-        self.opacity_btn.setIcon(QIcon('logos and icons/UI Icons/opacity_icon.png'))
+        self.opacity_btn.setIcon(QIcon('UI/UI Icons/opacity_icon.png'))
         self.opacity_btn.setIconSize(QSize(24, 24))
         self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
         self.opacity_spin = QSpinBox()
@@ -583,10 +584,10 @@ class MPRUN(QMainWindow):
         self.underline_btn.clicked.connect(self.update_item_font)
         font_size_and_spacing_hlayout = ToolbarHorizontalLayout()
         font_size_and_spacing_hlayout.layout.addWidget(
-            QIconWidget('', 'logos and icons/UI Icons/Major/font_size_icon.svg', 20, 20))
+            QIconWidget('', 'UI/UI Icons/Major/font_size_icon.svg', 20, 20))
         font_size_and_spacing_hlayout.layout.addWidget(self.font_size_spin)
         font_size_and_spacing_hlayout.layout.addWidget(
-            QIconWidget('', 'logos and icons/UI Icons/Major/font_spacing_icon.svg', 20, 20))
+            QIconWidget('', 'UI/UI Icons/Major/font_spacing_icon.svg', 20, 20))
         font_size_and_spacing_hlayout.layout.addWidget(self.font_letter_spacing_spin)
         font_size_and_spacing_hlayout.layout.setContentsMargins(0, 0, 0, 0)
         font_style_hlayout = ToolbarHorizontalLayout()
@@ -727,7 +728,7 @@ class MPRUN(QMainWindow):
         #----toolbar buttons----#
 
         # Select Button
-        self.select_btn = QAction(QIcon('logos and icons/Tool Icons/selection_icon.png'), '', self)
+        self.select_btn = QAction(QIcon('UI/Tool Icons/selection_icon.png'), '', self)
         self.select_btn.setToolTip('''Select Tool:
         Key-Spacebar''')
         self.select_btn.setCheckable(True)
@@ -736,7 +737,7 @@ class MPRUN(QMainWindow):
         self.select_btn.triggered.connect(self.use_select)
 
         # Pan Button
-        self.pan_btn = QAction(QIcon('logos and icons/Tool Icons/pan_icon.png'), '', self)
+        self.pan_btn = QAction(QIcon('UI/Tool Icons/pan_icon.png'), '', self)
         self.pan_btn.setToolTip('''Pan Tool:
         Key-P''')
         self.pan_btn.setCheckable(True)
@@ -744,7 +745,7 @@ class MPRUN(QMainWindow):
         self.pan_btn.triggered.connect(self.use_pan)
 
         # Path draw button
-        self.path_btn = QAction(QIcon('logos and icons/Tool Icons/pen_tool_icon.png'), '', self)
+        self.path_btn = QAction(QIcon('UI/Tool Icons/pen_tool_icon.png'), '', self)
         self.path_btn.setCheckable(True)
         self.path_btn.setToolTip('''Path Draw Tool:
         Key-L''')
@@ -753,7 +754,7 @@ class MPRUN(QMainWindow):
         self.path_btn.triggered.connect(self.use_path)
 
         # Pen draw button
-        self.pen_btn = QAction(QIcon('logos and icons/Tool Icons/pen_draw_icon.png'), '', self)
+        self.pen_btn = QAction(QIcon('UI/Tool Icons/pen_draw_icon.png'), '', self)
         self.pen_btn.setCheckable(True)
         self.pen_btn.setToolTip('''Pen Draw Tool:
         Command+L (MacOS) or Control+L (Windows)''')
@@ -762,7 +763,7 @@ class MPRUN(QMainWindow):
         self.pen_btn.triggered.connect(self.use_pen_tool)
 
         # Label draw button
-        self.label_btn = QAction(QIcon('logos and icons/Tool Icons/label_icon.png'), "", self)
+        self.label_btn = QAction(QIcon('UI/Tool Icons/label_icon.png'), "", self)
         self.label_btn.setCheckable(True)
         self.label_btn.setToolTip('''Line and Label Tool:
         Key-T''')
@@ -771,7 +772,7 @@ class MPRUN(QMainWindow):
         self.label_btn.triggered.connect(self.use_label)
 
         # Add Text Button
-        self.add_text_btn = QAction(QIcon('logos and icons/Tool Icons/text_icon.png'), '', self)
+        self.add_text_btn = QAction(QIcon('UI/Tool Icons/text_icon.png'), '', self)
         self.add_text_btn.setToolTip('''Text Tool:
         Command+T (MacOS) or Control+T (Windows)''')
         self.add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
@@ -780,7 +781,7 @@ class MPRUN(QMainWindow):
         self.add_text_btn.triggered.connect(self.use_text)
 
         # Scale Button
-        self.scale_btn = QAction(QIcon('logos and icons/Tool Icons/scale_icon.png'), '', self)
+        self.scale_btn = QAction(QIcon('UI/Tool Icons/scale_icon.png'), '', self)
         self.scale_btn.setToolTip('''Scale Tool: 
         Key-Q''')
         self.scale_btn.setCheckable(True)
@@ -788,21 +789,21 @@ class MPRUN(QMainWindow):
         self.scale_btn.triggered.connect(self.use_scale_tool)
 
         # Hide Button
-        self.hide_btn = QAction(QIcon('logos and icons/Tool Icons/hide_icon.png'), '', self)
+        self.hide_btn = QAction(QIcon('UI/Tool Icons/hide_icon.png'), '', self)
         self.hide_btn.setToolTip('''Hide Element Tool: 
         Key-H''')
         self.hide_btn.setShortcut(QKeySequence('H'))
         self.hide_btn.triggered.connect(self.use_hide_item)
 
         # Unhide Button
-        self.unhide_btn = QAction(QIcon('logos and icons/Tool Icons/unhide_icon.png'), '', self)
+        self.unhide_btn = QAction(QIcon('UI/Tool Icons/unhide_icon.png'), '', self)
         self.unhide_btn.setToolTip('''Unhide All Tool: 
         Command+H (MacOS) or Control+H (Windows)''')
         self.unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
         self.unhide_btn.triggered.connect(self.use_unhide_all)
 
         # Add Canvas Button
-        self.add_canvas_btn = QAction(QIcon('logos and icons/Tool Icons/add_canvas_icon.png'), '', self)
+        self.add_canvas_btn = QAction(QIcon('UI/Tool Icons/add_canvas_icon.png'), '', self)
         self.add_canvas_btn.setToolTip('''Add Canvas Tool: 
         Key-A''')
         self.add_canvas_btn.setCheckable(True)
@@ -810,7 +811,7 @@ class MPRUN(QMainWindow):
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
         # Insert Image Button
-        self.insert_btn = QAction(QIcon('logos and icons/Tool Icons/insert_image_icon2.png'), '', self)
+        self.insert_btn = QAction(QIcon('UI/Tool Icons/insert_image_icon2.png'), '', self)
         self.insert_btn.setToolTip('''Insert Image Tool: 
         Key-I''')
         self.insert_btn.setShortcut(QKeySequence('I'))
@@ -882,35 +883,35 @@ class MPRUN(QMainWindow):
 
     def create_toolbar4(self):
         #----item toolbar widgets----#
-        align_left_btn = QAction(QIcon('logos and icons/Tool Icons/align_left_icon.png'), '', self)
+        align_left_btn = QAction(QIcon('UI/Tool Icons/align_left_icon.png'), '', self)
         align_left_btn.setToolTip('Align the selected elements to the left')
         align_left_btn.triggered.connect(self.use_align_left)
 
-        align_right_btn = QAction(QIcon('logos and icons/Tool Icons/align_right_icon.png'), '', self)
+        align_right_btn = QAction(QIcon('UI/Tool Icons/align_right_icon.png'), '', self)
         align_right_btn.setToolTip('Align the selected elements to the right')
         align_right_btn.triggered.connect(self.use_align_right)
 
-        align_center_btn = QAction(QIcon('logos and icons/Tool Icons/align_center_icon.png'), '', self)
+        align_center_btn = QAction(QIcon('UI/Tool Icons/align_center_icon.png'), '', self)
         align_center_btn.setToolTip('Align the selected elements to the center')
         align_center_btn.triggered.connect(self.use_align_center)
 
-        align_middle_btn = QAction(QIcon('logos and icons/Tool Icons/align_middle_icon.png'), '', self)
+        align_middle_btn = QAction(QIcon('UI/Tool Icons/align_middle_icon.png'), '', self)
         align_middle_btn.setToolTip('Align the selected elements to the middle')
         align_middle_btn.triggered.connect(self.use_align_middle)
 
-        align_top_btn = QAction(QIcon('logos and icons/Tool Icons/align_top_icon.png'), '', self)
+        align_top_btn = QAction(QIcon('UI/Tool Icons/align_top_icon.png'), '', self)
         align_top_btn.setToolTip('Align the selected elements to the top')
         align_top_btn.triggered.connect(self.use_align_top)
 
-        align_bottom_btn = QAction(QIcon('logos and icons/Tool Icons/align_bottom_icon.png'), '', self)
+        align_bottom_btn = QAction(QIcon('UI/Tool Icons/align_bottom_icon.png'), '', self)
         align_bottom_btn.setToolTip('Align the selected elements to the center')
         align_bottom_btn.triggered.connect(self.use_align_bottom)
 
-        raise_layer_action = QAction(QIcon('logos and icons/Tool Icons/raise_layer_icon.png'), '', self)
+        raise_layer_action = QAction(QIcon('UI/Tool Icons/raise_layer_icon.png'), '', self)
         raise_layer_action.setToolTip('Raise the selected elements a layer up')
         raise_layer_action.triggered.connect(self.use_raise_layer)
 
-        lower_layer_action = QAction(QIcon('logos and icons/Tool Icons/lower_layer_icon.png'), '', self)
+        lower_layer_action = QAction(QIcon('UI/Tool Icons/lower_layer_icon.png'), '', self)
         lower_layer_action.setToolTip('Lower the selected elements a layer down')
         lower_layer_action.triggered.connect(self.use_lower_layer)
 
