@@ -8,6 +8,7 @@ from custom_classes import *
 from undo_commands import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
+from app_internal import *
 import xml.etree.ElementTree as ET
 import time
 import json
@@ -1005,6 +1006,12 @@ class SceneManager:
 
     def serialize_items(self):
         items_data = []
+
+        '''items_data.append({
+            'mpversion': self.scene.mpversion,
+            'copyright': copyright_message,
+        })'''
+
         for item in self.scene.items():
             if isinstance(item, CanvasItem):
                 items_data.append(self.serialize_canvas(item))
