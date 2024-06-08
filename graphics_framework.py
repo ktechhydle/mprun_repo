@@ -1448,12 +1448,16 @@ class SceneManager:
             with open(self.filename, 'rb') as f:
                 items_data = pickle.load(f)
 
+            # Handle metadata
+            metadata = items_data.pop(0)
+            self.scene.mpversion = metadata.get('mpversion', 'unknown')
+
             repaired_items_data = []
             removed_files = []
             for item_data in items_data:
-                if item_data['type'] in ('CustomPixmapItem', 'CustomSvgItem') and not os.path.exists(
+                if item_data['type'] == 'CustomPixmapItem' or 'CustomSvgItem' and not os.path.exists(
                         item_data['filename']):
-                    removed_files.append(os.path.basename(item_data['filename']))
+                    removed_files.append(item_data['filename'])
                 else:
                     repaired_items_data.append(item_data)
 
