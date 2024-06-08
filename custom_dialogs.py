@@ -353,14 +353,17 @@ class CanvasEditorPanel(QWidget):
         for canvas, key in self.canvas_presets.items():
             self.canvas_preset_dropdown.addItem(canvas, key)
         self.canvas_preset_dropdown.setCurrentText('Custom')
+        self.canvas_preset_dropdown.setFixedWidth(205)
         self.canvas_preset_dropdown.currentIndexChanged.connect(self.update_canvas_size)
 
         self.canvas_name_entry = QLineEdit(self)
+        self.canvas_name_entry.setFixedWidth(205)
         self.canvas_name_entry.setPlaceholderText('Canvas Name')
         self.canvas_name_entry.setToolTip('Change the name of the canvas')
         self.canvas_name_entry.textChanged.connect(self.update_canvas_name)
 
         widget1 = ToolbarHorizontalLayout()
+        widget1.layout.addSpacing(25)
         widget1.layout.addWidget(canvas_x_size_label)
         widget1.layout.addWidget(self.canvas_x_entry)
         widget1.layout.addWidget(canvas_y_size_label)
