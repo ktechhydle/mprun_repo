@@ -39,15 +39,16 @@ class QColorButton(QPushButton):
         super().paintEvent(event)
 
         if self.transparent:
+            rect = self.rect()
+            new_rect = QRectF(1, 1, rect.width() - 3, rect.height() - 3)
             self.setStyleSheet('background-color: transparent;')
             painter = QPainter(self)
             painter.setRenderHints(QPainter.HighQualityAntialiasing)
-            pen = painter.pen()
-            pen.setColor(QColor('red'))
-            pen.setWidth(2)
-            painter.setPen(pen)
             painter.begin(self)
-            painter.drawLine(self.rect().topLeft(), self.rect().bottomRight())
+            painter.setBrush(QBrush(QColor('white')))
+            painter.drawRect(new_rect)
+            painter.setPen(QPen(QColor('red'), 3, Qt.PenStyle.SolidLine, Qt.PenCapStyle.SquareCap))
+            painter.drawLine(self.rect().bottomLeft() + QPointF(2, -1), self.rect().topRight() + QPointF(-1, 2))
             painter.end()
 
 class CustomLineEdit(QLineEdit):
