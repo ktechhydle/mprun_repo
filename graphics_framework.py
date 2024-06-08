@@ -917,7 +917,7 @@ class SceneManager:
                             self.deserialize_items(items_data)
 
                             self.filename = filename
-                            parent.setWindowTitle(f'MPRUN - {self.filename}')
+                            parent.setWindowTitle(f'MPRUN - {os.path.basename(self.filename)}')
 
                             if self.repair_needed:
                                 # Display a confirmation dialog
