@@ -1,3 +1,4 @@
+import os.path
 import sys
 import math
 import time
@@ -103,12 +104,15 @@ class MPRUN(QMainWindow):
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
         save_action = QAction('Save', self)
+        save_action.setShortcut(QKeySequence('Ctrl+S'))
         save_action.triggered.connect(self.save)
 
         saveas_action = QAction('Save As', self)
+        saveas_action.setShortcut(QKeySequence('Ctrl+Shift+S'))
         saveas_action.triggered.connect(self.saveas)
 
         open_action = QAction('Open', self)
+        open_action.setShortcut(QKeySequence('Ctrl+O'))
         open_action.triggered.connect(self.open)
 
         export_action = QAction('Export Canvas', self)
@@ -353,7 +357,7 @@ class MPRUN(QMainWindow):
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.properties_tab.setFixedHeight(475)
-        self.properties_tab.setFixedWidth(285)
+        self.properties_tab.setFixedWidth(300)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
         self.tab_view.addTab(self.properties_tab, 'Properties')
@@ -362,7 +366,7 @@ class MPRUN(QMainWindow):
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.characters_tab.setFixedHeight(175)
-        self.characters_tab.setFixedWidth(285)
+        self.characters_tab.setFixedWidth(300)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
 
@@ -370,7 +374,7 @@ class MPRUN(QMainWindow):
         self.image_trace = QWidget()
         self.image_trace.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.image_trace.setFixedHeight(375)
-        self.image_trace.setFixedWidth(285)
+        self.image_trace.setFixedWidth(300)
         self.image_trace_layout = QVBoxLayout()
         self.image_trace.setLayout(self.image_trace_layout)
 
@@ -378,15 +382,17 @@ class MPRUN(QMainWindow):
         self.libraries_tab = LibraryWidget(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setFixedHeight(400)
-        self.libraries_tab.setFixedWidth(285)
+        self.libraries_tab.setFixedWidth(300)
         self.libraries_tab.load_svg_library('Course Element')
         self.tab_view.addTab(self.libraries_tab, 'Libraries')
 
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
+        self.canvas_tab.setFixedWidth(300)
 
         # Text Along Path Tab
         self.text_along_path_tab = TextAlongPathPanel(self.canvas)
+        self.text_along_path_tab.setFixedWidth(300)
 
         # This next section is basically all the widgets for each tab
         # Some tabs don't have many widgets as they are subclassed in other files.
@@ -551,14 +557,14 @@ class MPRUN(QMainWindow):
         self.font_size_spin.setValue(20)
         self.font_size_spin.setMaximum(1000)
         self.font_size_spin.setMinimum(1)
-        self.font_size_spin.setFixedWidth(100)
+        self.font_size_spin.setFixedWidth(105)
         self.font_size_spin.setSuffix(' pt')
         self.font_size_spin.setToolTip('Change the font size')
         self.font_letter_spacing_spin = QSpinBox(self)
         self.font_letter_spacing_spin.setValue(1)
         self.font_letter_spacing_spin.setMaximum(1000)
         self.font_letter_spacing_spin.setMinimum(-10)
-        self.font_letter_spacing_spin.setFixedWidth(100)
+        self.font_letter_spacing_spin.setFixedWidth(105)
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
         self.font_color_btn = QColorButton(self)
@@ -2408,7 +2414,7 @@ Date:""")
                 with open(self.canvas.manager.filename, 'wb') as f:
                     pickle.dump(self.canvas.manager.serialize_items(), f)
 
-                    self.setWindowTitle(f'MPRUN - {self.canvas.manager.filename}')
+                    self.setWindowTitle(f'MPRUN - {os.path.basename(self.canvas.manager.filename)}')
 
                     self.canvas.modified = False
 
@@ -2416,7 +2422,7 @@ Date:""")
                 self.saveas()
 
         except Exception as e:
-            QMessageBox.critical(self.scene.parent(), 'Open File Error', f"Error saving scene: {e}", QMessageBox.Ok)
+            QMessageBox.critical(self, 'Open File Error', f"Error saving scene: {e}", QMessageBox.Ok)
 
     def saveas(self):
         filename, _ = QFileDialog.getSaveFileName(self, 'Save As', '', 'MPRUN files (*.mp)')
@@ -2428,12 +2434,18 @@ Date:""")
 
                     self.canvas.manager.filename = filename
                     self.canvas.modified = False
-                    self.setWindowTitle(f'MPRUN - {self.canvas.manager.filename}')
+                    self.setWindowTitle(f'MPRUN - {os.path.basename(self.canvas.manager.filename)}')
             except Exception as e:
                 print(e)
 
     def open(self):
         self.canvas.manager.load(self)
+
+    def set_user_data(self, data):
+        self.user_data = {}
+
+        for key, value in self.user_data.items():
+            pass
 
 
 if __name__ == '__main__':
@@ -2449,4 +2461,9 @@ if __name__ == '__main__':
         app.setStyleSheet(windows_style)
 
     window = MPRUN()
+
+    with open('Internal/user_data.mpdat', 'rb') as f:
+        data = pickle.load(f)
+        window.set_user_data(data)
+
     sys.exit(app.exec_())
