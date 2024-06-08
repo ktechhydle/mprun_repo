@@ -242,6 +242,8 @@ class DetachableTabWidget(QtWidgets.QTabWidget):
             self.contentWidget = contentWidget
             self.setCentralWidget(self.contentWidget)
             self.contentWidget.show()
+            self.setFixedWidth(self.contentWidget.width())
+            self.setFixedHeight(self.contentWidget.height())
 
             self.windowDropFilter = self.WindowDropFilter()
             self.installEventFilter(self.windowDropFilter)
