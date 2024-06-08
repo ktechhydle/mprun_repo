@@ -31,7 +31,6 @@ class MPRUN(QMainWindow):
         self.setWindowIcon(QIcon('UI/Main Logos/MPRUN_logoV3.png'))
         self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
-        self.version = '1.0.0'
 
         # File
         self.file_name = None

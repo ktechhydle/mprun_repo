@@ -1,8 +1,0 @@
-vtracer~=0.6.10
-PyQt5~=5.15.10
-future~=1.0.0
-pillow~=10.3.0
-customtkinter~=5.2.2
-numpy~=1.26.4
-scipy~=1.13.0
-scikit-image~=0.23.2

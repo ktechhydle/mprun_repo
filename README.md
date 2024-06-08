@@ -6,8 +6,8 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 > [!NOTE]
 > # Install
 > 1. Clone the git with `https://github.com/ktechhydle/mprun_repo.git`.
-> 2. Install the project requirements with `pip install -r IMPORTANT/requirements.txt`.
-> 3. Run `launcher.py`, and see the full app.
+> 2. Install the project requirements with `pip install -r requirements.txt`.
+> 3. Run `main.py`, and see the full app.
 > 4. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it.***](license.txt)
 
 # How It Works...
@@ -48,7 +48,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Insert Image Tool:
 	> Insert various image types into the scene (including SVG!).
 
-# Additional tools (found in the `Tools` and `Edit` menu)
+# Additional tools (found in the menu bar)
 - Smooth Path Tool:
 	> Smooth selected path elements (if not already smoothed) with the Savitzky–Golay Filter.
 - Close Path Tool:
@@ -65,6 +65,12 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Ungroup selected element groups.
 - Trace Image Tool:
 	> Trace imported Bitmap images into SVG format (this tool is customizable with the `Image Trace` panel).
+- Save:
+	> Save documents in an `.mp` format.
+- Save As:
+	> Save documents with a new name in an `.mp` format.
+- Open:
+    > Open `.mp` documents for further editing.
 
 # Additional Features
 - Vector Graphics:

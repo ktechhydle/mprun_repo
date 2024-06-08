@@ -59,14 +59,3 @@ if os.path.exists('Internal/user_data.mpdat'):
 else:
     with open('Internal/user_data.mpdat', 'w') as f:
         json.dump(user_data, f)
-
-class DisclaimerWin(QMessageBox):
-    def __init__(self, data_file, parent=None):
-        super().__init__(parent)
-
-        self.setWindowTitle('Disclaimer')
-        self.setIcon(QMessageBox.Warning)
-        self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-
-        self.data_file = data_file
-        self.setText(data_use_disclaimer)

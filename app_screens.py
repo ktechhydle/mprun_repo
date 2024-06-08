@@ -1,6 +1,7 @@
 from PIL import Image
 from PyQt5 import QtWidgets, QtGui, QtCore
 from custom_widgets import *
+from app_internal import *
 import sys
 
 class AboutWin(QtWidgets.QWidget):
@@ -197,6 +198,17 @@ class FindActionWin(QtWidgets.QWidget):
                 widget.setFocus(Qt.FocusReason.MouseFocusReason)
 
             self.close()
+
+class DisclaimerWin(QMessageBox):
+    def __init__(self, data_file, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle('Disclaimer')
+        self.setIcon(QMessageBox.Warning)
+        self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        self.data_file = data_file
+        self.setText(data_use_disclaimer)
 
 
 
