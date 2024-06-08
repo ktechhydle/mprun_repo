@@ -10,6 +10,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtOpenGL import *
 from PyQt5.QtSvg import *
 from PyQt5.Qt import *
+
+import app_internal
 from graphics_framework import *
 from custom_classes import *
 from custom_widgets import *
@@ -1037,11 +1039,7 @@ class MPRUN(QMainWindow):
         self.last_paper = self.paper
 
         # Text on paper
-        self.paper_text = CustomTextItem("""Run #:
-Page #:
-Competition:
-Athlete:
-Date:""")
+        self.paper_text = CustomTextItem(default_text)
         self.paper_text.setPos(2, 2)
         self.paper_text.setDefaultTextColor(QColor('black'))
         self.paper_text.setFont(font)

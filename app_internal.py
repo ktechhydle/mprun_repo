@@ -6,6 +6,12 @@ import pickle
 import sys
 import os
 
+default_text = """Run #:
+Page #:
+Competition:
+Athlete:
+Date:"""
+
 copyright_message = '''
 
 Copyright (C) 2023-2024 MPRUN Document
@@ -32,6 +38,7 @@ user_data = []
 
 user_data.append({
     'disclaimer_read': False,
+    'whatsnew_read': False,
     'tutorial_watched': False,
 })
 
