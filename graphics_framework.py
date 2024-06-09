@@ -1032,6 +1032,7 @@ class SceneManager:
                         'name': item.toolTip(),
                         'zval': item.zValue(),
                         'locked': True if item.markdownEnabled else False,
+                        'visible': item.isVisible(),
                     })
 
             elif isinstance(item, CustomPathItem):
@@ -1057,6 +1058,7 @@ class SceneManager:
                         'textcolor': self.serialize_color(item.text_along_path_color) if item.add_text else self.serialize_color(QColor('black')),
                         'textspacing': item.text_along_path_spacing if item.add_text else 3,
                         'starttextfrombeginning': item.start_text_from_beginning if item.add_text else False,
+                        'visible': item.isVisible(),
                     }
 
                     items_data.append(path_data)
@@ -1074,6 +1076,7 @@ class SceneManager:
                         'y': item.pos().y(),
                         'name': item.toolTip(),
                         'zval': item.zValue(),
+                        'visible': item.isVisible(),
                         'children': self.serialize_group(item)
                     })
 
@@ -1099,6 +1102,8 @@ class SceneManager:
                         'textposx': item.text_element.pos().x(),
                         'textposy': item.text_element.pos().y(),
                         'textzval': item.text_element.zValue(),
+                        'visible': item.isVisible(),
+                        'textvisible': item.text_element.isVisible(),
                     }
 
                     items_data.append(data)
@@ -1117,6 +1122,7 @@ class SceneManager:
                         'name': item.toolTip(),
                         'zval': item.zValue(),
                         'filename': item.return_filename(),
+                        'visible': item.isVisible(),
                     }
 
                     items_data.append(data)
@@ -1135,6 +1141,7 @@ class SceneManager:
                         'name': item.toolTip(),
                         'zval': item.zValue(),
                         'filename': item.return_filename(),
+                        'visible': item.isVisible(),
                     }
 
                     items_data.append(data)
@@ -1225,6 +1232,7 @@ class SceneManager:
                     'name': child.toolTip(),
                     'zval': child.zValue(),
                     'locked': True if child.markdownEnabled else False,
+                    'visible': child.isVisible(),
                 })
             elif isinstance(child, CustomPathItem):
                 path_data = {
@@ -1238,6 +1246,7 @@ class SceneManager:
                     'name': child.toolTip(),
                     'zval': child.zValue(),
                     'elements': self.serialize_path(child.path()),
+                    'visible': child.isVisible(),
                 }
 
                 if child.add_text:
@@ -1333,6 +1342,7 @@ class SceneManager:
         text_item.setToolTip(data['name'])
         text_item.setZValue(data['zval'])
         text_item.locked = data['locked']
+        text_item.setVisible(data['visible'])
 
         if data.get('markdown', True):
             text_item.toMarkdown()
@@ -1362,6 +1372,7 @@ class SceneManager:
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
         path_item.setZValue(data['zval'])
+        path_item.setVisible(data['visible'])
 
         if data.get('smooth', True):
             path_item.smooth = True
@@ -1389,6 +1400,7 @@ class SceneManager:
         group_item.setPos(data['x'], data['y'])
         group_item.setToolTip(data['name'])
         group_item.setZValue(data['zval'])
+        group_item.setVisible(data['visible'])
 
         for child_data in data['children']:
             if child_data['type'] == 'CustomTextItem':
@@ -1427,6 +1439,8 @@ class SceneManager:
         path_item.text_element.setZValue(data['textzval'])
         path_item.text_element.setDefaultTextColor(self.deserialize_color(data['textcolor']))
         path_item.text_element.setFont(self.deserialize_font(data['textfont']))
+        path_item.setVisible(data['visible'])
+        path_item.text_element.setVisible(data['textvisible'])
 
         return path_item
 
@@ -1438,6 +1452,7 @@ class SceneManager:
             svg_item.setPos(data['x'], data['y'])
             svg_item.setToolTip(data['name'])
             svg_item.setZValue(data['zval'])
+            svg_item.setVisible(data['visible'])
             return svg_item
         else:
             self.repair_needed = True
@@ -1452,6 +1467,7 @@ class SceneManager:
             pixmap_item.setPos(data['x'], data['y'])
             pixmap_item.setToolTip(data['name'])
             pixmap_item.setZValue(data['zval'])
+            pixmap_item.setVisible(data['visible'])
             return pixmap_item
         else:
             self.repair_needed = True

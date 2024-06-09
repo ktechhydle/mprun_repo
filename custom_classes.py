@@ -485,7 +485,6 @@ class CustomTextItem(QGraphicsTextItem):
         item = CustomTextItem()
         item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
-        item.setPlainText(self.toPlainText())
         item.setPos(self.pos())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
@@ -496,6 +495,15 @@ class CustomTextItem(QGraphicsTextItem):
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Text')
+
+        if self.markdownEnabled:
+            item.markdownEnabled = True
+            item.setPlainText(self.old_text)
+            item.old_text = item.toPlainText()
+            item.toMarkdown()
+
+        else:
+            self.setPlainText(self.toPlainText())
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
