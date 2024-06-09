@@ -1821,7 +1821,11 @@ class MPRUN(QMainWindow):
                     items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
             elif isinstance(item, CustomTextItem):
-                item.locked = False
+                if item.markdownEnabled:
+                    pass
+
+                else:
+                    item.locked = False
 
         if self.gsnap_check_btn.isChecked():
             self.gsnap_check_btn.click()
@@ -2090,7 +2094,6 @@ class MPRUN(QMainWindow):
             elif file_path.endswith(('.txt', '.csv')):
                 with open(file_path, 'r') as f:
                     item = CustomTextItem(f.read())
-                    item.setFileName(file_path)
 
                     add_command = AddItemCommand(self.canvas, item)
                     self.canvas.addCommand(add_command)
@@ -2100,8 +2103,8 @@ class MPRUN(QMainWindow):
             elif file_path.endswith('.md'):
                 with open(file_path, 'r') as f:
                     item = CustomTextItem(f.read())
-                    item.setFileName(file_path)
                     item.toMarkdown()
+                    item.set_locked()
 
                     add_command = AddItemCommand(self.canvas, item)
                     self.canvas.addCommand(add_command)

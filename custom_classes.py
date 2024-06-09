@@ -423,22 +423,14 @@ class CustomTextItem(QGraphicsTextItem):
 
         self.setToolTip('Text')
         self.locked = False
-        self.old_html = self.toHtml()
-        self.old_text = self.toPlainText()
-        self.filename = None
-
         self.setAcceptHoverEvents(True)
-
         self.gridEnabled = False
+        self.old_text = self.toPlainText()
         self.markdownEnabled = False
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
             self.mouse_offset = event.pos()
-
-            if event.modifiers() & Qt.ControlModifier:
-                if self.filename is not None:
-                    QDesktopServices.openUrl(QUrl.fromLocalFile(self.filename))
 
         super().mousePressEvent(event)
 
@@ -474,37 +466,17 @@ class CustomTextItem(QGraphicsTextItem):
             self.clearFocus()
 
     def focusOutEvent(self, event):
-        if self.markdownEnabled:
-            new_html = self.toHtml()
-            if self.old_html != new_html:
-                edit_command = EditMarkdownCommand(self, self.old_html, new_html)
-                self.scene().addCommand(edit_command)
-                self.old_html = new_html
+        new_text = self.toPlainText()
+        if self.old_text != new_text:
+            edit_command = EditTextCommand(self, self.old_text, new_text)
+            self.scene().addCommand(edit_command)
+            self.old_text = new_text
 
-            cursor = self.textCursor()
-            cursor.clearSelection()
-            self.setTextCursor(cursor)
-            self.setTextInteractionFlags(Qt.NoTextInteraction)
-            super().focusOutEvent(event)
-
-        else:
-            new_text = self.toPlainText()
-            if self.old_text != new_text:
-                edit_command = EditTextCommand(self, self.old_text, new_text)
-                self.scene().addCommand(edit_command)
-                self.old_text = new_text
-
-            cursor = self.textCursor()
-            cursor.clearSelection()
-            self.setTextCursor(cursor)
-            self.setTextInteractionFlags(Qt.NoTextInteraction)
-            super().focusOutEvent(event)
-
-    def setFileName(self, filename):
-        self.filename = filename
-
-    def fileName(self):
-        return self.filename
+        cursor = self.textCursor()
+        cursor.clearSelection()
+        self.setTextCursor(cursor)
+        self.setTextInteractionFlags(Qt.NoTextInteraction)
+        super().focusOutEvent(event)
 
     def set_locked(self):
         self.locked = True
@@ -543,6 +515,7 @@ class CustomTextItem(QGraphicsTextItem):
 
         self.setHtml(html_text)
         self.markdownEnabled = True
+        self.set_locked()
 
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path, text: str):

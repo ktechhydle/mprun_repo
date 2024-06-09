@@ -287,13 +287,11 @@ y: {int(p.y())}''')
             elif url.toLocalFile().endswith(('.txt', '.csv')):
                 with open(url.toLocalFile(), 'r') as f:
                     item = CustomTextItem(f.read())
-                    item.setFileName(url.toLocalFile())
                     item.setToolTip('Imported Text')
 
             elif url.toLocalFile().endswith('.md'):
                 with open(url.toLocalFile(), 'r') as f:
                     item = CustomTextItem(f.read())
-                    item.setFileName(url.toLocalFile())
                     item.setToolTip('Imported Text')
                     item.toMarkdown()
 
@@ -1023,7 +1021,8 @@ class SceneManager:
                 else:
                     items_data.append({
                         'type': 'CustomTextItem',
-                        'text': item.toPlainText(),
+                        'markdown': True if item.markdownEnabled else False,
+                        'text': item.old_text if item.markdownEnabled else item.toPlainText(),
                         'font': self.serialize_font(item.font()),
                         'color': self.serialize_color(item.defaultTextColor()),
                         'rotation': item.rotation(),
@@ -1032,6 +1031,7 @@ class SceneManager:
                         'y': item.pos().y(),
                         'name': item.toolTip(),
                         'zval': item.zValue(),
+                        'locked': True if item.markdownEnabled else False,
                     })
 
             elif isinstance(item, CustomPathItem):
@@ -1214,6 +1214,7 @@ class SceneManager:
             if isinstance(child, CustomTextItem):
                 children.append({
                     'type': 'CustomTextItem',
+                    'markdown': True if child.markdownEnabled else False,
                     'text': child.toPlainText(),
                     'font': self.serialize_font(child.font()),
                     'color': self.serialize_color(child.defaultTextColor()),
@@ -1223,6 +1224,7 @@ class SceneManager:
                     'y': child.pos().y(),
                     'name': child.toolTip(),
                     'zval': child.zValue(),
+                    'locked': True if child.markdownEnabled else False,
                 })
             elif isinstance(child, CustomPathItem):
                 path_data = {
@@ -1330,6 +1332,11 @@ class SceneManager:
         text_item.setPos(data['x'], data['y'])
         text_item.setToolTip(data['name'])
         text_item.setZValue(data['zval'])
+        text_item.locked = data['locked']
+
+        if data.get('markdown', True):
+            text_item.toMarkdown()
+
         return text_item
 
     def deserialize_custom_path_item(self, data):
