@@ -235,6 +235,18 @@ QDialogButtonBox QPushButton {
       color: #535353;
     }
 
+QDialogButtonBox QPushButton:default {
+    border: 2px solid #1473e6;
+    border-radius: 12px;
+    background-color: #1473e6;
+    min-width: 100px;
+    font-size: 15px; }
+    QDialogButtonBox QPushButton:default:hover {
+        border: 2px solid #0d66d0;
+        background-color: #0d66d0;
+        color: white;
+    }
+
 /* Sliders and scrollbars */
 QSlider {
   border: None; }

@@ -206,6 +206,7 @@ class DisclaimerWin(QMessageBox):
         self.setWindowTitle('Disclaimer')
         self.setIcon(QMessageBox.Warning)
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        self.setDefaultButton(QMessageBox.Yes)
 
         self.data_file = data_file
         self.setText(data_use_disclaimer)
