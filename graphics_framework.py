@@ -680,7 +680,7 @@ y: {int(p.y())}''')
             width = current_pos.x() - self.clicked_canvas_point.x()
             height = current_pos.y() - self.clicked_canvas_point.y()
 
-            if QApplication.keyboardModifiers() & Qt.ControlModifier:  # Check if 'C' key is pressed
+            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
                 # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
                 size = min(abs(width), abs(height))
                 width = size if width >= 0 else -size
