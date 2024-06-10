@@ -653,9 +653,6 @@ y: {int(p.y())}''')
                 self.scene().addItem(self.canvas_item)
                 command = AddItemCommand(self.scene(), self.canvas_item)
                 self.canvas.addCommand(command)
-
-                self.setCursor(Qt.CursorShape.SizeFDiagCursor)
-
             else:
                 pass
 
@@ -701,8 +698,6 @@ y: {int(p.y())}''')
             self.clicked_canvas_point = None
 
             self.canvas.update()
-
-        self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
@@ -891,6 +886,8 @@ class SceneManager:
 
     def load(self, parent):
         try:
+            self.scene.parentWindow.use_exit_add_canvas()
+
             if self.scene.modified:
                 # Display a confirmation dialog
                 confirmation_dialog = QMessageBox(self.scene.parentWindow)
