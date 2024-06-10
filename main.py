@@ -967,7 +967,7 @@ class MPRUN(QMainWindow):
         self.canvas_view.setViewport(self.opengl_widget)
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
-        self.action_group.triggered.connect(self.canvas_view.on_add_canvas)
+        self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
 
         # Update default fonts, colors, etc.
         self.update('ui_update')
@@ -1791,41 +1791,15 @@ class MPRUN(QMainWindow):
 
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
-                for items in item.childItems():
-                    if isinstance(items, CanvasTextItem):
-                        items.setVisible(True)
-
-                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+                item.setCanvasActive(True)
 
     def use_exit_add_canvas(self):
         # Deactivate the add canvas tool
         self.select_btn.trigger()
-        self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
 
         for item in self.canvas.items():
-            self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
-
             if isinstance(item, CanvasItem):
-                brush = QBrush(QColor('white'))
-                pen = QPen(QColor('white'), 2, Qt.SolidLine)
-                pen.setWidthF(0)
-                pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
-                item.setBrush(brush)
-                item.setPen(pen)
-
-                for items in item.childItems():
-                    items.setVisible(False)
-                    items.parentItem().setSelected(False)
-                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
-                    items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
-
-            elif isinstance(item, CustomTextItem):
-                if item.markdownEnabled:
-                    pass
-
-                else:
-                    item.locked = False
+                item.setCanvasActive(False)
 
         if self.gsnap_check_btn.isChecked():
             self.gsnap_check_btn.click()

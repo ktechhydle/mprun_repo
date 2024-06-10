@@ -617,6 +617,8 @@ class CanvasItem(QGraphicsRectItem):
         self.text = CanvasTextItem(name, self)
         self.text.setVisible(False)
         self.text.setZValue(10000)
+        self.active = False
+        self.setAcceptHoverEvents(True)
 
         self.gridEnabled = False
         self.setZValue(-1)
@@ -645,6 +647,34 @@ class CanvasItem(QGraphicsRectItem):
 
     def name(self):
         return self.text.toPlainText()
+
+    def canvasActive(self):
+        return self.active
+
+    def setCanvasActive(self, enabled: bool):
+        self.scene().setBackgroundBrush(QBrush(QColor('#737373')))
+        self.setFlag(QGraphicsItem.ItemIsMovable, enabled)
+        self.setFlag(QGraphicsItem.ItemIsSelectable, enabled)
+        self.text.setVisible(enabled)
+        self.active = enabled
+        self.setCursor(Qt.SizeAllCursor)
+        if enabled is False:
+            self.scene().setBackgroundBrush(QBrush(QColor('#606060')))
+            self.setCursor(Qt.CursorShape.ArrowCursor)
+            brush = QBrush(QColor('white'))
+            pen = QPen(QColor('white'), 2, Qt.SolidLine)
+            pen.setWidthF(0)
+            pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+            self.setBrush(brush)
+            self.setPen(pen)
+
+        for item in self.scene().items():
+            if isinstance(item, CanvasItem):
+                pass
+
+            else:
+                item.setFlag(QGraphicsItem.ItemIsSelectable, not enabled)
+                item.setFlag(QGraphicsItem.ItemIsMovable, not enabled)
 
 class CanvasTextItem(QGraphicsTextItem):
     def __init__(self, text, parent):

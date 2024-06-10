@@ -162,7 +162,7 @@ class CustomGraphicsView(QGraphicsView):
         else:
             super().mousePressEvent(event)
 
-        self.on_add_canvas()
+        self.on_add_canvas_trigger()
         
     def mouseMoveEvent(self, event):
         point = event.pos()
@@ -627,69 +627,70 @@ y: {int(p.y())}''')
         except Exception as e:
             pass
 
-    def on_add_canvas(self):
+    def on_add_canvas_trigger(self):
         if self.add_canvas_btn.isChecked():
-            self.scene().setBackgroundBrush(QBrush(QColor('#737373')))
-
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
-                    for items in item.childItems():
-                        items.setVisible(True)
-                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                    item.setFlag(QGraphicsItem.ItemIsMovable, False)
+                    item.setCanvasActive(True)
 
         elif not self.add_canvas_btn.isChecked():
-            self.scene().setBackgroundBrush(QBrush(QColor('#606060')))
-
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
-                    for items in item.childItems():
-                        items.setVisible(False)
-                        items.parentItem().setSelected(False)
-                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
-                        items.parentItem().setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
-
-                else:
-                    item.setFlag(QGraphicsItem.ItemIsSelectable)
-                    item.setFlag(QGraphicsItem.ItemIsMovable)
+                    item.setCanvasActive(False)
 
     def on_add_canvas_start(self, event):
-        if event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
-            self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
-            self.setDragMode(QGraphicsView.NoDrag)
+        if event.button() == Qt.LeftButton:
+            item_under_mouse = self.itemAt(event.pos())
 
-            self.clicked_canvas_point = self.mapToScene(event.pos())
-            self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), 'Canvas')
-            self.canvas_item.setPos(self.clicked_canvas_point)
+            if item_under_mouse is None:  # No item under mouse, create new CanvasItem
+                self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
+                self.setDragMode(QGraphicsView.NoDrag)
 
-            self.scene().addItem(self.canvas_item)
-            command = AddItemCommand(self.scene(), self.canvas_item)
-            self.canvas.addCommand(command)
+                self.clicked_canvas_point = self.mapToScene(event.pos())
+                self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), 'Canvas')
+                self.canvas_item.setPos(self.clicked_canvas_point)
+
+                self.scene().addItem(self.canvas_item)
+                command = AddItemCommand(self.scene(), self.canvas_item)
+                self.canvas.addCommand(command)
+
+                self.setCursor(Qt.CursorShape.SizeFDiagCursor)
+
+            else:
+                pass
 
     def on_add_canvas_drag(self, event):
-        if self.canvas_item is not None and event.buttons() & Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
+        if self.canvas_item is not None and event.buttons() & Qt.LeftButton and self.clicked_canvas_point is not None:
             current_pos = self.mapToScene(event.pos())
-            self.canvas_item.setRect(0,
-                                     0,
-                                     current_pos.x() - self.clicked_canvas_point.x(),
-                                     current_pos.y() - self.clicked_canvas_point.y())
+            width = current_pos.x() - self.clicked_canvas_point.x()
+            height = current_pos.y() - self.clicked_canvas_point.y()
+
+            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
+                # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
+                size = min(abs(width), abs(height))
+                width = size if width >= 0 else -size
+                height = size if height >= 0 else -size
+
+            self.canvas_item.setRect(0, 0, width, height)
 
     def on_add_canvas_end(self, event):
-        if self.canvas_item is not None and event.button() == Qt.LeftButton and event.modifiers() & Qt.ShiftModifier:
+        if self.canvas_item is not None and event.button() == Qt.LeftButton:
             self.setDragMode(QGraphicsView.RubberBandDrag)
             current_pos = self.mapToScene(event.pos())
-            self.canvas_item.setRect(0,
-                                     0,
-                                     current_pos.x() - self.clicked_canvas_point.x(),
-                                     current_pos.y() - self.clicked_canvas_point.y())
+            width = current_pos.x() - self.clicked_canvas_point.x()
+            height = current_pos.y() - self.clicked_canvas_point.y()
 
+            if QApplication.keyboardModifiers() & Qt.ControlModifier:  # Check if 'C' key is pressed
+                # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
+                size = min(abs(width), abs(height))
+                width = size if width >= 0 else -size
+                height = size if height >= 0 else -size
+
+            self.canvas_item.setRect(0, 0, width, height)
             self.canvas_item.setPos(self.clicked_canvas_point)
             self.canvas_item.setToolTip('Canvas')
             self.canvas_item.setZValue(-1)
+            self.canvas_item.setCanvasActive(True)
             self.scene().addItem(self.canvas_item.text)
 
             if self.canvas_item.rect().isEmpty():
@@ -700,6 +701,8 @@ y: {int(p.y())}''')
             self.clicked_canvas_point = None
 
             self.canvas.update()
+
+        self.setCursor(Qt.CursorShape.ArrowCursor)
 
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
