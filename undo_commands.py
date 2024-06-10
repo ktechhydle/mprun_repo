@@ -115,24 +115,18 @@ class ScaleCommand(QUndoCommand):
     def undo(self):
         self.item.setScale(self.old_scale)
 
-class TransformScaleCommand(QUndoCommand):
-    def __init__(self, item, x, y, old_scalex, old_scaley):
+class TransformCommand(QUndoCommand):
+    def __init__(self, item, old_t, new_t):
         super().__init__()
         self.item = item
-        self.old_scalex = old_scalex
-        self.old_scaley = old_scaley
-        self.x = x
-        self.y = y
+        self.old_transform = old_t
+        self.new_transform = new_t
 
     def redo(self):
-        transform = QTransform()
-        transform.scale(self.x, self.y)
-        self.item.setTransform(transform)
+        self.item.setTransform(self.new_transform)
 
     def undo(self):
-        transform = QTransform()
-        transform.scale(self.old_scaley, self.old_scalex)
-        self.item.setTransform(transform)
+        self.item.setTransform(self.old_transform)
 
 class MouseTransformScaleCommand(QUndoCommand):
     def __init__(self, item, old_transform, new_transform):
@@ -148,17 +142,20 @@ class MouseTransformScaleCommand(QUndoCommand):
         self.item.setTransform(self.new_transform)
 
 class RotateCommand(QUndoCommand):
-    def __init__(self, item, old_rotation, new_rotation):
+    def __init__(self, parent, item, old_rotation, new_rotation):
         super().__init__()
         self.item = item
         self.old_value = old_rotation
         self.new_value = new_rotation
+        self.parent = parent
 
     def redo(self):
         self.item.setRotation(self.new_value)
+        self.parent.update_transform_ui()
 
     def undo(self):
         self.item.setRotation(self.old_value)
+        self.parent.update_transform_ui()
 
 class MoveItemCommand(QUndoCommand):
     def __init__(self, item, oldPos):

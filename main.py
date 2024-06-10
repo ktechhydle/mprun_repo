@@ -1703,25 +1703,48 @@ class MPRUN(QMainWindow):
         try:
             items = self.canvas.selectedItems()
             if len(items) > 1:
-                pass
+                # Calculate the center of the bounding box for the selected items
+                bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
+                center_x = bounding_rect.center().x()
+                center_y = bounding_rect.center().y()
+
+                # Calculate the scaling factor for the group
+                current_width = bounding_rect.width()
+                current_height = bounding_rect.height()
+
+                scale_x = x_value / current_width if current_width != 0 else 1
+                scale_y = y_value / current_height if current_height != 0 else 1
+
+                # Create a transform centered on the bounding box's center
+                transform = QTransform()
+                transform.translate(center_x, center_y)
+                transform.scale(scale_x, scale_y)
+                transform.translate(-center_x, -center_y)
+
+                # Apply the transform to each item
+                for item in items:
+                    command = TransformCommand(item, item.transform(), transform)
+                    self.canvas.addCommand(command)
 
             else:
                 for item in items:
                     if isinstance(item, CanvasItem):
+                        # Specific handling for CanvasItem if required
                         pass
-
                     else:
-                        x_value = x_value / item.boundingRect().width()
-                        y_value = y_value / item.boundingRect().height()
+                        current_width = item.boundingRect().width()
+                        current_height = item.boundingRect().height()
 
-                        command = TransformScaleCommand(item, x_value, y_value, item.transform().m11(), item.transform().m22())
+                        scale_x = x_value / item.sceneBoundingRect().width()
+                        scale_y = y_value / item.sceneBoundingRect().height()
+
+                        transform = QTransform()
+                        transform.scale(scale_x, scale_y)
+                        command = TransformCommand(item, item.transform(), transform)
                         self.canvas.addCommand(command)
 
-                        item.boundingRect().setWidth(x_value)
-                        item.boundingRect().setHeight(y_value)
-
         except Exception as e:
-            pass
+            print(f"Error during scaling: {e}")
 
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
@@ -1730,20 +1753,40 @@ class MPRUN(QMainWindow):
 
     def use_rotate(self, value):
         items = self.canvas.selectedItems()
+        if not items:
+            return
+
+        # Calculate the center of the selected items
+        bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
+        center_x = bounding_rect.center().x()
+        center_y = bounding_rect.center().y()
+
+        # Rotate each item around the center
         for item in items:
             if isinstance(item, CanvasItem):
                 pass
 
             else:
-                # Calculate the center point of the item
-                center = item.boundingRect().center()
+                # Get the bounding rect of the item
+                bounding_rect = item.boundingRect()
 
-                # Set the transformation origin to the center point
-                item.setTransformOriginPoint(center)
+                # Calculate the center of the bounding rect
+                center_x = bounding_rect.center().x()
+                center_y = bounding_rect.center().y()
 
-                # Rotate the item
-                command = RotateCommand(item, item.rotation(), value)
+                # Set the rotation angle
+                command = RotateCommand(self, item, item.rotation(), value)
                 self.canvas.addCommand(command)
+
+                # Get the new bounding rect of the rotated item
+                new_bounding_rect = item.boundingRect()
+
+                # Calculate the offset from the old center to the new center
+                offset_x = bounding_rect.center().x() - new_bounding_rect.center().x()
+                offset_y = bounding_rect.center().y() - new_bounding_rect.center().y()
+
+                # Move the item to compensate for the offset
+                item.moveBy(offset_x, offset_y)
 
     def use_flip_horizontal(self):
         for item in self.canvas.selectedItems():
