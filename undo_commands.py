@@ -16,17 +16,20 @@ class AddItemCommand(QUndoCommand):
         self.scene.removeItem(self.item)
 
 class PositionChangeCommand(QUndoCommand):
-    def __init__(self, item, old, new):
+    def __init__(self, parent, item, old, new):
         super().__init__()
         self.item = item
         self.old = old
         self.new = new
+        self.parent = parent
 
     def redo(self):
         self.item.setPos(self.new)
+        self.parent.update_transform_ui()
 
     def undo(self):
         self.item.setPos(self.old)
+        self.parent.update_transform_ui()
 
 class EditTextCommand(QUndoCommand):
     def __init__(self, item, old_text, new_text):
@@ -40,19 +43,6 @@ class EditTextCommand(QUndoCommand):
 
     def undo(self):
         self.item.setPlainText(self.old_text)
-
-class EditMarkdownCommand(QUndoCommand):
-    def __init__(self, item, old_text, new_text):
-        super().__init__()
-        self.item = item
-        self.old_text = old_text
-        self.new_text = new_text
-
-    def redo(self):
-        self.item.setHtml(self.new_text)
-
-    def undo(self):
-        self.item.setHtml(self.old_text)
 
 class RemoveItemCommand(QUndoCommand):
     def __init__(self, scene, item):

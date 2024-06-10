@@ -50,7 +50,7 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
-        self.undo_stack.setUndoLimit(75)
+        self.undo_stack.setUndoLimit(200)
 
         # Create GUI
         self.create_actions_dict()
@@ -1559,9 +1559,6 @@ class MPRUN(QMainWindow):
             if isinstance(item, CanvasItem):
                 pass
 
-            elif isinstance(item, CanvasTextItem):
-                pass
-
             else:
                 item.setZValue(item.zValue() + 1.0)
                 self.update_appearance_ui()
@@ -1575,9 +1572,6 @@ class MPRUN(QMainWindow):
                 if isinstance(item, CanvasItem):
                     pass
 
-                elif isinstance(item, CanvasTextItem):
-                    pass
-
                 else:
                     item.setZValue(item.zValue() - 1.0)
                     self.update_appearance_ui()
@@ -1588,9 +1582,6 @@ class MPRUN(QMainWindow):
             max_z = max([item.zValue() for item in self.canvas.items()])
             for item in selected_items:
                 if isinstance(item, CanvasItem):
-                    pass
-
-                elif isinstance(item, CanvasTextItem):
                     pass
 
                 else:
@@ -1679,12 +1670,26 @@ class MPRUN(QMainWindow):
     def use_set_item_pos(self):
         self.canvas.blockSignals(True)
         try:
-            x = self.x_pos_spin.value()
-            y = self.y_pos_spin.value()
+            # Get target position from spin boxes
+            target_x = self.x_pos_spin.value()
+            target_y = self.y_pos_spin.value()
 
-            for item in self.canvas.selectedItems():
-                pass
+            # Get the bounding rect of selected items
+            selected_items = self.canvas.selectedItems()
+            if not selected_items:
+                return
 
+            bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
+
+            # Calculate the offset
+            offset_x = target_x - bounding_rect.x()
+            offset_y = target_y - bounding_rect.y()
+
+            # Move each selected item by the offset
+            for item in selected_items:
+                new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
+                command = PositionChangeCommand(self, item, item.pos(), new_pos)
+                self.canvas.addCommand(command)
         finally:
             self.canvas.blockSignals(False)
 
