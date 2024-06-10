@@ -1767,26 +1767,32 @@ class MPRUN(QMainWindow):
                 pass
 
             else:
-                # Get the bounding rect of the item
-                bounding_rect = item.boundingRect()
+                if len(items) > 1:
+                    # Get the bounding rect of the item
+                    bounding_rect = item.boundingRect()
 
-                # Calculate the center of the bounding rect
-                center_x = bounding_rect.center().x()
-                center_y = bounding_rect.center().y()
+                    # Calculate the center of the bounding rect
+                    center_x = bounding_rect.center().x()
+                    center_y = bounding_rect.center().y()
 
-                # Set the rotation angle
-                command = RotateCommand(self, item, item.rotation(), value)
-                self.canvas.addCommand(command)
+                    # Set the rotation angle
+                    command = RotateCommand(self, item, item.rotation(), value)
+                    self.canvas.addCommand(command)
 
-                # Get the new bounding rect of the rotated item
-                new_bounding_rect = item.boundingRect()
+                    # Get the new bounding rect of the rotated item
+                    new_bounding_rect = item.boundingRect()
 
-                # Calculate the offset from the old center to the new center
-                offset_x = bounding_rect.center().x() - new_bounding_rect.center().x()
-                offset_y = bounding_rect.center().y() - new_bounding_rect.center().y()
+                    # Calculate the offset from the old center to the new center
+                    offset_x = bounding_rect.center().x() - new_bounding_rect.center().x()
+                    offset_y = bounding_rect.center().y() - new_bounding_rect.center().y()
 
-                # Move the item to compensate for the offset
-                item.moveBy(offset_x, offset_y)
+                    # Move the item to compensate for the offset
+                    item.moveBy(offset_x, offset_y)
+
+                else:
+                    # Set the rotation angle
+                    command = RotateCommand(self, item, item.rotation(), value)
+                    self.canvas.addCommand(command)
 
     def use_flip_horizontal(self):
         for item in self.canvas.selectedItems():
