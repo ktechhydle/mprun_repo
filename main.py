@@ -329,7 +329,7 @@ class MPRUN(QMainWindow):
 
         # Item toolbar
         self.item_toolbar = QToolBar('MPRUN Item Bar')
-        self.item_toolbar.setIconSize(QSize(16, 16))
+        self.item_toolbar.setIconSize(QSize(26, 26))
         self.item_toolbar.setMovable(True)
         self.item_toolbar.setFloatable(True)
         self.item_toolbar.setFixedHeight(42)

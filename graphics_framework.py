@@ -32,7 +32,7 @@ class CustomGraphicsView(QGraphicsView):
         self.points = []
 
         # Set flags
-        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
