@@ -503,7 +503,7 @@ class CustomTextItem(QGraphicsTextItem):
             item.toMarkdown()
 
         else:
-            self.setPlainText(self.toPlainText())
+            item.setPlainText(self.toPlainText())
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
