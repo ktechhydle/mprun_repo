@@ -330,7 +330,10 @@ class MPRUN(QMainWindow):
         # Item toolbar
         self.item_toolbar = QToolBar('MPRUN Item Bar')
         self.item_toolbar.setIconSize(QSize(16, 16))
-        self.item_toolbar.setMovable(False)
+        self.item_toolbar.setMovable(True)
+        self.item_toolbar.setFloatable(True)
+        self.item_toolbar.setFixedHeight(42)
+        self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
 
         # View Toolbar
