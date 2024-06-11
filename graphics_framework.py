@@ -785,9 +785,13 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def undo(self):
         self.undo_stack.undo()
+        self.parentWindow.update_transform_ui()
+        self.parentWindow.update_appearance_ui()
 
     def redo(self):
         self.undo_stack.redo()
+        self.parentWindow.update_transform_ui()
+        self.parentWindow.update_appearance_ui()
 
     def addCommand(self, command):
         self.undo_stack.push(command)

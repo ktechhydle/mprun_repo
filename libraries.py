@@ -89,12 +89,14 @@ class LibraryWidget(QWidget):
 
         # Check if no Combobox Images files are found
         if not svg_files:
+            self.library_list_widget.setDragEnabled(False)
             list_item = QListWidgetItem('No files found')
             list_item.setIcon(QIcon('UI/UI Icons/folder_failed_icon.svg'))
             self.library_list_widget.setIconSize(QSize(40, 40))
             self.library_list_widget.addItem(list_item)
 
         else:
+            self.library_list_widget.setDragEnabled(True)
             # Add each Combobox Images file to the list widget
             for svg_file in svg_files:
                 list_item = QListWidgetItem(svg_file)
