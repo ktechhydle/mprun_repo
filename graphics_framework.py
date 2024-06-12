@@ -647,10 +647,9 @@ y: {int(p.y())}''')
                 self.setDragMode(QGraphicsView.NoDrag)
 
                 self.clicked_canvas_point = self.mapToScene(event.pos())
-                self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), 'Canvas')
+                self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), f'Canvas {self.scene().canvas_count}')
                 self.canvas_item.setPos(self.clicked_canvas_point)
 
-                self.scene().addItem(self.canvas_item)
                 command = AddItemCommand(self.scene(), self.canvas_item)
                 self.canvas.addCommand(command)
             else:
@@ -685,7 +684,7 @@ y: {int(p.y())}''')
 
             self.canvas_item.setRect(0, 0, width, height)
             self.canvas_item.setPos(self.clicked_canvas_point)
-            self.canvas_item.setToolTip('Canvas')
+            self.canvas_item.setToolTip(f'Canvas {self.scene().canvas_count}')
             self.canvas_item.setZValue(-1)
             self.canvas_item.setCanvasActive(True)
             self.scene().addItem(self.canvas_item.text)
@@ -721,6 +720,7 @@ class CustomGraphicsScene(QGraphicsScene):
         super().__init__()
         self.file_name = None
         self.mpversion = '1.0.0'
+        self.canvas_count = 1
         self.undo_stack = undoStack
         self.scale_btn = None
         self.modified = False
@@ -736,6 +736,7 @@ class CustomGraphicsScene(QGraphicsScene):
         self.gridSize = 10
         self.gridSquares = 5
 
+        # Item Movement
         self.movingItem = None
         self.oldPos = QPointF()
         self.itemMoved.connect(self.on_move_item)
@@ -873,6 +874,9 @@ class CustomGraphicsScene(QGraphicsScene):
     def addItem(self, item):
         super().addItem(item)
 
+        if isinstance(item, CanvasItem):
+            self.canvas_count += 1
+
         if self.gridEnabled:
             for item in self.items():
                 if isinstance(item, CanvasTextItem):
@@ -880,6 +884,17 @@ class CustomGraphicsScene(QGraphicsScene):
 
                 else:
                     item.gridEnabled = True
+
+    def removeItem(self, item):
+        super().removeItem(item)
+
+        for item in self.items():
+            if isinstance(item, CanvasItem):
+                if self.canvas_count == 1:
+                    pass
+
+                else:
+                    self.canvas_count -= 1
 
 class SceneManager:
     def __init__(self, scene: QGraphicsScene):
