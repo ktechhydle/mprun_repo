@@ -43,6 +43,7 @@ class CanvasItemSelector(QDialog):
 
         # Transparent option checkbox
         self.transparent_check_btn = QCheckBox()
+        self.transparent_check_btn.clicked.connect(self.canvas_changed)
         self.transparent_check_btn.setText('Transparent Background')
         self.transparent_check_btn.setToolTip('Export the selected canvas with a transparent background')
 
@@ -108,6 +109,22 @@ class CanvasItemSelector(QDialog):
         if self.watermark_item is not None:
             self.watermark_item.setPos(selected_item.sceneBoundingRect().bottomRight().x() - 65,
                                        selected_item.sceneBoundingRect().bottomRight().y() - 65)
+
+        if self.transparent_check_btn.isChecked():
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    b = item.brush()
+                    p = item.pen()
+                    b.setColor(QColor(Qt.transparent))
+                    p.setColor(QColor(Qt.transparent))
+
+                    item.setBrush(b)
+                    item.setPen(p)
+
+        else:
+            for item in self.canvas.items():
+                if isinstance(item, CanvasItem):
+                    item.restore()
 
         self.view.fitInView(selected_item.sceneBoundingRect(), Qt.KeepAspectRatio)
 

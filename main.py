@@ -1767,8 +1767,8 @@ class MPRUN(QMainWindow):
             if isinstance(item, CanvasItem):
                 item.setCanvasActive(False)
 
-        if self.gsnap_check_btn.isChecked():
-            self.gsnap_check_btn.click()
+        if self.quick_actions_tab.gsnap_check_btn.isChecked():
+            self.quick_actions_tab.gsnap_check_btn.click()
 
     def use_exit_grid(self):
         if self.gsnap_check_btn.isChecked():
@@ -2116,13 +2116,7 @@ class MPRUN(QMainWindow):
 
                     for item in self.canvas.items():
                         if isinstance(item, CanvasItem):
-                            b = item.brush()
-                            p = item.pen()
-                            b.setColor(QColor(Qt.transparent))
-                            p.setColor(QColor(Qt.transparent))
-
-                            item.setBrush(b)
-                            item.setPen(p)
+                            item.setTransparentMode()
 
                 self.filter_selected_canvas_for_export(selected_item)
 

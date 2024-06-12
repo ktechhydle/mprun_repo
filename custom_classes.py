@@ -676,6 +676,23 @@ class CanvasItem(QGraphicsRectItem):
                 item.setFlag(QGraphicsItem.ItemIsSelectable, not enabled)
                 item.setFlag(QGraphicsItem.ItemIsMovable, not enabled)
 
+    def setTransparentMode(self):
+        b = self.brush()
+        p = self.pen()
+        b.setColor(QColor(Qt.transparent))
+        p.setColor(QColor(Qt.transparent))
+
+        self.setBrush(b)
+        self.setPen(p)
+
+    def restore(self):
+        brush = QBrush(QColor('white'))
+        pen = QPen(QColor('white'), 2, Qt.SolidLine)
+        pen.setWidthF(0)
+        pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+        self.setBrush(brush)
+        self.setPen(pen)
+
 class CanvasTextItem(QGraphicsTextItem):
     def __init__(self, text, parent):
         super().__init__()
