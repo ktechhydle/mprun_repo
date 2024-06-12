@@ -83,25 +83,19 @@ class MPRUN(QMainWindow):
         # Create menus
         self.menu_bar = QMenuBar(self)
         self.setMenuBar(self.menu_bar)
-        self.mprun_menu = self.menu_bar.addMenu('&MPRUN')
         self.file_menu = self.menu_bar.addMenu('&File')
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.object_menu = self.menu_bar.addMenu('&Object')
         self.help_menu = self.menu_bar.addMenu('&Help')
 
-        # Create MPRUN actions
-        about_action = QAction('About', self)
-        about_action.triggered.connect(self.show_about)
-
-        show_version_action = QAction('Version', self)
-        show_version_action.triggered.connect(self.show_version)
-
         # Create file actions
         insert_action = QAction('Insert', self)
+        insert_action.setShortcut(QKeySequence('I'))
         insert_action.triggered.connect(self.insert_image)
 
         add_canvas_action = QAction('Add Canvas', self)
+        add_canvas_action.setShortcut(QKeySequence('A'))
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
         save_action = QAction('Save', self)
@@ -132,20 +126,33 @@ class MPRUN(QMainWindow):
         path_menu = self.tool_menu.addMenu('Path')
         characters_menu = self.tool_menu.addMenu('Characters')
         image_menu = self.tool_menu.addMenu('Image')
+        view_menu = self.tool_menu.addMenu('View')
+
+        select_action = QAction('Select', self)
+        select_action.setShortcut(QKeySequence(Qt.Key_Space))
+        select_action.triggered.connect(self.use_select)
+
+        pan_action = QAction('Pan', self)
+        pan_action.setShortcut(QKeySequence('P'))
+        pan_action.triggered.connect(self.use_pan)
 
         path_action = QAction('Path Draw', self)
+        path_action.setShortcut(QKeySequence('L'))
         path_action.triggered.connect(self.use_path)
         path_action.triggered.connect(self.update)
 
         pen_action = QAction('Pen Draw', self)
+        pen_action.setShortcut(QKeySequence('Ctrl+L'))
         pen_action.triggered.connect(self.use_pen_tool)
         pen_action.triggered.connect(self.update)
 
         linelabel_action = QAction('Line and Label', self)
+        linelabel_action.setShortcut(QKeySequence('T'))
         linelabel_action.triggered.connect(self.use_label)
         linelabel_action.triggered.connect(self.update)
 
         text_action = QAction('Text', self)
+        text_action.setShortcut(QKeySequence('Ctrl+T'))
         text_action.triggered.connect(self.use_text)
         text_action.triggered.connect(self.update)
 
@@ -173,6 +180,7 @@ class MPRUN(QMainWindow):
         name_action.triggered.connect(self.use_name_item)
 
         scale_action = QAction('Scale', self)
+        scale_action.setShortcut(QKeySequence('Q'))
         scale_action.triggered.connect(self.use_scale_tool)
 
         duplicate_action = QAction('Duplicate', self)
@@ -203,9 +211,11 @@ class MPRUN(QMainWindow):
         bring_to_front_action.triggered.connect(self.use_bring_to_front)
 
         hide_action = QAction('Hide Selected', self)
+        hide_action.setShortcut(QKeySequence('H'))
         hide_action.triggered.connect(self.use_hide_item)
 
         unhide_action = QAction('Unhide All', self)
+        unhide_action.setShortcut(QKeySequence('Ctrl+H'))
         unhide_action.triggered.connect(self.use_unhide_all)
 
         reset_action = QAction('Reset Item', self)
@@ -216,13 +226,16 @@ class MPRUN(QMainWindow):
         select_all_action.triggered.connect(self.use_select_all)
 
         # Create help menu actions
+        about_action = QAction('About', self)
+        about_action.triggered.connect(self.show_about)
+
+        show_version_action = QAction('Version', self)
+        show_version_action.triggered.connect(self.show_version)
+
         find_action_action = QAction('Find Action', self)
         find_action_action.triggered.connect(self.show_find_action)
 
         # Add actions
-        self.mprun_menu.addAction(about_action)
-        self.mprun_menu.addAction(show_version_action)
-
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addAction(insert_action)
         self.file_menu.addSeparator()
@@ -255,6 +268,9 @@ class MPRUN(QMainWindow):
         self.object_menu.addSeparator()
         self.object_menu.addAction(select_all_action)
 
+        self.help_menu.addAction(about_action)
+        self.help_menu.addAction(show_version_action)
+        self.help_menu.addSeparator()
         self.help_menu.addAction(find_action_action)
 
         # Sub menu actions
@@ -269,6 +285,9 @@ class MPRUN(QMainWindow):
         characters_menu.addAction(text_action)
 
         image_menu.addAction(image_trace_action)
+
+        view_menu.addAction(select_action)
+        view_menu.addAction(pan_action)
 
         # Add to actions dict
         self.actions['Trace Image'] = image_trace_action
@@ -295,7 +314,8 @@ class MPRUN(QMainWindow):
         self.toolbar = QToolBar('Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.TopToolBarArea | Qt.RightToolBarArea)
-        self.toolbar.setFloatable(False)
+        self.toolbar.setFloatable(True)
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Item toolbar
@@ -701,7 +721,6 @@ class MPRUN(QMainWindow):
         Key-Spacebar''')
         self.select_btn.setCheckable(True)
         self.select_btn.setChecked(True)
-        self.select_btn.setShortcut(QKeySequence(Qt.Key_Space))
         self.select_btn.triggered.connect(self.use_select)
 
         # Pan Button
@@ -709,7 +728,6 @@ class MPRUN(QMainWindow):
         self.pan_btn.setToolTip('''Pan Tool:
         Key-P''')
         self.pan_btn.setCheckable(True)
-        self.pan_btn.setShortcut(QKeySequence("P"))
         self.pan_btn.triggered.connect(self.use_pan)
 
         # Path draw button
@@ -717,7 +735,6 @@ class MPRUN(QMainWindow):
         self.path_btn.setCheckable(True)
         self.path_btn.setToolTip('''Path Draw Tool:
         Key-L''')
-        self.path_btn.setShortcut(QKeySequence('L'))
         self.path_btn.triggered.connect(self.update)
         self.path_btn.triggered.connect(self.use_path)
 
@@ -726,7 +743,6 @@ class MPRUN(QMainWindow):
         self.pen_btn.setCheckable(True)
         self.pen_btn.setToolTip('''Pen Draw Tool:
         Command+L (MacOS) or Control+L (Windows)''')
-        self.pen_btn.setShortcut(QKeySequence('Ctrl+L'))
         self.pen_btn.triggered.connect(self.update)
         self.pen_btn.triggered.connect(self.use_pen_tool)
 
@@ -735,7 +751,6 @@ class MPRUN(QMainWindow):
         self.label_btn.setCheckable(True)
         self.label_btn.setToolTip('''Line and Label Tool:
         Key-T''')
-        self.label_btn.setShortcut(QKeySequence('T'))
         self.label_btn.triggered.connect(self.update)
         self.label_btn.triggered.connect(self.use_label)
 
@@ -743,7 +758,6 @@ class MPRUN(QMainWindow):
         self.add_text_btn = QAction(QIcon('UI/Tool Icons/text_icon.png'), '', self)
         self.add_text_btn.setToolTip('''Text Tool:
         Command+T (MacOS) or Control+T (Windows)''')
-        self.add_text_btn.setShortcut(QKeySequence('Ctrl+T'))
         self.add_text_btn.setCheckable(True)
         self.add_text_btn.triggered.connect(self.update)
         self.add_text_btn.triggered.connect(self.use_text)
@@ -753,21 +767,18 @@ class MPRUN(QMainWindow):
         self.scale_btn.setToolTip('''Scale Tool: 
         Key-Q''')
         self.scale_btn.setCheckable(True)
-        self.scale_btn.setShortcut(QKeySequence('Q'))
         self.scale_btn.triggered.connect(self.use_scale_tool)
 
         # Hide Button
         self.hide_btn = QAction(QIcon('UI/Tool Icons/hide_icon.png'), '', self)
         self.hide_btn.setToolTip('''Hide Element Tool: 
         Key-H''')
-        self.hide_btn.setShortcut(QKeySequence('H'))
         self.hide_btn.triggered.connect(self.use_hide_item)
 
         # Unhide Button
         self.unhide_btn = QAction(QIcon('UI/Tool Icons/unhide_icon.png'), '', self)
         self.unhide_btn.setToolTip('''Unhide All Tool: 
         Command+H (MacOS) or Control+H (Windows)''')
-        self.unhide_btn.setShortcut(QKeySequence('Ctrl+H'))
         self.unhide_btn.triggered.connect(self.use_unhide_all)
 
         # Add Canvas Button
@@ -775,14 +786,12 @@ class MPRUN(QMainWindow):
         self.add_canvas_btn.setToolTip('''Add Canvas Tool: 
         Key-A''')
         self.add_canvas_btn.setCheckable(True)
-        self.add_canvas_btn.setShortcut(QKeySequence('A'))
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
         # Insert Image Button
         self.insert_btn = QAction(QIcon('UI/Tool Icons/insert_image_icon2.png'), '', self)
         self.insert_btn.setToolTip('''Insert Element Tool: 
         Key-I''')
-        self.insert_btn.setShortcut(QKeySequence('I'))
         self.insert_btn.triggered.connect(self.insert_image)
 
         # ----add actions----#
@@ -1171,7 +1180,7 @@ class MPRUN(QMainWindow):
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
         if len(self.canvas.selectedItems()) > 0:
-            self.properties_tab.setFixedHeight(450)
+            self.properties_tab.setFixedHeight(425)
 
             self.transform_separator.setHidden(False)
             self.transform_label.setHidden(False)
@@ -1471,6 +1480,7 @@ class MPRUN(QMainWindow):
             self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def use_select(self):
+        self.select_btn.setChecked(True)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
         self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
 
