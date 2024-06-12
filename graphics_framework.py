@@ -788,6 +788,8 @@ class CustomGraphicsScene(QGraphicsScene):
         self.undo_stack.undo()
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
+        self.modified = True
+        self.parentWindow.setWindowTitle(f'MPRUN - *{os.path.basename(self.manager.filename)}')
 
     def redo(self):
         self.undo_stack.redo()
