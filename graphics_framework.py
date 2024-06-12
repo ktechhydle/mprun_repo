@@ -485,7 +485,7 @@ y: {int(p.y())}''')
             self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
             self.pathg_item.setBrush(self.stroke_fill)
             self.pathg_item.text_element.setFont(self.font)
-            self.pathg_item.text_element.setPos(self.mapToScene(event.pos()) - QPointF(0, self.pathg_item.text_element.sceneBoundingRect().height()))
+            self.pathg_item.text_element.setPos(self.mapToScene(event.pos()) - self.pathg_item.text_element.boundingRect().center())
 
 
             add_command = AddItemCommand(self.canvas, self.pathg_item)

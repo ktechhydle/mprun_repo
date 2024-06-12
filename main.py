@@ -420,16 +420,19 @@ class MPRUN(QMainWindow):
         self.width_transform_label = QLabel('W:')
         self.height_transform_label = QLabel('H:')
         self.x_pos_spin = QSpinBox(self)
+        self.x_pos_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.x_pos_spin.setMaximum(10000)
         self.x_pos_spin.setMinimum(-10000)
         self.x_pos_spin.setSuffix(' pt')
         self.x_pos_spin.setToolTip('Change the x position')
         self.y_pos_spin = QSpinBox(self)
+        self.y_pos_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.y_pos_spin.setMaximum(10000)
         self.y_pos_spin.setMinimum(-10000)
         self.y_pos_spin.setSuffix(' pt')
         self.y_pos_spin.setToolTip('Change the y position')
         self.width_scale_spin = QDoubleSpinBox(self)
+        self.width_scale_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.width_scale_spin.setValue(0.0)
         self.width_scale_spin.setDecimals(2)
         self.width_scale_spin.setRange(-10000.00, 10000.00)
@@ -437,6 +440,7 @@ class MPRUN(QMainWindow):
         self.width_scale_spin.setSuffix(' pt')
         self.width_scale_spin.setToolTip('Change the width')
         self.height_scale_spin = QDoubleSpinBox(self)
+        self.height_scale_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.height_scale_spin.setValue(0.0)
         self.height_scale_spin.setDecimals(2)
         self.height_scale_spin.setRange(-10000.00, 10000.00)
@@ -444,6 +448,7 @@ class MPRUN(QMainWindow):
         self.height_scale_spin.setSuffix(' pt')
         self.height_scale_spin.setToolTip('Change the height')
         self.rotate_item_spin = QSpinBox(self)
+        self.rotate_item_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.rotate_item_spin.setRange(-360, 360)
         self.rotate_item_spin.setSuffix('°')
         self.rotate_item_spin.setToolTip('Change the rotation')
@@ -1653,10 +1658,8 @@ class MPRUN(QMainWindow):
             # Move each selected item by the offset
             for item in selected_items:
                 if isinstance(item, LeaderLineItem):
-                    try:
-                        item.childItems()[0].setSelected(False)
-                    except:
-                        pass
+                    item.childItems()[0].setSelected(False)
+                    item.updatePathEndPoint()
 
                 new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
                 command = PositionChangeCommand(self, item, item.pos(), new_pos)
