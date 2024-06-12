@@ -427,6 +427,7 @@ class CustomTextItem(QGraphicsTextItem):
         self.gridEnabled = False
         self.old_text = self.toPlainText()
         self.markdownEnabled = False
+        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
@@ -525,6 +526,11 @@ class CustomTextItem(QGraphicsTextItem):
         self.markdownEnabled = True
         self.set_locked()
 
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionChange and isinstance(self.parentItem(), LeaderLineItem):
+            self.parentItem().updatePathEndPoint()
+        return super().itemChange(change, value)
+
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path, text: str):
         super().__init__(path)
@@ -574,6 +580,14 @@ class LeaderLineItem(QGraphicsPathItem):
 
         except Exception as e:
             print(e)
+
+    def updatePathEndPoint(self):
+        path = self.path()
+        if path.elementCount() > 0:
+            start_element_index = 0  # The start point is the first element in the path
+            new_start_point = self.mapFromItem(self.text_element, self.text_element.boundingRect().bottomLeft())
+            path.setElementPositionAt(start_element_index, new_start_point.x(), new_start_point.y())
+            self.setPath(path)
 
     def duplicate(self):
         path = self.path()

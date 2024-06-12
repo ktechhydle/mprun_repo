@@ -791,10 +791,20 @@ class CustomGraphicsScene(QGraphicsScene):
         self.modified = True
         self.parentWindow.setWindowTitle(f'MPRUN - *{os.path.basename(self.manager.filename)}')
 
+        for item in self.items():
+            if isinstance(item, CustomTextItem):
+                if isinstance(item.parentItem(), LeaderLineItem):
+                    item.parentItem().updatePathEndPoint()
+
     def redo(self):
         self.undo_stack.redo()
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
+
+        for item in self.items():
+            if isinstance(item, CustomTextItem):
+                if isinstance(item.parentItem(), LeaderLineItem):
+                    item.parentItem().updatePathEndPoint()
 
     def addCommand(self, command):
         self.undo_stack.push(command)
@@ -888,6 +898,12 @@ class CustomGraphicsScene(QGraphicsScene):
                     item.gridEnabled = True
 
     def removeItem(self, item):
+        if isinstance(item, CustomTextItem):
+            if isinstance(item.parentItem(), LeaderLineItem):
+                return 
+            else:
+                super().removeItem(item)
+                
         super().removeItem(item)
 
         for item in self.items():

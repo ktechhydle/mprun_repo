@@ -1652,6 +1652,12 @@ class MPRUN(QMainWindow):
 
             # Move each selected item by the offset
             for item in selected_items:
+                if isinstance(item, LeaderLineItem):
+                    try:
+                        item.childItems()[0].setSelected(False)
+                    except:
+                        pass
+
                 new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
                 command = PositionChangeCommand(self, item, item.pos(), new_pos)
                 self.canvas.addCommand(command)
