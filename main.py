@@ -1889,14 +1889,8 @@ class MPRUN(QMainWindow):
     def use_ungroup_group(self):
         for group in self.canvas.selectedItems():
             if isinstance(group, CustomGraphicsItemGroup):
-                if group.childItems():
-                    for child in group.childItems():
-                        child.setFlag(QGraphicsItem.ItemIsSelectable)
-                        child.setToolTip(child.toolTip())
-                        child.setParentItem(child)
-
-                self.canvas.destroyItemGroup(group)
-                self.undo_stack.clear()
+                command = UngroupItemsCommand(self.canvas, group)
+                self.canvas.addCommand(command)
 
     def use_align_left(self):
         if not self.canvas.selectedItems():

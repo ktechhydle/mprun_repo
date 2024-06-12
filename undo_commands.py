@@ -471,3 +471,30 @@ class GroupItemsCommand(QUndoCommand):
             self.group.removeFromGroup(child)
 
         self.canvas.removeItem(self.group)
+
+class UngroupItemsCommand(QUndoCommand):
+    def __init__(self, canvas, group):
+        super().__init__()
+
+        self.canvas = canvas
+        self.GroupItem = group
+        self.children = []
+
+    def redo(self):
+        if self.GroupItem.childItems():
+            for child in self.GroupItem.childItems():
+                self.children.append(child)
+                child.setFlag(QGraphicsItem.ItemIsSelectable)
+                child.setToolTip(child.toolTip())
+                self.GroupItem.removeFromGroup(child)
+
+        self.canvas.removeItem(self.GroupItem)
+
+    def undo(self):
+        for child in self.children:
+            child.setFlag(QGraphicsItem.ItemIsSelectable, False)
+            self.GroupItem.addToGroup(child)
+
+        self.children.clear()
+
+        self.canvas.addItem(self.GroupItem)
