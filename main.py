@@ -88,7 +88,6 @@ class MPRUN(QMainWindow):
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.object_menu = self.menu_bar.addMenu('&Object')
-        self.window_menu = self.menu_bar.addMenu('&Window')
         self.help_menu = self.menu_bar.addMenu('&Help')
 
         # Create MPRUN actions
@@ -128,12 +127,17 @@ class MPRUN(QMainWindow):
         close_action = QAction('Close', self)
         close_action.triggered.connect(lambda: self.close())
 
-        # Create tools actions
-        path_action = QAction('Path', self)
+        # Create tools submenus and actions
+        drawing_menu = self.tool_menu.addMenu('Drawing')
+        path_menu = self.tool_menu.addMenu('Path')
+        characters_menu = self.tool_menu.addMenu('Characters')
+        image_menu = self.tool_menu.addMenu('Image')
+
+        path_action = QAction('Path Draw', self)
         path_action.triggered.connect(self.use_path)
         path_action.triggered.connect(self.update)
 
-        pen_action = QAction('Pen', self)
+        pen_action = QAction('Pen Draw', self)
         pen_action.triggered.connect(self.use_pen_tool)
         pen_action.triggered.connect(self.update)
 
@@ -210,25 +214,6 @@ class MPRUN(QMainWindow):
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
 
-        # Create window menu actions
-        properties_action = QAction('Properties', self)
-        properties_action.triggered.connect(lambda: self.display_choosen_tab('Properties'))
-
-        libraries_action = QAction('Libraries', self)
-        libraries_action.triggered.connect(lambda: self.display_choosen_tab('Libraries'))
-
-        characters_action = QAction('Characters', self)
-        characters_action.triggered.connect(lambda: self.display_choosen_tab('Characters'))
-
-        vectorizing_action = QAction('Image Trace', self)
-        vectorizing_action.triggered.connect(lambda: self.display_choosen_tab('Image Trace'))
-
-        text_along_path_action = QAction('Text Along Path', self)
-        text_along_path_action.triggered.connect(lambda: self.display_choosen_tab('Text Along Path'))
-
-        canvas_action = QAction('Canvas', self)
-        canvas_action.triggered.connect(lambda: self.display_choosen_tab('Canvas'))
-
         # Create help menu actions
         find_action_action = QAction('Find Action', self)
         find_action_action.triggered.connect(self.show_find_action)
@@ -248,18 +233,6 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(export_multiple_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(close_action)
-
-        self.tool_menu.addAction(path_action)
-        self.tool_menu.addAction(pen_action)
-        self.tool_menu.addSeparator()
-        self.tool_menu.addAction(linelabel_action)
-        self.tool_menu.addAction(text_action)
-        self.tool_menu.addSeparator()
-        self.tool_menu.addAction(smooth_action)
-        self.tool_menu.addAction(close_subpath_action)
-        self.tool_menu.addAction(add_text_along_path_action)
-        self.tool_menu.addSeparator()
-        self.tool_menu.addAction(image_trace_action)
 
         self.edit_menu.addAction(undo_action)
         self.edit_menu.addAction(redo_action)
@@ -282,16 +255,20 @@ class MPRUN(QMainWindow):
         self.object_menu.addSeparator()
         self.object_menu.addAction(select_all_action)
 
-        self.window_menu.addAction(properties_action)
-        self.window_menu.addAction(libraries_action)
-        self.window_menu.addSeparator()
-        self.window_menu.addAction(characters_action)
-        self.window_menu.addAction(text_along_path_action)
-        self.window_menu.addSeparator()
-        self.window_menu.addAction(vectorizing_action)
-        self.window_menu.addAction(canvas_action)
-
         self.help_menu.addAction(find_action_action)
+
+        # Sub menu actions
+        drawing_menu.addAction(path_action)
+        drawing_menu.addAction(pen_action)
+        drawing_menu.addAction(linelabel_action)
+
+        path_menu.addAction(smooth_action)
+        path_menu.addAction(close_subpath_action)
+        path_menu.addAction(add_text_along_path_action)
+
+        characters_menu.addAction(text_action)
+
+        image_menu.addAction(image_trace_action)
 
         # Add to actions dict
         self.actions['Trace Image'] = image_trace_action
@@ -309,12 +286,6 @@ class MPRUN(QMainWindow):
         self.actions['Redo'] = redo_action
         self.actions['Export Canvas'] = export_action
         self.actions['Export All'] = export_multiple_action
-        self.actions['Characters Panel'] = characters_action
-        self.actions['Properties Panel'] = properties_action
-        self.actions['Libraries Panel'] = libraries_action
-        self.actions['Text Along Path Panel'] = text_along_path_action
-        self.actions['Canvas Panel'] = canvas_action
-        self.actions['Image Trace Panel'] = vectorizing_action
         self.actions['Save'] = save_action
         self.actions['Save As'] = saveas_action
         self.actions['Open'] = open_action
@@ -351,15 +322,8 @@ class MPRUN(QMainWindow):
         self.tab_view_dock.setWindowTitle('MPRUN Panel Manager')
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea)
 
-        # Tabview
-        self.tab_view = DetachableTabWidget(self)
-        self.tab_view.setMovable(True)
-        self.tab_view.setDocumentMode(True)
-        self.tab_view.setTabsClosable(True)
-        self.tab_view.setTabPosition(QTabWidget.TabPosition.North)
-        self.tab_view.setTabShape(QTabWidget.TabShape.Rounded)
-        self.tab_view.tabCloseRequested.connect(self.close_tab)
-        self.tab_view.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.toolbox = QToolBox(self)
+        self.toolbox.setFixedWidth(300)
 
         # Properties Tab
         self.properties_tab = QWidget(self)
@@ -368,7 +332,7 @@ class MPRUN(QMainWindow):
         self.properties_tab.setFixedWidth(300)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
-        self.tab_view.addTab(self.properties_tab, 'Properties')
+        self.toolbox.addItem(self.properties_tab, 'Properties')
 
         # Characters Tab
         self.characters_tab = QWidget()
@@ -377,6 +341,7 @@ class MPRUN(QMainWindow):
         self.characters_tab.setFixedWidth(300)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
+        self.toolbox.addItem(self.characters_tab, 'Characters')
 
         # Vectorize Tab
         self.image_trace = QWidget()
@@ -385,6 +350,7 @@ class MPRUN(QMainWindow):
         self.image_trace.setFixedWidth(300)
         self.image_trace_layout = QVBoxLayout()
         self.image_trace.setLayout(self.image_trace_layout)
+        self.toolbox.addItem(self.image_trace, 'Image Trace')
 
         # Libraries Tab
         self.libraries_tab = LibraryWidget(self.canvas)
@@ -392,15 +358,17 @@ class MPRUN(QMainWindow):
         self.libraries_tab.setFixedHeight(400)
         self.libraries_tab.setFixedWidth(300)
         self.libraries_tab.load_svg_library('Course Element')
-        self.tab_view.addTab(self.libraries_tab, 'Libraries')
+        self.toolbox.addItem(self.libraries_tab, 'Libraries')
 
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
         self.canvas_tab.setFixedWidth(300)
+        self.toolbox.addItem(self.canvas_tab, 'Canvas')
 
         # Text Along Path Tab
         self.text_along_path_tab = TextAlongPathPanel(self.canvas)
         self.text_along_path_tab.setFixedWidth(300)
+        self.toolbox.addItem(self.text_along_path_tab, 'Text Along Path')
 
         # This next section is basically all the widgets for each tab
         # Some tabs don't have many widgets as they are subclassed in other files.
@@ -672,7 +640,7 @@ class MPRUN(QMainWindow):
         self.rotate_item_spin.valueChanged.connect(self.use_rotate)
 
         # Add action toolbar actions
-        self.tab_view_dock.setWidget(self.tab_view)
+        self.tab_view_dock.setWidget(self.toolbox)
         self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
 
         # Properties Tab Widgets
@@ -1799,7 +1767,7 @@ class MPRUN(QMainWindow):
         self.update_transform_ui()
 
     def use_add_canvas(self):
-        self.display_choosen_tab('Canvas')
+        self.toolbox.setCurrentWidget(self.canvas_tab)
         self.add_canvas_btn.setChecked(True)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
         self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
@@ -1849,7 +1817,7 @@ class MPRUN(QMainWindow):
     def use_add_text_along_path(self):
         try:
             self.use_exit_add_canvas()
-            self.display_choosen_tab('Text Along Path')
+            self.toolbox.setCurrentWidget(self.text_along_path_tab)
             for i in range(self.tab_view.count()):
                 if self.tab_view.tabText(i) == 'Text Along Path':
                     self.tab_view.setCurrentIndex(i)
@@ -2350,42 +2318,6 @@ class MPRUN(QMainWindow):
                 json.dump(existing_data, f)
         else:
             self.close()
-
-    def display_choosen_tab(self, tab_name):
-        for i in range(self.tab_view.count()):
-            if self.tab_view.tabText(i) == tab_name:
-                break
-
-            else:
-                if tab_name == 'Properties':
-                    self.tab_view.addTab(self.properties_tab, tab_name)
-                    self.tab_view.setCurrentWidget(self.properties_tab)
-
-                elif tab_name == 'Libraries':
-                    self.tab_view.addTab(self.libraries_tab, tab_name)
-                    self.tab_view.setCurrentWidget(self.libraries_tab)
-
-                elif tab_name == 'Characters':
-                    self.tab_view.addTab(self.characters_tab, tab_name)
-                    self.tab_view.setCurrentWidget(self.characters_tab)
-
-                elif tab_name == 'Image Trace':
-                    self.tab_view.addTab(self.image_trace, tab_name)
-                    self.tab_view.setCurrentWidget(self.image_trace)
-
-                elif tab_name == 'Text Along Path':
-                    self.tab_view.addTab(self.text_along_path_tab, tab_name)
-
-                elif tab_name == 'Canvas':
-                    self.tab_view.addTab(self.canvas_tab, tab_name)
-                    self.tab_view.setCurrentWidget(self.canvas_tab)
-
-    def close_tab(self, i):
-        if self.tab_view.count() > 1:
-            self.tab_view.removeTab(i)
-
-        else:
-            pass
 
     def save(self):
         try:
