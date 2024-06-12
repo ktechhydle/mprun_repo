@@ -528,6 +528,7 @@ class QuickActionsPanel(QWidget):
     def createUI(self):
         self.gsnap_check_btn = QCheckBox(self)
         self.gsnap_check_btn.setText('Grid Enabled')
+        self.gsnap_check_btn.setToolTip('Enable snap to grid')
         self.gsnap_check_btn.setShortcut(QKeySequence('Z'))
         self.gsnap_check_btn.clicked.connect(self.use_enable_grid)
         self.gsnap_grid_spin = QSpinBox(self)
@@ -537,6 +538,7 @@ class QuickActionsPanel(QWidget):
         self.gsnap_grid_spin.setValue(10)
         self.gsnap_grid_spin.setMinimum(1)
         self.gsnap_grid_spin.setMaximum(1000)
+        self.gsnap_grid_spin.setToolTip('Change the grid size')
         horizontal_widget = ToolbarHorizontalLayout()
         horizontal_widget.layout.addWidget(self.gsnap_check_btn)
         gsnap_hlayout = ToolbarHorizontalLayout()

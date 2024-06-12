@@ -350,7 +350,7 @@ class CustomDockWidget(QDockWidget):
         self.minimize_btn.setToolTip('Collapse')
         self.minimize_btn.setIcon(QIcon('UI/UI Icons/Minor/minimize.svg'))
         self.minimize_btn.setIconSize(QSize(16, 16))
-        self.minimize_btn.clicked.connect(self.toolbox.setCollapsed)
+        self.minimize_btn.clicked.connect(self.collapse)
         self.minimize_btn.setStyleSheet('QPushButton { background: #424242;'
                                      'border: none; }'
                                      'QPushButton:hover {'
@@ -368,6 +368,15 @@ class CustomDockWidget(QDockWidget):
         self.title_bar.layout().setSpacing(0)
 
         self.setTitleBarWidget(self.title_bar)
+
+    def collapse(self):
+        self.toolbox.setCollapsed()
+
+        if self.toolbox.collapsed():
+            self.minimize_btn.setToolTip('Expand')
+
+        else:
+            self.minimize_btn.setToolTip('Collapse')
 
 class CustomToolbox(QToolBox):
     def __init__(self, parent=None):
@@ -392,7 +401,7 @@ class CustomToolbox(QToolBox):
 
         else:
             self.c = True
-            self.setFixedWidth(100)
+            self.setFixedWidth(1)
 
 
 
