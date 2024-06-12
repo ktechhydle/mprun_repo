@@ -337,7 +337,7 @@ class MPRUN(QMainWindow):
         # Characters Tab
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.characters_tab.setFixedHeight(175)
+        self.characters_tab.setFixedHeight(200)
         self.characters_tab.setFixedWidth(300)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
@@ -531,7 +531,7 @@ class MPRUN(QMainWindow):
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
         self.font_color_btn = QColorButton(self)
-        self.font_color_btn.setFixedWidth(28)
+        self.font_color_btn.setFixedWidth(90)
         self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.setStyleSheet(f'background-color: black;')
         self.font_color_btn.clicked.connect(self.font_color_chooser)
@@ -560,11 +560,15 @@ class MPRUN(QMainWindow):
         font_size_and_spacing_hlayout.layout.addWidget(self.font_letter_spacing_spin)
         font_size_and_spacing_hlayout.layout.setContentsMargins(0, 0, 0, 0)
         font_style_hlayout = ToolbarHorizontalLayout()
-        font_style_hlayout.layout.addWidget(self.font_color_btn)
         font_style_hlayout.layout.addWidget(self.bold_btn)
         font_style_hlayout.layout.addWidget(self.italic_btn)
         font_style_hlayout.layout.addWidget(self.underline_btn)
         font_style_hlayout.layout.setContentsMargins(0, 0, 0, 0)
+        font_color_hlayout = ToolbarHorizontalLayout()
+        font_color_hlayout.layout.setContentsMargins(0, 0, 0, 0)
+        font_color_hlayout.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        font_color_hlayout.layout.addWidget(QLabel('Color:'))
+        font_color_hlayout.layout.addWidget(self.font_color_btn)
 
         #_____ Image Trace tab widgets _____
         vector_options_label = QLabel('Image Trace', self)
@@ -647,6 +651,7 @@ class MPRUN(QMainWindow):
         self.characters_tab_layout.addWidget(self.font_choice_combo)
         self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
         self.characters_tab_layout.addWidget(font_style_hlayout)
+        self.characters_tab_layout.addWidget(font_color_hlayout)
 
         # Vectorize Tab Widgets
         self.image_trace_layout.addWidget(HorizontalSeparator())
