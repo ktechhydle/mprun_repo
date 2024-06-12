@@ -1801,9 +1801,6 @@ class MPRUN(QMainWindow):
         try:
             self.use_exit_add_canvas()
             self.toolbox.setCurrentWidget(self.text_along_path_tab)
-            for i in range(self.tab_view.count()):
-                if self.tab_view.tabText(i) == 'Text Along Path':
-                    self.tab_view.setCurrentIndex(i)
 
             self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
             self.text_along_path_tab.text_along_path_check_btn.click()
