@@ -2182,14 +2182,6 @@ class MPRUN(QMainWindow):
                     svg_generator.setSize(rect.size().toSize())
                     svg_generator.setViewBox(rect)
 
-                    # Get input for title
-                    title, ok1 = QInputDialog.getText(self, 'SVG Document Title', 'Enter a title for the SVG')
-
-                    if ok1:
-                        svg_generator.setTitle(title)
-                    else:
-                        svg_generator.setTitle('MPRUN SVG Document (Powered by QSvgGenerator)')
-
                     # Clear selection
                     self.canvas.clearSelection()
 
