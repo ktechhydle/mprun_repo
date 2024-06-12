@@ -1523,7 +1523,8 @@ class MPRUN(QMainWindow):
                 pass
 
             else:
-                item.setZValue(item.zValue() + 1.0)
+                c = LayerChangeCommand(item, item.zValue(), item.zValue() + 1)
+                self.canvas.addCommand(c)
                 self.update_appearance_ui()
 
     def use_lower_layer(self):
@@ -1536,7 +1537,8 @@ class MPRUN(QMainWindow):
                     pass
 
                 else:
-                    item.setZValue(item.zValue() - 1.0)
+                    c = LayerChangeCommand(item, item.zValue(), item.zValue() - 1)
+                    self.canvas.addCommand(c)
                     self.update_appearance_ui()
 
     def use_bring_to_front(self):

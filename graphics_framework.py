@@ -1142,7 +1142,7 @@ class SceneManager:
                         'y': item.pos().y(),
                         'name': item.toolTip(),
                         'zval': item.zValue(),
-                        'filename': item.return_filename(),
+                        'filename': item.source(),
                         'visible': item.isVisible(),
                     }
 
@@ -1506,7 +1506,7 @@ class SceneManager:
             repaired_items_data = []
             removed_files = []
             for item_data in items_data:
-                if item_data['type'] == 'CustomPixmapItem' or 'CustomSvgItem' and not os.path.exists(
+                if item_data['type'] in ('CustomPixmapItem', 'CustomSvgItem') and not os.path.exists(
                         item_data['filename']):
                     removed_files.append(item_data['filename'])
                 else:

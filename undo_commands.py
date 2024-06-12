@@ -498,3 +498,17 @@ class UngroupItemsCommand(QUndoCommand):
         self.children.clear()
 
         self.canvas.addItem(self.GroupItem)
+
+class LayerChangeCommand(QUndoCommand):
+    def __init__(self, item, old, new):
+        super().__init__()
+
+        self.item = item
+        self.old = old
+        self.new = new
+
+    def redo(self):
+        self.item.setZValue(self.new)
+
+    def undo(self):
+        self.item.setZValue(self.old)

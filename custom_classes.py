@@ -332,7 +332,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         self.filename = file
 
     def return_filename(self):
-        return str(self.filename)
+        return self.filename
 
     def duplicate(self):
         pixmap = QPixmap(self.return_filename())
@@ -389,8 +389,8 @@ class CustomSvgItem(QGraphicsSvgItem):
     def store_filename(self, file):
         self.filename = file
 
-    def return_filename(self):
-        return str(self.filename)
+    def source(self):
+        return self.filename
 
     def duplicate(self):
         svg = self.return_filename()
