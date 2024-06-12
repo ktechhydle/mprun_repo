@@ -60,7 +60,6 @@ class MPRUN(QMainWindow):
         self.create_toolbar1()
         self.create_toolbar2()
         self.create_toolbar3()
-        self.create_toolbar4()
         self.create_view()
         self.create_default_objects()
         self.update()
@@ -135,6 +134,12 @@ class MPRUN(QMainWindow):
         pan_action = QAction('Pan', self)
         pan_action.setShortcut(QKeySequence('P'))
         pan_action.triggered.connect(self.use_pan)
+
+        rotate_view_action = QAction('Rotate', self)
+        rotate_view_action.triggered.connect(lambda: self.rotate_scene_spin.setFocus())
+
+        zoom_view_action = QAction('Zoom', self)
+        zoom_view_action.triggered.connect(lambda: self.view_zoom_spin.setFocus())
 
         path_action = QAction('Path Draw', self)
         path_action.setShortcut(QKeySequence('L'))
@@ -288,6 +293,8 @@ class MPRUN(QMainWindow):
 
         view_menu.addAction(select_action)
         view_menu.addAction(pan_action)
+        view_menu.addAction(rotate_view_action)
+        view_menu.addAction(zoom_view_action)
 
         # Add to actions dict
         self.actions['Trace Image'] = image_trace_action
@@ -326,13 +333,6 @@ class MPRUN(QMainWindow):
         self.item_toolbar.setFixedHeight(42)
         self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
-
-        # View Toolbar
-        self.view_toolbar = QToolBar('View')
-        self.view_toolbar.setMovable(False)
-        self.view_toolbar.setFixedHeight(22)
-        self.view_toolbar.setStyleSheet('padding: 1px;')
-        self.addToolBar(Qt.ToolBarArea.BottomToolBarArea, self.view_toolbar)
 
     def create_toolbar1(self):
         #----action toolbar widgets----#
@@ -834,30 +834,6 @@ class MPRUN(QMainWindow):
         self.actions['Insert Image'] = self.insert_btn
 
     def create_toolbar3(self):
-        #----toolbar widgets----#
-        self.view_zoom_spin = QSpinBox(self)
-        self.view_zoom_spin.setRange(1, 5000)
-        self.view_zoom_spin.setFixedHeight(20)
-        self.view_zoom_spin.setSuffix('%')
-        self.view_zoom_spin.setValue(100)
-        self.view_zoom_spin.valueChanged.connect(self.use_change_view)
-
-        self.rotate_sceen_spin = QSpinBox(self)
-        self.rotate_sceen_spin.setFixedHeight(20)
-        self.rotate_sceen_spin.setMinimum(-10000)
-        self.rotate_sceen_spin.setMaximum(10000)
-        self.rotate_sceen_spin.setSuffix('°')
-        self.rotate_sceen_spin.valueChanged.connect(self.use_change_view)
-
-        # Add widgets
-        self.view_toolbar.addWidget(self.view_zoom_spin)
-        self.view_toolbar.addWidget(self.rotate_sceen_spin)
-
-        # Add to actions dict
-        self.actions['Zoom View'] = self.view_zoom_spin
-        self.actions['Rotate View'] = self.rotate_sceen_spin
-
-    def create_toolbar4(self):
         #----item toolbar widgets----#
         align_left_btn = QAction(QIcon('UI/Tool Icons/align_left_icon.png'), '', self)
         align_left_btn.setToolTip('Align the selected elements to the left')
@@ -891,6 +867,27 @@ class MPRUN(QMainWindow):
         lower_layer_action.setToolTip('Lower the selected elements a layer down')
         lower_layer_action.triggered.connect(self.use_lower_layer)
 
+        self.view_zoom_spin = QSpinBox(self)
+        self.view_zoom_spin.setToolTip('Zoom view')
+        self.view_zoom_spin.setRange(1, 5000)
+        self.view_zoom_spin.setFixedWidth(50)
+        self.view_zoom_spin.setSuffix('%')
+        self.view_zoom_spin.setValue(100)
+        self.view_zoom_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.view_zoom_spin.valueChanged.connect(self.use_change_view)
+
+        self.rotate_scene_spin = QSpinBox(self)
+        self.rotate_scene_spin.setToolTip('Rotate View')
+        self.rotate_scene_spin.setFixedWidth(50)
+        self.rotate_scene_spin.setMinimum(-10000)
+        self.rotate_scene_spin.setMaximum(10000)
+        self.rotate_scene_spin.setSuffix('°')
+        self.rotate_scene_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.rotate_scene_spin.valueChanged.connect(self.use_change_view)
+
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
         # Add widgets
         self.item_toolbar.addAction(align_left_btn)
         self.item_toolbar.addAction(align_right_btn)
@@ -901,8 +898,13 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addSeparator()
         self.item_toolbar.addAction(raise_layer_action)
         self.item_toolbar.addAction(lower_layer_action)
+        self.item_toolbar.addWidget(spacer)
+        self.item_toolbar.addWidget(self.rotate_scene_spin)
+        self.item_toolbar.addWidget(self.view_zoom_spin)
 
         # Add to actions dict
+        self.actions['Zoom View'] = self.view_zoom_spin
+        self.actions['Rotate View'] = self.rotate_scene_spin
         self.actions['Align Left'] = align_left_btn
         self.actions['Align Right'] = align_right_btn
         self.actions['Align Middle'] = align_middle_btn
@@ -1513,7 +1515,7 @@ class MPRUN(QMainWindow):
 
         self.canvas_view.resetTransform()
         self.canvas_view.scale(value, value)
-        self.canvas_view.rotate(self.rotate_sceen_spin.value())
+        self.canvas_view.rotate(self.rotate_scene_spin.value())
 
     def use_raise_layer(self):
         for item in self.canvas.selectedItems():
