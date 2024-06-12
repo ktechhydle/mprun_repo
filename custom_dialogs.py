@@ -495,3 +495,70 @@ class TextAlongPathPanel(QWidget):
                     command = AddTextToPathCommand(item, self.text_along_path_check_btn, True, False)
                     self.canvas.addCommand(command)
                     item.update()
+
+class QuickActionsPanel(QWidget):
+    def __init__(self, canvas, parent):
+        super().__init__(parent)
+
+        self.canvas = canvas
+        self.parent = parent
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+        self.setFixedHeight(125)
+
+        self.createUI()
+
+    def createUI(self):
+        self.gsnap_check_btn = QCheckBox(self)
+        self.gsnap_check_btn.setText('Grid Enabled')
+        self.gsnap_check_btn.setShortcut(QKeySequence('Z'))
+        self.gsnap_check_btn.clicked.connect(self.use_enable_grid)
+        self.gsnap_grid_spin = QSpinBox(self)
+        self.gsnap_grid_spin.setFixedWidth(80)
+        self.gsnap_grid_spin.setSuffix(' pt')
+        grid_size_label = QLabel('Grid Size:', self)
+        self.gsnap_grid_spin.setValue(10)
+        self.gsnap_grid_spin.setMinimum(1)
+        self.gsnap_grid_spin.setMaximum(1000)
+        horizontal_widget = ToolbarHorizontalLayout()
+        horizontal_widget.layout.addWidget(self.gsnap_check_btn)
+        gsnap_hlayout = ToolbarHorizontalLayout()
+        gsnap_hlayout.layout.addWidget(grid_size_label)
+        gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
+
+        self.layout.addWidget(HorizontalSeparator())
+        self.layout.addWidget(horizontal_widget)
+        self.layout.addWidget(gsnap_hlayout)
+
+        self.gsnap_grid_spin.valueChanged.connect(self.update)
+
+    def use_exit_grid(self):
+        if self.gsnap_check_btn.isChecked():
+            self.gsnap_check_btn.click()
+
+    def use_enable_grid(self):
+        if self.gsnap_check_btn.isChecked():
+            self.canvas.setGridEnabled(True)
+            self.canvas.update()
+
+            for item in self.canvas.items():
+                if isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.gridEnabled = True
+
+        else:
+            self.canvas.setGridEnabled(False)
+            self.canvas.update()
+
+            for item in self.canvas.items():
+                if isinstance(item, CanvasTextItem):
+                    pass
+
+                else:
+                    item.gridEnabled = False
+
+    def update(self):
+        # Update grid
+        self.canvas.setGridSize(self.gsnap_grid_spin.value())

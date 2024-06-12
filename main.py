@@ -318,21 +318,21 @@ class MPRUN(QMainWindow):
         #----action toolbar widgets----#
 
         # Dock widget
-        self.tab_view_dock = CustomDockWidget(self)
-        self.tab_view_dock.setWindowTitle('MPRUN Panel Manager')
-        self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea)
-
-        self.toolbox = QToolBox(self)
+        self.toolbox = CustomToolbox(self)
         self.toolbox.setFixedWidth(300)
+        self.toolbox.setMinimumHeight(680)
+
+        self.tab_view_dock = CustomDockWidget(self.toolbox, self)
+        self.tab_view_dock.setWindowTitle('MPRUN Panel Manager')
+        self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
 
         # Properties Tab
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.properties_tab.setFixedHeight(475)
+        self.properties_tab.setFixedHeight(300)
         self.properties_tab.setFixedWidth(300)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
-        self.toolbox.addItem(self.properties_tab, 'Properties')
 
         # Characters Tab
         self.characters_tab = QWidget()
@@ -341,7 +341,6 @@ class MPRUN(QMainWindow):
         self.characters_tab.setFixedWidth(300)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
-        self.toolbox.addItem(self.characters_tab, 'Characters')
 
         # Vectorize Tab
         self.image_trace = QWidget()
@@ -350,7 +349,6 @@ class MPRUN(QMainWindow):
         self.image_trace.setFixedWidth(300)
         self.image_trace_layout = QVBoxLayout()
         self.image_trace.setLayout(self.image_trace_layout)
-        self.toolbox.addItem(self.image_trace, 'Image Trace')
 
         # Libraries Tab
         self.libraries_tab = LibraryWidget(self.canvas)
@@ -358,17 +356,26 @@ class MPRUN(QMainWindow):
         self.libraries_tab.setFixedHeight(400)
         self.libraries_tab.setFixedWidth(300)
         self.libraries_tab.load_svg_library('Course Element')
-        self.toolbox.addItem(self.libraries_tab, 'Libraries')
 
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
         self.canvas_tab.setFixedWidth(300)
-        self.toolbox.addItem(self.canvas_tab, 'Canvas')
 
         # Text Along Path Tab
         self.text_along_path_tab = TextAlongPathPanel(self.canvas)
         self.text_along_path_tab.setFixedWidth(300)
+
+        # Quick Actions Tab
+        self.quick_actions_tab = QuickActionsPanel(self.canvas, self)
+
+        # Add tabs
+        self.toolbox.addItem(self.properties_tab, 'Properties')
+        self.toolbox.addItem(self.libraries_tab, 'Libraries')
+        self.toolbox.addItem(self.characters_tab, 'Characters')
         self.toolbox.addItem(self.text_along_path_tab, 'Text Along Path')
+        self.toolbox.addItem(self.image_trace, 'Image Trace')
+        self.toolbox.addItem(self.canvas_tab, 'Canvas')
+        self.toolbox.addItem(self.quick_actions_tab, 'Quick Actions')
 
         # This next section is basically all the widgets for each tab
         # Some tabs don't have many widgets as they are subclassed in other files.
@@ -383,9 +390,6 @@ class MPRUN(QMainWindow):
         appearence_label = QLabel('Appearance', self)
         appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
-        quick_actions_label = QLabel('Quick Actions', self)
-        quick_actions_label.setStyleSheet("QLabel {font-size: 12px; alignment: center; }")
-        quick_actions_label.setAlignment(Qt.AlignLeft)
 
         self.rotation_label = QIconWidget('', 'UI/Tool Icons/rotate_icon.png', 28, 28)
         self.rotation_label.setAlignment(Qt.AlignRight)
@@ -509,23 +513,6 @@ class MPRUN(QMainWindow):
         opacity_hlayout.layout.addSpacing(100)
         opacity_hlayout.layout.setContentsMargins(0, 14, 0, 0)
 
-        self.gsnap_check_btn = QCheckBox(self)
-        self.gsnap_check_btn.setText('Grid Enabled')
-        self.gsnap_check_btn.setShortcut(QKeySequence('Z'))
-        self.gsnap_check_btn.clicked.connect(self.use_enable_grid)
-        self.gsnap_grid_spin = QSpinBox(self)
-        self.gsnap_grid_spin.setFixedWidth(80)
-        self.gsnap_grid_spin.setSuffix(' pt')
-        grid_size_label = QLabel('Grid Size:', self)
-        self.gsnap_grid_spin.setValue(10)
-        self.gsnap_grid_spin.setMinimum(1)
-        self.gsnap_grid_spin.setMaximum(1000)
-        horizontal_widget_for_stroke_fill = ToolbarHorizontalLayout()
-        horizontal_widget_for_stroke_fill.layout.addWidget(self.gsnap_check_btn)
-        gsnap_hlayout = ToolbarHorizontalLayout()
-        gsnap_hlayout.layout.addWidget(grid_size_label)
-        gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
-
         #_____ Characters tab widgets _____
         self.font_choice_combo = QFontComboBox(self)
         self.font_choice_combo.setToolTip('Change the font style')
@@ -632,7 +619,6 @@ class MPRUN(QMainWindow):
         self.font_letter_spacing_spin.valueChanged.connect(self.update_item_font)
         self.font_choice_combo.currentFontChanged.connect(self.update_item_font)
         self.font_choice_combo.currentTextChanged.connect(self.update_item_font)
-        self.gsnap_grid_spin.valueChanged.connect(self.update)
         self.x_pos_spin.valueChanged.connect(self.use_set_item_pos)
         self.y_pos_spin.valueChanged.connect(self.use_set_item_pos)
         self.width_scale_spin.valueChanged.connect(self.use_scale_x)
@@ -655,12 +641,6 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(widget5)
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
-        self.properties_tab_layout.addSpacing(24)
-        self.properties_tab_layout.addWidget(HorizontalSeparator())
-        self.properties_tab_layout.addWidget(quick_actions_label)
-        self.properties_tab_layout.addWidget(horizontal_widget_for_stroke_fill)
-        self.properties_tab_layout.addWidget(HorizontalSeparator())
-        self.properties_tab_layout.addWidget(gsnap_hlayout)
 
         # Elements Tab Widgets
         self.characters_tab_layout.addWidget(HorizontalSeparator())
@@ -687,6 +667,7 @@ class MPRUN(QMainWindow):
         self.actions['Change Font Color'] = self.font_color_btn
         self.actions['Open Library'] = self.libraries_tab.open_library_button
         self.actions['Reload Library'] = self.libraries_tab.reload_library_button
+        self.actions['Enable Grid'] = self.quick_actions_tab.gsnap_check_btn
 
         # Default widget settings
         self.transform_separator.setHidden(True)
@@ -930,7 +911,7 @@ class MPRUN(QMainWindow):
                                               self.scale_btn,
                                               self.pan_btn,
                                               self.view_zoom_spin,
-                                              self.gsnap_check_btn)
+                                              self.quick_actions_tab.gsnap_check_btn)
         format = QSurfaceFormat()
         format.setSamples(4)
         self.opengl_widget = QOpenGLWidget()
@@ -1021,9 +1002,6 @@ class MPRUN(QMainWindow):
 
     def update(self, *args):
         super().update()
-
-        # Update grid
-        self.canvas.setGridSize(self.gsnap_grid_spin.value())
 
         for mode in args:
             if mode == 'ui_update':
@@ -1188,7 +1166,7 @@ class MPRUN(QMainWindow):
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
         if len(self.canvas.selectedItems()) > 0:
-            self.properties_tab.setFixedHeight(600)
+            self.properties_tab.setFixedHeight(450)
 
             self.transform_separator.setHidden(False)
             self.transform_label.setHidden(False)
@@ -1220,7 +1198,7 @@ class MPRUN(QMainWindow):
                     self.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
 
         else:
-            self.properties_tab.setFixedHeight(475)
+            self.properties_tab.setFixedHeight(300)
 
             self.transform_separator.setHidden(True)
             self.transform_label.setHidden(True)

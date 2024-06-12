@@ -325,32 +325,75 @@ class QLinkLabel(QLabel):
         webbrowser.open_new(self.link)
 
 class CustomDockWidget(QDockWidget):
-    def __init__(self, parent=None):
+    def __init__(self, toolbox, parent=None):
         super().__init__(parent)
 
         self.setLayout(QVBoxLayout())
         self.setFeatures(QDockWidget.AllDockWidgetFeatures)
+        self.toolbox = toolbox
 
+        self.create()
+
+    def create(self):
         self.close_btn = QPushButton('', self)
-        self.close_btn.setIcon(QIcon('UI/UI Icons/close-button-qdockwidget.svg'))
-        self.close_btn.setIconSize(QSize(12, 12))
+        self.close_btn.setToolTip('Close')
+        self.close_btn.setIcon(QIcon('UI/UI Icons/Minor/cross.svg'))
+        self.close_btn.setIconSize(QSize(16, 16))
         self.close_btn.clicked.connect(self.close)
         self.close_btn.setStyleSheet('QPushButton { background: #424242;'
                             'border: none; }'
                             'QPushButton:hover {'
                             'background: #494949; }')
-        self.close_btn.setFixedSize(QSize(14, 14))
+        self.close_btn.setFixedSize(QSize(18, 18))
+
+        self.minimize_btn = QPushButton('', self)
+        self.minimize_btn.setToolTip('Collapse')
+        self.minimize_btn.setIcon(QIcon('UI/UI Icons/Minor/minimize.svg'))
+        self.minimize_btn.setIconSize(QSize(16, 16))
+        self.minimize_btn.clicked.connect(self.toolbox.setCollapsed)
+        self.minimize_btn.setStyleSheet('QPushButton { background: #424242;'
+                                     'border: none; }'
+                                     'QPushButton:hover {'
+                                     'background: #494949; }')
+        self.minimize_btn.setFixedSize(QSize(18, 18))
 
         self.title_bar = QWidget(self)
         self.title_bar.setObjectName('dockWidgetTitleBar')
         self.title_bar.setFixedHeight(20)
         self.title_bar.setLayout(QHBoxLayout())
         self.title_bar.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        self.title_bar.layout().addWidget(self.minimize_btn)
         self.title_bar.layout().addWidget(self.close_btn)
         self.title_bar.layout().setContentsMargins(0, 0, 0, 0)
         self.title_bar.layout().setSpacing(0)
 
         self.setTitleBarWidget(self.title_bar)
+
+class CustomToolbox(QToolBox):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        for i in range(self.count()):
+            page = self.widget(i)
+            scroll_area = page.findChild(QScrollArea)
+            if scroll_area:
+                scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+                scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.c = False
+
+    def collapsed(self):
+        return self.c
+
+    def setCollapsed(self):
+        if self.collapsed():
+            self.setFixedWidth(300)
+            self.c = False
+
+        else:
+            self.c = True
+            self.setFixedWidth(100)
+
 
 
 

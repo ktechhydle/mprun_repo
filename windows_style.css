@@ -377,7 +377,7 @@ QTabBar::scroller:next, QTabBar::scroller:prev {
     width: 0px;
 }
 
-/* Dockwidget and listwidget */
+/* Dockwidget, listwidget, toolbox */
 QDockWidget {
     background: #424242;
     color: white;
@@ -403,6 +403,16 @@ QListWidget::item:selected {
 QListWidget::item:hover {
     border: 2px solid #636363;
 }
+
+QToolBox::tab {
+  background-color: #535353;
+  font-weight: bold;
+  color: #c0c0c0;
+  border-radius: 3px;
+  image: url('UI/UI Icons/Minor/triangle-right.svg');
+  image-position: left; }
+  QToolBox::tab:selected {
+    image: url('UI/UI Icons/Minor/triangle-down.svg'); }
 
 /* Custom widgets */
 #modernLineEdit {
