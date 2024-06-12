@@ -357,7 +357,7 @@ class MPRUN(QMainWindow):
         # Characters Tab
         self.characters_tab = QWidget()
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.characters_tab.setFixedHeight(200)
+        self.characters_tab.setFixedHeight(185)
         self.characters_tab.setFixedWidth(300)
         self.characters_tab_layout = QVBoxLayout()
         self.characters_tab.setLayout(self.characters_tab_layout)
@@ -373,7 +373,7 @@ class MPRUN(QMainWindow):
         # Libraries Tab
         self.libraries_tab = LibraryWidget(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.setFixedHeight(400)
+        self.libraries_tab.setFixedHeight(385)
         self.libraries_tab.setFixedWidth(300)
         self.libraries_tab.load_svg_library('Course Element')
 
@@ -591,9 +591,6 @@ class MPRUN(QMainWindow):
         font_color_hlayout.layout.addWidget(self.font_color_btn)
 
         #_____ Image Trace tab widgets _____
-        vector_options_label = QLabel('Image Trace', self)
-        vector_options_label.setStyleSheet("QLabel { font-size: 12px;}")
-
         colormode_label = QLabel('Preset:')
         mode_label = QLabel('Mode:')
         color_precision_label = QLabel('Color Precision (More Accurate):', self)
@@ -609,6 +606,7 @@ class MPRUN(QMainWindow):
         self.mode_combo.addItem('Spline', 'spline')
         self.mode_combo.addItem('Polygon', 'polygon')
         self.mode_combo.addItem('None', 'none')
+        self.mode_combo.setMinimumWidth(200)
 
         self.color_precision_spin = QSpinBox(self)
         self.color_precision_spin.setMaximum(8)
@@ -628,11 +626,15 @@ class MPRUN(QMainWindow):
         self.path_precision_spin.setToolTip('Change the path precision')
 
         image_tracehlayout1 = ToolbarHorizontalLayout()
+        image_tracehlayout1.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         image_tracehlayout1.layout.addWidget(colormode_label)
         image_tracehlayout1.layout.addWidget(self.colormode_combo)
+        image_tracehlayout1.layout.setContentsMargins(0, 0, 0, 0)
         image_tracehlayout2 = ToolbarHorizontalLayout()
+        image_tracehlayout2.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
         image_tracehlayout2.layout.addWidget(mode_label)
         image_tracehlayout2.layout.addWidget(self.mode_combo)
+        image_tracehlayout2.layout.setContentsMargins(0, 0, 0, 0)
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.update_item_pen)
@@ -667,15 +669,12 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(opacity_hlayout)
 
         # Elements Tab Widgets
-        self.characters_tab_layout.addWidget(HorizontalSeparator())
         self.characters_tab_layout.addWidget(self.font_choice_combo)
         self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
         self.characters_tab_layout.addWidget(font_style_hlayout)
         self.characters_tab_layout.addWidget(font_color_hlayout)
 
         # Vectorize Tab Widgets
-        self.image_trace_layout.addWidget(HorizontalSeparator())
-        self.image_trace_layout.addWidget(vector_options_label)
         self.image_trace_layout.addWidget(image_tracehlayout1)
         self.image_trace_layout.addWidget(image_tracehlayout2)
         self.image_trace_layout.addWidget(path_precision_label)

@@ -18,8 +18,14 @@ class HorizontalSeparator(QFrame):
         self.color = '#4b4b4b'
         self.setFrameShape(QFrame.HLine)
         self.setFrameShadow(QFrame.Plain)
-        self.setStyleSheet(f'background-color: {self.color}; '
-                           f'color: {self.color}')
+        self.setStyleSheet(f'background-color: {self.color}; color: {self.color}')
+        self.setFixedHeight(2)  # Set the height to 1 pixel
+
+    def sizeHint(self):
+        return QSize(2, 2)
+
+    def minimumSizeHint(self):
+        return QSize(2, 2)
 
 class QColorButton(QPushButton):
     def __init__(self, parent=None):

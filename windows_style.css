@@ -59,6 +59,12 @@ QToolBar::handle {
     border-radius: 4px; /* Border radius */
 }
 
+QToolBar::separator {
+    background-color: #4b4b4b; /* Background color of the separator */
+    width: 1px; /* Width of the separator */
+    height: 15px; /* Height of the separator */
+}
+
 QToolButton {
     background-color: #535353; /* Background color of buttons */
     border: none; /* Button border */
@@ -111,7 +117,7 @@ QComboBox {
     border: 2px solid #5f5f5f;
     border-radius: 3px;
     padding: 2px 25px 2px 8px; /* Adjusted padding */
-    min-width: 75px;
+    min-width: 100px;
     height: 23px;
 }
 

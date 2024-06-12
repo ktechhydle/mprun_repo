@@ -40,7 +40,6 @@ class LibraryWidget(QWidget):
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        self.layout.addWidget(HorizontalSeparator())
 
         self.canvas = canvas
 

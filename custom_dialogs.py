@@ -325,7 +325,7 @@ class CanvasEditorPanel(QWidget):
     def __init__(self, canvas):
         super().__init__()
 
-        self.setFixedHeight(200)
+        self.setFixedHeight(185)
         self.setFixedWidth(285)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
@@ -394,7 +394,6 @@ class CanvasEditorPanel(QWidget):
         widget3.layout.addWidget(canvas_name_label)
         widget3.layout.addWidget(self.canvas_name_entry)
 
-        self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(widget1)
         self.layout.addWidget(widget2)
         self.layout.addWidget(widget3)
@@ -441,7 +440,7 @@ class TextAlongPathPanel(QWidget):
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        self.setFixedHeight(175)
+        self.setFixedHeight(160)
         self.setFixedWidth(285)
 
         self.createUi()
@@ -467,7 +466,6 @@ class TextAlongPathPanel(QWidget):
         self.text_entry.setPlaceholderText('Enter Text')
         self.text_entry.setToolTip('Enter text along the path')
 
-        self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(self.text_along_path_check_btn)
         self.layout.addWidget(self.distrubute_evenly_check_btn)
         self.layout.addWidget(spacing_label)
@@ -521,7 +519,7 @@ class QuickActionsPanel(QWidget):
         self.parent = parent
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        self.setFixedHeight(125)
+        self.setFixedHeight(115)
 
         self.createUI()
 
@@ -545,7 +543,6 @@ class QuickActionsPanel(QWidget):
         gsnap_hlayout.layout.addWidget(grid_size_label)
         gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
 
-        self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(horizontal_widget)
         self.layout.addWidget(gsnap_hlayout)
 

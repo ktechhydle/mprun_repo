@@ -10,7 +10,7 @@ class AboutWin(QtWidgets.QWidget):
 
         self.setWindowTitle('About MPRUN')
         self.setWindowIcon(QtGui.QIcon('UI/Main Logos/MPRUN_icon.ico'))
-        self.setFixedSize(500, 900)
+        self.setFixedSize(500, 700)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet('border-radius: 5px;')
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
