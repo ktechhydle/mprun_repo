@@ -167,6 +167,7 @@ class MPRUN(QMainWindow):
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
         redo_action.triggered.connect(self.canvas.redo)
 
+        # Create object actions
         name_action = QAction('Name', self)
         name_action.setShortcut(QKeySequence('N'))
         name_action.triggered.connect(self.use_name_item)
@@ -237,18 +238,17 @@ class MPRUN(QMainWindow):
         self.edit_menu.addAction(undo_action)
         self.edit_menu.addAction(redo_action)
         self.edit_menu.addSeparator()
-        self.edit_menu.addAction(name_action)
-        self.edit_menu.addAction(scale_action)
-        self.edit_menu.addSeparator()
 
         self.object_menu.addAction(raise_layer_action)
         self.object_menu.addAction(lower_layer_action)
         self.object_menu.addAction(bring_to_front_action)
         self.object_menu.addSeparator()
+        self.object_menu.addAction(name_action)
         self.object_menu.addAction(duplicate_action)
         self.object_menu.addAction(group_action)
         self.object_menu.addAction(ungroup_action)
         self.object_menu.addSeparator()
+        self.object_menu.addAction(scale_action)
         self.object_menu.addAction(hide_action)
         self.object_menu.addAction(unhide_action)
         self.object_menu.addAction(reset_action)
@@ -292,14 +292,14 @@ class MPRUN(QMainWindow):
 
     def init_toolbars(self):
         # Toolbar
-        self.toolbar = QToolBar('MPRUN Toolset')
+        self.toolbar = QToolBar('Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.TopToolBarArea | Qt.RightToolBarArea)
         self.toolbar.setFloatable(False)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Item toolbar
-        self.item_toolbar = QToolBar('MPRUN Item Bar')
+        self.item_toolbar = QToolBar('Items')
         self.item_toolbar.setIconSize(QSize(26, 26))
         self.item_toolbar.setMovable(True)
         self.item_toolbar.setFloatable(True)
@@ -308,7 +308,7 @@ class MPRUN(QMainWindow):
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
 
         # View Toolbar
-        self.view_toolbar = QToolBar('MPRUN View Toolbar')
+        self.view_toolbar = QToolBar('View')
         self.view_toolbar.setMovable(False)
         self.view_toolbar.setFixedHeight(22)
         self.view_toolbar.setStyleSheet('padding: 1px;')
@@ -323,7 +323,7 @@ class MPRUN(QMainWindow):
         self.toolbox.setMinimumHeight(680)
 
         self.tab_view_dock = CustomDockWidget(self.toolbox, self)
-        self.tab_view_dock.setWindowTitle('MPRUN Panel Manager')
+        self.tab_view_dock.setWindowTitle('Actions')
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
 
         # Properties Tab
@@ -1771,8 +1771,8 @@ class MPRUN(QMainWindow):
             self.quick_actions_tab.gsnap_check_btn.click()
 
     def use_exit_grid(self):
-        if self.gsnap_check_btn.isChecked():
-            self.gsnap_check_btn.click()
+        if self.quick_actions_tab.gsnap_check_btn.isChecked():
+            self.quick_actions_tab.gsnap_check_btn.click()
 
     def use_smooth_path(self):
         for item in self.canvas.selectedItems():
