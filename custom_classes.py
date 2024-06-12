@@ -584,9 +584,27 @@ class LeaderLineItem(QGraphicsPathItem):
     def updatePathEndPoint(self):
         path = self.path()
         if path.elementCount() > 0:
-            start_element_index = 0  # The start point is the first element in the path
-            new_start_point = self.mapFromItem(self.text_element, self.text_element.boundingRect().bottomLeft())
-            path.setElementPositionAt(start_element_index, new_start_point.x(), new_start_point.y())
+            last_element_index = path.elementCount() - 1
+            end_point = QPointF(path.elementAt(last_element_index).x, path.elementAt(last_element_index).y)
+            text_rect = self.text_element.boundingRect()
+
+            # Determine the closest corner of the text bounding rect to the end_point
+            top_left = self.mapFromItem(self.text_element, text_rect.topLeft())
+            top_right = self.mapFromItem(self.text_element, text_rect.topRight())
+            bottom_left = self.mapFromItem(self.text_element, text_rect.bottomLeft())
+            bottom_right = self.mapFromItem(self.text_element, text_rect.bottomRight())
+
+            corners = {
+                'top_left': top_left,
+                'top_right': top_right,
+                'bottom_left': bottom_left,
+                'bottom_right': bottom_right
+            }
+
+            closest_corner = min(corners, key=lambda corner: (corners[corner] - end_point).manhattanLength())
+            new_start_point = corners[closest_corner]
+
+            path.setElementPositionAt(0, new_start_point.x(), new_start_point.y())
             self.setPath(path)
 
     def duplicate(self):

@@ -529,6 +529,7 @@ y: {int(p.y())}''')
 
             # Set Tooltips for elements
             self.pathg_item.setToolTip('Leader Line')
+            self.pathg_item.updatePathEndPoint()
 
     def on_add_text(self, event):
         if event.button() == Qt.LeftButton:
