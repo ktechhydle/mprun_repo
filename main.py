@@ -1684,6 +1684,14 @@ class MPRUN(QMainWindow):
                     pass
 
                 else:
+                    if isinstance(item, LeaderLineItem):
+                        item.childItems()[0].setSelected(False)
+                        item.updatePathEndPoint()
+
+                    elif isinstance(item, CustomTextItem):
+                        if isinstance(item.parentItem(), LeaderLineItem):
+                            item.parentItem().updatePathEndPoint()
+
                     # Calculate the center of the bounding box for the selected items
                     bounding_rect = item.boundingRect()
                     center_x = bounding_rect.center().x()
@@ -1725,6 +1733,14 @@ class MPRUN(QMainWindow):
                 pass
 
             else:
+                if isinstance(item, LeaderLineItem):
+                    item.childItems()[0].setSelected(False)
+                    item.updatePathEndPoint()
+
+                elif isinstance(item, CustomTextItem):
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
+
                 item.setTransformOriginPoint(item.boundingRect().center())
 
                 # Set the rotation angle
