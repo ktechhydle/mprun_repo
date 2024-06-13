@@ -76,7 +76,7 @@ class CustomGraphicsView(QGraphicsView):
         self.sculpting_item = None
         self.sculpting_item_point_index = -1
         self.sculpting_item_offset = QPointF()
-        self.sculpt_shape = QGraphicsEllipseItem(0, 0, 50, 50)
+        self.sculpt_shape = QGraphicsEllipseItem(0, 0, 25, 25)
         self.sculpting_initial_path = None
 
         # Add methods for zooming
@@ -170,6 +170,7 @@ class CustomGraphicsView(QGraphicsView):
 
         elif self.sculpt_btn.isChecked():
             self.on_sculpt_start(event)
+            self.disable_item_flags()
 
         else:
             super().mousePressEvent(event)
@@ -218,6 +219,7 @@ y: {int(p.y())}''')
 
         elif self.sculpt_btn.isChecked():
             self.on_sculpt(event)
+            self.disable_item_flags()
 
         else:
             super().mouseMoveEvent(event)
@@ -249,6 +251,7 @@ y: {int(p.y())}''')
 
         elif self.sculpt_btn.isChecked():
             self.on_sculpt_end(event)
+            self.disable_item_flags()
 
         else:
             super().mouseReleaseEvent(event)
@@ -771,7 +774,7 @@ y: {int(p.y())}''')
                     point = path.elementAt(i)
                     point_pos = QPointF(point.x, point.y)
                     dist = (point_pos - pos).manhattanLength()
-                    if dist < min_dist and dist < 50:  # thresh hold for selection
+                    if dist < min_dist and dist < 25:  # thresh hold for selection
                         min_dist = dist
                         closest_item = item
                         closest_point_index = i
@@ -782,15 +785,29 @@ y: {int(p.y())}''')
     def update_path_point(self, item, index, new_pos):
         path = item.path()
         elements = [path.elementAt(i) for i in range(path.elementCount())]
+
+        if index < 1 or index + 2 >= len(elements):
+            return  # Ensure we have enough points for cubicTo
+
+        # Modify the specific point
         elements[index].x = new_pos.x()
         elements[index].y = new_pos.y()
 
         new_path = QPainterPath()
-        if elements:
-            new_path.moveTo(elements[0].x, elements[0].y)
-            for elem in elements[1:]:
-                new_path.lineTo(elem.x, elem.y)
+        new_path.moveTo(elements[0].x, elements[0].y)
+
+        i = 1
+        while i < len(elements):
+            if i + 2 < len(elements):
+                new_path.cubicTo(elements[i].x, elements[i].y,
+                                 elements[i + 1].x, elements[i + 1].y,
+                                 elements[i + 2].x, elements[i + 2].y)
+                i += 3
+            else:
+                new_path.lineTo(elements[i].x, elements[i].y)
+
         item.setPath(new_path)
+        item.smooth = False
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)
