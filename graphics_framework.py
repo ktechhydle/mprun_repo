@@ -518,9 +518,6 @@ y: {int(p.y())}''')
             if self.leader_line.isEmpty():
                 self.scene().removeItem(self.pathg_item)
 
-            add_command = AddItemCommand(self.canvas, self.pathg_item)
-            self.canvas.addCommand(add_command)
-
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
