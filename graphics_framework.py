@@ -486,7 +486,7 @@ y: {int(p.y())}''')
             self.pathg_item.setPen(self.pen)
             self.pathg_item.setBrush(self.stroke_fill)
             self.pathg_item.text_element.setFont(self.font)
-            self.pathg_item.text_element.setPos(self.start_point - self.pathg_item.text_element.boundingRect().center())
+            self.pathg_item.text_element.setPos(self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
 
             add_command = AddItemCommand(self.canvas, self.pathg_item)
             self.canvas.addCommand(add_command)

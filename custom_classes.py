@@ -616,7 +616,7 @@ class LeaderLineItem(QGraphicsPathItem):
     def duplicate(self):
         path = self.path()
 
-        item = LeaderLineItem(path)
+        item = LeaderLineItem(path, self.text_element.toPlainText())
         item.setPen(self.pen())
         item.setBrush(self.brush())
         item.setPos(self.pos())
@@ -628,13 +628,15 @@ class LeaderLineItem(QGraphicsPathItem):
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Path')
+        item.setToolTip('Leader Line')
 
-        if self.childItems():
-            for child in self.childItems():
-                copy = child.duplicate()
+        item.text_element.setFont(self.text_element.font())
+        item.text_element.setDefaultTextColor(self.text_element.defaultTextColor())
+        item.text_element.setTransform(self.text_element.transform())
+        item.text_element.setRotation(self.text_element.rotation())
+        item.text_element.setPos(self.text_element.pos())
 
-                copy.setParentItem(item)
+        item.updatePathEndPoint()
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
