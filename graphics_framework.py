@@ -76,7 +76,8 @@ class CustomGraphicsView(QGraphicsView):
         self.sculpting_item = None
         self.sculpting_item_point_index = -1
         self.sculpting_item_offset = QPointF()
-        self.sculpt_shape = QGraphicsEllipseItem(0, 0, 25, 25)
+        self.sculpt_shape = QGraphicsEllipseItem(0, 0, 50, 50)
+        self.sculpt_shape.setZValue(10000)
         self.sculpting_initial_path = None
 
         # Add methods for zooming
@@ -220,6 +221,7 @@ y: {int(p.y())}''')
         elif self.sculpt_btn.isChecked():
             self.on_sculpt(event)
             self.disable_item_flags()
+            super().mouseMoveEvent(event)
 
         else:
             super().mouseMoveEvent(event)
@@ -774,7 +776,7 @@ y: {int(p.y())}''')
                     point = path.elementAt(i)
                     point_pos = QPointF(point.x, point.y)
                     dist = (point_pos - pos).manhattanLength()
-                    if dist < min_dist and dist < 25:  # thresh hold for selection
+                    if dist < min_dist and dist < 50:  # thresh hold for selection
                         min_dist = dist
                         closest_item = item
                         closest_point_index = i

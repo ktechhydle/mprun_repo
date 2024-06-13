@@ -170,6 +170,10 @@ class MPRUN(QMainWindow):
         add_text_along_path_action = QAction('Add Text Along Path', self)
         add_text_along_path_action.triggered.connect(self.use_add_text_along_path)
 
+        sculpt_path_action = QAction('Sculpt Path', self)
+        sculpt_path_action.setShortcut(QKeySequence('S'))
+        sculpt_path_action.triggered.connect(self.use_sculpt_path)
+
         # Create edit actions
         undo_action = QAction('Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
@@ -286,6 +290,7 @@ class MPRUN(QMainWindow):
         path_menu.addAction(smooth_action)
         path_menu.addAction(close_subpath_action)
         path_menu.addAction(add_text_along_path_action)
+        path_menu.addAction(sculpt_path_action)
 
         characters_menu.addAction(text_action)
 
@@ -302,6 +307,7 @@ class MPRUN(QMainWindow):
         self.actions['Smooth Path'] = smooth_action
         self.actions['Add Text Along Path'] = add_text_along_path_action
         self.actions['Close Path'] = close_subpath_action
+        self.actions['Sculpt Path'] = sculpt_path_action
         self.actions['Duplicate'] = duplicate_action
         self.actions['Reset Item'] = reset_action
         self.actions['Group Selection'] = group_action
@@ -765,7 +771,7 @@ class MPRUN(QMainWindow):
         self.sculpt_btn.setToolTip('''Sculpt Tool:
         Key-S''')
         self.sculpt_btn.triggered.connect(self.update)
-        self.sculpt_btn.triggered.connect(self.use_sculpt_tool)
+        self.sculpt_btn.triggered.connect(self.use_sculpt_path)
 
         # Label draw button
         self.label_btn = QAction(QIcon('UI/Tool Icons/label_icon.png'), "", self)
@@ -1531,7 +1537,7 @@ class MPRUN(QMainWindow):
         self.pen_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
 
-    def use_sculpt_tool(self):
+    def use_sculpt_path(self):
         self.sculpt_btn.setChecked(True)
 
     def use_label(self):
