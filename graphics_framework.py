@@ -69,6 +69,7 @@ class CustomGraphicsView(QGraphicsView):
         self.layer_height = None
         self.path = None
         self.last_point = None
+        self.label_drawing = False
 
         # Add methods for zooming
         self.zoomInFactor = 1.25
@@ -473,61 +474,56 @@ y: {int(p.y())}''')
                     super().mouseReleaseEvent(event)
 
     def on_label_start(self, event):
-        # Check the button being pressed
         if event.button() == Qt.LeftButton:
-            # Create the leader line
-            self.leader_line = QPainterPath()  # Create a new QPainterPath
-            self.leader_line.moveTo(self.mapToScene(event.pos()))
+            self.label_drawing = True
+            self.start_point = self.mapToScene(event.pos())
+            self.leader_line = QPainterPath()
+            self.leader_line.moveTo(self.start_point)
             self.setDragMode(QGraphicsView.NoDrag)
-            self.clicked_label_point = self.mapToScene(event.pos())
+            self.clicked_label_point = self.start_point
 
-            # Create path item
             self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
+            self.pathg_item.setPen(self.pen)
             self.pathg_item.setBrush(self.stroke_fill)
             self.pathg_item.text_element.setFont(self.font)
-            self.pathg_item.text_element.setPos(self.mapToScene(event.pos()) - self.pathg_item.text_element.boundingRect().center())
-
+            self.pathg_item.text_element.setPos(self.start_point - self.pathg_item.text_element.boundingRect().center())
 
             add_command = AddItemCommand(self.canvas, self.pathg_item)
             self.canvas.addCommand(add_command)
-
             self.canvas.update()
 
     def on_label(self, event):
-        # Check the buttons
-        if event.button() == Qt.LeftButton:
-            # Move line to current coords
-            self.leader_line.lineTo(self.mapToScene(event.pos()))
-            self.pathg_item.setPath(self.leader_line)
+        if self.label_drawing:
+            current_point = self.mapToScene(event.pos())
+            temp_line = QPainterPath()
+            temp_line.moveTo(self.start_point)
+            temp_line.lineTo(current_point)
+            self.pathg_item.setPath(temp_line)
+            self.pathg_item.updatePathEndPoint()
             self.pathg_item.update()
-
             self.canvas.update()
+        super().mouseMoveEvent(event)
 
     def on_label_end(self, event):
-        # Check buttons
-        if event.button() == Qt.LeftButton:
-            # Move line to current mouse coords
-            self.leader_line.lineTo(self.mapToScene(event.pos()))
+        if event.button() == Qt.LeftButton and self.label_drawing:
+            self.label_drawing = False
+            end_point = self.mapToScene(event.pos())
+            self.leader_line.lineTo(end_point)
             self.pathg_item.setPath(self.leader_line)
             self.canvas.update()
 
-            # Load path as QGraphicsItem, set parent items
-            self.pathg_item.setPen(self.pen)
             self.pathg_item.setZValue(0)
             self.pathg_item.text_element.select_text_and_set_cursor()
 
             if self.leader_line.isEmpty():
                 self.scene().removeItem(self.pathg_item)
 
-            # Add item
             add_command = AddItemCommand(self.canvas, self.pathg_item)
             self.canvas.addCommand(add_command)
 
-            # Set flags
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
             self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
-            # Set Tooltips for elements
             self.pathg_item.setToolTip('Leader Line')
             self.pathg_item.updatePathEndPoint()
 
