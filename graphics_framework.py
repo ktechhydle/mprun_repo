@@ -282,7 +282,7 @@ y: {int(p.y())}''')
         for url in event.mimeData().urls():
             if url.toLocalFile().endswith('.svg'):
                 item = CustomSvgItem(url.toLocalFile())
-                item.store_filename(url.toLocalFile())
+                item.store_filename(os.path.abspath(url.toLocalFile()))
                 item.setToolTip('Imported SVG')
 
             elif url.toLocalFile().endswith(('.txt', '.csv')):
@@ -299,7 +299,7 @@ y: {int(p.y())}''')
             else:
                 pixmap = QPixmap(url.toLocalFile())
                 item = CustomPixmapItem(pixmap)
-                item.store_filename(url.toLocalFile())
+                item.store_filename(os.path.abspath(url.toLocalFile()))
                 item.setToolTip('Imported Bitmap')
 
             # Set default attributes
@@ -1472,12 +1472,14 @@ class SceneManager:
         path_item.text_element.setFont(self.deserialize_font(data['textfont']))
         path_item.setVisible(data['visible'])
         path_item.text_element.setVisible(data['textvisible'])
+        path_item.updatePathEndPoint()
 
         return path_item
 
     def deserialize_custom_svg_item(self, data):
         if os.path.exists(data['filename']):
             svg_item = CustomSvgItem(data['filename'])
+            svg_item.store_filename(data['filename'])
             svg_item.setRotation(data['rotation'])
             svg_item.setTransform(self.deserialize_transform(data['transform']))
             svg_item.setPos(data['x'], data['y'])
@@ -1493,6 +1495,7 @@ class SceneManager:
         if os.path.exists(data['filename']):
             pixmap = QPixmap(data['filename'])
             pixmap_item = CustomPixmapItem(pixmap)
+            pixmap_item.store_filename(data['filename'])
             pixmap_item.setRotation(data['rotation'])
             pixmap_item.setTransform(self.deserialize_transform(data['transform']))
             pixmap_item.setPos(data['x'], data['y'])
