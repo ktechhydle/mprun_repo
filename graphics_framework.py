@@ -26,7 +26,9 @@ class CustomGraphicsView(QGraphicsView):
                  scale_btn,
                  pan_btn,
                  zoom_spin,
-                 grid_checkbtn):
+                 grid_checkbtn,
+                 sculpt_btn):
+
         super().__init__()
         self.scalingCommand = None
         self.points = []
@@ -50,6 +52,7 @@ class CustomGraphicsView(QGraphicsView):
         self.button = button
         self.button2 = button2
         self.pen_btn = smooth_btn
+        self.sculpt_btn = sculpt_btn
         self.text_btn = button4
         self.add_canvas_btn = add_canvas_btn
         self.select_btn = select_btn
@@ -70,6 +73,11 @@ class CustomGraphicsView(QGraphicsView):
         self.path = None
         self.last_point = None
         self.label_drawing = False
+        self.sculpting_item = None
+        self.sculpting_item_point_index = -1
+        self.sculpting_item_offset = QPointF()
+        self.sculpt_shape = QGraphicsEllipseItem(0, 0, 50, 50)
+        self.sculpting_initial_path = None
 
         # Add methods for zooming
         self.zoomInFactor = 1.25
@@ -160,6 +168,9 @@ class CustomGraphicsView(QGraphicsView):
             self.disable_item_flags()
             super().mousePressEvent(event)
 
+        elif self.sculpt_btn.isChecked():
+            self.on_sculpt_start(event)
+
         else:
             super().mousePressEvent(event)
 
@@ -205,6 +216,9 @@ y: {int(p.y())}''')
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
+        elif self.sculpt_btn.isChecked():
+            self.on_sculpt(event)
+
         else:
             super().mouseMoveEvent(event)
 
@@ -232,6 +246,9 @@ y: {int(p.y())}''')
         elif self.pan_btn.isChecked():
             self.on_pan_end(event)
             super().mouseReleaseEvent(event)
+
+        elif self.sculpt_btn.isChecked():
+            self.on_sculpt_end(event)
 
         else:
             super().mouseReleaseEvent(event)
@@ -711,6 +728,69 @@ y: {int(p.y())}''')
                                 Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
+
+    def on_sculpt_start(self, event):
+        pos = self.mapToScene(event.pos())
+        item, point_index, offset = self.find_closest_point(pos)
+        if item is not None:
+            self.sculpting_item = item
+            self.sculpting_item_point_index = point_index
+            self.sculpting_item_offset = offset
+            self.sculpting_initial_path = item.path()
+
+        self.canvas.addItem(self.sculpt_shape)
+
+    def on_sculpt(self, event):
+        if self.sculpting_item is not None and self.sculpting_item_point_index != -1:
+            pos = self.mapToScene(event.pos()) - self.sculpting_item_offset
+            self.update_path_point(self.sculpting_item, self.sculpting_item_point_index, pos)
+
+        self.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculpt_shape.boundingRect().center())
+
+    def on_sculpt_end(self, event):
+        if self.sculpting_item is not None:
+            new_path = self.sculpting_item.path()
+            if new_path != self.sculpting_initial_path:
+                command = EditPathCommand(self.sculpting_item, self.sculpting_initial_path, new_path)
+                self.canvas.addCommand(command)
+        self.sculpting_item = None
+        self.sculpting_item_point_index = -1
+        self.sculpting_initial_path = None
+        self.canvas.removeItem(self.sculpt_shape)
+
+    def find_closest_point(self, pos):
+        min_dist = float('inf')
+        closest_item = None
+        closest_point_index = -1
+        closest_offset = QPointF()
+
+        for item in self.scene().items():
+            if isinstance(item, QGraphicsPathItem):
+                path = item.path()
+                for i in range(path.elementCount()):
+                    point = path.elementAt(i)
+                    point_pos = QPointF(point.x, point.y)
+                    dist = (point_pos - pos).manhattanLength()
+                    if dist < min_dist and dist < 50:  # thresh hold for selection
+                        min_dist = dist
+                        closest_item = item
+                        closest_point_index = i
+                        closest_offset = pos - point_pos
+
+        return closest_item, closest_point_index, closest_offset
+
+    def update_path_point(self, item, index, new_pos):
+        path = item.path()
+        elements = [path.elementAt(i) for i in range(path.elementCount())]
+        elements[index].x = new_pos.x()
+        elements[index].y = new_pos.y()
+
+        new_path = QPainterPath()
+        if elements:
+            new_path.moveTo(elements[0].x, elements[0].y)
+            for elem in elements[1:]:
+                new_path.lineTo(elem.x, elem.y)
+        item.setPath(new_path)
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)

@@ -759,6 +759,14 @@ class MPRUN(QMainWindow):
         self.pen_btn.triggered.connect(self.update)
         self.pen_btn.triggered.connect(self.use_pen_tool)
 
+        # Sculpt button
+        self.sculpt_btn = QAction(QIcon('UI/Tool Icons/pen_draw_icon.png'), '', self)
+        self.sculpt_btn.setCheckable(True)
+        self.sculpt_btn.setToolTip('''Sculpt Tool:
+        Key-S''')
+        self.sculpt_btn.triggered.connect(self.update)
+        self.sculpt_btn.triggered.connect(self.use_sculpt_tool)
+
         # Label draw button
         self.label_btn = QAction(QIcon('UI/Tool Icons/label_icon.png'), "", self)
         self.label_btn.setCheckable(True)
@@ -814,6 +822,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.pan_btn)
         self.toolbar.addAction(self.path_btn)
         self.toolbar.addAction(self.pen_btn)
+        self.toolbar.addAction(self.sculpt_btn)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addAction(self.scale_btn)
@@ -827,6 +836,7 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.pan_btn)
         self.action_group.addAction(self.path_btn)
         self.action_group.addAction(self.pen_btn)
+        self.action_group.addAction(self.sculpt_btn)
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
         self.action_group.addAction(self.scale_btn)
@@ -940,7 +950,8 @@ class MPRUN(QMainWindow):
                                               self.scale_btn,
                                               self.pan_btn,
                                               self.view_zoom_spin,
-                                              self.quick_actions_tab.gsnap_check_btn)
+                                              self.quick_actions_tab.gsnap_check_btn,
+                                              self.sculpt_btn)
         format = QSurfaceFormat()
         format.setSamples(4)
         self.opengl_widget = QOpenGLWidget()
@@ -1519,6 +1530,9 @@ class MPRUN(QMainWindow):
     def use_pen_tool(self):
         self.pen_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
+
+    def use_sculpt_tool(self):
+        self.sculpt_btn.setChecked(True)
 
     def use_label(self):
         self.label_btn.setChecked(True)
