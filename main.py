@@ -436,7 +436,7 @@ class MPRUN(QMainWindow):
         self.width_scale_spin.setValue(0.0)
         self.width_scale_spin.setDecimals(2)
         self.width_scale_spin.setRange(-10000.00, 10000.00)
-        self.width_scale_spin.setSingleStep(0.1)
+        self.width_scale_spin.setSingleStep(1.0)
         self.width_scale_spin.setSuffix(' pt')
         self.width_scale_spin.setToolTip('Change the width')
         self.height_scale_spin = QDoubleSpinBox(self)
@@ -444,7 +444,7 @@ class MPRUN(QMainWindow):
         self.height_scale_spin.setValue(0.0)
         self.height_scale_spin.setDecimals(2)
         self.height_scale_spin.setRange(-10000.00, 10000.00)
-        self.height_scale_spin.setSingleStep(0.1)
+        self.height_scale_spin.setSingleStep(1.0)
         self.height_scale_spin.setSuffix(' pt')
         self.height_scale_spin.setToolTip('Change the height')
         self.rotate_item_spin = QSpinBox(self)
@@ -1533,7 +1533,6 @@ class MPRUN(QMainWindow):
             else:
                 c = LayerChangeCommand(item, item.zValue(), item.zValue() + 1)
                 self.canvas.addCommand(c)
-                self.update_appearance_ui()
 
     def use_lower_layer(self):
         for item in self.canvas.selectedItems():
@@ -1547,7 +1546,6 @@ class MPRUN(QMainWindow):
                 else:
                     c = LayerChangeCommand(item, item.zValue(), item.zValue() - 1)
                     self.canvas.addCommand(c)
-                    self.update_appearance_ui()
 
     def use_bring_to_front(self):
         selected_items = self.canvas.selectedItems()
@@ -1558,7 +1556,7 @@ class MPRUN(QMainWindow):
                     pass
 
                 else:
-                    item.setZValue(max_z + 1)
+                    item.setZValue(max_z)
 
     def use_vectorize(self):
         for item in self.canvas.selectedItems():
@@ -1749,21 +1747,17 @@ class MPRUN(QMainWindow):
 
     def use_flip_horizontal(self):
         for item in self.canvas.selectedItems():
-            if self.width_scale_spin.value() > 0:
-                item.setPos(item.scenePos().x() + item.sceneBoundingRect().width(), item.scenePos().y())
-
-            else:
-                item.setPos(item.scenePos().x() - item.sceneBoundingRect().width(), item.scenePos().y())
+            if isinstance(item, LeaderLineItem):
+                item.childItems()[0].setSelected(False)
+                item.updatePathEndPoint()
 
         self.width_scale_spin.setValue(-self.width_scale_spin.value())
 
     def use_flip_vertical(self):
         for item in self.canvas.selectedItems():
-            if self.height_scale_spin.value() > 0:
-                item.setPos(item.scenePos().x(), item.scenePos().y() + item.sceneBoundingRect().height())
-
-            else:
-                item.setPos(item.scenePos().x(), item.scenePos().y() - item.sceneBoundingRect().height())
+            if isinstance(item, LeaderLineItem):
+                item.childItems()[0].setSelected(False)
+                item.updatePathEndPoint()
 
         self.height_scale_spin.setValue(-self.height_scale_spin.value())
 
@@ -1871,6 +1865,15 @@ class MPRUN(QMainWindow):
 
     def use_hide_item(self):
         for item in self.canvas.selectedItems():
+            if isinstance(item, LeaderLineItem):
+                item.childItems()[0].setSelected(False)
+
+            elif isinstance(item, CustomTextItem):
+                if isinstance(item.parentItem(), LeaderLineItem):
+                    command = HideCommand(item.parentItem(), True, False)
+                    self.canvas.addCommand(command)
+                    return
+
             command = HideCommand(item, True, False)
             self.canvas.addCommand(command)
 

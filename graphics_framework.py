@@ -569,14 +569,19 @@ y: {int(p.y())}''')
                 delta = self.mapToScene(event.pos()) - item_center
 
                 # Calculate scaling factors
-                scale_x = 1 + delta.x() / 100.0
-                scale_y = 1 + delta.y() / 100.0
+                scale_x = 1 + delta.x() / 50.0
+                scale_y = 1 + delta.y() / 50.0
 
                 item = self.scalingCommand.item
                 if self.initialScale is not None:
                     if isinstance(item, CanvasItem):
                         pass
+
                     else:
+                        if isinstance(item, CustomTextItem):
+                            if isinstance(item.parentItem(), LeaderLineItem):
+                                item.parentItem().updatePathEndPoint()
+
                         item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
 
                         # Check if Shift key is pressed
