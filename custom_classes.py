@@ -466,12 +466,18 @@ class CustomTextItem(QGraphicsTextItem):
         if event.key() == Qt.Key_Escape:
             self.clearFocus()
 
+        if isinstance(self.parentItem(), LeaderLineItem):
+            self.parentItem().updatePathEndPoint()
+
     def focusOutEvent(self, event):
         new_text = self.toPlainText()
         if self.old_text != new_text:
             edit_command = EditTextCommand(self, self.old_text, new_text)
             self.scene().addCommand(edit_command)
             self.old_text = new_text
+
+            if isinstance(self.parentItem(), LeaderLineItem):
+                self.parentItem().updatePathEndPoint()
 
         cursor = self.textCursor()
         cursor.clearSelection()

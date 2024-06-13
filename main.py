@@ -1105,6 +1105,9 @@ class MPRUN(QMainWindow):
                                                 QColor(self.font_color.get()))
                     self.canvas.addCommand(command)
 
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
+
                 elif isinstance(item, CustomPathItem):
                     if item.add_text == True:
                         item.update()
