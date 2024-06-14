@@ -86,6 +86,7 @@ class MPRUN(QMainWindow):
         self.tool_menu = self.menu_bar.addMenu('&Tools')
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.object_menu = self.menu_bar.addMenu('&Object')
+        self.selection_menu = self.menu_bar.addMenu('&Selection')
         self.help_menu = self.menu_bar.addMenu('&Help')
 
         # Create file actions
@@ -183,6 +184,14 @@ class MPRUN(QMainWindow):
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
         redo_action.triggered.connect(self.canvas.redo)
 
+        delete_action = QAction('Delete', self)
+        delete_action.setShortcut(QKeySequence('Backspace'))
+        delete_action.triggered.connect(self.use_delete)
+
+        hard_delete_action = QAction('Hard Delete', self)
+        hard_delete_action.setShortcut(QKeySequence('Ctrl+Shift+Backspace'))
+        hard_delete_action.triggered.connect(self.use_hard_delete)
+
         # Create object actions
         name_action = QAction('Name', self)
         name_action.setShortcut(QKeySequence('N'))
@@ -230,9 +239,35 @@ class MPRUN(QMainWindow):
         reset_action = QAction('Reset Item', self)
         reset_action.triggered.connect(self.use_reset_item)
 
+        # Create selection menu actions
         select_all_action = QAction('Select All', self)
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
+
+        clear_selection_action = QAction('Clear Selection', self)
+        clear_selection_action.setShortcut(QKeySequence('Escape'))
+        clear_selection_action.triggered.connect(self.use_clear_selection)
+
+        select_paths_action = QAction('Select Paths', self)
+        select_paths_action.triggered.connect(lambda: self.use_selection_mode('path'))
+
+        select_text_action = QAction('Select Text', self)
+        select_text_action.triggered.connect(lambda: self.use_selection_mode('text'))
+
+        select_leaderline_action = QAction('Select Leader Lines', self)
+        select_leaderline_action.triggered.connect(lambda: self.use_selection_mode('leaderline'))
+
+        select_groups_action = QAction('Select Groups', self)
+        select_groups_action.triggered.connect(lambda: self.use_selection_mode('group'))
+
+        select_pixmaps_action = QAction('Select Pixmaps', self)
+        select_pixmaps_action.triggered.connect(lambda: self.use_selection_mode('pixmap'))
+
+        select_svgs_action = QAction('Select SVGs', self)
+        select_svgs_action.triggered.connect(lambda: self.use_selection_mode('svg'))
+
+        select_canvases_action = QAction('Select Canvases', self)
+        select_canvases_action.triggered.connect(lambda: self.use_selection_mode('canvas'))
 
         # Create help menu actions
         about_action = QAction('About', self)
@@ -260,6 +295,8 @@ class MPRUN(QMainWindow):
         self.edit_menu.addAction(undo_action)
         self.edit_menu.addAction(redo_action)
         self.edit_menu.addSeparator()
+        self.edit_menu.addAction(delete_action)
+        self.edit_menu.addAction(hard_delete_action)
 
         self.object_menu.addAction(raise_layer_action)
         self.object_menu.addAction(lower_layer_action)
@@ -275,7 +312,19 @@ class MPRUN(QMainWindow):
         self.object_menu.addAction(unhide_action)
         self.object_menu.addAction(reset_action)
         self.object_menu.addSeparator()
-        self.object_menu.addAction(select_all_action)
+
+        self.selection_menu.addAction(select_all_action)
+        self.selection_menu.addAction(clear_selection_action)
+        self.selection_menu.addSeparator()
+        self.selection_menu.addAction(select_paths_action)
+        self.selection_menu.addAction(select_text_action)
+        self.selection_menu.addAction(select_leaderline_action)
+        self.selection_menu.addSeparator()
+        self.selection_menu.addAction(select_groups_action)
+        self.selection_menu.addAction(select_pixmaps_action)
+        self.selection_menu.addAction(select_svgs_action)
+        self.selection_menu.addSeparator()
+        self.selection_menu.addAction(select_canvases_action)
 
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
@@ -1154,17 +1203,6 @@ class MPRUN(QMainWindow):
                         item.setTextAlongPathColor(QColor(self.font_color.get()))
                         item.update()
 
-    def keyPressEvent(self, event):
-        if event.key() == QKeySequence('Backspace'):
-            for item in self.canvas.selectedItems():
-                command = RemoveItemCommand(self.canvas, item)
-                self.canvas.addCommand(command)
-
-        elif event.key() == QKeySequence('Escape'):
-            self.canvas.clearSelection()
-
-        super().keyPressEvent(event)
-
     def closeEvent(self, event):
         if self.canvas.modified:
             # Display a confirmation dialog
@@ -1527,6 +1565,16 @@ class MPRUN(QMainWindow):
 
             self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
+    def use_delete(self):
+        for item in self.canvas.selectedItems():
+            command = RemoveItemCommand(self.canvas, item)
+            self.canvas.addCommand(command)
+
+    def use_hard_delete(self):
+        for item in self.canvas.selectedItems():
+            self.canvas.removeItem(item)
+            del item
+
     def use_select(self):
         self.select_btn.setChecked(True)
         self.canvas_view.on_add_canvas_trigger()
@@ -1539,6 +1587,52 @@ class MPRUN(QMainWindow):
         for item in self.canvas.items():
             if item.flags() & QGraphicsItem.ItemIsSelectable:
                 item.setSelected(True)
+
+    def use_clear_selection(self):
+        self.select_btn.trigger()
+        self.canvas.clearSelection()
+
+    def use_selection_mode(self, mode: str):
+        if mode == 'canvas':
+            self.use_add_canvas()
+
+        else:
+            self.select_btn.trigger()
+
+        self.canvas.clearSelection()
+
+        for item in self.canvas.items():
+            if mode == 'path':
+                if isinstance(item, CustomPathItem):
+                    item.setSelected(True)
+
+            elif mode == 'leaderline':
+                if isinstance(item, LeaderLineItem):
+                    item.setSelected(True)
+
+            elif mode == 'pixmap':
+                if isinstance(item, CustomPixmapItem):
+                    item.setSelected(True)
+
+            elif mode == 'svg':
+                if isinstance(item, CustomSvgItem):
+                    item.setSelected(True)
+
+            elif mode == 'text':
+                if isinstance(item, CustomTextItem):
+                    item.setSelected(True)
+
+            elif mode == 'svg':
+                if isinstance(item, CustomSvgItem):
+                    item.setSelected(True)
+
+            elif mode == 'canvas':
+                if isinstance(item, CanvasItem):
+                    item.setSelected(True)
+
+            elif mode == 'group':
+                if isinstance(item, CustomGraphicsItemGroup):
+                    item.setSelected(True)
 
     def use_pan(self):
         self.pan_btn.setChecked(True)
