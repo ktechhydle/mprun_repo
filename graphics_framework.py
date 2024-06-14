@@ -793,8 +793,7 @@ y: {int(p.y())}''')
 
         # Define a function to calculate influence based on distance
         def calculate_influence(dist, radius):
-            # Linear falloff example
-            return max(0, (radius - dist) / radius)
+            return math.exp(-(dist**2) / (2 * (radius / 2.0)**2))
 
         # Adjust all points within the radius
         for i in range(len(elements)):

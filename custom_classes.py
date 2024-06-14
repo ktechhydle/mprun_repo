@@ -62,7 +62,7 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         group = CustomGraphicsItemGroup()
 
         # Set position, scale, and rotation
-        group.setPos(self.pos())
+        group.setPos(self.pos() + QPointF(10, 10))
         group.setScale(self.scale())
         group.setRotation(self.rotation())
         group.setZValue(self.zValue())
@@ -182,7 +182,7 @@ class CustomPathItem(QGraphicsPathItem):
         item = CustomPathItem(path)
         item.setPen(self.pen())
         item.setBrush(self.brush())
-        item.setPos(self.pos())
+        item.setPos(self.pos() + QPointF(10, 10))
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
@@ -338,7 +338,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         pixmap = QPixmap(self.return_filename())
 
         item = CustomPixmapItem(pixmap)
-        item.setPos(self.pos())
+        item.setPos(self.pos() + QPointF(10, 10))
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
@@ -393,10 +393,10 @@ class CustomSvgItem(QGraphicsSvgItem):
         return self.filename
 
     def duplicate(self):
-        svg = self.return_filename()
+        svg = self.source()
 
         item = CustomSvgItem(svg)
-        item.setPos(self.pos())
+        item.setPos(self.pos() + QPointF(10, 10))
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
@@ -492,7 +492,7 @@ class CustomTextItem(QGraphicsTextItem):
         item = CustomTextItem()
         item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
-        item.setPos(self.pos())
+        item.setPos(self.pos() + QPointF(10, 10))
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
@@ -619,7 +619,7 @@ class LeaderLineItem(QGraphicsPathItem):
         item = LeaderLineItem(path, self.text_element.toPlainText())
         item.setPen(self.pen())
         item.setBrush(self.brush())
-        item.setPos(self.pos())
+        item.setPos(self.pos() + QPointF(10, 10))
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
