@@ -257,6 +257,10 @@ y: {int(p.y())}''')
 
         self.parent().update_transform_ui()
 
+    def mouseDoubleClickEvent(self, event):
+        if self.sculpt_btn.isChecked():
+            self.on_sculpt_double_click(event)
+
     def wheelEvent(self, event):
         try:
             self.zoom_spin.blockSignals(True)
@@ -759,6 +763,57 @@ y: {int(p.y())}''')
         self.sculpting_item_point_index = -1
         self.sculpting_initial_path = None
         self.canvas.removeItem(self.sculpt_shape)
+
+    def on_sculpt_double_click(self, event):
+        pos = self.mapToScene(event.pos())
+        item, point_index, offset = self.find_closest_point(pos)
+
+        if item is not None and point_index != -1:
+            path = item.path()
+            elements = [path.elementAt(i) for i in range(path.elementCount())]
+
+            # Ensure the clicked point is not too close to the edges where cubicTo points are required
+            if point_index < 1 or point_index + 2 >= len(elements):
+                return
+
+            # Smooth the path around the double-clicked point
+            self.smooth_path_around_point(elements, point_index)
+
+            # Recreate the path with smoothed elements
+            new_path = QPainterPath()
+            new_path.moveTo(elements[0].x, elements[0].y)
+
+            i = 1
+            while i < len(elements):
+                if i + 2 < len(elements):
+                    new_path.cubicTo(elements[i].x, elements[i].y,
+                                     elements[i + 1].x, elements[i + 1].y,
+                                     elements[i + 2].x, elements[i + 2].y)
+                    i += 3
+                else:
+                    new_path.lineTo(elements[i].x, elements[i].y)
+                    i += 1
+
+            command = EditPathCommand(item, item.path(), new_path)
+            self.canvas.addCommand(command)
+            item.smooth = False
+
+    def smooth_path_around_point(self, elements, index):
+        if index < 1 or index + 1 >= len(elements):
+            return
+
+        # Get the control points around the clicked point
+        p0 = QPointF(elements[index - 1].x, elements[index - 1].y)  # Previous control point
+        p1 = QPointF(elements[index].x, elements[index].y)  # Clicked point
+        p2 = QPointF(elements[index + 1].x, elements[index + 1].y)  # Next control point
+
+        # Calculate smoothed positions
+        smoothed_x = (p0.x() + 2 * p1.x() + p2.x()) / 4
+        smoothed_y = (p0.y() + 2 * p1.y() + p2.y()) / 4
+
+        # Update the clicked point to the smoothed position
+        elements[index].x = smoothed_x
+        elements[index].y = smoothed_y
 
     def find_closest_point(self, pos):
         min_dist = float('inf')
