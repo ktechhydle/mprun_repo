@@ -1553,6 +1553,7 @@ class MPRUN(QMainWindow):
 
     def use_sculpt_path(self):
         self.sculpt_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
 
     def use_set_sculpt_radius(self, value):
         self.canvas_view.set_sculpt_radius(value)
