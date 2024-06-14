@@ -326,7 +326,8 @@ class MPRUN(QMainWindow):
         # Toolbar
         self.toolbar = QToolBar('Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.TopToolBarArea | Qt.RightToolBarArea)
+        self.toolbar.setFixedWidth(60)
+        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
         self.toolbar.setFloatable(True)
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
@@ -334,8 +335,7 @@ class MPRUN(QMainWindow):
         # Item toolbar
         self.item_toolbar = QToolBar('Items')
         self.item_toolbar.setIconSize(QSize(26, 26))
-        self.item_toolbar.setMovable(True)
-        self.item_toolbar.setFloatable(True)
+        self.item_toolbar.setMovable(False)
         self.item_toolbar.setFixedHeight(42)
         self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
@@ -566,7 +566,7 @@ class MPRUN(QMainWindow):
         self.font_letter_spacing_spin = QSpinBox(self)
         self.font_letter_spacing_spin.setValue(1)
         self.font_letter_spacing_spin.setMaximum(1000)
-        self.font_letter_spacing_spin.setMinimum(-10)
+        self.font_letter_spacing_spin.setMinimum(-100)
         self.font_letter_spacing_spin.setFixedWidth(105)
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
@@ -766,7 +766,7 @@ class MPRUN(QMainWindow):
         self.pen_btn.triggered.connect(self.use_pen_tool)
 
         # Sculpt button
-        self.sculpt_btn = QAction(QIcon('UI/Tool Icons/pen_draw_icon.png'), '', self)
+        self.sculpt_btn = QAction(QIcon('UI/Tool Icons/sculpt_icon.png'), '', self)
         self.sculpt_btn.setCheckable(True)
         self.sculpt_btn.setToolTip('''Sculpt Tool:
         Key-S''')
@@ -1516,6 +1516,7 @@ class MPRUN(QMainWindow):
 
     def use_select(self):
         self.select_btn.setChecked(True)
+        self.canvas_view.on_add_canvas_trigger()
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
         self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
 
@@ -1539,6 +1540,7 @@ class MPRUN(QMainWindow):
 
     def use_sculpt_path(self):
         self.sculpt_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
 
     def use_label(self):
         self.label_btn.setChecked(True)

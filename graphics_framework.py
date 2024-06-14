@@ -770,13 +770,13 @@ y: {int(p.y())}''')
         closest_offset = QPointF()
 
         for item in self.scene().items():
-            if isinstance(item, QGraphicsPathItem):
+            if isinstance(item, CustomPathItem):
                 path = item.path()
                 for i in range(path.elementCount()):
                     point = path.elementAt(i)
                     point_pos = QPointF(point.x, point.y)
                     dist = (point_pos - pos).manhattanLength()
-                    if dist < min_dist and dist < 50:  # thresh hold for selection
+                    if dist < min_dist and dist < 100:  # threshold for selection
                         min_dist = dist
                         closest_item = item
                         closest_point_index = i
@@ -807,6 +807,8 @@ y: {int(p.y())}''')
                 i += 3
             else:
                 new_path.lineTo(elements[i].x, elements[i].y)
+
+                i += 1
 
         item.setPath(new_path)
         item.smooth = False
