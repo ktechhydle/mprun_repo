@@ -791,10 +791,23 @@ y: {int(p.y())}''')
         if index < 1 or index + 2 >= len(elements):
             return  # Ensure we have enough points for cubicTo
 
-        # Modify the specific point
+        old_pos = QPointF(elements[index].x, elements[index].y)
+        delta_pos = new_pos - old_pos
+
+        # Update the specific point
         elements[index].x = new_pos.x()
         elements[index].y = new_pos.y()
 
+        # Adjust control points
+        if index > 0:
+            elements[index - 1].x += delta_pos.x()
+            elements[index - 1].y += delta_pos.y()
+
+        if index + 1 < len(elements):
+            elements[index + 1].x += delta_pos.x()
+            elements[index + 1].y += delta_pos.y()
+
+        # Recreate the path
         new_path = QPainterPath()
         new_path.moveTo(elements[0].x, elements[0].y)
 
@@ -807,7 +820,6 @@ y: {int(p.y())}''')
                 i += 3
             else:
                 new_path.lineTo(elements[i].x, elements[i].y)
-
                 i += 1
 
         item.setPath(new_path)
