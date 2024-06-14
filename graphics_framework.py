@@ -737,12 +737,14 @@ y: {int(p.y())}''')
 
     def on_sculpt_start(self, event):
         pos = self.mapToScene(event.pos())
-        item, point_index, offset = self.find_closest_point(pos)
-        if item is not None:
+        item = self.scene().itemAt(pos, self.transform())  # Find the item at the current scene position
+
+        if isinstance(item, CustomPathItem):
             self.sculpting_item = item
-            self.sculpting_item_point_index = point_index
-            self.sculpting_item_offset = offset
-            self.sculpting_initial_path = item.path()
+            self.sculpting_item_point_index, self.sculpting_item_offset = self.find_closest_point(pos, item)
+            self.sculpting_initial_path = QPainterPath(item.path())  # Make a deep copy of the path
+
+            print(f"Sculpt Start: Item ID {id(item)}, Point Index {self.sculpting_item_point_index}")
 
         self.canvas.addItem(self.sculpt_shape)
 
@@ -750,6 +752,7 @@ y: {int(p.y())}''')
         if self.sculpting_item is not None and self.sculpting_item_point_index != -1:
             pos = self.mapToScene(event.pos()) - self.sculpting_item_offset
             self.update_path_point(self.sculpting_item, self.sculpting_item_point_index, pos)
+            print(f"Sculpt: Item ID {id(self.sculpting_item)}, Point Index {self.sculpting_item_point_index}")
 
         self.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculpt_shape.boundingRect().center())
 
@@ -759,82 +762,56 @@ y: {int(p.y())}''')
             if new_path != self.sculpting_initial_path:
                 command = EditPathCommand(self.sculpting_item, self.sculpting_initial_path, new_path)
                 self.canvas.addCommand(command)
+                print(f"Sculpt End: Item ID {id(self.sculpting_item)}")
+
         self.sculpting_item = None
         self.sculpting_item_point_index = -1
         self.sculpting_initial_path = None
+        self.sculpting_item_offset = QPointF()
         self.canvas.removeItem(self.sculpt_shape)
 
     def on_sculpt_double_click(self, event):
         pos = self.mapToScene(event.pos())
-        item, point_index, offset = self.find_closest_point(pos)
+        item = self.scene().itemAt(pos, self.transform())
 
-        if item is not None and point_index != -1:
-            path = item.path()
-            elements = [path.elementAt(i) for i in range(path.elementCount())]
+        if isinstance(item, CustomPathItem):
+            # Find the closest point on the path
+            point_index, offset = self.find_closest_point(pos, item)
 
-            # Ensure the clicked point is not too close to the edges where cubicTo points are required
-            if point_index < 1 or point_index + 2 >= len(elements):
-                return
+            if point_index != -1:
+                path = item.path()
+                elements = [path.elementAt(i) for i in range(path.elementCount())]
 
-            # Smooth the path around the double-clicked point
-            self.smooth_path_around_point(elements, point_index)
+                if point_index > 0 and point_index + 1 < len(elements):
+                    # Average the point with its neighbors
+                    smoothed_x = (elements[point_index - 1].x + elements[point_index + 1].x) / 2
+                    smoothed_y = (elements[point_index - 1].y + elements[point_index + 1].y) / 2
 
-            # Recreate the path with smoothed elements
-            new_path = QPainterPath()
-            new_path.moveTo(elements[0].x, elements[0].y)
+                    # Update the path element
+                    path.setElementPositionAt(point_index, smoothed_x, smoothed_y)
 
-            i = 1
-            while i < len(elements):
-                if i + 2 < len(elements):
-                    new_path.cubicTo(elements[i].x, elements[i].y,
-                                     elements[i + 1].x, elements[i + 1].y,
-                                     elements[i + 2].x, elements[i + 2].y)
-                    i += 3
-                else:
-                    new_path.lineTo(elements[i].x, elements[i].y)
-                    i += 1
+                    # Set the updated path to the item
+                    command = EditPathCommand(item, item.path(), path)
+                    self.canvas.addCommand(command)
+                    item.smooth = False
 
-            command = EditPathCommand(item, item.path(), new_path)
-            self.canvas.addCommand(command)
-            item.smooth = False
-
-    def smooth_path_around_point(self, elements, index):
-        if index < 1 or index + 1 >= len(elements):
-            return
-
-        # Get the control points around the clicked point
-        p0 = QPointF(elements[index - 1].x, elements[index - 1].y)  # Previous control point
-        p1 = QPointF(elements[index].x, elements[index].y)  # Clicked point
-        p2 = QPointF(elements[index + 1].x, elements[index + 1].y)  # Next control point
-
-        # Calculate smoothed positions
-        smoothed_x = (p0.x() + 2 * p1.x() + p2.x()) / 4
-        smoothed_y = (p0.y() + 2 * p1.y() + p2.y()) / 4
-
-        # Update the clicked point to the smoothed position
-        elements[index].x = smoothed_x
-        elements[index].y = smoothed_y
-
-    def find_closest_point(self, pos):
+    def find_closest_point(self, pos, item):
+        path = item.path()
         min_dist = float('inf')
-        closest_item = None
         closest_point_index = -1
         closest_offset = QPointF()
 
-        for item in self.scene().items():
-            if isinstance(item, CustomPathItem):
-                path = item.path()
-                for i in range(path.elementCount()):
-                    point = path.elementAt(i)
-                    point_pos = QPointF(point.x, point.y)
-                    dist = (point_pos - pos).manhattanLength()
-                    if dist < min_dist and dist < self.sculpt_radius:  # threshold for selection
-                        min_dist = dist
-                        closest_item = item
-                        closest_point_index = i
-                        closest_offset = pos - point_pos
+        for i in range(path.elementCount()):
+            point = path.elementAt(i)
+            point_pos = QPointF(point.x, point.y)
+            dist = (point_pos - pos).manhattanLength()
 
-        return closest_item, closest_point_index, closest_offset
+            if dist < min_dist:
+                min_dist = dist
+                closest_point_index = i
+                closest_offset = pos - point_pos
+
+        return closest_point_index, closest_offset
 
     def update_path_point(self, item, index, new_pos):
         path = item.path()
