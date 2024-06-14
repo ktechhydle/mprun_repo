@@ -336,7 +336,6 @@ class MPRUN(QMainWindow):
         self.item_toolbar = QToolBar('Items')
         self.item_toolbar.setIconSize(QSize(26, 26))
         self.item_toolbar.setMovable(False)
-        self.item_toolbar.setFixedHeight(42)
         self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
 
@@ -915,6 +914,18 @@ class MPRUN(QMainWindow):
         self.rotate_scene_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
         self.rotate_scene_spin.valueChanged.connect(self.use_change_view)
 
+        sculpt_label = QLabel('Sculpt Radius:')
+        self.sculpt_radius_spin = QSpinBox(self)
+        self.sculpt_radius_spin.setSuffix(' pt')
+        self.sculpt_radius_spin.setFixedWidth(75)
+        self.sculpt_radius_spin.setRange(10, 500)
+        self.sculpt_radius_spin.setToolTip('Change the sculpt radius')
+        self.sculpt_radius_spin.setValue(100)
+        self.sculpt_radius_spin.valueChanged.connect(self.use_set_sculpt_radius)
+        sculpt_hlayout = ToolbarHorizontalLayout()
+        sculpt_hlayout.layout.addWidget(sculpt_label)
+        sculpt_hlayout.layout.addWidget(self.sculpt_radius_spin)
+
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
@@ -928,6 +939,8 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addSeparator()
         self.item_toolbar.addAction(raise_layer_action)
         self.item_toolbar.addAction(lower_layer_action)
+        self.item_toolbar.addSeparator()
+        self.item_toolbar.addWidget(sculpt_hlayout)
         self.item_toolbar.addWidget(spacer)
         self.item_toolbar.addWidget(self.rotate_scene_spin)
         self.item_toolbar.addWidget(self.view_zoom_spin)
@@ -1540,7 +1553,9 @@ class MPRUN(QMainWindow):
 
     def use_sculpt_path(self):
         self.sculpt_btn.setChecked(True)
-        self.canvas_view.disable_item_flags()
+
+    def use_set_sculpt_radius(self, value):
+        self.canvas_view.set_sculpt_radius(value)
 
     def use_label(self):
         self.label_btn.setChecked(True)

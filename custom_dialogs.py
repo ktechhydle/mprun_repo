@@ -542,11 +542,13 @@ class QuickActionsPanel(QWidget):
         gsnap_hlayout = ToolbarHorizontalLayout()
         gsnap_hlayout.layout.addWidget(grid_size_label)
         gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
+        gsnap_hlayout.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
 
         self.layout.addWidget(horizontal_widget)
         self.layout.addWidget(gsnap_hlayout)
 
-        self.gsnap_grid_spin.valueChanged.connect(self.update)
+        # Update
+        self.gsnap_grid_spin.valueChanged.connect(self.update_grid)
 
     def use_exit_grid(self):
         if self.gsnap_check_btn.isChecked():
@@ -575,6 +577,9 @@ class QuickActionsPanel(QWidget):
                 else:
                     item.gridEnabled = False
 
-    def update(self):
+    def update_grid(self):
         # Update grid
         self.canvas.setGridSize(self.gsnap_grid_spin.value())
+
+    def update_sculpt_radius(self, value):
+        self.parent.use_set_sculpt_radius(value)
