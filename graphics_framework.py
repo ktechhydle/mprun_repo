@@ -79,6 +79,7 @@ class CustomGraphicsView(QGraphicsView):
         self.sculpt_shape = QGraphicsEllipseItem(0, 0, 50, 50)
         self.sculpt_shape.setZValue(10000)
         self.sculpting_initial_path = None
+        self.sculpt_radius = 100
 
         # Add methods for zooming
         self.zoomInFactor = 1.25
@@ -776,7 +777,7 @@ y: {int(p.y())}''')
                     point = path.elementAt(i)
                     point_pos = QPointF(point.x, point.y)
                     dist = (point_pos - pos).manhattanLength()
-                    if dist < min_dist and dist < 100:  # threshold for selection
+                    if dist < min_dist and dist < self.sculpt_radius:  # threshold for selection
                         min_dist = dist
                         closest_item = item
                         closest_point_index = i
@@ -794,20 +795,14 @@ y: {int(p.y())}''')
         old_pos = QPointF(elements[index].x, elements[index].y)
         delta_pos = new_pos - old_pos
 
-        # Update the specific point
-        elements[index].x = new_pos.x()
-        elements[index].y = new_pos.y()
+        for i in range(max(0, index - 1), min(len(elements), index + 2)):
+            point = elements[i]
+            point_pos = QPointF(point.x, point.y)
+            dist = (point_pos - old_pos).manhattanLength()
+            if dist <= self.sculpt_radius:
+                elements[i].x += delta_pos.x()
+                elements[i].y += delta_pos.y()
 
-        # Adjust control points
-        if index > 0:
-            elements[index - 1].x += delta_pos.x()
-            elements[index - 1].y += delta_pos.y()
-
-        if index + 1 < len(elements):
-            elements[index + 1].x += delta_pos.x()
-            elements[index + 1].y += delta_pos.y()
-
-        # Recreate the path
         new_path = QPainterPath()
         new_path.moveTo(elements[0].x, elements[0].y)
 
@@ -824,6 +819,11 @@ y: {int(p.y())}''')
 
         item.setPath(new_path)
         item.smooth = False
+
+    def set_sculpt_radius(self, value):
+        self.sculpt_radius = value
+        self.sculpt_shape.setRect(0, 0, value, value)
+
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(QGraphicsItem, QPointF)
