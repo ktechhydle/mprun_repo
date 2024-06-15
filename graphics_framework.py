@@ -549,6 +549,12 @@ y: {int(p.y())}''')
 
     def on_add_text(self, event):
         if event.button() == Qt.LeftButton:
+            for item in self.canvas.items():
+                if isinstance(item, CustomTextItem):
+                    if item.hasFocus():
+                        item.clearFocus()
+                        return
+
             pos = self.mapToScene(event.pos())
 
             self.text = CustomTextItem('Lorem Ipsum')

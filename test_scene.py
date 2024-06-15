@@ -1,84 +1,128 @@
-import sys
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtSvg import *
 from PyQt5.QtCore import *
-import numpy as np
+from PyQt5.QtGui import *
+import sys
+import math
 
-class LiquifyGraphicsView(QGraphicsView):
-    def __init__(self, scene):
-        super().__init__(scene)
+class PathEditorGraphicsView(QGraphicsView):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.sculpting_item = None
+        self.sculpting_item_point_index = -1
+        self.sculpting_item_offset = QPointF()
+        self.undo_stack = QUndoStack(self)
+        self.initial_path = None
+        self.sculpt_radius = 10  # Radius for sculpting tool
         self.setRenderHint(QPainter.Antialiasing)
-        self.setMouseTracking(True)
-        self._lastPos = None
-        self._pixmapItem = None
-
-    def setPixmapItem(self, pixmapItem):
-        self._pixmapItem = pixmapItem
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self._lastPos = event.pos()
-            self._liquify(event.pos())
+            self.on_sculpt_start(event)
+        super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self._lastPos is not None:
-            self._liquify(event.pos())
-            self._lastPos = event.pos()
+        self.on_sculpt(event)
+        super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self._lastPos = None
+            self.on_sculpt_end(event)
+        super().mouseReleaseEvent(event)
 
-    def _liquify(self, currentPos):
-        if self._pixmapItem is not None:
-            # Compute the offset
-            offset = currentPos - self._lastPos
+    def on_sculpt_start(self, event):
+        pos = self.mapToScene(event.pos())
+        item, point_index, offset = self.find_closest_point(pos)
+        if item is not None:
+            self.sculpting_item = item
+            self.sculpting_item_point_index = point_index
+            self.sculpting_item_offset = offset
+            self.initial_path = item.path()  # Store the initial path before editing
 
-            # Get the current image from the pixmap
-            pixmap = self._pixmapItem.pixmap()
-            image = pixmap.toImage()
+    def on_sculpt(self, event):
+        if self.sculpting_item is not None and self.sculpting_item_point_index != -1:
+            pos = self.mapToScene(event.pos()) - self.sculpting_item_offset
+            self.update_path_points_in_radius(self.sculpting_item, self.sculpting_item_point_index, pos, self.sculpt_radius)
 
-            # Convert QImage to numpy array
-            width = image.width()
-            height = image.height()
-            ptr = image.bits()
-            ptr.setsize(image.byteCount())
-            arr = np.array(ptr).reshape(height, width, 4)
+    def on_sculpt_end(self, event):
+        self.sculpting_item = None
+        self.sculpting_item_point_index = -1
+        self.initial_path = None
 
-            # Apply a simple liquify effect (moving pixels)
-            x, y = currentPos.x(), currentPos.y()
-            if 0 <= x < width and 0 <= y < height:
-                arr[max(0, y - 10):min(height, y + 10), max(0, x - 10):min(width, x + 10), :] = arr[max(0, y - 10 + offset.y()):min(height, y + 10 + offset.y()), max(0, x - 10 + offset.x()):min(width, x + 10 + offset.x()), :]
+    def find_closest_point(self, pos):
+        min_dist = float('inf')
+        closest_item = None
+        closest_point_index = -1
+        closest_offset = QPointF()
 
-            # Convert numpy array back to QImage
-            image = QImage(arr.data, width, height, QImage.Format_ARGB32)
+        for item in self.scene().items():
+            if isinstance(item, QGraphicsPathItem):
+                path = item.path()
+                for i in range(path.elementCount()):
+                    point = path.elementAt(i)
+                    point_pos = QPointF(point.x, point.y)
+                    dist = dist = ((pos.x() - point_pos.x())**2 + (pos.y() - point_pos.y())**2)**.5
+                    if dist < min_dist and dist < 50:  # threshold for selection
+                        min_dist = dist
+                        closest_item = item
+                        closest_point_index = i
+                        closest_offset = pos - point_pos
 
-            # Update the pixmap item
-            self._pixmapItem.setPixmap(QPixmap.fromImage(image))
+        return closest_item, closest_point_index, closest_offset
 
+    def update_path_points_in_radius(self, item, index, new_pos, radius):
+        path = item.path()
+        elements = [path.elementAt(i) for i in range(path.elementCount())]
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle('Liquify Tool')
+        # Update the central point
+        if index < 0 or index >= len(elements):
+            return
 
-        # Create scene and view
-        self.scene = QGraphicsScene(self)
-        self.view = LiquifyGraphicsView(self.scene)
-        self.setCentralWidget(self.view)
+        elements[index].x = new_pos.x()
+        elements[index].y = new_pos.y()
 
-        # Load image
-        pixmap = QPixmap('UI/Main Logos/mprun_splash_screen2.png')
-        self.pixmapItem = QGraphicsPixmapItem(pixmap)
-        self.scene.addItem(self.pixmapItem)
+        # Update points within the radius
+        for i in range(len(elements)):
+            if math.sqrt((elements[i].x - elements[index].x) ** 2 + (elements[i].y - elements[index].y) ** 2) <= radius:
+                elements[i].x = new_pos.x() + (elements[i].x - elements[index].x)
+                elements[i].y = new_pos.y() + (elements[i].y - elements[index].y)
 
-        # Set pixmap item in view
-        self.view.setPixmapItem(self.pixmapItem)
+        new_path = QPainterPath()
+        new_path.moveTo(elements[0].x, elements[0].y)
 
+        i = 1
+        while i < len(elements):
+            if i + 2 < len(elements):
+                new_path.cubicTo(elements[i].x, elements[i].y,
+                                 elements[i+1].x, elements[i+1].y,
+                                 elements[i+2].x, elements[i+2].y)
+                i += 3
+            else:
+                new_path.lineTo(elements[i].x, elements[i].y)
+                i += 1
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec_())
+        item.setPath(new_path)
+
+app = QApplication(sys.argv)
+scene = QGraphicsScene()
+view = PathEditorGraphicsView()
+view.setScene(scene)
+
+# Example path item
+path = QPainterPath()
+path.moveTo(50, 50)
+path.cubicTo(70, 100, 130, 0, 150, 50)
+path.cubicTo(70, 100, 130, 0, 150, 50)
+path.cubicTo(170, 100, 230, 0, 250, 50)
+path.cubicTo(270, 100, 330, 0, 350, 50)
+path.cubicTo(370, 100, 430, 0, 450, 50)
+path.cubicTo(470, 100, 530, 0, 550, 50)
+path.cubicTo(570, 100, 630, 0, 650, 50)
+path.cubicTo(670, 100, 730, 0, 750, 50)
+path_item = QGraphicsPathItem(path)
+scene.addItem(path_item)
+
+# if we move the position of the path at all, the tool no longer works
+path_item.setPos(100, 100)
+
+view.show()
+sys.exit(app.exec_())
