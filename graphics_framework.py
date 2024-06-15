@@ -936,7 +936,7 @@ class CustomGraphicsScene(QGraphicsScene):
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
         self.modified = True
-        self.parentWindow.setWindowTitle(f'MPRUN - *{os.path.basename(self.manager.filename)}')
+        self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
         for item in self.items():
             if isinstance(item, CustomTextItem):
@@ -947,6 +947,7 @@ class CustomGraphicsScene(QGraphicsScene):
         self.undo_stack.redo()
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
+        self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
         for item in self.items():
             if isinstance(item, CustomTextItem):
@@ -956,7 +957,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def addCommand(self, command):
         self.undo_stack.push(command)
         self.modified = True
-        self.parentWindow.setWindowTitle(f'*{os.path.basename(self.manager.filename)} - MPRUN')
+        self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
