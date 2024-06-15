@@ -76,7 +76,7 @@ class MPRUN(QMainWindow):
         self.canvas.selectionChanged.connect(self.update_appearance_ui)
         self.canvas.selectionChanged.connect(self.update_transform_ui)
         self.canvas.itemMoved.connect(self.update_appearance_ui)
-        self.setWindowTitle(f'MPRUN - {self.canvas.manager.filename}')
+        self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
 
     def create_menu(self):
         # Create menus
@@ -1239,6 +1239,9 @@ class MPRUN(QMainWindow):
 
                     except Exception:
                         pass
+
+                else:
+                    event.ignore()
 
             else:
                 event.ignore()
@@ -2470,10 +2473,9 @@ class MPRUN(QMainWindow):
             if self.canvas.manager.filename != 'Untitled':
                 with open(self.canvas.manager.filename, 'wb') as f:
                     pickle.dump(self.canvas.manager.serialize_items(), f)
-
-                    self.setWindowTitle(f'MPRUN - {os.path.basename(self.canvas.manager.filename)}')
-
+                    self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
                     self.canvas.modified = False
+                    return True
 
             else:
                 self.saveas()
@@ -2491,10 +2493,14 @@ class MPRUN(QMainWindow):
 
                     self.canvas.manager.filename = filename
                     self.canvas.modified = False
-                    self.setWindowTitle(f'MPRUN - {os.path.basename(self.canvas.manager.filename)}')
+                    self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
+                    return True
 
             except Exception as e:
                 print(e)
+
+        else:
+            return False
 
     def open(self):
         self.canvas.manager.load(self)

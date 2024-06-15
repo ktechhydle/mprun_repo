@@ -956,7 +956,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def addCommand(self, command):
         self.undo_stack.push(command)
         self.modified = True
-        self.parentWindow.setWindowTitle(f'MPRUN - *{os.path.basename(self.manager.filename)}')
+        self.parentWindow.setWindowTitle(f'*{os.path.basename(self.manager.filename)} - MPRUN')
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
@@ -1096,7 +1096,7 @@ class SceneManager:
                             self.deserialize_items(items_data)
 
                             self.filename = filename
-                            parent.setWindowTitle(f'MPRUN - {os.path.basename(self.filename)}')
+                            parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
 
                             if self.repair_needed:
                                 # Display a confirmation dialog
@@ -1129,7 +1129,7 @@ class SceneManager:
                             self.deserialize_items(items_data)
 
                             self.filename = filename
-                            parent.setWindowTitle(f'MPRUN - {os.path.basename(self.filename)}')
+                            parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
 
                             if self.repair_needed:
                                 # Display a confirmation dialog
@@ -1160,7 +1160,7 @@ class SceneManager:
                         self.deserialize_items(items_data)
 
                         self.filename = filename
-                        parent.setWindowTitle(f'MPRUN - {os.path.basename(self.filename)}')
+                        parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
 
                         if self.repair_needed:
                             # Display a confirmation dialog
