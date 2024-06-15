@@ -815,6 +815,7 @@ y: {int(p.y())}''')
                 elements[i].y += delta_pos.y() * influence
 
         new_path = QPainterPath()
+        new_path.setFillRule(Qt.WindingFill)
         new_path.moveTo(elements[0].x, elements[0].y)
 
         i = 1
