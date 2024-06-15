@@ -221,6 +221,7 @@ class CustomPathItem(QGraphicsPathItem):
         simplified_vertices = approximate_polygon(smoothed_vertices, tolerance=tolerance)
 
         smooth_path = QPainterPath()
+        smooth_path.setFillRule(Qt.WindingFill)
         smooth_path.moveTo(simplified_vertices[0][0], simplified_vertices[0][1])
 
         for i in range(1, len(simplified_vertices) - 2, 3):
