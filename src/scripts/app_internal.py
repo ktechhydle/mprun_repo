@@ -1,10 +1,4 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtSvg import *
-import json
-import sys
-import os
+from src.scripts.imports import *
 
 default_text = """Run #:
 Page #:

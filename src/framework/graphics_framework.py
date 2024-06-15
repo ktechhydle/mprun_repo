@@ -1,10 +1,4 @@
-import os.path
-
-from src.framework.custom_classes import *
-from src.framework.undo_commands import *
-from src.scripts.app_internal import *
-import pickle
-import math
+from src.scripts.imports import *
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas,

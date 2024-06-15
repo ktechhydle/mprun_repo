@@ -1,5 +1,4 @@
-from src.gui.custom_widgets import *
-from src.framework.undo_commands import *
+from src.scripts.imports import *
 
 class CanvasItemSelector(QDialog):
     def __init__(self, canvas, parent=None):

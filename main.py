@@ -1,12 +1,4 @@
-import os.path
-import vtracer
-
-from src.gui.custom_dialogs import *
-from src.scripts.app_screens import *
-from src.gui.libraries import *
-from src.scripts.styles import *
-from src.scripts.app_internal import *
-
+from src.scripts.imports import *
 
 class MPRUN(QMainWindow):
     def __init__(self):

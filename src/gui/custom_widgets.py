@@ -1,5 +1,5 @@
 from src.framework.custom_classes import *
-import webbrowser
+from src.scripts.imports import *
 
 class ToolbarHorizontalLayout(QWidget):
     def __init__(self):

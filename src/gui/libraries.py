@@ -1,6 +1,6 @@
 from src.framework.graphics_framework import *
 from src.gui.custom_widgets import *
-import os
+from src.scripts.imports import *
 
 
 class DragDropListWidget(QListWidget):

@@ -1,7 +1,4 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtSvg import *
+from src.scripts.imports import *
 
 class AddItemCommand(QUndoCommand):
     def __init__(self, scene, item):
