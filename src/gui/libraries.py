@@ -1,13 +1,5 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtOpenGL import *
-from PyQt5.QtSvg import *
-from PyQt5.Qt import *
-from graphics_framework import *
-from custom_classes import *
-from custom_widgets import *
-import sys
+from src.framework.graphics_framework import *
+from src.gui.custom_widgets import *
 import os
 
 
@@ -54,7 +46,7 @@ class LibraryWidget(QWidget):
         self.reload_library_button = QPushButton("")
         self.reload_library_button.setFixedWidth(28)
         self.reload_library_button.setStyleSheet('border: none')
-        self.reload_library_button.setIcon(QIcon('UI/UI Icons/refresh_icon.svg'))
+        self.reload_library_button.setIcon(QIcon('../../ui/UI Icons/refresh_icon.svg'))
         self.reload_library_button.setToolTip('Reload the current library')
         library_btn_hlayout = ToolbarHorizontalLayout()
         library_btn_hlayout.layout.addWidget(self.open_library_button)
@@ -90,7 +82,7 @@ class LibraryWidget(QWidget):
         if not svg_files:
             self.library_list_widget.setDragEnabled(False)
             list_item = QListWidgetItem('No files found')
-            list_item.setIcon(QIcon('UI/UI Icons/folder_failed_icon.svg'))
+            list_item.setIcon(QIcon('../../ui/UI Icons/folder_failed_icon.svg'))
             self.library_list_widget.setIconSize(QSize(40, 40))
             self.library_list_widget.addItem(list_item)
 

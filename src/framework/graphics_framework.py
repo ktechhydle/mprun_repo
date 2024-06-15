@@ -1,17 +1,8 @@
 import os.path
 
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtSvg import *
-from custom_classes import *
-from undo_commands import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from app_internal import *
-import xml.etree.ElementTree as ET
-import time
-import json
+from src.framework.custom_classes import *
+from src.framework.undo_commands import *
+from src.scripts.app_internal import *
 import pickle
 import math
 

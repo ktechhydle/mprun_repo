@@ -53,9 +53,9 @@ user_data = [{
     'platform': sys.platform
 }]
 
-if os.path.exists('Internal/user_data.mpdat'):
+if os.path.exists('internal/user_data.mpdat'):
     pass
 
 else:
-    with open('Internal/user_data.mpdat', 'w') as f:
+    with open('internal/user_data.mpdat', 'w') as f:
         json.dump(user_data, f)

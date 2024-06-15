@@ -1,15 +1,14 @@
-from PIL import Image
 from PyQt5 import QtWidgets, QtGui, QtCore
-from custom_widgets import *
-from app_internal import *
-import sys
+from src.gui.custom_widgets import *
+from src.scripts.app_internal import *
+
 
 class AboutWin(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle('About MPRUN')
-        self.setWindowIcon(QtGui.QIcon('UI/Main Logos/MPRUN_icon.ico'))
+        self.setWindowIcon(QtGui.QIcon('ui/Main Logos/MPRUN_icon.ico'))
         self.setFixedSize(500, 700)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet('border-radius: 5px;')
@@ -23,8 +22,8 @@ class AboutWin(QtWidgets.QWidget):
 
         # App image and label
         mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("UI/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
-                                                                        QtCore.Qt.KeepAspectRatio)
+        pixmap = QtGui.QPixmap("ui/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
+                                                                              QtCore.Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
 
@@ -82,7 +81,7 @@ class VersionWin(QtWidgets.QWidget):
         super().__init__()
 
         self.setWindowTitle('MPRUN Version')
-        self.setWindowIcon(QtGui.QIcon('UI/Main Logos/MPRUN_icon.ico'))
+        self.setWindowIcon(QtGui.QIcon('ui/Main Logos/MPRUN_icon.ico'))
         self.setFixedSize(500, 250)
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
@@ -97,8 +96,8 @@ class VersionWin(QtWidgets.QWidget):
 
         # App image and label
         mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("UI/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
-                                                                        QtCore.Qt.KeepAspectRatio)
+        pixmap = QtGui.QPixmap("ui/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
+                                                                              QtCore.Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
 
@@ -132,7 +131,7 @@ class FindActionWin(QtWidgets.QWidget):
     def __init__(self, actions, parent=None):
         super().__init__(parent)
 
-        self.setWindowIcon(QIcon('UI/Main Logos/MPRUN_icon.ico'))
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.ico'))
         self.setWindowTitle('Find Action')
         self.setFixedHeight(500)
         self.setFixedWidth(300)
@@ -210,9 +209,3 @@ class DisclaimerWin(QMessageBox):
 
         self.data_file = data_file
         self.setText(data_use_disclaimer)
-
-
-
-if __name__ == '__main__':
-    app = VersionWin()
-    app.mainloop()
