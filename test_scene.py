@@ -31,60 +31,65 @@ class PathEditorGraphicsView(QGraphicsView):
 
     def on_sculpt_start(self, event):
         pos = self.mapToScene(event.pos())
-        item, point_index, offset = self.find_closest_point(pos)
-        if item is not None:
+        item = self.scene().itemAt(pos, self.transform())
+
+        if isinstance(item, QGraphicsPathItem):
             self.sculpting_item = item
-            self.sculpting_item_point_index = point_index
-            self.sculpting_item_offset = offset
-            self.initial_path = item.path()  # Store the initial path before editing
+            self.sculpting_item_point_index, self.sculpting_item_offset = self.find_closest_point(pos, item)
+            self.sculpting_initial_path = QPainterPath(item.path())
+
+            print(f"Sculpt Start: Item ID {id(item)}, Point Index {self.sculpting_item_point_index}")
 
     def on_sculpt(self, event):
         if self.sculpting_item is not None and self.sculpting_item_point_index != -1:
             pos = self.mapToScene(event.pos()) - self.sculpting_item_offset
-            self.update_path_points_in_radius(self.sculpting_item, self.sculpting_item_point_index, pos, self.sculpt_radius)
+            self.update_path_point(self.sculpting_item, self.sculpting_item_point_index, pos)
 
     def on_sculpt_end(self, event):
         self.sculpting_item = None
         self.sculpting_item_point_index = -1
         self.initial_path = None
 
-    def find_closest_point(self, pos):
+    def find_closest_point(self, pos, item):
+        path = item.path()
         min_dist = float('inf')
-        closest_item = None
         closest_point_index = -1
         closest_offset = QPointF()
 
-        for item in self.scene().items():
-            if isinstance(item, QGraphicsPathItem):
-                path = item.path()
-                for i in range(path.elementCount()):
-                    point = path.elementAt(i)
-                    point_pos = QPointF(point.x, point.y)
-                    dist = dist = ((pos.x() - point_pos.x())**2 + (pos.y() - point_pos.y())**2)**.5
-                    if dist < min_dist and dist < 50:  # threshold for selection
-                        min_dist = dist
-                        closest_item = item
-                        closest_point_index = i
-                        closest_offset = pos - point_pos
+        for i in range(path.elementCount()):
+            point = path.elementAt(i)
+            point_pos = QPointF(point.x, point.y)
+            dist = QLineF(point_pos, pos).length()
 
-        return closest_item, closest_point_index, closest_offset
+            if dist < min_dist:
+                min_dist = dist
+                closest_point_index = i
+                closest_offset = pos - point_pos
 
-    def update_path_points_in_radius(self, item, index, new_pos, radius):
+        return closest_point_index, closest_offset
+
+    def update_path_point(self, item, index, new_pos):
         path = item.path()
         elements = [path.elementAt(i) for i in range(path.elementCount())]
 
-        # Update the central point
         if index < 0 or index >= len(elements):
-            return
+            return  # Ensure the index is within bounds
 
-        elements[index].x = new_pos.x()
-        elements[index].y = new_pos.y()
+        old_pos = QPointF(elements[index].x, elements[index].y)
+        delta_pos = new_pos - old_pos
 
-        # Update points within the radius
+        def calculate_influence(dist, radius):
+            return math.exp(-(dist**2) / (2 * (radius / 2.0)**2))
+
         for i in range(len(elements)):
-            if math.sqrt((elements[i].x - elements[index].x) ** 2 + (elements[i].y - elements[index].y) ** 2) <= radius:
-                elements[i].x = new_pos.x() + (elements[i].x - elements[index].x)
-                elements[i].y = new_pos.y() + (elements[i].y - elements[index].y)
+            point = elements[i]
+            point_pos = QPointF(point.x, point.y)
+            dist = QLineF(point_pos, old_pos).length()
+
+            if dist <= self.sculpt_radius:
+                influence = calculate_influence(dist, self.sculpt_radius)
+                elements[i].x += delta_pos.x() * influence
+                elements[i].y += delta_pos.y() * influence
 
         new_path = QPainterPath()
         new_path.moveTo(elements[0].x, elements[0].y)
@@ -93,8 +98,8 @@ class PathEditorGraphicsView(QGraphicsView):
         while i < len(elements):
             if i + 2 < len(elements):
                 new_path.cubicTo(elements[i].x, elements[i].y,
-                                 elements[i+1].x, elements[i+1].y,
-                                 elements[i+2].x, elements[i+2].y)
+                                 elements[i + 1].x, elements[i + 1].y,
+                                 elements[i + 2].x, elements[i + 2].y)
                 i += 3
             else:
                 new_path.lineTo(elements[i].x, elements[i].y)

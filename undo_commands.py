@@ -45,21 +45,18 @@ class EditTextCommand(QUndoCommand):
         self.item.setPlainText(self.old_text)
 
 class RemoveItemCommand(QUndoCommand):
-    def __init__(self, scene, item):
+    def __init__(self, canvas, items):
         super().__init__()
-        self.scene = scene
-        self.item = item
-        self.removed = False
+        self.canvas = canvas
+        self.items = items
 
     def redo(self):
-        if not self.removed:
-            self.scene.removeItem(self.item)
-            self.removed = True
+        for item in self.items:
+            self.canvas.removeItem(item)
 
     def undo(self):
-        if self.removed:
-            self.scene.addItem(self.item)
-            self.removed = False
+        for item in self.items:
+            self.canvas.addItem(item)
 
 class GraphicsEffectCommand(QUndoCommand):
     def __init__(self, item, amount, og_effect, effect):

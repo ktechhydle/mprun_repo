@@ -743,7 +743,7 @@ y: {int(p.y())}''')
 
     def on_sculpt_start(self, event):
         pos = self.mapToScene(event.pos())
-        item = self.scene().itemAt(pos, self.transform())  # Find the item at the current scene position
+        item = self.scene().itemAt(pos, self.transform())
 
         if isinstance(item, CustomPathItem):
             self.sculpting_item = item
@@ -753,6 +753,7 @@ y: {int(p.y())}''')
             print(f"Sculpt Start: Item ID {id(item)}, Point Index {self.sculpting_item_point_index}")
 
         self.canvas.addItem(self.sculpt_shape)
+        self.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculpt_shape.boundingRect().center())
 
     def on_sculpt(self, event):
         if self.sculpting_item is not None and self.sculpting_item_point_index != -1:
@@ -770,36 +771,16 @@ y: {int(p.y())}''')
                 self.canvas.addCommand(command)
                 print(f"Sculpt End: Item ID {id(self.sculpting_item)}")
 
-        self.sculpting_item = None
-        self.sculpting_item_point_index = -1
-        self.sculpting_initial_path = None
-        self.sculpting_item_offset = QPointF()
-        self.canvas.removeItem(self.sculpt_shape)
+        self.reset_sculpting_state()
 
     def on_sculpt_double_click(self, event):
         pos = self.mapToScene(event.pos())
         item = self.scene().itemAt(pos, self.transform())
 
         if isinstance(item, CustomPathItem):
-            # Find the closest point on the path
             point_index, offset = self.find_closest_point(pos, item)
-
             if point_index != -1:
-                path = item.path()
-                elements = [path.elementAt(i) for i in range(path.elementCount())]
-
-                if point_index > 0 and point_index + 1 < len(elements):
-                    # Average the point with its neighbors
-                    smoothed_x = (elements[point_index - 1].x + elements[point_index + 1].x) / 2
-                    smoothed_y = (elements[point_index - 1].y + elements[point_index + 1].y) / 2
-
-                    # Update the path element
-                    path.setElementPositionAt(point_index, smoothed_x, smoothed_y)
-
-                    # Set the updated path to the item
-                    command = EditPathCommand(item, item.path(), path)
-                    self.canvas.addCommand(command)
-                    item.smooth = False
+                self.smooth_path_point(item, point_index)
 
     def find_closest_point(self, pos, item):
         path = item.path()
@@ -810,7 +791,7 @@ y: {int(p.y())}''')
         for i in range(path.elementCount()):
             point = path.elementAt(i)
             point_pos = QPointF(point.x, point.y)
-            dist = (point_pos - pos).manhattanLength()
+            dist = QLineF(point_pos, pos).length()
 
             if dist < min_dist:
                 min_dist = dist
@@ -823,28 +804,25 @@ y: {int(p.y())}''')
         path = item.path()
         elements = [path.elementAt(i) for i in range(path.elementCount())]
 
-        if index < 1 or index + 2 >= len(elements):
-            return  # Ensure we have enough points for cubicTo
+        if index < 0 or index >= len(elements):
+            return  # Ensure the index is within bounds
 
         old_pos = QPointF(elements[index].x, elements[index].y)
         delta_pos = new_pos - old_pos
 
-        # Define a function to calculate influence based on distance
         def calculate_influence(dist, radius):
             return math.exp(-(dist**2) / (2 * (radius / 2.0)**2))
 
-        # Adjust all points within the radius
         for i in range(len(elements)):
             point = elements[i]
             point_pos = QPointF(point.x, point.y)
-            dist = (point_pos - old_pos).manhattanLength()
+            dist = QLineF(point_pos, old_pos).length()
 
             if dist <= self.sculpt_radius:
                 influence = calculate_influence(dist, self.sculpt_radius)
                 elements[i].x += delta_pos.x() * influence
                 elements[i].y += delta_pos.y() * influence
 
-        # Recreate the path
         new_path = QPainterPath()
         new_path.moveTo(elements[0].x, elements[0].y)
 
@@ -861,6 +839,27 @@ y: {int(p.y())}''')
 
         item.setPath(new_path)
         item.smooth = False
+
+    def smooth_path_point(self, item, point_index):
+        path = item.path()
+        elements = [path.elementAt(i) for i in range(path.elementCount())]
+
+        if point_index > 0 and point_index + 1 < len(elements):
+            smoothed_x = (elements[point_index - 1].x + elements[point_index + 1].x) / 2
+            smoothed_y = (elements[point_index - 1].y + elements[point_index + 1].y) / 2
+
+            path.setElementPositionAt(point_index, smoothed_x, smoothed_y)
+
+            command = EditPathCommand(item, item.path(), path)
+            self.canvas.addCommand(command)
+            item.smooth = False
+
+    def reset_sculpting_state(self):
+        self.sculpting_item = None
+        self.sculpting_item_point_index = -1
+        self.sculpting_initial_path = None
+        self.sculpting_item_offset = QPointF()
+        self.canvas.removeItem(self.sculpt_shape)
 
     def set_sculpt_radius(self, value):
         self.sculpt_radius = value

@@ -1569,8 +1569,9 @@ class MPRUN(QMainWindow):
             self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def use_delete(self):
-        for item in self.canvas.selectedItems():
-            command = RemoveItemCommand(self.canvas, item)
+        selected_items = self.canvas.selectedItems()
+        if selected_items:
+            command = RemoveItemCommand(self.canvas, selected_items)
             self.canvas.addCommand(command)
 
     def use_hard_delete(self):
