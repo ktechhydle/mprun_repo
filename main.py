@@ -2435,20 +2435,20 @@ class MPRUN(QMainWindow):
         self.w.show()
 
     def show_disclaimer(self):
-        w = DisclaimerWin('internal/user_data.mpdat')
+        w = DisclaimerWin('internal data/user_data.mpdat')
 
         result = w.exec_()
 
         if result == QMessageBox.Yes:
             # Read existing data
-            with open('internal/user_data.mpdat', 'r') as f:
+            with open('internal data/user_data.mpdat', 'r') as f:
                 existing_data = json.load(f)
 
             # Update the data
             existing_data[0]['disclaimer_read'] = True
 
             # Write the updated data back to the file
-            with open('internal/user_data.mpdat', 'w') as f:
+            with open('internal data/user_data.mpdat', 'w') as f:
                 json.dump(existing_data, f)
         else:
             self.close()
@@ -2510,7 +2510,7 @@ if __name__ == '__main__':
 
     window = MPRUN()
 
-    with open('internal/user_data.mpdat', 'r') as f:
+    with open('internal data/user_data.mpdat', 'r') as f:
         data = json.load(f)
         window.set_user_data(data)
 
