@@ -245,6 +245,9 @@ y: {int(p.y())}''')
     def mouseDoubleClickEvent(self, event):
         if self.sculpt_btn.isChecked():
             self.on_sculpt_double_click(event)
+            
+        else:
+            super().mouseDoubleClickEvent(event)
 
     def wheelEvent(self, event):
         try:
