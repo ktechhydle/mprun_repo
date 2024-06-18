@@ -1,5 +1,6 @@
-from PyQt5 import QtWidgets, QtGui, QtCore
 from src.scripts.imports import *
+from src.gui.custom_widgets import *
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 
 class AboutWin(QtWidgets.QWidget):

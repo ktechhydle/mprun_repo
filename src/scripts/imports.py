@@ -26,6 +26,7 @@ from shapely.geometry.polygon import orient
 # Import custom packages
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
+from src.framework.custom_classes import *
 from src.scripts.app_screens import *
 from src.scripts.styles import *
 from src.scripts.app_internal import *

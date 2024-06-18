@@ -2422,8 +2422,11 @@ class MPRUN(QMainWindow):
         self.w.show()
 
     def show_about(self):
-        self.w = AboutWin()
-        self.w.show()
+        try:
+            self.w = AboutWin()
+            self.w.show()
+        except Exception as e:
+            print(e)
 
     def show_find_action(self):
         self.w = FindActionWin(self.actions)
