@@ -259,14 +259,20 @@ class StrokeLabel(QLabel):
                                              QIcon('ui/UI Icons/Combobox Images/round_cap.svg'),
                                              Qt.DecorationRole)
 
-        self.join_style_options = {'Miter Join': Qt.MiterJoin,
-                                   'Round Join': Qt.RoundJoin,
-                                   'Bevel Join': Qt.BevelJoin
+        self.join_style_options = {
+            'Bevel Join': Qt.BevelJoin,
+            'Round Join': Qt.RoundJoin,
+            'Miter Join': Qt.MiterJoin,
                                    }
         self.join_style_combo = QComboBox(self)
         self.join_style_combo.setStyleSheet('text-decoration: none;')
+        self.join_style_combo.setIconSize(QSize(65, 20))
         for join, v in self.join_style_options.items():
             self.join_style_combo.addItem(join, v)
+
+        self.join_style_combo.setItemData(0, QIcon('ui/UI Icons/Major/bevel_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(1, QIcon('ui/UI Icons/Major/round_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(2, QIcon('ui/UI Icons/Major/miter_join.png'), Qt.DecorationRole)
 
         widget1.setDefaultWidget(self.stroke_style_combo)
         widget2.setDefaultWidget(self.stroke_pencap_combo)
