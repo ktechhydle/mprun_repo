@@ -173,10 +173,6 @@ class MPRUN(QMainWindow):
         name_action.setShortcut(QKeySequence('N'))
         name_action.triggered.connect(self.use_name_item)
 
-        scale_action = QAction('Scale', self)
-        scale_action.setShortcut(QKeySequence('Q'))
-        scale_action.triggered.connect(self.use_scale_tool)
-
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.setShortcut(QKeySequence("D"))
         duplicate_action.triggered.connect(self.use_duplicate)
@@ -189,10 +185,29 @@ class MPRUN(QMainWindow):
         ungroup_action.setShortcut(QKeySequence('Ctrl+G'))
         ungroup_action.triggered.connect(self.use_ungroup_group)
 
+        scale_action = QAction('Scale', self)
+        scale_action.setShortcut(QKeySequence('Q'))
+        scale_action.triggered.connect(self.use_scale_tool)
+
+        flip_horizontal_action = QAction('Flip Horizontal', self)
+        flip_horizontal_action.setShortcut(QKeySequence(''))
+        flip_horizontal_action.triggered.connect(self.use_flip_horizontal)
+
+        flip_vertical_action = QAction('Flip Vertical', self)
+        flip_vertical_action.setShortcut(QKeySequence(''))
+        flip_vertical_action.triggered.connect(self.use_flip_vertical)
+
+        mirror_horizontal_action = QAction('Mirror Horizontal', self)
+        mirror_horizontal_action.setShortcut(QKeySequence('M+H'))
+        mirror_horizontal_action.triggered.connect(lambda: self.use_mirror('h'))
+
+        mirror_vertical_action = QAction('Mirror Vertical', self)
+        mirror_vertical_action.setShortcut(QKeySequence('M+V'))
+        mirror_vertical_action.triggered.connect(lambda: self.use_mirror('v'))
+
         image_trace_action = QAction('Trace Image', self)
         image_trace_action.triggered.connect(self.use_vectorize)
 
-        # Create item actions
         raise_layer_action = QAction('Raise Layer', self)
         raise_layer_action.setShortcut(QKeySequence('Up'))
         raise_layer_action.triggered.connect(self.use_raise_layer)
@@ -284,6 +299,11 @@ class MPRUN(QMainWindow):
         self.object_menu.addAction(ungroup_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(scale_action)
+        self.object_menu.addAction(flip_horizontal_action)
+        self.object_menu.addAction(flip_vertical_action)
+        self.object_menu.addAction(mirror_horizontal_action)
+        self.object_menu.addAction(mirror_vertical_action)
+        self.object_menu.addSeparator()
         self.object_menu.addAction(hide_action)
         self.object_menu.addAction(unhide_action)
         self.object_menu.addAction(reset_action)
@@ -520,6 +540,7 @@ class MPRUN(QMainWindow):
         self.fill_color_btn = QColorButton(self)
         self.fill_color_btn.setButtonColor('#00ff00')
         self.fill_color_btn.setFixedWidth(28)
+        self.fill_color_btn.setFixedHeight(26)
         self.fill_color_btn.setToolTip('Change the fill color')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
         self.fill_color.set('#00ff00')
@@ -533,6 +554,7 @@ class MPRUN(QMainWindow):
         self.stroke_color_btn = QColorButton(self)
         self.stroke_color_btn.setButtonColor(self.outline_color.get())
         self.stroke_color_btn.setFixedWidth(28)
+        self.stroke_color_btn.setFixedHeight(26)
         self.stroke_color_btn.setToolTip('Change the stroke color')
         self.stroke_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.stroke_color_btn.clicked.connect(self.stroke_color_chooser)
@@ -561,6 +583,7 @@ class MPRUN(QMainWindow):
         opacity_label.setStyleSheet('color: white;')
         self.opacity_btn = QPushButton('')
         self.opacity_btn.setFixedWidth(28)
+        self.opacity_btn.setFixedHeight(26)
         self.opacity_btn.setIcon(QIcon('ui/UI Icons/opacity_icon.png'))
         self.opacity_btn.setIconSize(QSize(24, 24))
         self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
@@ -931,7 +954,7 @@ class MPRUN(QMainWindow):
         self.view_zoom_spin.valueChanged.connect(self.use_change_view)
 
         self.rotate_scene_spin = QSpinBox(self)
-        self.rotate_scene_spin.setToolTip('Rotate View')
+        self.rotate_scene_spin.setToolTip('Rotate view')
         self.rotate_scene_spin.setFixedWidth(50)
         self.rotate_scene_spin.setMinimum(-10000)
         self.rotate_scene_spin.setMaximum(10000)
@@ -1267,8 +1290,19 @@ class MPRUN(QMainWindow):
                 self.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
                 self.rotate_item_spin.setValue(int(item.rotation()))
                 self.opacity_spin.setValue(int(item.opacity() * 100))
-                self.width_scale_spin.setValue(float(item.sceneBoundingRect().width()))
-                self.height_scale_spin.setValue(float(item.sceneBoundingRect().height()))
+
+                if item.transform().m11() < 0:
+                    self.width_scale_spin.setValue(-item.boundingRect().width())
+
+                else:
+                    self.width_scale_spin.setValue(item.boundingRect().width())
+
+                if item.transform().m22() < 0:
+                    self.height_scale_spin.setValue(-item.boundingRect().height())
+
+                else:
+                    self.height_scale_spin.setValue(item.boundingRect().height())
+
                 self.selection_label.setText(item.toolTip())
 
                 if len(self.canvas.selectedItems()) > 1:
@@ -1277,7 +1311,7 @@ class MPRUN(QMainWindow):
                     self.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
 
         else:
-            self.properties_tab.setFixedHeight(300)
+            self.properties_tab.setFixedHeight(325)
 
             self.transform_separator.setHidden(True)
             self.transform_label.setHidden(True)
@@ -1884,6 +1918,30 @@ class MPRUN(QMainWindow):
                 item.updatePathEndPoint()
 
         self.height_scale_spin.setValue(-self.height_scale_spin.value())
+
+    def use_mirror(self, direction):
+        for item in self.canvas.selectedItems():
+            if not isinstance(item, CanvasItem):
+                self.use_escape()
+                child = item.duplicate()
+                child.setSelected(True)
+                child.setPos(item.pos())
+
+                if direction == 'h':
+                    self.use_flip_horizontal()
+
+                    if self.width_scale_spin.value() < 0:
+                        child.setX(child.pos().x() - child.boundingRect().width())
+                    else:
+                        child.setX(child.pos().x() + child.boundingRect().width())
+
+                elif direction == 'v':
+                    self.use_flip_vertical()
+
+                    if self.height_scale_spin.value() < 0:
+                        child.setY(child.pos().y() - child.boundingRect().height())
+                    else:
+                        child.setY(child.pos().y() + child.boundingRect().height())
 
     def use_change_opacity(self, value):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
