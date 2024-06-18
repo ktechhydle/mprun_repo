@@ -1581,6 +1581,12 @@ class MPRUN(QMainWindow):
     def use_delete(self):
         selected_items = self.canvas.selectedItems()
         if selected_items:
+            for item in selected_items:
+                if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                    item.parentItem().setSelected(True)
+
+            selected_items = self.canvas.selectedItems()
+
             command = RemoveItemCommand(self.canvas, selected_items)
             self.canvas.addCommand(command)
 
