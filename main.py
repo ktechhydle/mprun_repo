@@ -222,7 +222,7 @@ class MPRUN(QMainWindow):
 
         clear_selection_action = QAction('Clear Selection', self)
         clear_selection_action.setShortcut(QKeySequence('Escape'))
-        clear_selection_action.triggered.connect(self.use_clear_selection)
+        clear_selection_action.triggered.connect(self.use_escape)
 
         select_paths_action = QAction('Select Paths', self)
         select_paths_action.triggered.connect(lambda: self.use_selection_mode('path'))
@@ -1568,9 +1568,12 @@ class MPRUN(QMainWindow):
             if item.flags() & QGraphicsItem.ItemIsSelectable:
                 item.setSelected(True)
 
-    def use_clear_selection(self):
-        self.select_btn.trigger()
+    def use_escape(self):
         self.canvas.clearSelection()
+
+        for item in self.canvas.items():
+            if isinstance(item, CustomTextItem) and item.hasFocus():
+                item.clearFocus()
 
     def use_selection_mode(self, mode: str):
         if mode == 'canvas':
