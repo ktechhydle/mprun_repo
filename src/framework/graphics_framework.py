@@ -734,21 +734,6 @@ y: {int(p.y())}''')
         item = self.scene().itemAt(pos, self.transform())
 
         if isinstance(item, CustomPathItem):
-            pos = self.mapToScene(event.pos())
-            self.sculpting_item = item
-            self.sculpting_item_point_index, self.sculpting_item_offset = self.find_closest_point(pos, item)
-            self.sculpting_initial_path = QPainterPath(item.path())  # Make a deep copy of the path
-
-            print(f"Sculpt Start: Item ID {id(item)}, Point Index {self.sculpting_item_point_index}")
-
-        self.canvas.addItem(self.sculpt_shape)
-        self.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculpt_shape.boundingRect().center())
-
-    def on_sculpt_start(self, event):
-        pos = self.mapToScene(event.pos())
-        item = self.scene().itemAt(pos, self.transform())
-
-        if isinstance(item, CustomPathItem):
             pos_in_item_coords = item.mapFromScene(pos)
             self.sculpting_item = item
             self.sculpting_item_point_index, self.sculpting_item_offset = self.find_closest_point(pos_in_item_coords,
