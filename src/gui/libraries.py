@@ -60,11 +60,16 @@ class LibraryWidget(QWidget):
         # Search bar
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Search...")
+        self.search_bar.setObjectName('modernLineEdit')
         self.search_bar.textChanged.connect(self.filter_library)
 
         library_btn_hlayout = QHBoxLayout()
         library_btn_hlayout.addWidget(self.open_library_button)
         library_btn_hlayout.addWidget(self.reload_library_button)
+
+        search_hlayout = QHBoxLayout()
+        search_hlayout.addWidget(self.open_library_button)
+        search_hlayout.addWidget(self.search_bar)
 
         self.layout.addLayout(library_btn_hlayout)
         self.layout.addWidget(self.search_bar)

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 705.42 191.43">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 283.04 76.32">
   <defs>
     <style>
       .cls-1 {
-        stroke: #29abe2;
-        stroke-miterlimit: 10;
-        stroke-width: 9px;
+        stroke: #000;
+        stroke-linejoin: round;
+        stroke-width: 2px;
       }
 
       .cls-1, .cls-2 {
@@ -14,16 +14,16 @@
       }
 
       .cls-2 {
-        stroke: #000;
-        stroke-linejoin: round;
-        stroke-width: 5px;
+        stroke: #29abe2;
+        stroke-miterlimit: 10;
+        stroke-width: 3.6px;
       }
     </style>
   </defs>
   <g id="Layer_1-2" data-name="Layer 1">
     <g>
-      <path class="cls-1" d="M4.5,81.32s40.91,58.77,109.6,64.19c21.15,1.67,44.55-.15,69.54-7.76,57.36-17.47,116.88-92.32,179.75-118.48,15.95-6.64,34.7-11.31,54.37-13.88,80.89-10.56,174.04,75.93,174.04,75.93"/>
-      <polyline class="cls-2" points="614.46 188.93 559.94 134.41 648.41 45.95 702.92 100.46"/>
+      <path class="cls-2" d="M1.8,32.42s16.42,23.43,43.98,25.59c8.49.67,17.87-.06,27.9-3.09,23.01-6.96,46.9-36.8,72.12-47.23,6.4-2.65,13.92-4.51,21.82-5.53,32.46-4.21,69.83,30.27,69.83,30.27"/>
+      <polyline class="cls-1" points="246.54 75.32 224.67 53.59 260.17 18.32 282.04 40.05"/>
     </g>
   </g>
 </svg>

@@ -1583,6 +1583,7 @@ class MPRUN(QMainWindow):
         if selected_items:
             for item in selected_items:
                 if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                    item.setSelected(False)
                     item.parentItem().setSelected(True)
 
             selected_items = self.canvas.selectedItems()
