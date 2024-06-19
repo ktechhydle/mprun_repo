@@ -734,6 +734,7 @@ y: {int(p.y())}''')
         item = self.scene().itemAt(pos, self.transform())
 
         if isinstance(item, CustomPathItem):
+            pos = self.mapToScene(event.pos())
             self.sculpting_item = item
             self.sculpting_item_point_index, self.sculpting_item_offset = self.find_closest_point(pos, item)
             self.sculpting_initial_path = QPainterPath(item.path())  # Make a deep copy of the path
@@ -743,10 +744,27 @@ y: {int(p.y())}''')
         self.canvas.addItem(self.sculpt_shape)
         self.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculpt_shape.boundingRect().center())
 
+    def on_sculpt_start(self, event):
+        pos = self.mapToScene(event.pos())
+        item = self.scene().itemAt(pos, self.transform())
+
+        if isinstance(item, CustomPathItem):
+            pos_in_item_coords = item.mapFromScene(pos)
+            self.sculpting_item = item
+            self.sculpting_item_point_index, self.sculpting_item_offset = self.find_closest_point(pos_in_item_coords,
+                                                                                                  item)
+            self.sculpting_initial_path = QPainterPath(item.path())  # Make a deep copy of the path
+
+            print(f"Sculpt Start: Item ID {id(item)}, Point Index {self.sculpting_item_point_index}")
+
+        self.canvas.addItem(self.sculpt_shape)
+        self.sculpt_shape.setPos(pos - self.sculpt_shape.boundingRect().center())
+
     def on_sculpt(self, event):
         if self.sculpting_item is not None and self.sculpting_item_point_index != -1:
-            pos = self.mapToScene(event.pos()) - self.sculpting_item_offset
-            self.update_path_point(self.sculpting_item, self.sculpting_item_point_index, pos)
+            pos = self.mapToScene(event.pos())
+            pos_in_item_coords = self.sculpting_item.mapFromScene(pos) - self.sculpting_item_offset
+            self.update_path_point(self.sculpting_item, self.sculpting_item_point_index, pos_in_item_coords)
             print(f"Sculpt: Item ID {id(self.sculpting_item)}, Point Index {self.sculpting_item_point_index}")
 
         self.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculpt_shape.boundingRect().center())
@@ -766,7 +784,8 @@ y: {int(p.y())}''')
         item = self.scene().itemAt(pos, self.transform())
 
         if isinstance(item, CustomPathItem):
-            point_index, offset = self.find_closest_point(pos, item)
+            pos_in_item_coords = item.mapFromScene(pos)
+            point_index, offset = self.find_closest_point(pos_in_item_coords, item)
             if point_index != -1:
                 self.smooth_path_point(item, point_index)
 
@@ -799,7 +818,7 @@ y: {int(p.y())}''')
         delta_pos = new_pos - old_pos
 
         def calculate_influence(dist, radius):
-            return math.exp(-(dist**2) / (2 * (radius / 2.0)**2))
+            return math.exp(-(dist ** 2) / (2 * (radius / 2.0) ** 2))
 
         for i in range(len(elements)):
             point = elements[i]
