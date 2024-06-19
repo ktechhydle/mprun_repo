@@ -537,25 +537,31 @@ y: {int(p.y())}''')
 
     def on_add_text(self, event):
         if event.button() == Qt.LeftButton:
-            for item in self.canvas.items():
-                if isinstance(item, CustomTextItem):
-                    if item.hasFocus():
-                        item.clearFocus()
-                        return
+            i = self.scene().itemAt(self.mapToScene(event.pos()), self.transform())
 
-            pos = self.mapToScene(event.pos())
+            if i and isinstance(i, CustomTextItem):
+                i.set_active()
 
-            self.text = CustomTextItem('Lorem Ipsum')
-            self.text.setFont(self.font)
-            self.text.setDefaultTextColor(self.font_color)
+            else:
+                for item in self.canvas.items():
+                    if isinstance(item, CustomTextItem):
+                        if item.hasFocus():
+                            item.clearFocus()
+                            return
 
-            add_command = AddItemCommand(self.canvas, self.text)
-            self.canvas.addCommand(add_command)
+                pos = self.mapToScene(event.pos())
 
-            self.text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-            self.text.setZValue(0)
-            self.text.setPos(pos)
-            self.text.select_text_and_set_cursor()
+                self.text = CustomTextItem('Lorem Ipsum')
+                self.text.setFont(self.font)
+                self.text.setDefaultTextColor(self.font_color)
+
+                add_command = AddItemCommand(self.canvas, self.text)
+                self.canvas.addCommand(add_command)
+
+                self.text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+                self.text.setZValue(0)
+                self.text.setPos(pos)
+                self.text.select_text_and_set_cursor()
 
     def on_scale_start(self, event):
         if self.canvas.gridEnabled:

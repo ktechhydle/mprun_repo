@@ -511,6 +511,10 @@ class CustomTextItem(QGraphicsTextItem):
         cursor.select(QTextCursor.SelectionType.Document)
         self.setTextCursor(cursor)
 
+    def set_active(self):
+        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.setFocus(Qt.MouseFocusReason)
+
     def toMarkdown(self):
         html_text = markdown.markdown(self.toPlainText())
 
