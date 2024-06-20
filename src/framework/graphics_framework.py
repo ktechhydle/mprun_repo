@@ -865,7 +865,7 @@ y: {int(p.y())}''')
         self.sculpt_shape.setRect(0, 0, value, value)
 
 class CustomGraphicsScene(QGraphicsScene):
-    itemMoved = pyqtSignal(QGraphicsItem, QPointF)
+    itemMoved = pyqtSignal(object, QPointF)
 
     def __init__(self, undoStack):
         super().__init__()
@@ -936,11 +936,16 @@ class CustomGraphicsScene(QGraphicsScene):
         self.addCommand(command)
 
     def undo(self):
-        self.undo_stack.undo()
+        if self.undo_stack.canUndo():
+            self.undo_stack.undo()
+            self.modified = True
+            self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
+
+        else:
+            self.modified = False
+
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
-        self.modified = True
-        self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
         for item in self.items():
             if isinstance(item, CustomTextItem):
@@ -948,10 +953,16 @@ class CustomGraphicsScene(QGraphicsScene):
                     item.parentItem().updatePathEndPoint()
 
     def redo(self):
-        self.undo_stack.redo()
+        if self.undo_stack.canRedo():
+            self.undo_stack.redo()
+            self.modified = True
+            self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
+
+        else:
+            self.modified = False
+
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
-        self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
         for item in self.items():
             if isinstance(item, CustomTextItem):
