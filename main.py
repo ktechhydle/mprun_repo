@@ -2566,7 +2566,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     if sys.platform == 'darwin':
-        app.setStyleSheet(mac_style)
+        app.setStyleSheet(windows_style)
 
     else:
         app.setStyleSheet(windows_style)
