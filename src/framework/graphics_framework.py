@@ -914,7 +914,7 @@ class CustomGraphicsScene(QGraphicsScene):
                 if self.movingItem and event.button() == Qt.LeftButton:
                     self.oldPos = self.movingItem.pos()
 
-            self.clearSelection()
+                    self.clearSelection()
 
         super().mousePressEvent(event)
 
