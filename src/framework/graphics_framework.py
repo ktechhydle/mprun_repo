@@ -165,8 +165,8 @@ class CustomGraphicsView(QGraphicsView):
         p = self.mapToGlobal(point)
         p.setY(p.y())
         p.setX(p.x() + 10)
-        QToolTip.showText(p, f'''x: {int(p.x())} 
-y: {int(p.y())}''')
+        QToolTip.showText(p, f'''x: {int(self.mapToScene(point).x())} 
+y: {int(self.mapToScene(point).y())}''')
 
         if self.button.isChecked():
             self.on_path_draw(event)
