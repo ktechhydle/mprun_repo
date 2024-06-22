@@ -809,21 +809,18 @@ class MPRUN(QMainWindow):
         self.path_btn.setToolTip('''Path Draw Tool (L)''')
         self.path_btn.triggered.connect(self.update)
         self.path_btn.triggered.connect(self.use_path)
-        self.path_btn.triggered.connect(lambda: self.update_current_action(self.path_btn))
 
         self.pen_btn = QAction(QIcon('ui/Tool Icons/pen_draw_icon.png'), 'Pen Draw Tool (Ctrl+L)', self)
         self.pen_btn.setCheckable(True)
         self.pen_btn.setToolTip('''Pen Draw Tool (Ctrl+L)''')
         self.pen_btn.triggered.connect(self.update)
         self.pen_btn.triggered.connect(self.use_pen_tool)
-        self.pen_btn.triggered.connect(lambda: self.update_current_action(self.pen_btn))
 
         self.sculpt_btn = QAction(QIcon('ui/Tool Icons/sculpt_icon.png'), 'Sculpt Tool (S)', self)
         self.sculpt_btn.setCheckable(True)
         self.sculpt_btn.setToolTip('''Sculpt Tool (S)''')
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
-        self.sculpt_btn.triggered.connect(lambda: self.update_current_action(self.sculpt_btn))
 
         drawing_menu = QMenu(self)
         drawing_menu.addAction(self.path_btn)
@@ -1118,9 +1115,6 @@ class MPRUN(QMainWindow):
                 self.update_transform_ui()
                 self.update_appearance_ui()
                 self.repaint()
-
-    def update_current_action(self, action):
-        self.drawing_toolbutton.setDefaultAction(action)
 
     def update_item_pen(self):
         # Update pen and brush
@@ -1669,14 +1663,17 @@ class MPRUN(QMainWindow):
 
     def use_path(self):
         self.path_btn.setChecked(True)
+        self.drawing_toolbutton.setDefaultAction(self.path_btn)
         self.canvas_view.disable_item_flags()
 
     def use_pen_tool(self):
         self.pen_btn.setChecked(True)
+        self.drawing_toolbutton.setDefaultAction(self.pen_btn)
         self.canvas_view.disable_item_flags()
 
     def use_sculpt_path(self):
         self.sculpt_btn.setChecked(True)
+        self.drawing_toolbutton.setDefaultAction(self.sculpt_btn)
         self.canvas_view.disable_item_flags()
 
     def use_set_sculpt_radius(self, value):
