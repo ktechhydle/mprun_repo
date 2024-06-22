@@ -1,4 +1,6 @@
 from src.scripts.imports import *
+from src.framework.undo_commands import *
+from src.framework.custom_classes import *
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas,
