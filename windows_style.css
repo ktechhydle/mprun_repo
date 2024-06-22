@@ -64,6 +64,10 @@ QToolBar {
     padding: 1px; /* Padding */
 }
 
+QToolButton::menu-indicator {
+    image: none
+}
+
 #customToolBar {
     background-color: #535353;
     border: none;

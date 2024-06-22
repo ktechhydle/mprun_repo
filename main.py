@@ -791,90 +791,92 @@ class MPRUN(QMainWindow):
         #----toolbar buttons----#
 
         # Select Button
-        self.select_btn = QAction(QIcon('ui/Tool Icons/selection_icon.png'), '', self)
-        self.select_btn.setToolTip('''Select Tool:
-        Key-Spacebar''')
+        self.select_btn = QAction(QIcon('ui/Tool Icons/selection_icon.png'), 'Select Tool (Spacebar)', self)
+        self.select_btn.setToolTip('''Select Tool (Spacebar)''')
         self.select_btn.setCheckable(True)
         self.select_btn.setChecked(True)
         self.select_btn.triggered.connect(self.use_select)
 
         # Pan Button
-        self.pan_btn = QAction(QIcon('ui/Tool Icons/pan_icon.png'), '', self)
-        self.pan_btn.setToolTip('''Pan Tool:
-        Key-P''')
+        self.pan_btn = QAction(QIcon('ui/Tool Icons/pan_icon.png'), 'Pan Tool (P)', self)
+        self.pan_btn.setToolTip('''Pan Tool (P)''')
         self.pan_btn.setCheckable(True)
         self.pan_btn.triggered.connect(self.use_pan)
 
-        # Path draw button
-        self.path_btn = QAction(QIcon('ui/Tool Icons/pen_tool_icon.png'), '', self)
+        # Drawing/editing tools
+        self.path_btn = QAction(QIcon('ui/Tool Icons/pen_tool_icon.png'), 'Path Draw Tool (L)', self)
         self.path_btn.setCheckable(True)
-        self.path_btn.setToolTip('''Path Draw Tool:
-        Key-L''')
+        self.path_btn.setToolTip('''Path Draw Tool (L)''')
         self.path_btn.triggered.connect(self.update)
         self.path_btn.triggered.connect(self.use_path)
+        self.path_btn.triggered.connect(lambda: self.update_current_action(self.path_btn))
 
-        # Pen draw button
-        self.pen_btn = QAction(QIcon('ui/Tool Icons/pen_draw_icon.png'), '', self)
+        self.pen_btn = QAction(QIcon('ui/Tool Icons/pen_draw_icon.png'), 'Pen Draw Tool (Ctrl+L)', self)
         self.pen_btn.setCheckable(True)
-        self.pen_btn.setToolTip('''Pen Draw Tool:
-        Command+L (MacOS) or Control+L (Windows)''')
+        self.pen_btn.setToolTip('''Pen Draw Tool (Ctrl+L)''')
         self.pen_btn.triggered.connect(self.update)
         self.pen_btn.triggered.connect(self.use_pen_tool)
+        self.pen_btn.triggered.connect(lambda: self.update_current_action(self.pen_btn))
 
-        # Sculpt button
-        self.sculpt_btn = QAction(QIcon('ui/Tool Icons/sculpt_icon.png'), '', self)
+        self.sculpt_btn = QAction(QIcon('ui/Tool Icons/sculpt_icon.png'), 'Sculpt Tool (S)', self)
         self.sculpt_btn.setCheckable(True)
-        self.sculpt_btn.setToolTip('''Sculpt Tool:
-        Key-S''')
+        self.sculpt_btn.setToolTip('''Sculpt Tool (S)''')
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
+        self.sculpt_btn.triggered.connect(lambda: self.update_current_action(self.sculpt_btn))
+
+        drawing_menu = QMenu(self)
+        drawing_menu.addAction(self.path_btn)
+        drawing_menu.addAction(self.pen_btn)
+        drawing_menu.addAction(self.sculpt_btn)
+
+        self.drawing_toolbutton = QToolButton(self)
+        self.drawing_toolbutton.setIconSize(QSize(10, 10))
+        self.drawing_toolbutton.setFixedHeight(50)
+        self.drawing_toolbutton.setMenu(drawing_menu)
+        self.drawing_toolbutton.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
+        self.drawing_toolbutton.setDefaultAction(self.path_btn)
+        self.drawing_toolbutton.setToolButtonStyle(3)  # Adjust as needed
 
         # Label draw button
-        self.label_btn = QAction(QIcon('ui/Tool Icons/label_icon.png'), "", self)
+        self.label_btn = QAction(QIcon('ui/Tool Icons/label_icon.png'), "Line and Label Tool (T)", self)
         self.label_btn.setCheckable(True)
-        self.label_btn.setToolTip('''Line and Label Tool:
-        Key-T''')
+        self.label_btn.setToolTip('''Line and Label Tool (T)''')
         self.label_btn.triggered.connect(self.update)
         self.label_btn.triggered.connect(self.use_label)
 
         # Add Text Button
-        self.add_text_btn = QAction(QIcon('ui/Tool Icons/text_icon.png'), '', self)
-        self.add_text_btn.setToolTip('''Text Tool:
-        Command+T (MacOS) or Control+T (Windows)''')
+        self.add_text_btn = QAction(QIcon('ui/Tool Icons/text_icon.png'), 'Text Tool (Ctrl+T)', self)
+        self.add_text_btn.setToolTip('''Text Tool (Ctrl+T)''')
         self.add_text_btn.setCheckable(True)
         self.add_text_btn.triggered.connect(self.update)
         self.add_text_btn.triggered.connect(self.use_text)
 
         # Scale Button
-        self.scale_btn = QAction(QIcon('ui/Tool Icons/scale_icon.png'), '', self)
-        self.scale_btn.setToolTip('''Scale Tool: 
-        Key-Q''')
+        self.scale_btn = QAction(QIcon('ui/Tool Icons/scale_icon.png'), 'Scale Tool (Q)', self)
+        self.scale_btn.setToolTip('''Scale Tool (Q)''')
         self.scale_btn.setCheckable(True)
         self.scale_btn.triggered.connect(self.use_scale_tool)
 
         # Hide Button
-        self.hide_btn = QAction(QIcon('ui/Tool Icons/hide_icon.png'), '', self)
-        self.hide_btn.setToolTip('''Hide Element Tool: 
-        Key-H''')
+        self.hide_btn = QAction(QIcon('ui/Tool Icons/hide_icon.png'), 'Hide Element Tool (H)', self)
+        self.hide_btn.setToolTip('''Hide Element Tool (H)''')
         self.hide_btn.triggered.connect(self.use_hide_item)
 
         # Unhide Button
-        self.unhide_btn = QAction(QIcon('ui/Tool Icons/unhide_icon.png'), '', self)
-        self.unhide_btn.setToolTip('''Unhide All Tool: 
-        Command+H (MacOS) or Control+H (Windows)''')
+        self.unhide_btn = QAction(QIcon('ui/Tool Icons/unhide_icon.png'), 'Unhide All Tool (Ctrl+H)', self)
+        self.unhide_btn.setToolTip('''Unhide All Tool (Ctrl+H)''')
         self.unhide_btn.triggered.connect(self.use_unhide_all)
 
         # Add Canvas Button
-        self.add_canvas_btn = QAction(QIcon('ui/Tool Icons/add_canvas_icon.png'), '', self)
-        self.add_canvas_btn.setToolTip('''Add Canvas Tool: 
-        Key-A''')
+        self.add_canvas_btn = QAction(QIcon('ui/Tool Icons/add_canvas_icon.png'), 'Add Canvas Tool (A)', self)
+        self.add_canvas_btn.setToolTip('''Add Canvas Tool (A)''')
         self.add_canvas_btn.setCheckable(True)
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
         # Insert Image Button
-        self.insert_btn = QAction(QIcon('ui/Tool Icons/insert_image_icon2.png'), '', self)
-        self.insert_btn.setToolTip('''Insert Element Tool: 
-        Key-I''')
+        self.insert_btn = QAction(QIcon('ui/Tool Icons/insert_image_icon2.png'), 'Insert Element Tool (I)', self)
+        self.insert_btn.setToolTip('''Insert Element Tool (I)''')
         self.insert_btn.triggered.connect(self.insert_image)
 
         # ----add actions----#
@@ -882,9 +884,7 @@ class MPRUN(QMainWindow):
         # Add toolbar actions
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(self.pan_btn)
-        self.toolbar.addAction(self.path_btn)
-        self.toolbar.addAction(self.pen_btn)
-        self.toolbar.addAction(self.sculpt_btn)
+        self.toolbar.addWidget(self.drawing_toolbutton)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addAction(self.scale_btn)
@@ -1118,6 +1118,9 @@ class MPRUN(QMainWindow):
                 self.update_transform_ui()
                 self.update_appearance_ui()
                 self.repaint()
+
+    def update_current_action(self, action):
+        self.drawing_toolbutton.setDefaultAction(action)
 
     def update_item_pen(self):
         # Update pen and brush
