@@ -1,5 +1,6 @@
 # Import packages
 import pickle
+import time
 import math
 import os.path
 import vtracer

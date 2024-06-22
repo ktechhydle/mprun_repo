@@ -1028,24 +1028,18 @@ class MPRUN(QMainWindow):
                                               self.view_zoom_spin,
                                               self.quick_actions_tab.gsnap_check_btn,
                                               self.sculpt_btn)
-        format = QSurfaceFormat()
-        format.setSamples(4)
-        self.opengl_widget = QOpenGLWidget()
-        self.opengl_widget.setFormat(format)
-        self.canvas_view.setViewport(self.opengl_widget)
+        self.canvas_view.setViewport(CustomViewport())
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
+        self.setCentralWidget(self.canvas_view)
 
         # Update default fonts, colors, etc.
         self.update('ui_update')
         self.update_item_pen()
         self.update_item_font()
         self.update_item_fill()
-
-        # Use default tools, set central widget
         self.use_select()
-        self.setCentralWidget(self.canvas_view)
 
         # Context menu for view
         name_action = QAction('Name', self)
