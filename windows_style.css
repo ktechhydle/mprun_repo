@@ -64,9 +64,9 @@ QToolBar {
     padding: 1px; /* Padding */
 }
 
-QToolButton::menu-indicator {
-    image: none
-}
+/* QToolButton::menu-indicator {
+    image: url(ui/UI Icons/Minor/down-arrow.svg);
+} */
 
 #customToolBar {
     background-color: #535353;

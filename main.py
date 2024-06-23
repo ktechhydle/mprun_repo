@@ -822,18 +822,14 @@ class MPRUN(QMainWindow):
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
 
-        drawing_menu = QMenu(self)
-        drawing_menu.addAction(self.path_btn)
-        drawing_menu.addAction(self.pen_btn)
-        drawing_menu.addAction(self.sculpt_btn)
-
         self.drawing_toolbutton = QToolButton(self)
         self.drawing_toolbutton.setIconSize(QSize(10, 10))
-        self.drawing_toolbutton.setFixedHeight(50)
-        self.drawing_toolbutton.setMenu(drawing_menu)
+        self.drawing_toolbutton.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.drawing_toolbutton.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
         self.drawing_toolbutton.setDefaultAction(self.path_btn)
-        self.drawing_toolbutton.setToolButtonStyle(3)  # Adjust as needed
+        self.drawing_toolbutton.addAction(self.path_btn)
+        self.drawing_toolbutton.addAction(self.pen_btn)
+        self.drawing_toolbutton.addAction(self.sculpt_btn)
 
         # Label draw button
         self.label_btn = QAction(QIcon('ui/Tool Icons/label_icon.png'), "Line and Label Tool (T)", self)
@@ -1036,7 +1032,6 @@ class MPRUN(QMainWindow):
         self.update_item_pen()
         self.update_item_font()
         self.update_item_fill()
-        self.use_select()
 
         # Context menu for view
         name_action = QAction('Name', self)
@@ -1106,6 +1101,9 @@ class MPRUN(QMainWindow):
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(0)
         self.canvas.addItem(self.paper_text)
+
+        self.path_btn.trigger()
+        self.select_btn.trigger()
 
     def update(self, *args):
         super().update()
