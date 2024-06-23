@@ -938,6 +938,14 @@ class MPRUN(QMainWindow):
         align_bottom_btn.setToolTip('Align the selected elements to the center')
         align_bottom_btn.triggered.connect(self.use_align_bottom)
 
+        rotate_ccw_action = QAction(QIcon('ui/Tool Icons/raise_layer_icon.png'), '', self)
+        rotate_ccw_action.setToolTip('Rotate the selected elements 90° counter-clockwise')
+        rotate_ccw_action.triggered.connect(lambda: self.use_rotate_direction('ccw'))
+
+        rotate_cw_action = QAction(QIcon('ui/Tool Icons/lower_layer_icon.png'), '', self)
+        rotate_cw_action.setToolTip('Rotate the selected elements 90° clockwise')
+        rotate_cw_action.triggered.connect(lambda: self.use_rotate_direction('cw'))
+
         raise_layer_action = QAction(QIcon('ui/Tool Icons/raise_layer_icon.png'), '', self)
         raise_layer_action.setToolTip('Raise the selected elements a layer up')
         raise_layer_action.triggered.connect(self.use_raise_layer)
@@ -987,6 +995,8 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addAction(align_top_btn)
         self.item_toolbar.addAction(align_bottom_btn)
         self.item_toolbar.addSeparator()
+        self.item_toolbar.addAction(rotate_ccw_action)
+        self.item_toolbar.addAction(rotate_cw_action)
         self.item_toolbar.addAction(raise_layer_action)
         self.item_toolbar.addAction(lower_layer_action)
         self.item_toolbar.addSeparator()
@@ -1004,6 +1014,8 @@ class MPRUN(QMainWindow):
         self.actions['Align Center'] = align_center_btn
         self.actions['Align Top'] = align_top_btn
         self.actions['Align Bottom'] = align_bottom_btn
+        self.actions['Rotate Counter Clockwise'] = rotate_ccw_action
+        self.actions['Rotate Clockwise'] = rotate_cw_action
         self.actions['Raise Layer'] = raise_layer_action
         self.actions['Lower Layer'] = lower_layer_action
 
@@ -1910,6 +1922,37 @@ class MPRUN(QMainWindow):
                 # Set the rotation angle
                 command = RotateCommand(self, item, item.rotation(), value)
                 self.canvas.addCommand(command)
+
+    def use_rotate_direction(self, dir: str):
+        items = self.canvas.selectedItems()
+        if not items:
+            return
+
+        # Rotate each item around the center
+        for item in items:
+            if isinstance(item, CanvasItem):
+                pass
+
+            else:
+                if isinstance(item, LeaderLineItem):
+                    item.childItems()[0].setSelected(False)
+                    item.updatePathEndPoint()
+
+                elif isinstance(item, CustomTextItem):
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
+
+                item.setTransformOriginPoint(item.boundingRect().center())
+
+                if dir == 'ccw':
+                    # Set the rotation angle
+                    command = RotateCommand(self, item, item.rotation(), item.rotation() - 90)
+                    self.canvas.addCommand(command)
+
+                else:
+                    # Set the rotation angle
+                    command = RotateCommand(self, item, item.rotation(), item.rotation() + 90)
+                    self.canvas.addCommand(command)
 
     def use_flip_horizontal(self):
         for item in self.canvas.selectedItems():
