@@ -75,7 +75,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Vector Graphics:
 	> MPRUN uses a Vector Graphics Engine, and recently added OpenGL functions to make rendering significantly faster.
 - Layer management:
-	> Elements can be raised and lowered or set to a specific layer height via the `Layers` panel.
+	> Elements can be raised and lowered.
 - Elements are named:
 	> You will often see elements named `Path` or `Group` on the Canvas. ***Hover your mouse over an element to see the element name, or name the element via the `Name` tool.***
 - Insert different files:
@@ -83,7 +83,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Export multiple file types:
 	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
 - Pen and fill customization:
-	> Customize pen styles, caps, and more, also included is the ability to change fill colors in the `Appearance` panel.
+	> Customize pen styles, caps, and more, also included is the ability to change fill colors.
 - Font editing:
 	> Edit font families, colors, and more in the `Characters` panel.
 > [!TIP]
@@ -98,19 +98,6 @@ This is important because it ensures athletes don't go into competitions without
 # TL;DR
 > [!IMPORTANT]
 > MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize courses, draw their path, label tricks, and do so much more. It promotes strategic planning for athletes, preventing a 'just wing it' mentality and fostering a focused mindset for competitions.
-
-# Screenshots
-Home screen UI
-![mprun_homescreen_screenshot.png](Examples%2Fmprun_homescreen_screenshot.png)
-
-Workspace UI
-![Screenshot 2024-05-21 191939](https://github.com/ktechhydle/mprun_repo/assets/151480646/e6ccd3b5-f269-48a0-bf3f-7b88b065d2e1)
-
-Halfipe run example
-![mprun_halfpipe_run_example](https://github.com/ktechhydle/mprun_repo/assets/151480646/ce52950f-e929-4f02-a482-2adcc3d061be)
-
-Cool line design using MPRUN
-![mprun_graphicsdesign_example](https://github.com/ktechhydle/mprun_repo/assets/151480646/35f5a602-3bc8-4837-930d-9c6a38c78107)
 
 # See also
 [^1]: Read the acknowledgments at: https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit
