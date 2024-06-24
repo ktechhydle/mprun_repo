@@ -60,7 +60,7 @@ class MPRUN(QMainWindow):
         self.canvas.setParentWindow(self)
         self.canvas.selectionChanged.connect(self.update_appearance_ui)
         self.canvas.selectionChanged.connect(self.update_transform_ui)
-        self.canvas.itemMoved.connect(self.update_appearance_ui)
+        self.canvas.itemMoved.connect(self.update_transform_ui)
         self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
 
     def create_menu(self):
@@ -1446,6 +1446,9 @@ class MPRUN(QMainWindow):
                 else:
                     self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
 
+                self.canvas_view.update_pen(item.pen())
+                self.canvas_view.update_stroke_fill_color(item.brush())
+
             elif isinstance(item, CanvasItem):
                 self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
                 self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
@@ -1497,6 +1500,9 @@ class MPRUN(QMainWindow):
                     if pen.joinStyle() == v:
                         self.join_style_combo.setCurrentIndex(i)
 
+                self.canvas_view.update_pen(item.pen())
+                self.canvas_view.update_stroke_fill_color(item.brush())
+
             elif isinstance(item, CustomTextItem):
                 font = item.font()
                 color = item.defaultTextColor()
@@ -1515,6 +1521,8 @@ class MPRUN(QMainWindow):
                 self.bold_btn.setChecked(True if font.bold() else False)
                 self.italic_btn.setChecked(True if font.italic() else False)
                 self.underline_btn.setChecked(True if font.underline() else False)
+
+                self.canvas_view.update_font(item.font(), item.defaultTextColor())
 
         self.canvas_tab.canvas_x_entry.blockSignals(False)
         self.canvas_tab.canvas_y_entry.blockSignals(False)
