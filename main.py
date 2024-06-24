@@ -1516,6 +1516,10 @@ class MPRUN(QMainWindow):
                 self.italic_btn.setChecked(True if font.italic() else False)
                 self.underline_btn.setChecked(True if font.underline() else False)
 
+        self.update_item_pen()
+        self.update_item_fill()
+        self.update_item_font()
+
         self.canvas_tab.canvas_x_entry.blockSignals(False)
         self.canvas_tab.canvas_y_entry.blockSignals(False)
         self.canvas_tab.canvas_name_entry.blockSignals(False)
