@@ -56,12 +56,12 @@ class MPRUN(QMainWindow):
 
     def create_initial_canvas(self):
         # Canvas, canvas color
-        self.canvas = CustomGraphicsScene(self.undo_stack)
-        self.canvas.setParentWindow(self)
-        self.canvas.selectionChanged.connect(self.update_appearance_ui)
-        self.canvas.selectionChanged.connect(self.update_transform_ui)
-        self.canvas.itemMoved.connect(self.update_appearance_ui)
-        self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
+        self.grScene = CustomGraphicsScene(self.undo_stack)
+        self.grScene.setParentWindow(self)
+        self.grScene.selectionChanged.connect(self.update_appearance_ui)
+        self.grScene.selectionChanged.connect(self.update_transform_ui)
+        self.grScene.itemMoved.connect(self.update_appearance_ui)
+        self.setWindowTitle(f'{os.path.basename(self.grScene.manager.filename)} - MPRUN')
 
     def create_menu(self):
         # Create menus
@@ -163,11 +163,11 @@ class MPRUN(QMainWindow):
         # Create edit actions
         undo_action = QAction('Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
-        undo_action.triggered.connect(self.canvas.undo)
+        undo_action.triggered.connect(self.grScene.undo)
 
         redo_action = QAction('Redo', self)
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
-        redo_action.triggered.connect(self.canvas.redo)
+        redo_action.triggered.connect(self.grScene.redo)
 
         delete_action = QAction('Delete', self)
         delete_action.setShortcut(QKeySequence('Backspace'))
@@ -430,22 +430,22 @@ class MPRUN(QMainWindow):
         self.image_trace.setLayout(self.image_trace_layout)
 
         # Libraries Tab
-        self.libraries_tab = LibraryWidget(self.canvas)
+        self.libraries_tab = LibraryWidget(self.grScene)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setFixedHeight(385)
         self.libraries_tab.setFixedWidth(300)
         self.libraries_tab.load_svg_library('course elements')
 
         # Canvas Tab
-        self.canvas_tab = CanvasEditorPanel(self.canvas)
+        self.canvas_tab = CanvasEditorPanel(self.grScene)
         self.canvas_tab.setFixedWidth(300)
 
         # Text Along Path Tab
-        self.text_along_path_tab = TextAlongPathPanel(self.canvas)
+        self.text_along_path_tab = TextAlongPathPanel(self.grScene)
         self.text_along_path_tab.setFixedWidth(300)
 
         # Quick Actions Tab
-        self.quick_actions_tab = QuickActionsPanel(self.canvas, self)
+        self.quick_actions_tab = QuickActionsPanel(self.grScene, self)
 
         # Add tabs
         self.toolbox.addItem(self.properties_tab, 'Properties')
@@ -1021,23 +1021,23 @@ class MPRUN(QMainWindow):
 
     def create_view(self):
         # QGraphicsView Logic
-        self.canvas_view = CustomGraphicsView(self.canvas,
-                                              self.path_btn,
-                                              self.label_btn,
-                                              self.pen_btn,
-                                              self.add_text_btn,
-                                              self.add_canvas_btn,
-                                              self.select_btn,
-                                              self.scale_btn,
-                                              self.pan_btn,
-                                              self.view_zoom_spin,
-                                              self.quick_actions_tab.gsnap_check_btn,
-                                              self.sculpt_btn)
-        self.canvas_view.setViewport(CustomViewport())
-        self.canvas_view.setScene(self.canvas)
-        self.canvas.set_widget(self.scale_btn)
-        self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
-        self.setCentralWidget(self.canvas_view)
+        self.grView = CustomGraphicsView(self.grScene,
+                                         self.path_btn,
+                                         self.label_btn,
+                                         self.pen_btn,
+                                         self.add_text_btn,
+                                         self.add_canvas_btn,
+                                         self.select_btn,
+                                         self.scale_btn,
+                                         self.pan_btn,
+                                         self.view_zoom_spin,
+                                         self.quick_actions_tab.gsnap_check_btn,
+                                         self.sculpt_btn)
+        self.grView.setViewport(CustomViewport())
+        self.grView.setScene(self.grScene)
+        self.grScene.set_widget(self.scale_btn)
+        self.action_group.triggered.connect(self.grView.on_add_canvas_trigger)
+        self.setCentralWidget(self.grView)
 
         # Update default fonts, colors, etc.
         self.update('ui_update')
@@ -1077,18 +1077,18 @@ class MPRUN(QMainWindow):
         sep4 = QAction(self)
         sep4.setSeparator(True)
 
-        self.canvas_view.addAction(name_action)
-        self.canvas_view.addAction(sep1)
-        self.canvas_view.addAction(duplicate_action)
-        self.canvas_view.addAction(group_action)
-        self.canvas_view.addAction(ungroup_action)
-        self.canvas_view.addAction(sep3)
-        self.canvas_view.addAction(raise_layer_action)
-        self.canvas_view.addAction(lower_layer_action)
-        self.canvas_view.addAction(sep4)
-        self.canvas_view.addAction(hide_action)
-        self.canvas_view.addAction(unhide_action)
-        self.canvas_view.addAction(select_all_action)
+        self.grView.addAction(name_action)
+        self.grView.addAction(sep1)
+        self.grView.addAction(duplicate_action)
+        self.grView.addAction(group_action)
+        self.grView.addAction(ungroup_action)
+        self.grView.addAction(sep3)
+        self.grView.addAction(raise_layer_action)
+        self.grView.addAction(lower_layer_action)
+        self.grView.addAction(sep4)
+        self.grView.addAction(hide_action)
+        self.grView.addAction(unhide_action)
+        self.grView.addAction(select_all_action)
 
     def create_default_objects(self):
         font = QFont()
@@ -1101,7 +1101,7 @@ class MPRUN(QMainWindow):
 
         # Drawing paper
         self.paper = CanvasItem(QRectF(0, 0, 1000, 700), 'Canvas 1')
-        self.canvas.addItem(self.paper)
+        self.grScene.addItem(self.paper)
         self.last_paper = self.paper
 
         # Text on paper
@@ -1112,7 +1112,7 @@ class MPRUN(QMainWindow):
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(0)
-        self.canvas.addItem(self.paper_text)
+        self.grScene.addItem(self.paper_text)
 
         self.path_btn.trigger()
         self.select_btn.trigger()
@@ -1140,14 +1140,14 @@ class MPRUN(QMainWindow):
         pen.setStyle(data1)
         pen.setCapStyle(data2)
 
-        self.canvas_view.update_pen(pen)
+        self.grView.update_pen(pen)
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
+        if self.grScene.selectedItems():
+            for item in self.grScene.selectedItems():
                 if isinstance(item, CustomPathItem):
                     try:
                         command = PenChangeCommand(item, item.pen(), pen)
-                        self.canvas.addCommand(command)
+                        self.grScene.addCommand(command)
 
                     except Exception:
                         pass
@@ -1155,7 +1155,7 @@ class MPRUN(QMainWindow):
                 elif isinstance(item, LeaderLineItem):
                     try:
                         command = PenChangeCommand(item, item.pen(), pen)
-                        self.canvas.addCommand(command)
+                        self.grScene.addCommand(command)
 
                     except Exception:
                         pass
@@ -1163,14 +1163,14 @@ class MPRUN(QMainWindow):
     def update_item_fill(self):
         brush = QBrush(QColor(self.fill_color.get()))
 
-        self.canvas_view.update_stroke_fill_color(brush)
+        self.grView.update_stroke_fill_color(brush)
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
+        if self.grScene.selectedItems():
+            for item in self.grScene.selectedItems():
                 if isinstance(item, CustomPathItem):
                     try:
                         command = BrushChangeCommand(item, item.brush(), brush)
-                        self.canvas.addCommand(command)
+                        self.grScene.addCommand(command)
 
                     except Exception:
                         pass
@@ -1178,7 +1178,7 @@ class MPRUN(QMainWindow):
                 elif isinstance(item, LeaderLineItem):
                     try:
                         command = BrushChangeCommand(item, item.brush(), brush)
-                        self.canvas.addCommand(command)
+                        self.grScene.addCommand(command)
 
                     except Exception:
                         pass
@@ -1193,14 +1193,14 @@ class MPRUN(QMainWindow):
         font.setItalic(True if self.italic_btn.isChecked() else False)
         font.setUnderline(True if self.underline_btn.isChecked() else False)
 
-        self.canvas_view.update_font(font, QColor(self.font_color.get()))
+        self.grView.update_font(font, QColor(self.font_color.get()))
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
+        if self.grScene.selectedItems():
+            for item in self.grScene.selectedItems():
                 if isinstance(item, CustomTextItem):
                     command = FontChangeCommand(item, item.font(), font, item.defaultTextColor(),
                                                 QColor(self.font_color.get()))
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
 
                     if isinstance(item.parentItem(), LeaderLineItem):
                         item.parentItem().updatePathEndPoint()
@@ -1213,7 +1213,7 @@ class MPRUN(QMainWindow):
                         item.update()
 
     def closeEvent(self, event):
-        if self.canvas.modified:
+        if self.grScene.modified:
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox(self)
             confirmation_dialog.setWindowTitle('Close Document')
@@ -1277,7 +1277,7 @@ class MPRUN(QMainWindow):
         self.text_along_path_tab.spacing_spin.blockSignals(True)
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
-        if len(self.canvas.selectedItems()) > 0:
+        if len(self.grScene.selectedItems()) > 0:
             self.properties_tab.setFixedHeight(425)
 
             self.transform_separator.setHidden(False)
@@ -1295,7 +1295,7 @@ class MPRUN(QMainWindow):
             self.rotation_label.setHidden(False)
             self.rotate_item_spin.setHidden(False)
 
-            for item in self.canvas.selectedItems():
+            for item in self.grScene.selectedItems():
                 self.x_pos_spin.setValue(int(item.sceneBoundingRect().x()))
                 self.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
                 self.rotate_item_spin.setValue(int(item.rotation()))
@@ -1315,10 +1315,10 @@ class MPRUN(QMainWindow):
 
                 self.selection_label.setText(item.toolTip())
 
-                if len(self.canvas.selectedItems()) > 1:
+                if len(self.grScene.selectedItems()) > 1:
                     self.selection_label.setText('Combined Selection')
-                    self.x_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().x()))
-                    self.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
+                    self.x_pos_spin.setValue(int(self.grScene.selectedItemsSceneBoundingRect().x()))
+                    self.y_pos_spin.setValue(int(self.grScene.selectedItemsSceneBoundingRect().y()))
 
         else:
             self.properties_tab.setFixedHeight(325)
@@ -1383,7 +1383,7 @@ class MPRUN(QMainWindow):
         self.text_along_path_tab.spacing_spin.blockSignals(True)
         self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, CustomPathItem):
                 pen = item.pen()
                 brush = item.brush()
@@ -1589,40 +1589,40 @@ class MPRUN(QMainWindow):
             self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def use_delete(self):
-        selected_items = self.canvas.selectedItems()
+        selected_items = self.grScene.selectedItems()
         if selected_items:
             for item in selected_items:
                 if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
                     item.setSelected(False)
                     item.parentItem().setSelected(True)
 
-            selected_items = self.canvas.selectedItems()
+            selected_items = self.grScene.selectedItems()
 
-            command = RemoveItemCommand(self.canvas, selected_items)
-            self.canvas.addCommand(command)
+            command = RemoveItemCommand(self.grScene, selected_items)
+            self.grScene.addCommand(command)
 
     def use_hard_delete(self):
-        for item in self.canvas.selectedItems():
-            self.canvas.removeItem(item)
+        for item in self.grScene.selectedItems():
+            self.grScene.removeItem(item)
             del item
 
     def use_select(self):
         self.select_btn.setChecked(True)
-        self.canvas_view.on_add_canvas_trigger()
-        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
+        self.grView.on_add_canvas_trigger()
+        self.grView.setDragMode(QGraphicsView.RubberBandDrag)
+        self.grView.setContextMenuPolicy(Qt.ActionsContextMenu)
 
     def use_select_all(self):
         self.select_btn.trigger()
 
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if item.flags() & QGraphicsItem.ItemIsSelectable:
                 item.setSelected(True)
 
     def use_escape(self):
-        self.canvas.clearSelection()
+        self.grScene.clearSelection()
 
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if isinstance(item, CustomTextItem) and item.hasFocus():
                 item.clearFocus()
 
@@ -1633,9 +1633,9 @@ class MPRUN(QMainWindow):
         else:
             self.select_btn.trigger()
 
-        self.canvas.clearSelection()
+        self.grScene.clearSelection()
 
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if mode == 'path':
                 if isinstance(item, CustomPathItem):
                     item.setSelected(True)
@@ -1674,24 +1674,24 @@ class MPRUN(QMainWindow):
     def use_path(self):
         self.path_btn.setChecked(True)
         self.drawing_toolbutton.setDefaultAction(self.path_btn)
-        self.canvas_view.disable_item_flags()
+        self.grView.disable_item_flags()
 
     def use_pen_tool(self):
         self.pen_btn.setChecked(True)
         self.drawing_toolbutton.setDefaultAction(self.pen_btn)
-        self.canvas_view.disable_item_flags()
+        self.grView.disable_item_flags()
 
     def use_sculpt_path(self):
         self.sculpt_btn.setChecked(True)
         self.drawing_toolbutton.setDefaultAction(self.sculpt_btn)
-        self.canvas_view.disable_item_flags()
+        self.grView.disable_item_flags()
 
     def use_set_sculpt_radius(self, value):
-        self.canvas_view.set_sculpt_radius(value)
+        self.grView.set_sculpt_radius(value)
 
     def use_label(self):
         self.label_btn.setChecked(True)
-        self.canvas_view.disable_item_flags()
+        self.grView.disable_item_flags()
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
@@ -1699,21 +1699,21 @@ class MPRUN(QMainWindow):
     def use_change_view(self):
         value = self.view_zoom_spin.value() / 100
 
-        self.canvas_view.resetTransform()
-        self.canvas_view.scale(value, value)
-        self.canvas_view.rotate(self.rotate_scene_spin.value())
+        self.grView.resetTransform()
+        self.grView.scale(value, value)
+        self.grView.rotate(self.rotate_scene_spin.value())
 
     def use_raise_layer(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, CanvasItem):
                 pass
 
             else:
                 c = LayerChangeCommand(item, item.zValue(), item.zValue() + 1)
-                self.canvas.addCommand(c)
+                self.grScene.addCommand(c)
 
     def use_lower_layer(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if item.zValue() <= 0:
                 QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
 
@@ -1723,12 +1723,12 @@ class MPRUN(QMainWindow):
 
                 else:
                     c = LayerChangeCommand(item, item.zValue(), item.zValue() - 1)
-                    self.canvas.addCommand(c)
+                    self.grScene.addCommand(c)
 
     def use_bring_to_front(self):
-        selected_items = self.canvas.selectedItems()
+        selected_items = self.grScene.selectedItems()
         if selected_items:
-            max_z = max([item.zValue() for item in self.canvas.items()])
+            max_z = max([item.zValue() for item in self.grScene.items()])
             for item in selected_items:
                 if isinstance(item, CanvasItem):
                     pass
@@ -1737,7 +1737,7 @@ class MPRUN(QMainWindow):
                     item.setZValue(max_z)
 
     def use_vectorize(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, CustomPixmapItem):
                 # Convert the pixmap to SVG
                 try:
@@ -1773,8 +1773,8 @@ class MPRUN(QMainWindow):
                         # Add the item to the scene
                         item = CustomSvgItem(f'V-C STOR/{entry}.svg')
                         item.store_filename(f'V-C STOR/{entry}.svg')
-                        add_command = AddItemCommand(self.canvas, item)
-                        self.canvas.addCommand(add_command)
+                        add_command = AddItemCommand(self.grScene, item)
+                        self.grScene.addCommand(add_command)
                         self.create_item_attributes(item)
                         item.setToolTip('Vector Element')
 
@@ -1789,7 +1789,7 @@ class MPRUN(QMainWindow):
 
     def use_duplicate(self):
         # Get selected items and create a copy
-        selected_items = self.canvas.selectedItems()
+        selected_items = self.grScene.selectedItems()
 
         for item in selected_items:
             if isinstance(item, CustomTextItem):
@@ -1817,18 +1817,18 @@ class MPRUN(QMainWindow):
                 item.duplicate()
 
     def use_set_item_pos(self):
-        self.canvas.blockSignals(True)
+        self.grScene.blockSignals(True)
         try:
             # Get target position from spin boxes
             target_x = self.x_pos_spin.value()
             target_y = self.y_pos_spin.value()
 
             # Get the bounding rect of selected items
-            selected_items = self.canvas.selectedItems()
+            selected_items = self.grScene.selectedItems()
             if not selected_items:
                 return
 
-            bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
+            bounding_rect = self.grScene.selectedItemsSceneBoundingRect()
 
             # Calculate the offset
             offset_x = target_x - bounding_rect.x()
@@ -1842,9 +1842,9 @@ class MPRUN(QMainWindow):
 
                 new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
                 command = PositionChangeCommand(self, item, item.pos(), new_pos)
-                self.canvas.addCommand(command)
+                self.grScene.addCommand(command)
         finally:
-            self.canvas.blockSignals(False)
+            self.grScene.blockSignals(False)
 
     def use_scale_x(self, value):
         self.use_scale(self.width_scale_spin.value(), self.height_scale_spin.value())
@@ -1854,7 +1854,7 @@ class MPRUN(QMainWindow):
 
     def use_scale(self, x_value, y_value):
         try:
-            items = self.canvas.selectedItems()
+            items = self.grScene.selectedItems()
             for item in items:
                 if isinstance(item, CanvasItem):
                     pass
@@ -1888,7 +1888,7 @@ class MPRUN(QMainWindow):
 
                     # Apply the transform to each item
                     command = TransformCommand(item, item.transform(), transform)
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
 
         except Exception as e:
             print(f"Error during scaling: {e}")
@@ -1899,7 +1899,7 @@ class MPRUN(QMainWindow):
         self.use_exit_grid()
 
     def use_rotate(self, value):
-        items = self.canvas.selectedItems()
+        items = self.grScene.selectedItems()
         if not items:
             return
 
@@ -1921,10 +1921,10 @@ class MPRUN(QMainWindow):
 
                 # Set the rotation angle
                 command = RotateCommand(self, item, item.rotation(), value)
-                self.canvas.addCommand(command)
+                self.grScene.addCommand(command)
 
     def use_rotate_direction(self, dir: str):
-        items = self.canvas.selectedItems()
+        items = self.grScene.selectedItems()
         if not items:
             return
 
@@ -1947,15 +1947,15 @@ class MPRUN(QMainWindow):
                 if dir == 'ccw':
                     # Set the rotation angle
                     command = RotateCommand(self, item, item.rotation(), item.rotation() - 90)
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
 
                 else:
                     # Set the rotation angle
                     command = RotateCommand(self, item, item.rotation(), item.rotation() + 90)
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
 
     def use_flip_horizontal(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, LeaderLineItem):
                 item.childItems()[0].setSelected(False)
                 item.updatePathEndPoint()
@@ -1963,7 +1963,7 @@ class MPRUN(QMainWindow):
         self.width_scale_spin.setValue(-self.width_scale_spin.value())
 
     def use_flip_vertical(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, LeaderLineItem):
                 item.childItems()[0].setSelected(False)
                 item.updatePathEndPoint()
@@ -1971,7 +1971,7 @@ class MPRUN(QMainWindow):
         self.height_scale_spin.setValue(-self.height_scale_spin.value())
 
     def use_mirror(self, direction):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if not isinstance(item, CanvasItem):
                 self.use_escape()
                 child = item.duplicate()
@@ -1999,7 +1999,7 @@ class MPRUN(QMainWindow):
         opacity = value / self.opacity_spin.maximum()
 
         # Apply the effect to selected items
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, CanvasItem):
                 pass
 
@@ -2008,22 +2008,22 @@ class MPRUN(QMainWindow):
 
             else:
                 command = OpacityCommand(item, item.opacity(), opacity)
-                self.canvas.addCommand(command)
+                self.grScene.addCommand(command)
 
     def use_reset_item(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             command = ResetItemCommand(item)
-            self.canvas.addCommand(command)
+            self.grScene.addCommand(command)
 
         self.update_transform_ui()
 
     def use_add_canvas(self):
         self.toolbox.setCurrentWidget(self.canvas_tab)
         self.add_canvas_btn.setChecked(True)
-        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
+        self.grView.setDragMode(QGraphicsView.RubberBandDrag)
+        self.grScene.setBackgroundBrush(QBrush(QColor('#737373')))
 
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if isinstance(item, CanvasItem):
                 item.setCanvasActive(True)
 
@@ -2031,7 +2031,7 @@ class MPRUN(QMainWindow):
         # Deactivate the add canvas tool
         self.select_btn.trigger()
 
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if isinstance(item, CanvasItem):
                 item.setCanvasActive(False)
 
@@ -2043,7 +2043,7 @@ class MPRUN(QMainWindow):
             self.quick_actions_tab.gsnap_check_btn.click()
 
     def use_smooth_path(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, CustomPathItem):
                 if item.smooth == True:
                     pass
@@ -2052,18 +2052,18 @@ class MPRUN(QMainWindow):
                     try:
                         smoothed_path = item.smooth_path(item.path(), 0.1)
 
-                        add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
-                        self.canvas.addCommand(add_command)
+                        add_command = SmoothPathCommand(self.grScene, item, smoothed_path, item.path())
+                        self.grScene.addCommand(add_command)
 
                     except Exception:
                         QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
-                        self.canvas.undo()
+                        self.grScene.undo()
 
     def use_close_path(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, CustomPathItem):
-                command = CloseSubpathCommand(item, self.canvas)
-                self.canvas.addCommand(command)
+                command = CloseSubpathCommand(item, self.grScene)
+                self.grScene.addCommand(command)
 
     def use_add_text_along_path(self):
         try:
@@ -2075,7 +2075,7 @@ class MPRUN(QMainWindow):
             self.text_along_path_tab.text_entry.setFocus()
             self.text_along_path_tab.text_entry.clear()
 
-            for item in self.canvas.selectedItems():
+            for item in self.grScene.selectedItems():
                 if isinstance(item, CustomPathItem):
                     font = QFont()
                     font.setFamily(self.font_choice_combo.currentText())
@@ -2090,41 +2090,41 @@ class MPRUN(QMainWindow):
                     item.setTextAlongPathColor(QColor(self.font_color.get()))
 
                     command = AddTextToPathCommand(item, self.text_along_path_tab.text_along_path_check_btn, False, True)
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
                     item.update()
 
         except Exception:
             pass
 
     def use_hide_item(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, LeaderLineItem):
                 item.childItems()[0].setSelected(False)
 
             elif isinstance(item, CustomTextItem):
                 if isinstance(item.parentItem(), LeaderLineItem):
                     command = HideCommand(item.parentItem(), True, False)
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
                     return
 
             command = HideCommand(item, True, False)
-            self.canvas.addCommand(command)
+            self.grScene.addCommand(command)
 
     def use_unhide_all(self):
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if isinstance(item, CanvasTextItem):
                 pass
 
             else:
                 if not item.isVisible():
                     command = HideCommand(item, False, True)
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
 
                 else:
                     pass
 
     def use_name_item(self):
-        for item in self.canvas.selectedItems():
+        for item in self.grScene.selectedItems():
             if isinstance(item, CanvasItem):
                 if item.childItems():
                     pass
@@ -2137,13 +2137,13 @@ class MPRUN(QMainWindow):
 
                 if ok:
                     command = NameCommand(item, item.toolTip(), entry)
-                    self.canvas.addCommand(command)
+                    self.grScene.addCommand(command)
 
                     self.update_appearance_ui()
 
     def use_create_group(self):
-        if len(self.canvas.selectedItems()) > 1:
-            for item in self.canvas.selectedItems():
+        if len(self.grScene.selectedItems()) > 1:
+            for item in self.grScene.selectedItems():
                 if isinstance(item, (CanvasItem, LeaderLineItem)):
                     pass
 
@@ -2153,28 +2153,28 @@ class MPRUN(QMainWindow):
                             return
 
                     else:
-                        item = self.canvas.selectedItems()
+                        item = self.grScene.selectedItems()
 
-                        command = GroupItemsCommand(self.canvas, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
-                        self.canvas.addCommand(command)
+                        command = GroupItemsCommand(self.grScene, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
+                        self.grScene.addCommand(command)
 
                 else:
-                    item = self.canvas.selectedItems()
+                    item = self.grScene.selectedItems()
 
-                    command = GroupItemsCommand(self.canvas, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
-                    self.canvas.addCommand(command)
+                    command = GroupItemsCommand(self.grScene, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
+                    self.grScene.addCommand(command)
 
     def use_ungroup_group(self):
-        for group in self.canvas.selectedItems():
+        for group in self.grScene.selectedItems():
             if isinstance(group, CustomGraphicsItemGroup):
-                command = UngroupItemsCommand(self.canvas, group)
-                self.canvas.addCommand(command)
+                command = UngroupItemsCommand(self.grScene, group)
+                self.grScene.addCommand(command)
 
     def use_align_left(self):
-        if not self.canvas.selectedItems():
+        if not self.grScene.selectedItems():
             return
-        FirstSelItem = self.canvas.selectedItems()[0]
-        sel = self.canvas.selectedItems()
+        FirstSelItem = self.grScene.selectedItems()[0]
+        sel = self.grScene.selectedItems()
         for selItem in sel:
             dx, dy = 0, 0
             dx = (FirstSelItem.mapToScene(FirstSelItem.boundingRect().topLeft()).x()) - \
@@ -2184,10 +2184,10 @@ class MPRUN(QMainWindow):
         self.update_transform_ui()
 
     def use_align_right(self):
-        if not self.canvas.selectedItems():
+        if not self.grScene.selectedItems():
             return
-        last_sel_item = self.canvas.selectedItems()[0]
-        sel = self.canvas.selectedItems()
+        last_sel_item = self.grScene.selectedItems()[0]
+        sel = self.grScene.selectedItems()
         for sel_item in sel:
             dx = (last_sel_item.mapToScene(last_sel_item.boundingRect().topRight()).x()) - \
                  (sel_item.mapToScene(sel_item.boundingRect().topRight()).x())
@@ -2196,9 +2196,9 @@ class MPRUN(QMainWindow):
         self.update_transform_ui()
 
     def use_align_center(self):
-        if not self.canvas.selectedItems():
+        if not self.grScene.selectedItems():
             return
-        selected_items = self.canvas.selectedItems()
+        selected_items = self.grScene.selectedItems()
         # Find the average x-coordinate of the center of all selected items
         center_x = sum(item.sceneBoundingRect().center().x() for item in selected_items) / len(selected_items)
         for item in selected_items:
@@ -2209,9 +2209,9 @@ class MPRUN(QMainWindow):
         self.update_transform_ui()
 
     def use_align_top(self):
-        if not self.canvas.selectedItems():
+        if not self.grScene.selectedItems():
             return
-        selected_items = self.canvas.selectedItems()
+        selected_items = self.grScene.selectedItems()
         # Find the minimum y-coordinate of the top edge of all selected items
         top_y = min(item.sceneBoundingRect().top() for item in selected_items)
         for item in selected_items:
@@ -2222,9 +2222,9 @@ class MPRUN(QMainWindow):
         self.update_transform_ui()
 
     def use_align_bottom(self):
-        if not self.canvas.selectedItems():
+        if not self.grScene.selectedItems():
             return
-        selected_items = self.canvas.selectedItems()
+        selected_items = self.grScene.selectedItems()
         # Find the maximum y-coordinate of the bottom edge of all selected items
         bottom_y = max(item.sceneBoundingRect().bottom() for item in selected_items)
         for item in selected_items:
@@ -2235,9 +2235,9 @@ class MPRUN(QMainWindow):
         self.update_transform_ui()
 
     def use_align_middle(self):
-        if not self.canvas.selectedItems():
+        if not self.grScene.selectedItems():
             return
-        selected_items = self.canvas.selectedItems()
+        selected_items = self.grScene.selectedItems()
         # Find the average y-coordinate of the center of all selected items
         middle_y = sum(item.sceneBoundingRect().center().y() for item in selected_items) / len(selected_items)
         for item in selected_items:
@@ -2249,10 +2249,10 @@ class MPRUN(QMainWindow):
 
     def use_enable_grid(self):
         if self.gsnap_check_btn.isChecked():
-            self.canvas.setGridEnabled(True)
-            self.canvas.update()
+            self.grScene.setGridEnabled(True)
+            self.grScene.update()
 
-            for item in self.canvas.items():
+            for item in self.grScene.items():
                 if isinstance(item, CanvasTextItem):
                     pass
 
@@ -2260,10 +2260,10 @@ class MPRUN(QMainWindow):
                     item.gridEnabled = True
 
         else:
-            self.canvas.setGridEnabled(False)
-            self.canvas.update()
+            self.grScene.setGridEnabled(False)
+            self.grScene.update()
 
-            for item in self.canvas.items():
+            for item in self.grScene.items():
                 if isinstance(item, CanvasTextItem):
                     pass
 
@@ -2294,8 +2294,8 @@ class MPRUN(QMainWindow):
                 svg_item = CustomSvgItem(file_path)
                 svg_item.store_filename(file_path)
 
-                add_command = AddItemCommand(self.canvas, svg_item)
-                self.canvas.addCommand(add_command)
+                add_command = AddItemCommand(self.grScene, svg_item)
+                self.grScene.addCommand(add_command)
                 svg_item.setToolTip('Imported SVG')
 
                 self.create_item_attributes(svg_item)
@@ -2304,8 +2304,8 @@ class MPRUN(QMainWindow):
                 with open(file_path, 'r') as f:
                     item = CustomTextItem(f.read())
 
-                    add_command = AddItemCommand(self.canvas, item)
-                    self.canvas.addCommand(add_command)
+                    add_command = AddItemCommand(self.grScene, item)
+                    self.grScene.addCommand(add_command)
 
                     self.create_item_attributes(item)
 
@@ -2315,8 +2315,8 @@ class MPRUN(QMainWindow):
                     item.toMarkdown()
                     item.set_locked()
 
-                    add_command = AddItemCommand(self.canvas, item)
-                    self.canvas.addCommand(add_command)
+                    add_command = AddItemCommand(self.grScene, item)
+                    self.grScene.addCommand(add_command)
 
                     self.create_item_attributes(item)
 
@@ -2325,8 +2325,8 @@ class MPRUN(QMainWindow):
                 image2 = CustomPixmapItem(image1)
                 image2.store_filename(file_path)
 
-                add_command = AddItemCommand(self.canvas, image2)
-                self.canvas.addCommand(add_command)
+                add_command = AddItemCommand(self.grScene, image2)
+                self.grScene.addCommand(add_command)
                 image2.setToolTip('Imported Pixmap')
 
                 self.create_item_attributes(image2)
@@ -2342,7 +2342,7 @@ class MPRUN(QMainWindow):
         painter = QPainter(image)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-        self.canvas.render(painter, target=QRectF(image.rect()), source=rect)
+        self.grScene.render(painter, target=QRectF(image.rect()), source=rect)
         painter.end()
 
         try:
@@ -2365,10 +2365,10 @@ class MPRUN(QMainWindow):
         self.use_exit_add_canvas()
 
         # Create a custom dialog to with a dropdown to select which canvas to export
-        selector = CanvasItemSelector(self.canvas, self)
+        selector = CanvasItemSelector(self.grScene, self)
         selector.show()
 
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if isinstance(item, CanvasItem):
                 # Add the canvas items to the selector
                 selector.add_canvas_item(itemName=item.toolTip(), itemKey=item)
@@ -2381,9 +2381,9 @@ class MPRUN(QMainWindow):
 
             if selected_item:
                 if selector.transparent_check_btn.isChecked():
-                    self.canvas.setBackgroundBrush(QBrush(QColor(Qt.transparent)))
+                    self.grScene.setBackgroundBrush(QBrush(QColor(Qt.transparent)))
 
-                    for item in self.canvas.items():
+                    for item in self.grScene.items():
                         if isinstance(item, CanvasItem):
                             item.setTransparentMode()
 
@@ -2432,13 +2432,13 @@ class MPRUN(QMainWindow):
             if not file_path.endswith(selected_extension):
                 file_path += selected_extension
 
-            self.canvas.clearSelection()
-            for item in self.canvas.items():
+            self.grScene.clearSelection()
+            for item in self.grScene.items():
                 if isinstance(item, CanvasItem):
                     for child in item.childItems():
                         child.setVisible(False)
                         self.select_btn.setChecked(True)
-                        self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+                        self.grView.setDragMode(QGraphicsView.RubberBandDrag)
 
             if selected_extension == '.svg':
                 try:
@@ -2452,7 +2452,7 @@ class MPRUN(QMainWindow):
                     svg_generator.setViewBox(rect)
 
                     # Clear selection
-                    self.canvas.clearSelection()
+                    self.grScene.clearSelection()
 
                     # Create a QPainter to paint onto the QSvgGenerator
                     painter = QPainter()
@@ -2461,7 +2461,7 @@ class MPRUN(QMainWindow):
                     painter.begin(svg_generator)
 
                     # Render the scene onto the QPainter
-                    self.canvas.render(painter, target=rect, source=rect)
+                    self.grScene.render(painter, target=rect, source=rect)
 
                     # End painting
                     painter.end()
@@ -2491,8 +2491,8 @@ class MPRUN(QMainWindow):
                     painter.begin(printer)
 
                     # Render your content directly onto the painter
-                    self.canvas.render(painter, source=selected_item.sceneBoundingRect(),
-                                       target=selected_item.sceneBoundingRect())
+                    self.grScene.render(painter, source=selected_item.sceneBoundingRect(),
+                                        target=selected_item.sceneBoundingRect())
 
                     painter.end()
 
@@ -2508,7 +2508,7 @@ class MPRUN(QMainWindow):
 
             else:
                 try:
-                    self.canvas.clearSelection()
+                    self.grScene.clearSelection()
                     self.export_canvas_as_bitmap(file_path, selected_item)
 
                 except Exception as e:
@@ -2517,7 +2517,7 @@ class MPRUN(QMainWindow):
             self.use_exit_add_canvas()
 
     def choose_multiple_export(self):
-        selector = MultiCanvasItemSelector(self.canvas, self)
+        selector = MultiCanvasItemSelector(self.grScene, self)
         selector.show()
 
     def create_item_attributes(self, item):
@@ -2527,7 +2527,7 @@ class MPRUN(QMainWindow):
         item.setZValue(0)
 
     def show_version(self):
-        self.w = VersionWin(self.canvas.mpversion)
+        self.w = VersionWin(self.grScene.mpversion)
         self.w.show()
 
     def show_about(self):
@@ -2562,11 +2562,11 @@ class MPRUN(QMainWindow):
 
     def save(self):
         try:
-            if self.canvas.manager.filename != 'Untitled':
-                with open(self.canvas.manager.filename, 'wb') as f:
-                    pickle.dump(self.canvas.manager.serialize_items(), f)
-                    self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
-                    self.canvas.modified = False
+            if self.grScene.manager.filename != 'Untitled':
+                with open(self.grScene.manager.filename, 'wb') as f:
+                    pickle.dump(self.grScene.manager.serialize_items(), f)
+                    self.setWindowTitle(f'{os.path.basename(self.grScene.manager.filename)} - MPRUN')
+                    self.grScene.modified = False
                     return True
 
             else:
@@ -2581,11 +2581,11 @@ class MPRUN(QMainWindow):
         if filename:
             try:
                 with open(filename, 'wb') as f:
-                    pickle.dump(self.canvas.manager.serialize_items(), f)
+                    pickle.dump(self.grScene.manager.serialize_items(), f)
 
-                    self.canvas.manager.filename = filename
-                    self.canvas.modified = False
-                    self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
+                    self.grScene.manager.filename = filename
+                    self.grScene.modified = False
+                    self.setWindowTitle(f'{os.path.basename(self.grScene.manager.filename)} - MPRUN')
                     return True
 
             except Exception as e:
@@ -2595,7 +2595,7 @@ class MPRUN(QMainWindow):
             return False
 
     def open(self):
-        self.canvas.manager.load(self)
+        self.grScene.manager.load(self)
 
     def set_user_data(self, data):
         for user_data in data:

@@ -1,6 +1,7 @@
 from src.scripts.imports import *
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
+from src.scripts.app_internal import *
 
 class CustomViewport(QOpenGLWidget):
     def __init__(self):
@@ -12,7 +13,8 @@ class CustomViewport(QOpenGLWidget):
         self.setFormat(format)
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas,
+    def __init__(self,
+                 scene,
                  button,
                  button2,
                  smooth_btn,
@@ -53,7 +55,7 @@ class CustomGraphicsView(QGraphicsView):
         self.grid_checkbtn = grid_checkbtn
 
         # Items
-        self.canvas = canvas
+        self.grScene = scene
         self.mouse_offset = None
         self.is_dragging = False
         self.temp_path_item = None
@@ -95,7 +97,7 @@ class CustomGraphicsView(QGraphicsView):
         self.font_color = color
 
     def disable_item_flags(self):
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if isinstance(item, CanvasItem):
                 pass
 
@@ -107,7 +109,7 @@ class CustomGraphicsView(QGraphicsView):
                 item.setFlag(QGraphicsItem.ItemIsSelectable, False)
 
     def disable_item_movement(self):
-        for item in self.canvas.items():
+        for item in self.grScene.items():
             if isinstance(item, CanvasItem):
                 pass
 
@@ -330,9 +332,9 @@ y: {int(self.mapToScene(point).y())}''')
             item.setZValue(0)
 
             # Add item to scene
-            add_command = AddItemCommand(self.canvas, item)
-            self.canvas.addCommand(add_command)
-            self.canvas.update()
+            add_command = AddItemCommand(self.grScene, item)
+            self.grScene.addCommand(add_command)
+            self.grScene.update()
 
     def fitInView(self, *args, **kwargs):
         super().fitInView(*args, **kwargs)
@@ -366,16 +368,16 @@ y: {int(self.mapToScene(point).y())}''')
             
             # Remove temporary path if it exists
             if self.temp_path_item:
-                self.canvas.removeItem(self.temp_path_item)
+                self.grScene.removeItem(self.temp_path_item)
 
             # Load temporary path as QGraphicsItem to view it while drawing
             self.temp_path_item = CustomPathItem(self.path)
             self.temp_path_item.setPen(self.pen)
             self.temp_path_item.setBrush(self.stroke_fill)
             self.temp_path_item.setZValue(0)
-            self.canvas.addItem(self.temp_path_item)
+            self.grScene.addItem(self.temp_path_item)
 
-            self.canvas.update()
+            self.grScene.update()
 
     def on_path_draw_end(self, event):
         # Check the buttons
@@ -385,9 +387,9 @@ y: {int(self.mapToScene(point).y())}''')
 
             # Check if there is a temporary path (if so, remove it now)
             if self.temp_path_item:
-                self.canvas.removeItem(self.temp_path_item)
+                self.grScene.removeItem(self.temp_path_item)
 
-            self.canvas.update()
+            self.grScene.update()
 
             # Load main path as QGraphicsItem
             path_item = CustomPathItem(self.path)
@@ -396,8 +398,8 @@ y: {int(self.mapToScene(point).y())}''')
             path_item.setBrush(self.stroke_fill)
 
             # Add item
-            add_command = AddItemCommand(self.canvas, path_item)
-            self.canvas.addCommand(add_command)
+            add_command = AddItemCommand(self.grScene, path_item)
+            self.grScene.addCommand(add_command)
 
             # Set Flags
             path_item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -429,7 +431,7 @@ y: {int(self.mapToScene(point).y())}''')
 
                 # Remove temporary path if it exists
                 if self.temp_path_item is not None:
-                    self.canvas.removeItem(self.temp_path_item)
+                    self.grScene.removeItem(self.temp_path_item)
 
                 # Load temporary path as QGraphicsItem to view it while drawing
                 self.path.setFillRule(Qt.WindingFill)
@@ -438,7 +440,7 @@ y: {int(self.mapToScene(point).y())}''')
                 self.temp_path_item.setPen(self.pen)
                 self.temp_path_item.setBrush(self.stroke_fill)
                 self.temp_path_item.setZValue(0)
-                self.canvas.addItem(self.temp_path_item)
+                self.grScene.addItem(self.temp_path_item)
 
                 try:
                     self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
@@ -446,7 +448,7 @@ y: {int(self.mapToScene(point).y())}''')
                 except Exception:
                     pass
 
-                self.canvas.update()
+                self.grScene.update()
 
                 super().mouseMoveEvent(event)
 
@@ -463,9 +465,9 @@ y: {int(self.mapToScene(point).y())}''')
 
                     # Check if there is a temporary path (if so, remove it now)
                     if self.temp_path_item is not None:
-                        self.canvas.removeItem(self.temp_path_item)
+                        self.grScene.removeItem(self.temp_path_item)
 
-                    self.canvas.update()
+                    self.grScene.update()
 
                     # Load main path as QGraphicsItem
                     path_item = CustomPathItem(self.path)
@@ -479,8 +481,8 @@ y: {int(self.mapToScene(point).y())}''')
                         pass
 
                     # Add item
-                    add_command = AddItemCommand(self.canvas, path_item)
-                    self.canvas.addCommand(add_command)
+                    add_command = AddItemCommand(self.grScene, path_item)
+                    self.grScene.addCommand(add_command)
 
                     # Set Flags
                     path_item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -510,9 +512,9 @@ y: {int(self.mapToScene(point).y())}''')
             self.pathg_item.text_element.setFont(self.font)
             self.pathg_item.text_element.setPos(self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
 
-            add_command = AddItemCommand(self.canvas, self.pathg_item)
-            self.canvas.addCommand(add_command)
-            self.canvas.update()
+            add_command = AddItemCommand(self.grScene, self.pathg_item)
+            self.grScene.addCommand(add_command)
+            self.grScene.update()
 
     def on_label(self, event):
         if self.label_drawing:
@@ -523,7 +525,7 @@ y: {int(self.mapToScene(point).y())}''')
             self.pathg_item.setPath(temp_line)
             self.pathg_item.updatePathEndPoint()
             self.pathg_item.update()
-            self.canvas.update()
+            self.grScene.update()
         super().mouseMoveEvent(event)
 
     def on_label_end(self, event):
@@ -532,7 +534,7 @@ y: {int(self.mapToScene(point).y())}''')
             end_point = self.mapToScene(event.pos())
             self.leader_line.lineTo(end_point)
             self.pathg_item.setPath(self.leader_line)
-            self.canvas.update()
+            self.grScene.update()
 
             self.pathg_item.setZValue(0)
             self.pathg_item.text_element.select_text_and_set_cursor()
@@ -554,7 +556,7 @@ y: {int(self.mapToScene(point).y())}''')
                 i.set_active()
 
             else:
-                for item in self.canvas.items():
+                for item in self.grScene.items():
                     if isinstance(item, CustomTextItem):
                         if item.hasFocus():
                             item.clearFocus()
@@ -566,8 +568,8 @@ y: {int(self.mapToScene(point).y())}''')
                 self.text.setFont(self.font)
                 self.text.setDefaultTextColor(self.font_color)
 
-                add_command = AddItemCommand(self.canvas, self.text)
-                self.canvas.addCommand(add_command)
+                add_command = AddItemCommand(self.grScene, self.text)
+                self.grScene.addCommand(add_command)
 
                 self.text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
                 self.text.setZValue(0)
@@ -575,7 +577,7 @@ y: {int(self.mapToScene(point).y())}''')
                 self.text.select_text_and_set_cursor()
 
     def on_scale_start(self, event):
-        if self.canvas.gridEnabled:
+        if self.grScene.gridEnabled:
             self.grid_checkbtn.click()
 
         try:
@@ -654,7 +656,7 @@ y: {int(self.mapToScene(point).y())}''')
                 item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
 
             if self.scalingCommand and self.scalingCommand.new_transform != self.scalingCommand.old_transform:
-                self.canvas.addCommand(self.scalingCommand)
+                self.grScene.addCommand(self.scalingCommand)
                 self.scalingCommand = None
 
         except Exception as e:
@@ -662,12 +664,12 @@ y: {int(self.mapToScene(point).y())}''')
 
     def on_add_canvas_trigger(self):
         if self.add_canvas_btn.isChecked():
-            for item in self.canvas.items():
+            for item in self.grScene.items():
                 if isinstance(item, CanvasItem):
                     item.setCanvasActive(True)
 
         elif not self.add_canvas_btn.isChecked():
-            for item in self.canvas.items():
+            for item in self.grScene.items():
                 if isinstance(item, CanvasItem):
                     item.setCanvasActive(False)
 
@@ -684,7 +686,7 @@ y: {int(self.mapToScene(point).y())}''')
                 self.canvas_item.setPos(self.clicked_canvas_point)
 
                 command = AddItemCommand(self.scene(), self.canvas_item)
-                self.canvas.addCommand(command)
+                self.grScene.addCommand(command)
             else:
                 pass
 
@@ -729,7 +731,7 @@ y: {int(self.mapToScene(point).y())}''')
             self.canvas_item = None
             self.clicked_canvas_point = None
 
-            self.canvas.update()
+            self.grScene.update()
 
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
@@ -759,7 +761,7 @@ y: {int(self.mapToScene(point).y())}''')
 
             print(f"Sculpt Start: Item ID {id(item)}, Point Index {self.sculpting_item_point_index}")
 
-        self.canvas.addItem(self.sculpt_shape)
+        self.grScene.addItem(self.sculpt_shape)
         self.sculpt_shape.setPos(pos - self.sculpt_shape.boundingRect().center())
 
     def on_sculpt(self, event):
@@ -776,7 +778,7 @@ y: {int(self.mapToScene(point).y())}''')
             new_path = self.sculpting_item.path()
             if new_path != self.sculpting_initial_path:
                 command = EditPathCommand(self.sculpting_item, self.sculpting_initial_path, new_path)
-                self.canvas.addCommand(command)
+                self.grScene.addCommand(command)
                 print(f"Sculpt End: Item ID {id(self.sculpting_item)}")
 
         self.reset_sculpting_state()
@@ -861,7 +863,7 @@ y: {int(self.mapToScene(point).y())}''')
             path.setElementPositionAt(point_index, smoothed_x, smoothed_y)
 
             command = EditPathCommand(item, item.path(), path)
-            self.canvas.addCommand(command)
+            self.grScene.addCommand(command)
             item.smooth = False
 
     def reset_sculpting_state(self):
@@ -869,7 +871,7 @@ y: {int(self.mapToScene(point).y())}''')
         self.sculpting_item_point_index = -1
         self.sculpting_initial_path = None
         self.sculpting_item_offset = QPointF()
-        self.canvas.removeItem(self.sculpt_shape)
+        self.grScene.removeItem(self.sculpt_shape)
 
     def set_sculpt_radius(self, value):
         self.sculpt_radius = value
