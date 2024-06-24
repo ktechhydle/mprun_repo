@@ -60,7 +60,7 @@ class MPRUN(QMainWindow):
         self.grScene.setParentWindow(self)
         self.grScene.selectionChanged.connect(self.update_appearance_ui)
         self.grScene.selectionChanged.connect(self.update_transform_ui)
-        self.grScene.itemMoved.connect(self.update_appearance_ui)
+        self.grScene.itemMoved.connect(self.update_transform_ui)
         self.setWindowTitle(f'{os.path.basename(self.grScene.manager.filename)} - MPRUN')
 
     def create_menu(self):
@@ -1142,7 +1142,10 @@ class MPRUN(QMainWindow):
 
         self.grView.update_pen(pen)
 
-        if self.grScene.selectedItems():
+        if not self.grScene.selectedItems():
+            return
+
+        else:
             for item in self.grScene.selectedItems():
                 if isinstance(item, CustomPathItem):
                     try:
@@ -1165,7 +1168,10 @@ class MPRUN(QMainWindow):
 
         self.grView.update_stroke_fill_color(brush)
 
-        if self.grScene.selectedItems():
+        if not self.grScene.selectedItems():
+            return
+
+        else:
             for item in self.grScene.selectedItems():
                 if isinstance(item, CustomPathItem):
                     try:
@@ -1195,7 +1201,10 @@ class MPRUN(QMainWindow):
 
         self.grView.update_font(font, QColor(self.font_color.get()))
 
-        if self.grScene.selectedItems():
+        if not self.grScene.selectedItems():
+            return
+
+        else:
             for item in self.grScene.selectedItems():
                 if isinstance(item, CustomTextItem):
                     command = FontChangeCommand(item, item.font(), font, item.defaultTextColor(),
@@ -1517,8 +1526,6 @@ class MPRUN(QMainWindow):
                 self.underline_btn.setChecked(True if font.underline() else False)
 
         self.update_item_pen()
-        self.update_item_fill()
-        self.update_item_font()
 
         self.canvas_tab.canvas_x_entry.blockSignals(False)
         self.canvas_tab.canvas_y_entry.blockSignals(False)
