@@ -570,10 +570,34 @@ class LeaderLineItem(QGraphicsPathItem):
 
             path = self.path()
             if path.elementCount() > 1:
-                last_point = path.elementAt(path.elementCount() - 1)
-                end_point = QPointF(last_point.x, last_point.y)
-                # Drawing a 10x10 ellipse around the last point
-                painter.drawEllipse(end_point, 5, 5)
+                # Get the last two points of the path
+                last_element = path.elementAt(path.elementCount() - 1)
+                second_last_element = path.elementAt(path.elementCount() - 2)
+                last_point = QPointF(last_element.x, last_element.y)
+                second_last_point = QPointF(second_last_element.x, second_last_element.y)
+
+                # Calculate the angle of the line segment at the end of the path
+                dx = last_point.x() - second_last_point.x()
+                dy = last_point.y() - second_last_point.y()
+                angle = math.atan2(dy, dx)
+
+                # Calculate the new endpoint slightly beyond the last point
+                arrow_offset = 10  # Distance to extend the arrowhead beyond the last point
+                end_point = QPointF(last_point.x() + arrow_offset * math.cos(angle),
+                                    last_point.y() + arrow_offset * math.sin(angle))
+
+                # Define the arrowhead points
+                arrow_size = 12
+                p1 = QPointF(end_point.x() - arrow_size * math.cos(angle - math.pi / 6),
+                             end_point.y() - arrow_size * math.sin(angle - math.pi / 6))
+                p2 = QPointF(end_point.x() - arrow_size * math.cos(angle + math.pi / 6),
+                             end_point.y() - arrow_size * math.sin(angle + math.pi / 6))
+
+                # Create a polygon for the arrowhead
+                arrow_head = QPolygonF([end_point, p1, p2])
+
+                # Draw the arrowhead
+                painter.drawPolygon(arrow_head)
 
         except Exception as e:
             print(e)
