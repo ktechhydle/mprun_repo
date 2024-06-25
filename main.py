@@ -2279,65 +2279,7 @@ class MPRUN(QMainWindow):
                     item.gridEnabled = False
 
     def insert_image(self):
-        # Deactivate the add canvas tool
-        self.use_exit_add_canvas()
-
-        # File Dialog, file path
-        file_dialog = QFileDialog()
-        file_dialog.setNameFilter("SVG files (*.svg);;PNG files (*.png);;JPG files (*.jpg);;JPEG files (*.jpeg);;TIFF files (*.tiff);;BMP files (*.bmp);;ICO files (*.ico)")
-
-        file_path, _ = file_dialog.getOpenFileName(self, "Insert Element", "", "SVG files (*.svg);;"
-                                                                               "PNG files (*.png);;"
-                                                                               "JPG files (*.jpg);;"
-                                                                               "JPEG files (*.jpeg);;"
-                                                                               "TIFF files (*.tiff);;"
-                                                                               "BMP files (*.bmp);;"
-                                                                               "ICO files (*.ico);;"
-                                                                               "TXT files (*.txt);;"
-                                                                               "Markdown files (*.md);;"
-                                                                               "CSV files (*.csv)")
-
-        if file_path:
-            if file_path.endswith('.svg'):
-                svg_item = CustomSvgItem(file_path)
-                svg_item.store_filename(file_path)
-
-                add_command = AddItemCommand(self.canvas, svg_item)
-                self.canvas.addCommand(add_command)
-                svg_item.setToolTip('Imported SVG')
-
-                self.create_item_attributes(svg_item)
-
-            elif file_path.endswith(('.txt', '.csv')):
-                with open(file_path, 'r') as f:
-                    item = CustomTextItem(f.read())
-
-                    add_command = AddItemCommand(self.canvas, item)
-                    self.canvas.addCommand(add_command)
-
-                    self.create_item_attributes(item)
-
-            elif file_path.endswith('.md'):
-                with open(file_path, 'r') as f:
-                    item = CustomTextItem(f.read())
-                    item.toMarkdown()
-                    item.set_locked()
-
-                    add_command = AddItemCommand(self.canvas, item)
-                    self.canvas.addCommand(add_command)
-
-                    self.create_item_attributes(item)
-
-            else:
-                image1 = QPixmap(file_path)
-                image2 = CustomPixmapItem(image1)
-                image2.store_filename(file_path)
-
-                add_command = AddItemCommand(self.canvas, image2)
-                self.canvas.addCommand(add_command)
-                image2.setToolTip('Imported Pixmap')
-
-                self.create_item_attributes(image2)
+        self.canvas.importManager.importFile()
 
     def export_canvas_as_bitmap(self, filename, selected_item):
         # Create a QImage with the size of the selected item (QGraphicsRectItem)

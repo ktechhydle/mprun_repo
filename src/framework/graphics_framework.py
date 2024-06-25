@@ -1,4 +1,5 @@
 from src.scripts.imports import *
+from src.gui.custom_dialogs import *
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 
@@ -905,6 +906,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
         # File
         self.manager = SceneManager(self)
+        self.importManager = ImportManager(self)
 
     def set_widget(self, w):
         self.scale_btn = w
@@ -1713,3 +1715,77 @@ Removed missing items with filenames: {', '.join(removed_files)}""")
 
         except Exception as e:
             print(f"Error repairing file: {e}")
+
+class ImportManager:
+    def __init__(self, scene):
+        self.canvas = scene
+
+    def importFile(self):
+        # Deactivate the add canvas tool
+        self.canvas.parentWindow.use_exit_add_canvas()
+
+        file_path, _ = QFileDialog().getOpenFileName(self.canvas.parentWindow, "Insert Element", "", "SVG files (*.svg);;"
+                                                                               "PNG files (*.png);;"
+                                                                               "JPG files (*.jpg);;"
+                                                                               "JPEG files (*.jpeg);;"
+                                                                               "TIFF files (*.tiff);;"
+                                                                               "BMP files (*.bmp);;"
+                                                                               "ICO files (*.ico);;"
+                                                                               "TXT files (*.txt);;"
+                                                                               "Markdown files (*.md);;"
+                                                                               "CSV files (*.csv)")
+
+        if file_path:
+            if file_path.endswith('.svg'):
+                svg_item = CustomSvgItem(file_path)
+                svg_item.store_filename(file_path)
+
+                add_command = AddItemCommand(self.canvas, svg_item)
+                self.canvas.addCommand(add_command)
+                svg_item.setToolTip('Imported SVG')
+
+                self.create_item_attributes(svg_item)
+
+            elif file_path.endswith(('.txt', '.csv')):
+                with open(file_path, 'r') as f:
+                    item = CustomTextItem(f.read())
+
+                    add_command = AddItemCommand(self.canvas, item)
+                    self.canvas.addCommand(add_command)
+
+                    self.create_item_attributes(item)
+
+            elif file_path.endswith('.md'):
+                with open(file_path, 'r') as f:
+                    item = CustomTextItem(f.read())
+                    item.toMarkdown()
+                    item.set_locked()
+
+                    add_command = AddItemCommand(self.canvas, item)
+                    self.canvas.addCommand(add_command)
+
+                    self.create_item_attributes(item)
+
+            else:
+                image1 = QPixmap(file_path)
+                image2 = CustomPixmapItem(image1)
+                image2.store_filename(file_path)
+
+                add_command = AddItemCommand(self.canvas, image2)
+                self.canvas.addCommand(add_command)
+                image2.setToolTip('Imported Pixmap')
+
+                self.create_item_attributes(image2)
+
+    def importMPBUILDFile(self):
+        pass
+
+    def create_item_attributes(self, item):
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+
+        item.setZValue(0)
+
+class ExportManager:
+    def __init__(self, canvas):
+        self.canvas = canvas
