@@ -143,8 +143,8 @@ class MultiCanvasItemSelector(QDialog):
         self.setFixedWidth(750)
         self.setFixedHeight(500)
 
-        self.parent().use_exit_add_canvas()
         self.canvas = canvas
+        self.canvas.parentWindow.use_exit_add_canvas()
         self.watermark_item = None
 
         # Create the layout
