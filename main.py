@@ -869,7 +869,7 @@ class MPRUN(QMainWindow):
 
         # Insert Image Button
         self.insert_btn = QAction(QIcon('ui/Tool Icons/insert_image_icon2.png'), 'Insert Element Tool (I)', self)
-        self.insert_btn.setToolTip('''Insert Element Tool (I)''')
+        self.insert_btn.setToolTip('''Insert Tool (I)''')
         self.insert_btn.triggered.connect(self.insert_image)
 
         # ----add actions----#
