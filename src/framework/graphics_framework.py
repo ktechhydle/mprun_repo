@@ -1475,6 +1475,34 @@ class SceneManager:
                     })
 
                 children.append(path_data)
+            elif isinstance(child, CustomSvgItem):
+                data = {
+                    'type': 'CustomSvgItem',
+                    'rotation': child.rotation(),
+                    'transform': self.serialize_transform(child.transform()),
+                    'x': child.pos().x(),
+                    'y': child.pos().y(),
+                    'name': child.toolTip(),
+                    'zval': child.zValue(),
+                    'filename': child.source(),
+                    'visible': child.isVisible(),
+                }
+
+                children.append(data)
+            elif isinstance(child, CustomPixmapItem):
+                data = {
+                    'type': 'CustomPixmapItem',
+                    'rotation': child.rotation(),
+                    'transform': self.serialize_transform(child.transform()),
+                    'x': child.pos().x(),
+                    'y': child.pos().y(),
+                    'name': child.toolTip(),
+                    'zval': child.zValue(),
+                    'filename': child.return_filename(),
+                    'visible': child.isVisible(),
+                }
+
+                children.append(data)
 
         return children
 
@@ -1622,7 +1650,11 @@ class SceneManager:
                 child = self.deserialize_custom_text_item(child_data)
             elif child_data['type'] == 'CustomPathItem':
                 child = self.deserialize_custom_path_item(child_data)
-            # Add other child types as needed
+            elif child_data['type'] == 'CustomPixmapItem':
+                child = self.deserialize_custom_pixmap_item(child_data)
+            elif child_data['type'] == 'CustomSvgItem':
+                child = self.deserialize_custom_svg_item(child_data)
+
             group_item.addToGroup(child)
 
         return group_item
