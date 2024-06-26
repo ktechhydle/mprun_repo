@@ -2,6 +2,7 @@ from src.scripts.imports import *
 from src.gui.custom_dialogs import *
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
+from src.scripts.app_internal import *
 
 class CustomViewport(QOpenGLWidget):
     def __init__(self):
@@ -1092,7 +1093,7 @@ class CustomGraphicsScene(QGraphicsScene):
                     self.canvas_count -= 1
 
 class SceneManager:
-    def __init__(self, scene: QGraphicsScene):
+    def __init__(self, scene):
         self.scene = scene
         self.filename = 'Untitled'
         self.parent = None
