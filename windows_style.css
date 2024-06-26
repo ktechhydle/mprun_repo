@@ -41,11 +41,10 @@ QMenuBar::item:pressed
     background-color: #0664c3;
 }
 
-
 QMenu {
     padding-top: 3px;
     background-color: #535353;
-    border: 2px solid #434343;
+    border: 1px solid #5b5b5b;
 }
 
 QMenu::item {
@@ -439,6 +438,14 @@ QToolBox::tab {
   image-position: left; }
   QToolBox::tab:selected {
     image: url('UI/UI Icons/Minor/triangle-down.svg'); }
+
+QToolTip {
+    color: white;
+    background: #535353;
+    border: 2px solid #5b5b5b;
+    border-radius: 5px;
+    padding: 2px;
+}
 
 /* Custom widgets */
 #modernLineEdit {
