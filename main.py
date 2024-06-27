@@ -2180,15 +2180,14 @@ class MPRUN(QMainWindow):
 
     def use_align_left(self):
         if len(self.canvas.selectedItems()) < 1:
-            if not self.canvas.selectedItems():
-                return
             FirstSelItem = self.canvas.selectedItems()[0]
             sel = self.canvas.selectedItems()
             for selItem in sel:
                 dx, dy = 0, 0
                 dx = (FirstSelItem.mapToScene(FirstSelItem.boundingRect().topLeft()).x()) - \
                      (selItem.mapToScene(selItem.boundingRect().topLeft()).x())
-                selItem.moveBy(dx, dy)
+                command = AlignItemCommand(self, selItem, selItem.pos(), QPointF(dx, dy))
+                self.canvas.addCommand(command)
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
@@ -2215,7 +2214,8 @@ class MPRUN(QMainWindow):
             for sel_item in sel:
                 dx = (last_sel_item.mapToScene(last_sel_item.boundingRect().topRight()).x()) - \
                      (sel_item.mapToScene(sel_item.boundingRect().topRight()).x())
-                sel_item.moveBy(dx, 0)
+                command = AlignItemCommand(self, sel_item, sel_item.pos(), QPointF(dx, 0))
+                self.canvas.addCommand(command)
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
@@ -2244,7 +2244,8 @@ class MPRUN(QMainWindow):
             for item in selected_items:
                 # Calculate the displacement needed to move the item's center to the calculated center_x
                 dx = center_x - item.sceneBoundingRect().center().x()
-                item.moveBy(dx, 0)
+                command = AlignItemCommand(self, item, item.pos(), QPointF(dx, 0))
+                self.canvas.addCommand(command)
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
@@ -2272,7 +2273,8 @@ class MPRUN(QMainWindow):
             for item in selected_items:
                 # Calculate the displacement needed to move the item's top edge to the calculated top_y
                 dy = top_y - item.sceneBoundingRect().top()
-                item.moveBy(0, dy)
+                command = AlignItemCommand(self, item, item.pos(), QPointF(0, dy))
+                self.canvas.addCommand(command)
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
@@ -2300,7 +2302,8 @@ class MPRUN(QMainWindow):
             for item in selected_items:
                 # Calculate the displacement needed to move the item's bottom edge to the calculated bottom_y
                 dy = bottom_y - item.sceneBoundingRect().bottom()
-                item.moveBy(0, dy)
+                command = AlignItemCommand(self, item, item.pos(), QPointF(0, dy))
+                self.canvas.addCommand(command)
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
@@ -2328,7 +2331,8 @@ class MPRUN(QMainWindow):
             for item in selected_items:
                 # Calculate the displacement needed to move the item's center to the calculated middle_y
                 dy = middle_y - item.sceneBoundingRect().center().y()
-                item.moveBy(0, dy)
+                command = AlignItemCommand(self, item, item.pos(), QPointF(0, dy))
+                self.canvas.addCommand(command)
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():

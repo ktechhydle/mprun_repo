@@ -28,6 +28,22 @@ class PositionChangeCommand(QUndoCommand):
         self.item.setPos(self.old)
         self.parent.update_transform_ui()
 
+class AlignItemCommand(QUndoCommand):
+    def __init__(self, parent, item, old, new):
+        super().__init__()
+        self.item = item
+        self.old = old
+        self.new = new
+        self.parent = parent
+
+    def redo(self):
+        self.item.moveBy(self.new.x(), self.new.y())
+        self.parent.update_transform_ui()
+
+    def undo(self):
+        self.item.setPos(self.old)
+        self.parent.update_transform_ui()
+
 class EditTextCommand(QUndoCommand):
     def __init__(self, item, old_text, new_text):
         super().__init__()
