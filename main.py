@@ -2179,79 +2179,159 @@ class MPRUN(QMainWindow):
                 self.canvas.addCommand(command)
 
     def use_align_left(self):
-        if not self.canvas.selectedItems():
-            return
-        FirstSelItem = self.canvas.selectedItems()[0]
-        sel = self.canvas.selectedItems()
-        for selItem in sel:
-            dx, dy = 0, 0
-            dx = (FirstSelItem.mapToScene(FirstSelItem.boundingRect().topLeft()).x()) - \
-                 (selItem.mapToScene(selItem.boundingRect().topLeft()).x())
-            selItem.moveBy(dx, dy)
+        if len(self.canvas.selectedItems()) < 1:
+            if not self.canvas.selectedItems():
+                return
+            FirstSelItem = self.canvas.selectedItems()[0]
+            sel = self.canvas.selectedItems()
+            for selItem in sel:
+                dx, dy = 0, 0
+                dx = (FirstSelItem.mapToScene(FirstSelItem.boundingRect().topLeft()).x()) - \
+                     (selItem.mapToScene(selItem.boundingRect().topLeft()).x())
+                selItem.moveBy(dx, dy)
+
+        elif len(self.canvas.selectedItems()) == 1:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    for i in self.canvas.items():
+                        if isinstance(i, CanvasItem):
+                            for colision in i.collidingItems():
+                                if colision == item:
+                                    item.setPos(i.sceneBoundingRect().x(), item.y())
 
         self.update_transform_ui()
 
     def use_align_right(self):
-        if not self.canvas.selectedItems():
-            return
-        last_sel_item = self.canvas.selectedItems()[0]
-        sel = self.canvas.selectedItems()
-        for sel_item in sel:
-            dx = (last_sel_item.mapToScene(last_sel_item.boundingRect().topRight()).x()) - \
-                 (sel_item.mapToScene(sel_item.boundingRect().topRight()).x())
-            sel_item.moveBy(dx, 0)
+        if len(self.canvas.selectedItems()) > 1:
+            if not self.canvas.selectedItems():
+                return
+            last_sel_item = self.canvas.selectedItems()[0]
+            sel = self.canvas.selectedItems()
+            for sel_item in sel:
+                dx = (last_sel_item.mapToScene(last_sel_item.boundingRect().topRight()).x()) - \
+                     (sel_item.mapToScene(sel_item.boundingRect().topRight()).x())
+                sel_item.moveBy(dx, 0)
+
+        elif len(self.canvas.selectedItems()) == 1:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    for i in self.canvas.items():
+                        if isinstance(i, CanvasItem):
+                            for colision in i.collidingItems():
+                                if colision == item:
+                                    item.setPos(
+                                        (i.sceneBoundingRect().x() + i.sceneBoundingRect().width())
+                                        - item.sceneBoundingRect().width(), item.y())
 
         self.update_transform_ui()
 
     def use_align_center(self):
-        if not self.canvas.selectedItems():
-            return
-        selected_items = self.canvas.selectedItems()
-        # Find the average x-coordinate of the center of all selected items
-        center_x = sum(item.sceneBoundingRect().center().x() for item in selected_items) / len(selected_items)
-        for item in selected_items:
-            # Calculate the displacement needed to move the item's center to the calculated center_x
-            dx = center_x - item.sceneBoundingRect().center().x()
-            item.moveBy(dx, 0)
+        if len(self.canvas.selectedItems()) > 1:
+            if not self.canvas.selectedItems():
+                return
+            selected_items = self.canvas.selectedItems()
+            # Find the average x-coordinate of the center of all selected items
+            center_x = sum(item.sceneBoundingRect().center().x() for item in selected_items) / len(selected_items)
+            for item in selected_items:
+                # Calculate the displacement needed to move the item's center to the calculated center_x
+                dx = center_x - item.sceneBoundingRect().center().x()
+                item.moveBy(dx, 0)
+
+        elif len(self.canvas.selectedItems()) == 1:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    for i in self.canvas.items():
+                        if isinstance(i, CanvasItem):
+                            for colision in i.collidingItems():
+                                if colision == item:
+                                    item.setPos(i.boundingRect().center().x() - item.boundingRect().center().x(), item.y())
 
         self.update_transform_ui()
 
     def use_align_top(self):
-        if not self.canvas.selectedItems():
-            return
-        selected_items = self.canvas.selectedItems()
-        # Find the minimum y-coordinate of the top edge of all selected items
-        top_y = min(item.sceneBoundingRect().top() for item in selected_items)
-        for item in selected_items:
-            # Calculate the displacement needed to move the item's top edge to the calculated top_y
-            dy = top_y - item.sceneBoundingRect().top()
-            item.moveBy(0, dy)
+        if len(self.canvas.selectedItems()) > 1:
+            if not self.canvas.selectedItems():
+                return
+            selected_items = self.canvas.selectedItems()
+            # Find the minimum y-coordinate of the top edge of all selected items
+            top_y = min(item.sceneBoundingRect().top() for item in selected_items)
+            for item in selected_items:
+                # Calculate the displacement needed to move the item's top edge to the calculated top_y
+                dy = top_y - item.sceneBoundingRect().top()
+                item.moveBy(0, dy)
+
+        elif len(self.canvas.selectedItems()) == 1:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    for i in self.canvas.items():
+                        if isinstance(i, CanvasItem):
+                            for colision in i.collidingItems():
+                                if colision == item:
+                                    item.setPos(item.x(), i.y())
 
         self.update_transform_ui()
 
     def use_align_bottom(self):
-        if not self.canvas.selectedItems():
-            return
-        selected_items = self.canvas.selectedItems()
-        # Find the maximum y-coordinate of the bottom edge of all selected items
-        bottom_y = max(item.sceneBoundingRect().bottom() for item in selected_items)
-        for item in selected_items:
-            # Calculate the displacement needed to move the item's bottom edge to the calculated bottom_y
-            dy = bottom_y - item.sceneBoundingRect().bottom()
-            item.moveBy(0, dy)
+        if len(self.canvas.selectedItems()) > 1:
+            if not self.canvas.selectedItems():
+                return
+            selected_items = self.canvas.selectedItems()
+            # Find the maximum y-coordinate of the bottom edge of all selected items
+            bottom_y = max(item.sceneBoundingRect().bottom() for item in selected_items)
+            for item in selected_items:
+                # Calculate the displacement needed to move the item's bottom edge to the calculated bottom_y
+                dy = bottom_y - item.sceneBoundingRect().bottom()
+                item.moveBy(0, dy)
+
+        elif len(self.canvas.selectedItems()) == 1:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    for i in self.canvas.items():
+                        if isinstance(i, CanvasItem):
+                            for colision in i.collidingItems():
+                                if colision == item:
+                                    item.setPos(item.x(), (i.y() + i.boundingRect().height()) - item.boundingRect().height())
 
         self.update_transform_ui()
 
     def use_align_middle(self):
-        if not self.canvas.selectedItems():
-            return
-        selected_items = self.canvas.selectedItems()
-        # Find the average y-coordinate of the center of all selected items
-        middle_y = sum(item.sceneBoundingRect().center().y() for item in selected_items) / len(selected_items)
-        for item in selected_items:
-            # Calculate the displacement needed to move the item's center to the calculated middle_y
-            dy = middle_y - item.sceneBoundingRect().center().y()
-            item.moveBy(0, dy)
+        if len(self.canvas.selectedItems()) > 1:
+            if not self.canvas.selectedItems():
+                return
+            selected_items = self.canvas.selectedItems()
+            # Find the average y-coordinate of the center of all selected items
+            middle_y = sum(item.sceneBoundingRect().center().y() for item in selected_items) / len(selected_items)
+            for item in selected_items:
+                # Calculate the displacement needed to move the item's center to the calculated middle_y
+                dy = middle_y - item.sceneBoundingRect().center().y()
+                item.moveBy(0, dy)
+
+        elif len(self.canvas.selectedItems()) == 1:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CanvasItem):
+                    pass
+
+                else:
+                    for i in self.canvas.items():
+                        if isinstance(i, CanvasItem):
+                            for colision in i.collidingItems():
+                                if colision == item:
+                                    item.setPos(item.x(), i.boundingRect().center().y() - item.boundingRect().center().y())
 
         self.update_transform_ui()
 
