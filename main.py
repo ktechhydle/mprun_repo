@@ -2179,7 +2179,7 @@ class MPRUN(QMainWindow):
                 self.canvas.addCommand(command)
 
     def use_align_left(self):
-        if len(self.canvas.selectedItems()) < 1:
+        if len(self.canvas.selectedItems()) > 1:
             FirstSelItem = self.canvas.selectedItems()[0]
             sel = self.canvas.selectedItems()
             for selItem in sel:
