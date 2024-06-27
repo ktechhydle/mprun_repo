@@ -1847,7 +1847,7 @@ class ExportManager:
         selector.export_btn.clicked.connect(export)
 
     def multipleExport(self):
-        selector = MultiCanvasItemSelector(self.canvas, self.canvas.parentWindow)
+        selector = AllCanvasExporter(self.canvas, self.canvas.parentWindow)
         selector.show()
 
     def exportAsBitmap(self, filename, selected_item):

@@ -134,7 +134,7 @@ class CanvasItemSelector(QDialog):
                 self.canvas.removeItem(item)
                 self.watermark_item = None
 
-class MultiCanvasItemSelector(QDialog):
+class AllCanvasExporter(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Export All")
