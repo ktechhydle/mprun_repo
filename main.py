@@ -387,8 +387,8 @@ class MPRUN(QMainWindow):
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Item toolbar
-        self.item_toolbar = QToolBar('Items')
-        self.item_toolbar.setIconSize(QSize(26, 26))
+        self.item_toolbar = QToolBar('Control')
+        self.item_toolbar.setIconSize(QSize(32, 32))
         self.item_toolbar.setMovable(False)
         self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
@@ -938,11 +938,11 @@ class MPRUN(QMainWindow):
         align_bottom_btn.setToolTip('Align the selected elements to the center')
         align_bottom_btn.triggered.connect(self.use_align_bottom)
 
-        rotate_ccw_action = QAction(QIcon('ui/Tool Icons/raise_layer_icon.png'), '', self)
+        rotate_ccw_action = QAction(QIcon('ui/Tool Icons/rotate_ccw_icon.png'), '', self)
         rotate_ccw_action.setToolTip('Rotate the selected elements 90° counter-clockwise')
         rotate_ccw_action.triggered.connect(lambda: self.use_rotate_direction('ccw'))
 
-        rotate_cw_action = QAction(QIcon('ui/Tool Icons/lower_layer_icon.png'), '', self)
+        rotate_cw_action = QAction(QIcon('ui/Tool Icons/rotate_cw_icon.png'), '', self)
         rotate_cw_action.setToolTip('Rotate the selected elements 90° clockwise')
         rotate_cw_action.triggered.connect(lambda: self.use_rotate_direction('cw'))
 
