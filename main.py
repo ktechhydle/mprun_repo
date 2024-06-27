@@ -445,6 +445,7 @@ class MPRUN(QMainWindow):
 
         # Quick Actions Tab
         self.quick_actions_tab = QuickActionsPanel(self.canvas, self)
+        self.quick_actions_tab.setFixedWidth(300)
 
         # Add tabs
         self.toolbox.addItem(self.properties_tab, 'Properties')

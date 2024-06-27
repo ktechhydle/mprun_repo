@@ -1,5 +1,6 @@
 from src.scripts.imports import *
 from src.gui.custom_widgets import *
+from src.scripts.app_internal import *
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 
@@ -203,6 +204,7 @@ class DisclaimerWin(QMessageBox):
         super().__init__(parent)
 
         self.setWindowTitle('Disclaimer')
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_logoV3.png'))
         self.setIcon(QMessageBox.Warning)
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         self.setDefaultButton(QMessageBox.Yes)

@@ -335,34 +335,34 @@ class QLinkLabel(QLabel):
 class CustomDockWidget(QDockWidget):
     def __init__(self, toolbox, parent=None):
         super().__init__(parent)
-
         self.setLayout(QVBoxLayout())
         self.setFeatures(QDockWidget.AllDockWidgetFeatures)
         self.toolbox = toolbox
+        self.icon_buttons = []
+        self.is_collapsed = False
+        self.paint()
 
-        self.create()
-
-    def create(self):
+    def paint(self):
         self.close_btn = QPushButton('', self)
         self.close_btn.setToolTip('Close')
         self.close_btn.setIcon(QIcon('ui/UI Icons/Minor/cross.svg'))
         self.close_btn.setIconSize(QSize(16, 16))
         self.close_btn.clicked.connect(self.close)
         self.close_btn.setStyleSheet('QPushButton { background: #424242;'
-                            'border: none; }'
-                            'QPushButton:hover {'
-                            'background: #494949; }')
+                                     'border: none; }'
+                                     'QPushButton:hover {'
+                                     'background: #494949; }')
         self.close_btn.setFixedSize(QSize(18, 18))
 
         self.minimize_btn = QPushButton('', self)
         self.minimize_btn.setToolTip('Collapse')
         self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/minimize.svg'))
         self.minimize_btn.setIconSize(QSize(16, 16))
-        self.minimize_btn.clicked.connect(self.collapse)
+        self.minimize_btn.clicked.connect(self.toggle_collapse)
         self.minimize_btn.setStyleSheet('QPushButton { background: #424242;'
-                                     'border: none; }'
-                                     'QPushButton:hover {'
-                                     'background: #494949; }')
+                                        'border: none; }'
+                                        'QPushButton:hover {'
+                                        'background: #494949; }')
         self.minimize_btn.setFixedSize(QSize(18, 18))
 
         self.title_bar = QWidget(self)
@@ -377,18 +377,57 @@ class CustomDockWidget(QDockWidget):
 
         self.setTitleBarWidget(self.title_bar)
 
-    def collapse(self):
-        self.toolbox.setCollapsed()
-
-        if self.toolbox.collapsed():
-            self.minimize_btn.setToolTip('Expand')
-
+    def toggle_collapse(self):
+        if self.is_collapsed:
+            self.expand()
         else:
-            self.minimize_btn.setToolTip('Collapse')
+            self.collapse()
+
+    def collapse(self):
+        self.is_collapsed = True
+        self.toolbox.setHidden(True)
+        self.icon_buttons = []
+
+        icons_widget = QWidget(self)
+        icons_layout = QVBoxLayout()
+        icons_widget.setLayout(icons_layout)
+
+        for i in range(self.toolbox.count()):
+            btn = QPushButton(self.toolbox.itemText(i), self)
+            btn.setIcon(self.toolbox.itemIcon(i))
+            btn.clicked.connect(lambda _, idx=i: self.show_toolbox_panel(idx))
+            icons_layout.addWidget(btn)
+            self.icon_buttons.append(btn)
+
+        icons_widget.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+
+        self.setWidget(icons_widget)
+        self.minimize_btn.setToolTip('Expand to panels')
+
+    def expand(self):
+        self.is_collapsed = False
+        self.setWidget(self.toolbox)
+        self.toolbox.setHidden(False)
+        self.minimize_btn.setToolTip('Collapse to buttons')
+
+    def show_toolbox_panel(self, index):
+        panel = self.toolbox.widget(index)
+        popup = QMenu(self)
+        action = QWidgetAction(popup)
+        action.setDefaultWidget(panel)
+        popup.addAction(action)
+
+        button = self.icon_buttons[index]
+        button_pos = button.mapToGlobal(QPoint(0, 0))
+
+        # Adjust the position to show the menu at the top-right corner of the button
+        popup_pos = button_pos + QPoint(button.width(), 0)
+        popup.exec_(QPoint(((popup_pos.x() - panel.width()) - button.width()) - 10, popup_pos.y()))
 
 class CustomToolbox(QToolBox):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setFixedWidth(300)
 
         for i in range(self.count()):
             page = self.widget(i)
@@ -396,20 +435,6 @@ class CustomToolbox(QToolBox):
             if scroll_area:
                 scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
                 scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        self.c = False
-
-    def collapsed(self):
-        return self.c
-
-    def setCollapsed(self):
-        if self.collapsed():
-            self.setFixedWidth(300)
-            self.c = False
-
-        else:
-            self.c = True
-            self.setFixedWidth(1)
 
 
 

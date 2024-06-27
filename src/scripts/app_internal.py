@@ -47,7 +47,7 @@ user_data = [{
     'platform': sys.platform
 }]
 
-if os.path.exists('internal data/user_data.mpdat'):
+if os.path.exists(os.path.abspath('internal data/user_data.mpdat')):
     pass
 
 else:
