@@ -415,7 +415,7 @@ class CustomDockWidget(QDockWidget):
 
         if len(self.panels) > 0:
             for i in range(len(self.indexes)):
-                self.toolbox.setWidgetAtIndex(i, self.panels[i], self.panel_names[i])
+                self.toolbox.setWidgetAtIndex(self.indexes[i], self.panels[i], self.panel_names[i])
 
     def show_toolbox_panel(self, index):
         panel = self.toolbox.widget(index)
