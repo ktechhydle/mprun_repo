@@ -19,7 +19,6 @@ class MPRUN(QMainWindow):
 
         # File
         self.file_name = None
-        self.last_paper = None
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -1102,7 +1101,6 @@ class MPRUN(QMainWindow):
         # Drawing paper
         self.paper = CanvasItem(QRectF(0, 0, 1000, 700), 'Canvas 1')
         self.canvas.addItem(self.paper)
-        self.last_paper = self.paper
 
         # Text on paper
         self.paper_text = CustomTextItem(default_text)
@@ -2034,6 +2032,10 @@ class MPRUN(QMainWindow):
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
                 item.setCanvasActive(True)
+            elif isinstance(item, CanvasTextItem):
+                if item.parentItem() and isinstance(item.parentItem(), CanvasItem):
+                    if item.parentItem().rect().isEmpty():
+                        self.canvas.removeItem(item)
 
     def use_exit_add_canvas(self):
         # Deactivate the add canvas tool

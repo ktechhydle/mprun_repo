@@ -1075,23 +1075,6 @@ class CustomGraphicsScene(QGraphicsScene):
                 else:
                     item.gridEnabled = True
 
-    def removeItem(self, item):
-        if isinstance(item, CustomTextItem):
-            if isinstance(item.parentItem(), LeaderLineItem):
-                return 
-            else:
-                super().removeItem(item)
-                
-        super().removeItem(item)
-
-        for item in self.items():
-            if isinstance(item, CanvasItem):
-                if self.canvas_count == 1:
-                    pass
-
-                else:
-                    self.canvas_count -= 1
-
 class SceneManager:
     def __init__(self, scene):
         self.scene = scene
