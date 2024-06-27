@@ -2200,7 +2200,9 @@ class MPRUN(QMainWindow):
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
                                 if colision == item:
-                                    item.setPos(i.sceneBoundingRect().x(), item.y())
+                                    new = QPointF(i.sceneBoundingRect().x(), item.y())
+                                    command = PositionChangeCommand(self, item, item.pos(), new)
+                                    self.canvas.addCommand(command)
 
         self.update_transform_ui()
 
@@ -2225,9 +2227,10 @@ class MPRUN(QMainWindow):
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
                                 if colision == item:
-                                    item.setPos(
-                                        (i.sceneBoundingRect().x() + i.sceneBoundingRect().width())
+                                    new = QPointF((i.sceneBoundingRect().x() + i.sceneBoundingRect().width())
                                         - item.sceneBoundingRect().width(), item.y())
+                                    command = PositionChangeCommand(self, item, item.pos(), new)
+                                    self.canvas.addCommand(command)
 
         self.update_transform_ui()
 
@@ -2253,7 +2256,9 @@ class MPRUN(QMainWindow):
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
                                 if colision == item:
-                                    item.setPos(i.boundingRect().center().x() - item.boundingRect().center().x(), item.y())
+                                    new = QPointF(i.sceneBoundingRect().center().x() - item.boundingRect().center().x(), item.y())
+                                    command = PositionChangeCommand(self, item, item.pos(), new)
+                                    self.canvas.addCommand(command)
 
         self.update_transform_ui()
 
@@ -2279,7 +2284,9 @@ class MPRUN(QMainWindow):
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
                                 if colision == item:
-                                    item.setPos(item.x(), i.y())
+                                    new = QPointF(item.x(), i.y())
+                                    command = PositionChangeCommand(self, item, item.pos(), new)
+                                    self.canvas.addCommand(command)
 
         self.update_transform_ui()
 
@@ -2305,7 +2312,9 @@ class MPRUN(QMainWindow):
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
                                 if colision == item:
-                                    item.setPos(item.x(), (i.y() + i.boundingRect().height()) - item.boundingRect().height())
+                                    new = QPointF(item.x(), (i.y() + i.boundingRect().height()) - item.boundingRect().height())
+                                    command = PositionChangeCommand(self, item, item.pos(), new)
+                                    self.canvas.addCommand(command)
 
         self.update_transform_ui()
 
@@ -2331,7 +2340,9 @@ class MPRUN(QMainWindow):
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
                                 if colision == item:
-                                    item.setPos(item.x(), i.boundingRect().center().y() - item.boundingRect().center().y())
+                                    new = QPointF(item.x(), i.sceneBoundingRect().center().y() - item.boundingRect().center().y())
+                                    command = PositionChangeCommand(self, item, item.pos(), new)
+                                    self.canvas.addCommand(command)
 
         self.update_transform_ui()
 
