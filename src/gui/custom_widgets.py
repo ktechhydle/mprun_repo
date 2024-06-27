@@ -339,6 +339,9 @@ class CustomDockWidget(QDockWidget):
         self.setFeatures(QDockWidget.AllDockWidgetFeatures)
         self.toolbox = toolbox
         self.icon_buttons = []
+        self.panels = []
+        self.panel_names = []
+        self.indexes = []
         self.is_collapsed = False
         self.paint()
 
@@ -410,8 +413,41 @@ class CustomDockWidget(QDockWidget):
         self.toolbox.setHidden(False)
         self.minimize_btn.setToolTip('Collapse to buttons')
 
+        if len(self.panels) > 0:
+            for i in range(len(self.indexes)):
+                self.toolbox.setWidgetAtIndex(i, self.panels[i], self.panel_names[i])
+
     def show_toolbox_panel(self, index):
         panel = self.toolbox.widget(index)
+        self.panels.append(panel)
+        self.panel_names.append(self.toolbox.itemText(index))
+        self.indexes.append(index)
+
+        unique_items1 = []
+        seen1 = set()
+        for item in self.panels:
+            if item not in seen1:
+                unique_items1.append(item)
+                seen1.add(item)
+
+        unique_items2 = []
+        seen2 = set()
+        for item in self.panel_names:
+            if item not in seen2:
+                unique_items2.append(item)
+                seen2.add(item)
+
+        unique_items3 = []
+        seen3 = set()
+        for item in self.indexes:
+            if item not in seen3:
+                unique_items3.append(item)
+                seen3.add(item)
+
+        self.panels = unique_items1
+        self.panel_names = unique_items2
+        self.indexes = unique_items3
+
         popup = QMenu(self)
         action = QWidgetAction(popup)
         action.setDefaultWidget(panel)
@@ -424,6 +460,10 @@ class CustomDockWidget(QDockWidget):
         popup_pos = button_pos + QPoint(button.width(), 0)
         popup.exec_(QPoint(((popup_pos.x() - panel.width()) - button.width()) - 10, popup_pos.y()))
 
+        print(self.panels)
+        print(self.panel_names)
+        print(self.indexes)
+
 class CustomToolbox(QToolBox):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -435,6 +475,10 @@ class CustomToolbox(QToolBox):
             if scroll_area:
                 scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
                 scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    def setWidgetAtIndex(self, index, widget, name):
+        self.removeItem(index)
+        self.insertItem(index, widget, name)
 
 
 
