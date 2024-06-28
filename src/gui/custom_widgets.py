@@ -386,8 +386,10 @@ class CustomDockWidget(QDockWidget):
 
     def toggle_collapse(self):
         if self.is_collapsed:
+            self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/minimize.svg'))
             self.expand()
         else:
+            self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/maximize.svg'))
             self.collapse()
 
     def collapse(self):
