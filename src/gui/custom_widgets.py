@@ -290,7 +290,11 @@ class StrokeLabel(QLabel):
         self.pencap_options = self.stroke_pencap_options
 
     def mousePressEvent(self, event):
-        self.menu.exec_(event.globalPos())
+        btn_pos = self.mapToGlobal(QPoint(0, 0))
+        y = btn_pos.y() + 25
+        x = btn_pos.x() - self.width()
+
+        self.menu.exec_(QPoint(x, y))
 
 class QIconWidget(QLabel):
     def __init__(self, text: str, icon_file: str, w: int, h: int, parent=None):
