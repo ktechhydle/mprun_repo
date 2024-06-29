@@ -547,6 +547,7 @@ y: {int(self.mapToScene(point).y())}''')
 
     def on_add_text(self, event):
         if event.button() == Qt.LeftButton:
+            self.setDragMode(QGraphicsView.NoDrag)
             i = self.scene().itemAt(self.mapToScene(event.pos()), self.transform())
 
             if i and isinstance(i, CustomTextItem):
