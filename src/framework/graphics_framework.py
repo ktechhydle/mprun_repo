@@ -89,7 +89,7 @@ class CustomGraphicsView(QGraphicsView):
     def update_pen(self, pen):
         self.pen = pen
 
-    def update_stroke_fill_color(self, brush):
+    def update_brush(self, brush):
         self.stroke_fill = brush
 
     def update_font(self, font, color):
@@ -119,17 +119,13 @@ class CustomGraphicsView(QGraphicsView):
             else:
                 item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
-    def enable_item_flags(self):
-        for item in self.scene().items():
-            if isinstance(item, CanvasItem):
-                pass
-
-            elif isinstance(item, CanvasTextItem):
-                pass
-
-            else:
-                item.setFlag(QGraphicsItem.ItemIsSelectable, True)
-                item.setFlag(QGraphicsItem.ItemIsMovable, True)
+    def show_tooltip(self, event):
+        point = event.pos()
+        p = self.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+        QToolTip.showText(p, f'''x: {int(self.mapToScene(point).x())} 
+y: {int(self.mapToScene(point).y())}''')
 
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
@@ -174,32 +170,30 @@ class CustomGraphicsView(QGraphicsView):
         self.on_add_canvas_trigger()
         
     def mouseMoveEvent(self, event):
-        point = event.pos()
-        p = self.mapToGlobal(point)
-        p.setY(p.y())
-        p.setX(p.x() + 10)
-        QToolTip.showText(p, f'''x: {int(self.mapToScene(point).x())} 
-y: {int(self.mapToScene(point).y())}''')
-
         if self.button.isChecked():
+            self.show_tooltip(event)
             self.on_path_draw(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.pen_btn.isChecked():
+            self.show_tooltip(event)
             self.on_smooth_path_draw_draw(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
             
         elif self.text_btn.isChecked():
+            self.show_tooltip(event)
             super().mouseMoveEvent(event)
 
         elif self.button2.isChecked():
+            self.show_tooltip(event)
             self.on_label(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.scale_btn.isChecked():
+            self.show_tooltip(event)
             self.on_scale(event)
             self.disable_item_movement()
             super().mouseMoveEvent(event)
@@ -210,15 +204,18 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseMoveEvent(event)
 
         elif self.pan_btn.isChecked():
+            self.show_tooltip(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.sculpt_btn.isChecked():
+            self.show_tooltip(event)
             self.on_sculpt(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         else:
+            self.show_tooltip(event)
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -703,6 +700,13 @@ y: {int(self.mapToScene(point).y())}''')
                 height = size if height >= 0 else -size
 
             self.canvas_item.setRect(0, 0, width, height)
+
+            point = event.pos()
+            p = self.mapToGlobal(point)
+            p.setY(p.y())
+            p.setX(p.x() + 10)
+            QToolTip.showText(p, f'''width: {int(self.canvas_item.rect().width())} 
+height: {int(self.canvas_item.rect().height())}''')
 
     def on_add_canvas_end(self, event):
         if self.canvas_item is not None and event.button() == Qt.LeftButton:

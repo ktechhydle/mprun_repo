@@ -1162,7 +1162,7 @@ class MPRUN(QMainWindow):
     def update_item_fill(self):
         brush = QBrush(QColor(self.fill_color.get()))
 
-        self.canvas_view.update_stroke_fill_color(brush)
+        self.canvas_view.update_brush(brush)
 
         if self.canvas.selectedItems():
             for item in self.canvas.selectedItems():
@@ -1446,7 +1446,7 @@ class MPRUN(QMainWindow):
                     self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
 
                 self.canvas_view.update_pen(item.pen())
-                self.canvas_view.update_stroke_fill_color(item.brush())
+                self.canvas_view.update_brush(item.brush())
 
             elif isinstance(item, CanvasItem):
                 self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
@@ -1500,7 +1500,7 @@ class MPRUN(QMainWindow):
                         self.join_style_combo.setCurrentIndex(i)
 
                 self.canvas_view.update_pen(item.pen())
-                self.canvas_view.update_stroke_fill_color(item.brush())
+                self.canvas_view.update_brush(item.brush())
 
             elif isinstance(item, CustomTextItem):
                 font = item.font()
