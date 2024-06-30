@@ -1114,6 +1114,16 @@ class MPRUN(QMainWindow):
                 self.update_appearance_ui()
                 self.repaint()
 
+            elif mode == 'item_update':
+                self.canvas.update()
+                self.canvas_view.update()
+
+                for item in self.canvas.items():
+                    item.update()
+
+                    if isinstance(item, LeaderLineItem):
+                        item.updatePathEndPoint()
+
     def update_item_pen(self):
         # Update pen and brush
         index1 = self.stroke_style_combo.currentIndex()
@@ -2124,6 +2134,7 @@ class MPRUN(QMainWindow):
                                     self.canvas.addCommand(command)
 
         self.update_transform_ui()
+        self.update('item_update')
 
     def use_align_right(self):
         if len(self.canvas.selectedItems()) > 1:
@@ -2153,6 +2164,7 @@ class MPRUN(QMainWindow):
                                     self.canvas.addCommand(command)
 
         self.update_transform_ui()
+        self.update('item_update')
 
     def use_align_center(self):
         if len(self.canvas.selectedItems()) > 1:
@@ -2182,6 +2194,7 @@ class MPRUN(QMainWindow):
                                     self.canvas.addCommand(command)
 
         self.update_transform_ui()
+        self.update('item_update')
 
     def use_align_top(self):
         if len(self.canvas.selectedItems()) > 1:
@@ -2211,6 +2224,7 @@ class MPRUN(QMainWindow):
                                     self.canvas.addCommand(command)
 
         self.update_transform_ui()
+        self.update('item_update')
 
     def use_align_bottom(self):
         if len(self.canvas.selectedItems()) > 1:
@@ -2240,6 +2254,7 @@ class MPRUN(QMainWindow):
                                     self.canvas.addCommand(command)
 
         self.update_transform_ui()
+        self.update('item_update')
 
     def use_align_middle(self):
         if len(self.canvas.selectedItems()) > 1:
@@ -2269,6 +2284,7 @@ class MPRUN(QMainWindow):
                                     self.canvas.addCommand(command)
 
         self.update_transform_ui()
+        self.update('item_update')
 
     def use_enable_grid(self):
         if self.gsnap_check_btn.isChecked():
