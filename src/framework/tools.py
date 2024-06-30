@@ -17,6 +17,9 @@ class MouseScalingTool:
         pos = self.view.mapToScene(event.pos())
         item = self.canvas.itemAt(pos.toPoint(), self.view.transform())
         if item and not isinstance(item, CanvasItem):
+            if isinstance(item, CustomTextItem):
+                item.clearFocus()
+
             self.scaling_item = item
             self.scaling_item_initial_scale = item.scale()
             self.start_pos = pos

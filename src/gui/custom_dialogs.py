@@ -1,4 +1,5 @@
 from src.scripts.imports import *
+from src.scripts.app_internal import *
 from src.gui.custom_widgets import *
 from src.framework.custom_classes import *
 from src.framework.undo_commands import *
@@ -170,17 +171,7 @@ class AllCanvasExporter(QDialog):
         # Canvas selector
         self.file_type_combo = QComboBox()
         self.file_type_combo.setToolTip('Select a file type')
-        file_types = {
-                'SVG files (*.svg)': '.svg',
-                'PNG files (*.png)': '.png',
-                'JPG files (*.jpg)': '.jpg',
-                'JPEG files (*.jpeg)': '.jpeg',
-                'TIFF files (*.tiff)': '.tiff',
-                'WEBP files (*.webp)': '.webp',
-                'ICO files (*.ico)': '.ico',
-                'HEIC files (*.heic)': '.heic'
-            }
-        for value, key in file_types.items():
+        for value, key in export_all_file_types.items():
             self.file_type_combo.addItem(value, key)
 
         # Folder name entry

@@ -1528,16 +1528,7 @@ class ImportManager:
         # Deactivate the add canvas tool
         self.canvas.parentWindow.use_exit_add_canvas()
 
-        file_path, _ = QFileDialog().getOpenFileName(self.canvas.parentWindow, "Insert Element", "", "SVG files (*.svg);;"
-                                                                               "PNG files (*.png);;"
-                                                                               "JPG files (*.jpg);;"
-                                                                               "JPEG files (*.jpeg);;"
-                                                                               "TIFF files (*.tiff);;"
-                                                                               "BMP files (*.bmp);;"
-                                                                               "ICO files (*.ico);;"
-                                                                               "TXT files (*.txt);;"
-                                                                               "Markdown files (*.md);;"
-                                                                               "CSV files (*.csv)")
+        file_path, _ = QFileDialog().getOpenFileName(self.canvas.parentWindow, "Insert Element", "", supported_file_importing)
 
         if file_path:
             if file_path.endswith('.svg'):
@@ -1736,29 +1727,9 @@ class ExportManager:
         file_dialog = QFileDialog()
 
         file_path, selected_filter = file_dialog.getSaveFileName(self.canvas.parentWindow, 'Export Canvas', '',
-                                                                 'SVG files (*.svg);;'
-                                                                 'PNG files (*.png);;'
-                                                                 'JPG files (*.jpg);;'
-                                                                 'JPEG files (*.jpeg);;'
-                                                                 'TIFF files (*.tiff);;'
-                                                                 'PDF files (*.pdf);;'
-                                                                 'WEBP files (*.webp);;'
-                                                                 'HEIC files (*.heic);;'
-                                                                 'ICO files (*.ico)')
+                                                                 supported_file_exporting)
 
         if file_path:
-            # Get the selected filter's extension
-            filter_extensions = {
-                'SVG files (*.svg)': '.svg',
-                'PNG files (*.png)': '.png',
-                'JPG files (*.jpg)': '.jpg',
-                'JPEG files (*.jpeg)': '.jpeg',
-                'TIFF files (*.tiff)': '.tiff',
-                'PDF files (*.pdf)': '.pdf',
-                'WEBP files (*.webp)': '.webp',
-                'ICO files (*.ico)': '.ico',
-                'HEIC files (*.heic)': '.heic'
-            }
             selected_extension = filter_extensions.get(selected_filter, '.png')
 
             # Ensure the file_path has the selected extension
