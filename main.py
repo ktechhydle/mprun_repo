@@ -152,9 +152,6 @@ class MPRUN(QMainWindow):
         close_subpath_action = QAction('Close Path', self)
         close_subpath_action.triggered.connect(self.use_close_path)
 
-        add_text_along_path_action = QAction('Add Text Along Path', self)
-        add_text_along_path_action.triggered.connect(self.use_add_text_along_path)
-
         sculpt_path_action = QAction('Sculpt Path', self)
         sculpt_path_action.setShortcut(QKeySequence('S'))
         sculpt_path_action.triggered.connect(self.use_sculpt_path)
@@ -342,7 +339,6 @@ class MPRUN(QMainWindow):
 
         path_menu.addAction(smooth_action)
         path_menu.addAction(close_subpath_action)
-        path_menu.addAction(add_text_along_path_action)
         path_menu.addAction(sculpt_path_action)
 
         characters_menu.addAction(text_action)
@@ -358,7 +354,6 @@ class MPRUN(QMainWindow):
         self.actions['Trace Image'] = image_trace_action
         self.actions['Select All'] = select_all_action
         self.actions['Smooth Path'] = smooth_action
-        self.actions['Add Text Along Path'] = add_text_along_path_action
         self.actions['Close Path'] = close_subpath_action
         self.actions['Sculpt Path'] = sculpt_path_action
         self.actions['Duplicate'] = duplicate_action
@@ -439,10 +434,6 @@ class MPRUN(QMainWindow):
         self.canvas_tab = CanvasEditorPanel(self.canvas)
         self.canvas_tab.setFixedWidth(300)
 
-        # Text Along Path Tab
-        self.text_along_path_tab = TextAlongPathPanel(self.canvas)
-        self.text_along_path_tab.setFixedWidth(300)
-
         # Quick Actions Tab
         self.quick_actions_tab = QuickActionsPanel(self.canvas, self)
         self.quick_actions_tab.setFixedWidth(300)
@@ -451,7 +442,6 @@ class MPRUN(QMainWindow):
         self.toolbox.addItem(self.properties_tab, 'Properties')
         self.toolbox.addItem(self.libraries_tab, 'Libraries')
         self.toolbox.addItem(self.characters_tab, 'Characters')
-        self.toolbox.addItem(self.text_along_path_tab, 'Text Along Path')
         self.toolbox.addItem(self.image_trace, 'Image Trace')
         self.toolbox.addItem(self.canvas_tab, 'Canvas')
         self.toolbox.addItem(self.quick_actions_tab, 'Quick Actions')
@@ -1271,10 +1261,6 @@ class MPRUN(QMainWindow):
         self.height_scale_spin.blockSignals(True)
         self.rotate_item_spin.blockSignals(True)
         self.opacity_spin.blockSignals(True)
-        self.text_along_path_tab.text_entry.blockSignals(True)
-        self.text_along_path_tab.text_along_path_check_btn.blockSignals(True)
-        self.text_along_path_tab.spacing_spin.blockSignals(True)
-        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
         if len(self.canvas.selectedItems()) > 0:
             self.properties_tab.setFixedHeight(425)
@@ -1344,9 +1330,6 @@ class MPRUN(QMainWindow):
             self.opacity_spin.setValue(100)
             self.width_scale_spin.setValue(0.0)
             self.height_scale_spin.setValue(0.0)
-            self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
-            self.text_along_path_tab.text_entry.clear()
-            self.text_along_path_tab.spacing_spin.setValue(0)
 
         self.x_pos_spin.blockSignals(False)
         self.y_pos_spin.blockSignals(False)
@@ -1354,10 +1337,6 @@ class MPRUN(QMainWindow):
         self.opacity_spin.blockSignals(False)
         self.width_scale_spin.blockSignals(False)
         self.height_scale_spin.blockSignals(False)
-        self.text_along_path_tab.text_entry.blockSignals(False)
-        self.text_along_path_tab.text_along_path_check_btn.blockSignals(False)
-        self.text_along_path_tab.spacing_spin.blockSignals(False)
-        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(False)
 
     def update_appearance_ui(self):
         self.canvas_tab.canvas_x_entry.blockSignals(True)
@@ -1377,10 +1356,6 @@ class MPRUN(QMainWindow):
         self.bold_btn.blockSignals(True)
         self.italic_btn.blockSignals(True)
         self.underline_btn.blockSignals(True)
-        self.text_along_path_tab.text_entry.blockSignals(True)
-        self.text_along_path_tab.text_along_path_check_btn.blockSignals(True)
-        self.text_along_path_tab.spacing_spin.blockSignals(True)
-        self.text_along_path_tab.distrubute_evenly_check_btn.blockSignals(True)
 
         for item in self.canvas.selectedItems():
             if isinstance(item, CustomPathItem):
@@ -1418,32 +1393,6 @@ class MPRUN(QMainWindow):
                 for index, (s, v) in enumerate(self.join_style_options.items()):
                     if pen.joinStyle() == v:
                         self.join_style_combo.setCurrentIndex(i)
-
-                if item.add_text == True:
-                    self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
-                    self.text_along_path_tab.text_entry.setText(item.text_along_path)
-                    self.text_along_path_tab.spacing_spin.setValue(item.text_along_path_spacing)
-                    self.text_along_path_tab.text_along_path_check_btn.setChecked(True)
-
-                    font = item.text_along_path_font
-                    color = item.text_along_path_color.name()
-
-                    self.font_color_btn.setStyleSheet(f'background-color: {color};')
-                    self.font_choice_combo.setCurrentText(font.family())
-                    self.font_size_spin.setValue(font.pixelSize())
-                    self.font_letter_spacing_spin.setValue(int(font.letterSpacing()))
-                    self.bold_btn.setChecked(True if font.bold() else False)
-                    self.italic_btn.setChecked(True if font.italic() else False)
-                    self.underline_btn.setChecked(True if font.underline() else False)
-
-                    if item.start_text_from_beginning == True:
-                        self.text_along_path_tab.distrubute_evenly_check_btn.setChecked(False)
-
-                    else:
-                        self.text_along_path_tab.distrubute_evenly_check_btn.setChecked(True)
-
-                else:
-                    self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
 
                 self.canvas_view.update_pen(item.pen())
                 self.canvas_view.update_brush(item.brush())
@@ -2075,37 +2024,6 @@ class MPRUN(QMainWindow):
             if isinstance(item, CustomPathItem):
                 command = CloseSubpathCommand(item, self.canvas)
                 self.canvas.addCommand(command)
-
-    def use_add_text_along_path(self):
-        try:
-            self.use_exit_add_canvas()
-            self.toolbox.setCurrentWidget(self.text_along_path_tab)
-
-            self.text_along_path_tab.text_along_path_check_btn.setChecked(False)
-            self.text_along_path_tab.text_along_path_check_btn.click()
-            self.text_along_path_tab.text_entry.setFocus()
-            self.text_along_path_tab.text_entry.clear()
-
-            for item in self.canvas.selectedItems():
-                if isinstance(item, CustomPathItem):
-                    font = QFont()
-                    font.setFamily(self.font_choice_combo.currentText())
-                    font.setPixelSize(self.font_size_spin.value())
-                    font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
-                    font.setBold(True if self.bold_btn.isChecked() else False)
-                    font.setItalic(True if self.italic_btn.isChecked() else False)
-                    font.setUnderline(True if self.underline_btn.isChecked() else False)
-
-                    item.setTextAlongPathFont(font)
-                    item.setTextAlongPathSpacingFromPath(self.text_along_path_tab.spacing_spin.value())
-                    item.setTextAlongPathColor(QColor(self.font_color.get()))
-
-                    command = AddTextToPathCommand(item, self.text_along_path_tab.text_along_path_check_btn, False, True)
-                    self.canvas.addCommand(command)
-                    item.update()
-
-        except Exception:
-            pass
 
     def use_hide_item(self):
         for item in self.canvas.selectedItems():

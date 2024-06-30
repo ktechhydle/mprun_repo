@@ -59,6 +59,7 @@ class LibraryWidget(QWidget):
 
         # Search bar
         self.search_bar = QLineEdit()
+        self.search_bar.setToolTip('Search for files in the current library')
         self.search_bar.setPlaceholderText("Search...")
         self.search_bar.setObjectName('modernLineEdit')
         self.search_bar.textChanged.connect(self.filter_library)
