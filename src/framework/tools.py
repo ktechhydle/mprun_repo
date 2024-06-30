@@ -3,18 +3,53 @@ from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 
 class MouseScalingTool:
-    def __init__(self, canvas, view):
+    def __init__(self, canvas: QGraphicsScene, view: QGraphicsView):
         self.canvas = canvas
         self.view = view
+        self.scaling_item = None
+        self.scaling_item_initial_scale = None
+        self.scaling_command = None
+        self.start_pos = None
+
+        self.view.setMouseTracking(True)
 
     def on_scale_start(self, event):
-        pass
+        pos = self.view.mapToScene(event.pos())
+        item = self.canvas.itemAt(pos.toPoint(), self.view.transform())
+        if item and not isinstance(item, CanvasItem):
+            self.scaling_item = item
+            self.scaling_item_initial_scale = item.scale()
+            self.start_pos = pos
+
 
     def on_scale(self, event):
-        pass
+        if self.scaling_item and self.start_pos:
+            current_pos = self.view.mapToScene(event.pos())
+            delta = current_pos - self.start_pos
+            scale_factor = 1 + delta.y() / 100.0  # Adjust the scale sensitivity here
+
+            # Scale around the center of the item
+            self.scaling_item.setTransformOriginPoint(self.scaling_item.boundingRect().center())
+
+            new_scale = self.scaling_item.scale() * scale_factor
+            self.scaling_item.setScale(new_scale)
+
+            self.scaling_command = ScaleCommand(self.scaling_item, self.scaling_item_initial_scale, new_scale)
+
+            self.start_pos = current_pos
+
+            if (isinstance(self.scaling_item, CustomTextItem) and
+                    isinstance(self.scaling_item.parentItem(), LeaderLineItem)):
+                self.scaling_item.parentItem().updatePathEndPoint()
 
     def on_scale_end(self, event):
-        pass
+        if self.scaling_command:
+            self.canvas.addCommand(self.scaling_command)
+
+        self.scaling_item = None
+        self.scaling_item_initial_scale = None
+        self.start_pos = None
+        self.scaling_command = None
 
 class PathSculptingTool:
     def __init__(self, canvas, view):
