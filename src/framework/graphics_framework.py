@@ -3,6 +3,7 @@ from src.gui.custom_dialogs import *
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 from src.scripts.app_internal import *
+from src.framework.tools import *
 
 class CustomViewport(QOpenGLWidget):
     def __init__(self):
@@ -28,7 +29,6 @@ class CustomGraphicsView(QGraphicsView):
                  sculpt_btn):
 
         super().__init__()
-        self.scalingCommand = None
         self.points = []
 
         # Set flags
@@ -67,13 +67,10 @@ class CustomGraphicsView(QGraphicsView):
         self.path = None
         self.last_point = None
         self.label_drawing = False
-        self.sculpting_item = None
-        self.sculpting_item_point_index = -1
-        self.sculpting_item_offset = QPointF()
-        self.sculpt_shape = QGraphicsEllipseItem(0, 0, 100, 100)
-        self.sculpt_shape.setZValue(10000)
-        self.sculpting_initial_path = None
-        self.sculpt_radius = 100
+
+        # Tools
+        self.scalingTool = MouseScalingTool(self.canvas, self)
+        self.sculptingTool = PathSculptingTool(self.canvas, self)
 
         # Add methods for zooming
         self.zoomInFactor = 1.25
@@ -146,7 +143,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mousePressEvent(event)
 
         elif self.scale_btn.isChecked():
-            self.on_scale_start(event)
+            self.scalingTool.on_scale_start(event)
             self.disable_item_movement()
             super().mousePressEvent(event)
 
@@ -161,7 +158,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mousePressEvent(event)
 
         elif self.sculpt_btn.isChecked():
-            self.on_sculpt_start(event)
+            self.sculptingTool.on_sculpt_start(event)
             self.disable_item_flags()
 
         else:
@@ -194,7 +191,7 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.scale_btn.isChecked():
             self.show_tooltip(event)
-            self.on_scale(event)
+            self.scalingTool.on_scale(event)
             self.disable_item_movement()
             super().mouseMoveEvent(event)
 
@@ -210,7 +207,7 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.sculpt_btn.isChecked():
             self.show_tooltip(event)
-            self.on_sculpt(event)
+            self.sculptingTool.on_sculpt(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
@@ -232,7 +229,7 @@ y: {int(self.mapToScene(point).y())}''')
             self.on_label_end(event)
 
         elif self.scale_btn.isChecked():
-            self.on_scale_end(event)
+            self.scalingTool.on_scale_end(event)
             super().mouseReleaseEvent(event)
 
         elif self.add_canvas_btn.isChecked():
@@ -244,7 +241,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseReleaseEvent(event)
 
         elif self.sculpt_btn.isChecked():
-            self.on_sculpt_end(event)
+            self.sculptingTool.on_sculpt_end(event)
             self.disable_item_flags()
 
         else:
@@ -254,7 +251,7 @@ y: {int(self.mapToScene(point).y())}''')
 
     def mouseDoubleClickEvent(self, event):
         if self.sculpt_btn.isChecked():
-            self.on_sculpt_double_click(event)
+            self.sculptingTool.on_sculpt_double_click(event)
             
         else:
             super().mouseDoubleClickEvent(event)
@@ -574,92 +571,6 @@ y: {int(self.mapToScene(point).y())}''')
                 self.text.setPos(pos)
                 self.text.select_text_and_set_cursor()
 
-    def on_scale_start(self, event):
-        if self.canvas.gridEnabled:
-            self.grid_checkbtn.click()
-
-        try:
-            self.initialScale = None
-            if event.buttons() == Qt.LeftButton:
-                self.startPos = self.mapToScene(event.pos())
-
-                selected_items = self.scene().selectedItems()
-                if selected_items:
-                    item = selected_items[0]
-                    self.initialScale = item.transform().m11(), item.transform().m22()  # Get initial scale factors
-                    self.oldTransform = item.transform()  # Store the original transform
-                    self.scalingCommand = MouseTransformScaleCommand(item, self.oldTransform, self.oldTransform)
-
-        except Exception as e:
-            pass
-
-    def on_scale(self, event):
-        try:
-            self.setDragMode(QGraphicsView.NoDrag)
-
-            if event.buttons() == Qt.LeftButton and self.scalingCommand:
-                # Calculate delta relative to the center of the item
-                item_center = self.scalingCommand.item.boundingRect().center()
-                delta = self.mapToScene(event.pos()) - item_center
-
-                # Calculate scaling factors
-                scale_x = 1 + delta.x() / 50.0
-                scale_y = 1 + delta.y() / 50.0
-
-                item = self.scalingCommand.item
-                if self.initialScale is not None:
-                    if isinstance(item, CanvasItem):
-                        pass
-
-                    else:
-                        if isinstance(item, CustomTextItem):
-                            if isinstance(item.parentItem(), LeaderLineItem):
-                                item.parentItem().updatePathEndPoint()
-
-                        item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
-
-                        # Check if Shift key is pressed
-                        modifiers = event.modifiers()
-                        if modifiers & Qt.ShiftModifier:
-                            uniform_scale = 1 + max(delta.x(), delta.y()) / 100.0
-                            scale_x = scale_y = uniform_scale
-
-                        # Store original position
-                        old_pos = item.pos()
-
-                        # Set transform origin point to center
-                        item.setTransformOriginPoint(item_center)
-
-                        # Apply scaling transformation
-                        transform = QTransform().translate(item_center.x(), item_center.y()) \
-                            .scale(scale_x, scale_y) \
-                            .translate(-item_center.x(), -item_center.y())
-                        item.setTransform(transform)
-
-                        # Update position to keep the item centered
-                        new_pos = item.pos()
-                        item.setPos(new_pos + old_pos - item.pos())
-
-                        # Update the new scale in the command
-                        self.scalingCommand.new_transform = transform
-
-        except Exception as e:
-            pass
-
-    def on_scale_end(self, event):
-        try:
-            self.setDragMode(QGraphicsView.RubberBandDrag)
-
-            for item in self.scene().selectedItems():
-                item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
-
-            if self.scalingCommand and self.scalingCommand.new_transform != self.scalingCommand.old_transform:
-                self.canvas.addCommand(self.scalingCommand)
-                self.scalingCommand = None
-
-        except Exception as e:
-            pass
-
     def on_add_canvas_trigger(self):
         if self.add_canvas_btn.isChecked():
             for item in self.canvas.items():
@@ -752,135 +663,6 @@ height: {int(self.canvas_item.rect().height())}''')
                                 Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
-
-    def on_sculpt_start(self, event):
-        pos = self.mapToScene(event.pos())
-        item = self.scene().itemAt(pos, self.transform())
-
-        if isinstance(item, CustomPathItem):
-            pos_in_item_coords = item.mapFromScene(pos)
-            self.sculpting_item = item
-            self.sculpting_item_point_index, self.sculpting_item_offset = self.find_closest_point(pos_in_item_coords,
-                                                                                                  item)
-            self.sculpting_initial_path = QPainterPath(item.path())  # Make a deep copy of the path
-
-            print(f"Sculpt Start: Item ID {id(item)}, Point Index {self.sculpting_item_point_index}")
-
-        self.canvas.addItem(self.sculpt_shape)
-        self.sculpt_shape.setPos(pos - self.sculpt_shape.boundingRect().center())
-
-    def on_sculpt(self, event):
-        if self.sculpting_item is not None and self.sculpting_item_point_index != -1:
-            pos = self.mapToScene(event.pos())
-            pos_in_item_coords = self.sculpting_item.mapFromScene(pos) - self.sculpting_item_offset
-            self.update_path_point(self.sculpting_item, self.sculpting_item_point_index, pos_in_item_coords)
-            print(f"Sculpt: Item ID {id(self.sculpting_item)}, Point Index {self.sculpting_item_point_index}")
-
-        self.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculpt_shape.boundingRect().center())
-
-    def on_sculpt_end(self, event):
-        if self.sculpting_item is not None:
-            new_path = self.sculpting_item.path()
-            if new_path != self.sculpting_initial_path:
-                command = EditPathCommand(self.sculpting_item, self.sculpting_initial_path, new_path)
-                self.canvas.addCommand(command)
-                print(f"Sculpt End: Item ID {id(self.sculpting_item)}")
-
-        self.reset_sculpting_state()
-
-    def on_sculpt_double_click(self, event):
-        pos = self.mapToScene(event.pos())
-        item = self.scene().itemAt(pos, self.transform())
-
-        if isinstance(item, CustomPathItem):
-            pos_in_item_coords = item.mapFromScene(pos)
-            point_index, offset = self.find_closest_point(pos_in_item_coords, item)
-            if point_index != -1:
-                self.smooth_path_point(item, point_index)
-
-    def find_closest_point(self, pos, item):
-        path = item.path()
-        min_dist = float('inf')
-        closest_point_index = -1
-        closest_offset = QPointF()
-
-        for i in range(path.elementCount()):
-            point = path.elementAt(i)
-            point_pos = QPointF(point.x, point.y)
-            dist = QLineF(point_pos, pos).length()
-
-            if dist < min_dist:
-                min_dist = dist
-                closest_point_index = i
-                closest_offset = pos - point_pos
-
-        return closest_point_index, closest_offset
-
-    def update_path_point(self, item, index, new_pos):
-        path = item.path()
-        elements = [path.elementAt(i) for i in range(path.elementCount())]
-
-        if index < 0 or index >= len(elements):
-            return  # Ensure the index is within bounds
-
-        old_pos = QPointF(elements[index].x, elements[index].y)
-        delta_pos = new_pos - old_pos
-
-        def calculate_influence(dist, radius):
-            return math.exp(-(dist ** 2) / (2 * (radius / 2.0) ** 2))
-
-        for i in range(len(elements)):
-            point = elements[i]
-            point_pos = QPointF(point.x, point.y)
-            dist = QLineF(point_pos, old_pos).length()
-
-            if dist <= self.sculpt_radius:
-                influence = calculate_influence(dist, self.sculpt_radius)
-                elements[i].x += delta_pos.x() * influence
-                elements[i].y += delta_pos.y() * influence
-
-        new_path = QPainterPath()
-        new_path.setFillRule(Qt.WindingFill)
-        new_path.moveTo(elements[0].x, elements[0].y)
-
-        i = 1
-        while i < len(elements):
-            if i + 2 < len(elements):
-                new_path.cubicTo(elements[i].x, elements[i].y,
-                                 elements[i + 1].x, elements[i + 1].y,
-                                 elements[i + 2].x, elements[i + 2].y)
-                i += 3
-            else:
-                new_path.lineTo(elements[i].x, elements[i].y)
-                i += 1
-
-        item.setPath(new_path)
-        item.smooth = False
-
-    def smooth_path_point(self, item, point_index):
-        path = item.path()
-        elements = [path.elementAt(i) for i in range(path.elementCount())]
-
-        if point_index > 0 and point_index + 1 < len(elements):
-            smoothed_x = (elements[point_index - 1].x + elements[point_index + 1].x) / 2
-            smoothed_y = (elements[point_index - 1].y + elements[point_index + 1].y) / 2
-
-            path.setElementPositionAt(point_index, smoothed_x, smoothed_y)
-
-            command = EditPathCommand(item, item.path(), path)
-            self.canvas.addCommand(command)
-            item.smooth = False
-
-    def reset_sculpting_state(self):
-        self.sculpting_item = None
-        self.sculpting_item_point_index = -1
-        self.sculpting_initial_path = None
-        self.sculpting_item_offset = QPointF()
-        self.canvas.removeItem(self.sculpt_shape)
-
-    def set_sculpt_radius(self, value):
-        self.sculpt_radius = value
-        self.sculpt_shape.setRect(0, 0, value, value)
 
 class CustomGraphicsScene(QGraphicsScene):
     itemMoved = pyqtSignal(object, QPointF)
