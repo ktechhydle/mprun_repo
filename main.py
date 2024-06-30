@@ -1860,6 +1860,7 @@ class MPRUN(QMainWindow):
 
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
 
         self.use_exit_grid()
 

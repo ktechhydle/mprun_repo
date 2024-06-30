@@ -138,19 +138,6 @@ class TransformCommand(QUndoCommand):
     def undo(self):
         self.item.setTransform(self.old_transform)
 
-class MouseTransformScaleCommand(QUndoCommand):
-    def __init__(self, item, old_transform, new_transform):
-        super().__init__()
-        self.item = item
-        self.old_transform = old_transform
-        self.new_transform = new_transform
-
-    def undo(self):
-        self.item.setTransform(self.old_transform)
-
-    def redo(self):
-        self.item.setTransform(self.new_transform)
-
 class RotateCommand(QUndoCommand):
     def __init__(self, parent, item, old_rotation, new_rotation):
         super().__init__()
@@ -258,56 +245,6 @@ class EditPathCommand(QUndoCommand):
 
     def undo(self):
         self.item.setPath(self.oldPath)
-
-class AddTextToPathCommand(QUndoCommand):
-    def __init__(self, path, widget, og_value, new_value):
-        super().__init__()
-        self.item = path
-        self.widget = widget
-        self.og = og_value
-        self.new = new_value
-
-    def redo(self):
-        self.item.add_text = self.new
-        self.widget.setChecked(self.new)
-        self.item.update()
-
-    def undo(self):
-        self.item.add_text = self.og
-        self.widget.setChecked(self.og)
-        self.item.update()
-
-class PathTextChangedCommand(QUndoCommand):
-    def __init__(self, item, og, new):
-        super().__init__()
-
-        self.item = item
-        self.og = og
-        self.new = new
-
-    def redo(self):
-        self.item.setTextAlongPath(self.new)
-        self.item.update()
-
-    def undo(self):
-        self.item.setTextAlongPath(self.og)
-        self.item.update()
-
-class PathTextSpacingChangedCommand(QUndoCommand):
-    def __init__(self, item, og, new):
-        super().__init__()
-
-        self.item = item
-        self.og = og
-        self.new = new
-
-    def redo(self):
-        self.item.setTextAlongPathSpacingFromPath(self.new)
-        self.item.update()
-
-    def undo(self):
-        self.item.setTextAlongPathSpacingFromPath(self.og)
-        self.item.update()
 
 class FontChangeCommand(QUndoCommand):
     def __init__(self, item, oldf, newf, oldcolor, newcolor):

@@ -506,7 +506,7 @@ class CustomTextItem(QGraphicsTextItem):
 
     def select_text_and_set_cursor(self):
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
-        self.setFocus(Qt.MouseFocusReason)
+        self.setFocus()
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.End)
         cursor.select(QTextCursor.SelectionType.Document)

@@ -144,7 +144,7 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.scale_btn.isChecked():
             self.scalingTool.on_scale_start(event)
-            self.disable_item_movement()
+            self.disable_item_flags()
             super().mousePressEvent(event)
 
         elif self.add_canvas_btn.isChecked():
@@ -192,7 +192,7 @@ y: {int(self.mapToScene(point).y())}''')
         elif self.scale_btn.isChecked():
             self.show_tooltip(event)
             self.scalingTool.on_scale(event)
-            self.disable_item_movement()
+            self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.add_canvas_btn.isChecked():

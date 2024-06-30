@@ -14,6 +14,7 @@ class MouseScalingTool:
         self.view.setMouseTracking(True)
 
     def on_scale_start(self, event):
+        self.view.setDragMode(QGraphicsView.NoDrag)
         pos = self.view.mapToScene(event.pos())
         item = self.canvas.itemAt(pos.toPoint(), self.view.transform())
         if item and not isinstance(item, CanvasItem):
