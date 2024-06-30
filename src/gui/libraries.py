@@ -80,25 +80,27 @@ class LibraryWidget(QWidget):
         self.open_library_button.clicked.connect(self.open_library)
         self.reload_library_button.clicked.connect(self.reload_library)
 
+        self.load_library(os.path.abspath('course elements'))
+
     def open_library(self):
         # Open file dialog to select a folder
         folder_path = QFileDialog.getExistingDirectory(self, "Select Library Folder")
 
         if folder_path:
             self.current_folder_path = folder_path
-            self.load_svg_library(folder_path)
+            self.load_library(folder_path)
 
     def reload_library(self):
         if self.current_folder_path:
-            self.load_svg_library(self.current_folder_path)
+            self.load_library(self.current_folder_path)
 
-    def load_svg_library(self, folder_path):
+    def load_library(self, folder_path):
         # Clear existing items in the list widget
         self.library_list_widget.clear()
         self.library_list_widget.all_items = []
 
-        # List all SVG files in the selected folder
-        svg_files = [f for f in os.listdir(folder_path) if f.endswith('.svg')]
+        # List all SVG files in the selected folder (now supports pixmap as well)
+        svg_files = [f for f in os.listdir(folder_path) if f.endswith(('.svg', '.png', '.jpg', '.jpeg'))]
 
         # Check if no SVG files are found
         if not svg_files:

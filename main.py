@@ -428,7 +428,6 @@ class MPRUN(QMainWindow):
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setFixedHeight(385)
         self.libraries_tab.setFixedWidth(300)
-        self.libraries_tab.load_svg_library('course elements')
 
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
