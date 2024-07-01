@@ -1210,7 +1210,6 @@ class MPRUN(QMainWindow):
             # If the user clicked Yes, close the window
             if result == QMessageBox.Discard:
                 try:
-                    self.tab_view.closeEvent(event)
                     self.undo_stack.clear()
                     self.w.close()
                     event.accept()
@@ -1223,7 +1222,6 @@ class MPRUN(QMainWindow):
 
                 if success:
                     try:
-                        self.tab_view.closeEvent(event)
                         self.undo_stack.clear()
                         self.w.close()
                         event.accept()
@@ -1239,7 +1237,6 @@ class MPRUN(QMainWindow):
 
         else:
             try:
-                self.tab_view.closeEvent(event)
                 self.undo_stack.clear()
                 self.w.close()
                 event.accept()
