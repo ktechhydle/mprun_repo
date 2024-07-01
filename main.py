@@ -366,7 +366,6 @@ class MPRUN(QMainWindow):
         self.actions['Reset Item'] = reset_action
         self.actions['Group Selection'] = group_action
         self.actions['Ungroup Selection'] = ungroup_action
-        self.actions['Name Item'] = name_action
         self.actions['Bring to Front'] = bring_to_front_action
         self.actions['Undo'] = undo_action
         self.actions['Redo'] = redo_action
