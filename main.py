@@ -1,3 +1,5 @@
+import os.path
+
 from src.scripts.imports import *
 from src.scripts.app_internal import *
 from src.scripts.app_screens import *
@@ -82,6 +84,16 @@ class MPRUN(QMainWindow):
         add_canvas_action.setShortcut(QKeySequence('A'))
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
+        new_action = QAction('New', self)
+        new_action.setShortcut(QKeySequence('Ctrl+N'))
+        new_action.triggered.connect(self.new)
+
+        open_action = QAction('Open', self)
+        open_action.setShortcut(QKeySequence('Ctrl+O'))
+        open_action.triggered.connect(self.open)
+
+        self.open_recent_menu = QMenu('Open Recent')
+
         save_action = QAction('Save', self)
         save_action.setShortcut(QKeySequence('Ctrl+S'))
         save_action.triggered.connect(self.save)
@@ -89,10 +101,6 @@ class MPRUN(QMainWindow):
         saveas_action = QAction('Save As', self)
         saveas_action.setShortcut(QKeySequence('Ctrl+Shift+S'))
         saveas_action.triggered.connect(self.saveas)
-
-        open_action = QAction('Open', self)
-        open_action.setShortcut(QKeySequence('Ctrl+O'))
-        open_action.triggered.connect(self.open)
 
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
@@ -279,9 +287,12 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addAction(insert_action)
         self.file_menu.addSeparator()
+        self.file_menu.addAction(new_action)
+        self.file_menu.addAction(open_action)
+        self.file_menu.addMenu(self.open_recent_menu)
+        self.file_menu.addSeparator()
         self.file_menu.addAction(save_action)
         self.file_menu.addAction(saveas_action)
-        self.file_menu.addAction(open_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
         self.file_menu.addAction(export_multiple_action)
@@ -2359,6 +2370,9 @@ class MPRUN(QMainWindow):
         else:
             self.close()
 
+    def new(self):
+        self.canvas.manager.restore()
+
     def save(self):
         try:
             if self.canvas.manager.filename != 'Untitled':
@@ -2385,6 +2399,24 @@ class MPRUN(QMainWindow):
                     self.canvas.manager.filename = filename
                     self.canvas.modified = False
                     self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
+
+                    # Read existing data
+                    with open('internal data/user_data.mpdat', 'r') as f:
+                        existing_data = json.load(f)
+
+                    # Check if 'recent_files' exists and is a list, then append the new file
+                    if 'recent_files' in existing_data[0]:
+                        if isinstance(existing_data[0]['recent_files'], list):
+                            existing_data[0]['recent_files'].append(filename)
+                        else:
+                            existing_data[0]['recent_files'] = [existing_data[0]['recent_files'], filename]
+                    else:
+                        existing_data[0]['recent_files'] = [filename]
+
+                    # Write the updated data back to the file
+                    with open('internal data/user_data.mpdat', 'w') as f:
+                        json.dump(existing_data, f)
+
                     return True
 
             except Exception as e:
@@ -2396,10 +2428,21 @@ class MPRUN(QMainWindow):
     def open(self):
         self.canvas.manager.load(self)
 
+    def open_recent(self, filename: str):
+        self.canvas.manager.load_from_file(filename, self)
+
     def set_user_data(self, data):
         for user_data in data:
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
+
+            for recent_file in user_data['recent_files']:
+                if os.path.exists(recent_file):
+                    action = QAction(os.path.basename(recent_file), self)
+                    action.setToolTip(os.path.abspath(recent_file))
+                    action.triggered.connect(lambda: self.open_recent(action.toolTip()))
+
+                    self.open_recent_menu.addAction(action)
 
 
 if __name__ == '__main__':

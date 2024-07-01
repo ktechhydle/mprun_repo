@@ -1,3 +1,5 @@
+import os.path
+
 from src.scripts.imports import *
 
 supported_file_importing = '''
@@ -89,6 +91,7 @@ along with MPRUN. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 user_data = [{
+    'recent_files': [os.path.abspath('examples/example_run.mp'), os.path.abspath('examples/welcome.mp')],
     'disclaimer_read': False,
     'whatsnew_read': False,
     'tutorial_watched': False,

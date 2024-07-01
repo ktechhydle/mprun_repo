@@ -869,6 +869,37 @@ class SceneManager:
         self.parent = None
         self.repair_needed = False
 
+    def reset_to_default_scene(self):
+        self.scene.clear()
+        self.filename = 'Untitled'
+        self.scene.parentWindow.setWindowTitle(f'{self.filename} - MPRUN')
+        self.scene.parentWindow.create_default_objects()
+
+    def restore(self):
+        if self.scene.modified:
+            # Display a confirmation dialog
+            confirmation_dialog = QMessageBox(self.scene.parentWindow)
+            confirmation_dialog.setWindowTitle('Close Document')
+            confirmation_dialog.setIcon(QMessageBox.Warning)
+            confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
+            confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
+            confirmation_dialog.setDefaultButton(QMessageBox.Save)
+
+            # Get the result of the confirmation dialog
+            result = confirmation_dialog.exec_()
+
+            if result == QMessageBox.Discard:
+                self.reset_to_default_scene()
+
+            elif result == QMessageBox.Save:
+                success = self.scene.parentWindow.save()
+
+                if success:
+                    self.reset_to_default_scene()
+
+        else:
+            self.reset_to_default_scene()
+
     def load(self, parent):
         try:
             self.scene.parentWindow.use_exit_add_canvas()
@@ -978,6 +1009,110 @@ class SceneManager:
 
                             if result == QMessageBox.Yes:
                                 self.repair_file()
+
+        except Exception as e:
+            QMessageBox.critical(self.scene.parentWindow,
+                                 'Open File Error',
+                                 'The document you are attempting to open has been corrupted. '
+                                 'Please open a different document, or repair any changes.')
+
+            print(e)
+
+    def load_from_file(self, filename, parent):
+        try:
+            self.scene.parentWindow.use_exit_add_canvas()
+
+            if self.scene.modified:
+                # Display a confirmation dialog
+                confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                confirmation_dialog.setWindowTitle('Close Document')
+                confirmation_dialog.setIcon(QMessageBox.Warning)
+                confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
+                confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
+                confirmation_dialog.setDefaultButton(QMessageBox.Save)
+
+                # Get the result of the confirmation dialog
+                result = confirmation_dialog.exec_()
+
+                if result == QMessageBox.Discard:
+                    self.scene.undo_stack.clear()
+                    self.scene.clear()
+                    with open(filename, 'rb') as f:
+                        items_data = pickle.load(f)
+                        self.deserialize_items(items_data)
+
+                        self.filename = filename
+                        parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+
+                        if self.repair_needed:
+                            # Display a confirmation dialog
+                            confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                            confirmation_dialog.setWindowTitle('Open Document Error')
+                            confirmation_dialog.setIcon(QMessageBox.Warning)
+                            confirmation_dialog.setText(
+                                f"The document has file directories that could not be found. Do you want to do a file repair?")
+                            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                            # Get the result of the confirmation dialog
+                            result = confirmation_dialog.exec_()
+
+                            if result == QMessageBox.Yes:
+                                self.repair_file()
+
+                elif result == QMessageBox.Save:
+                    self.scene.undo_stack.clear()
+                    self.scene.clear()
+
+                    with open(filename, 'rb') as f:
+                        items_data = pickle.load(f)
+                        self.deserialize_items(items_data)
+
+                        self.filename = filename
+                        parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+
+                        if self.repair_needed:
+                            # Display a confirmation dialog
+                            confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                            confirmation_dialog.setWindowTitle('Open Document Error')
+                            confirmation_dialog.setIcon(QMessageBox.Warning)
+                            confirmation_dialog.setText(
+                                f"The document has file directories that could not be found. Do you want to do a file repair?")
+                            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                            # Get the result of the confirmation dialog
+                            result = confirmation_dialog.exec_()
+
+                            if result == QMessageBox.Yes:
+                                self.repair_file()
+
+            else:
+                self.scene.undo_stack.clear()
+                self.scene.clear()
+
+                with open(filename, 'rb') as f:
+                    items_data = pickle.load(f)
+                    self.deserialize_items(items_data)
+
+                    self.filename = filename
+                    parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+
+                    if self.repair_needed:
+                        # Display a confirmation dialog
+                        confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                        confirmation_dialog.setWindowTitle('Open Document Error')
+                        confirmation_dialog.setIcon(QMessageBox.Warning)
+                        confirmation_dialog.setText(
+                            f"The document has file directories that could not be found. Do you want to do a file repair?")
+                        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                        confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                        # Get the result of the confirmation dialog
+                        result = confirmation_dialog.exec_()
+
+                        if result == QMessageBox.Yes:
+                            self.repair_file()
 
         except Exception as e:
             QMessageBox.critical(self.scene.parentWindow,
