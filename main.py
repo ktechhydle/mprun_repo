@@ -2417,6 +2417,8 @@ class MPRUN(QMainWindow):
                     with open('internal data/user_data.mpdat', 'w') as f:
                         json.dump(existing_data, f)
 
+                    self.update_user_data()
+
                     return True
 
             except Exception as e:
@@ -2440,9 +2442,28 @@ class MPRUN(QMainWindow):
                 if os.path.exists(recent_file):
                     action = QAction(os.path.basename(recent_file), self)
                     action.setToolTip(os.path.abspath(recent_file))
-                    action.triggered.connect(lambda: self.open_recent(action.toolTip()))
+                    action_tooltip = action.toolTip()  # Capture the current tooltip
+                    action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
 
                     self.open_recent_menu.addAction(action)
+
+    def update_user_data(self):
+        with open('internal data/user_data.mpdat', 'r') as f:
+            data = json.load(f)
+
+            for user_data in data:
+                if not user_data['disclaimer_read']:
+                    self.show_disclaimer()
+
+                for recent_file in user_data['recent_files']:
+                    if os.path.exists(recent_file):
+                        if os.path.abspath(recent_file) not in (action.toolTip() for action in self.open_recent_menu.actions()):
+                            action = QAction(os.path.basename(recent_file), self)
+                            action.setToolTip(os.path.abspath(recent_file))
+                            action_tooltip = action.toolTip()
+                            action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
+
+                            self.open_recent_menu.addAction(action)
 
 
 if __name__ == '__main__':
