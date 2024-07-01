@@ -186,14 +186,6 @@ class MPRUN(QMainWindow):
         duplicate_action.setShortcut(QKeySequence("D"))
         duplicate_action.triggered.connect(self.use_duplicate)
 
-        group_action = QAction('Group Selected', self)
-        group_action.setShortcut(QKeySequence('G'))
-        group_action.triggered.connect(self.use_create_group)
-
-        ungroup_action = QAction('Ungroup Selected', self)
-        ungroup_action.setShortcut(QKeySequence('Ctrl+G'))
-        ungroup_action.triggered.connect(self.use_ungroup_group)
-
         scale_action = QAction('Scale', self)
         scale_action.setShortcut(QKeySequence('Q'))
         scale_action.triggered.connect(self.use_scale_tool)
@@ -306,10 +298,8 @@ class MPRUN(QMainWindow):
         self.object_menu.addAction(bring_to_front_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(duplicate_action)
-        self.object_menu.addAction(group_action)
-        self.object_menu.addAction(ungroup_action)
-        self.object_menu.addSeparator()
         self.object_menu.addAction(scale_action)
+        self.object_menu.addSeparator()
         self.object_menu.addAction(flip_horizontal_action)
         self.object_menu.addAction(flip_vertical_action)
         self.object_menu.addAction(mirror_horizontal_action)
@@ -1043,10 +1033,6 @@ class MPRUN(QMainWindow):
         # Context menu for view
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.triggered.connect(self.use_duplicate)
-        group_action = QAction('Group Selected', self)
-        group_action.triggered.connect(self.use_create_group)
-        ungroup_action = QAction('Ungroup Selected', self)
-        ungroup_action.triggered.connect(self.use_ungroup_group)
         vectorize_action = QAction('Vectorize', self)
         vectorize_action.triggered.connect(self.use_vectorize)
         raise_layer_action = QAction('Raise Layer', self)
@@ -1070,10 +1056,7 @@ class MPRUN(QMainWindow):
         sep4 = QAction(self)
         sep4.setSeparator(True)
 
-        self.canvas_view.addAction(sep1)
         self.canvas_view.addAction(duplicate_action)
-        self.canvas_view.addAction(group_action)
-        self.canvas_view.addAction(ungroup_action)
         self.canvas_view.addAction(sep3)
         self.canvas_view.addAction(raise_layer_action)
         self.canvas_view.addAction(lower_layer_action)
@@ -2064,35 +2047,6 @@ class MPRUN(QMainWindow):
 
                 else:
                     pass
-
-    def use_create_group(self):
-        if len(self.canvas.selectedItems()) > 1:
-            for item in self.canvas.selectedItems():
-                if isinstance(item, (CanvasItem, LeaderLineItem)):
-                    pass
-
-                elif isinstance(item, CustomTextItem):
-                    if item.parentItem():
-                        if isinstance(item.parentItem(), LeaderLineItem):
-                            return
-
-                    else:
-                        item = self.canvas.selectedItems()
-
-                        command = GroupItemsCommand(self.canvas, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
-                        self.canvas.addCommand(command)
-
-                else:
-                    item = self.canvas.selectedItems()
-
-                    command = GroupItemsCommand(self.canvas, CustomGraphicsItemGroup, LeaderLineItem, CanvasItem)
-                    self.canvas.addCommand(command)
-
-    def use_ungroup_group(self):
-        for group in self.canvas.selectedItems():
-            if isinstance(group, CustomGraphicsItemGroup):
-                command = UngroupItemsCommand(self.canvas, group)
-                self.canvas.addCommand(command)
 
     def use_align_left(self):
         if len(self.canvas.selectedItems()) > 1:
