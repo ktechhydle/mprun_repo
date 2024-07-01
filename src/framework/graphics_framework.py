@@ -665,7 +665,7 @@ height: {int(self.canvas_item.rect().height())}''')
         self.setDragMode(QGraphicsView.NoDrag)
 
 class CustomGraphicsScene(QGraphicsScene):
-    itemMoved = pyqtSignal(object, QPointF)
+    itemsMoved = pyqtSignal(object, object)
 
     def __init__(self, undoStack):
         super().__init__()
@@ -688,9 +688,10 @@ class CustomGraphicsScene(QGraphicsScene):
         self.gridSquares = 5
 
         # Item Movement
+        self.oldPositions = {}
         self.movingItem = None
         self.oldPos = QPointF()
-        self.itemMoved.connect(self.on_move_item)
+        self.itemsMoved.connect(self.on_move_item)
 
         # Managers
         self.manager = SceneManager(self)
@@ -703,39 +704,20 @@ class CustomGraphicsScene(QGraphicsScene):
     def setParentWindow(self, parent: QMainWindow):
         self.parentWindow = parent
 
-    def mousePressEvent(self, event: QGraphicsSceneMouseEvent):
-        if self.scale_btn is not None:
-            if self.scale_btn.isChecked():
-                pass
-
-            else:
-                mousePos = event.buttonDownScenePos(Qt.LeftButton)
-                itemList = self.items(mousePos)
-                self.movingItem = None if not itemList else itemList[0]
-
-                if self.movingItem and event.button() == Qt.LeftButton:
-                    self.oldPos = self.movingItem.pos()
-
-                    self.clearSelection()
-
+    def mousePressEvent(self, event):
         super().mousePressEvent(event)
+        if event.button() == Qt.LeftButton:
+            self.oldPositions = {i: i.pos() for i in self.selectedItems()}
 
-    def mouseReleaseEvent(self, event: QGraphicsSceneMouseEvent):
-        if self.scale_btn is not None:
-            if self.scale_btn.isChecked():
-                pass
-
-            else:
-                if self.movingItem and event.button() == Qt.LeftButton:
-                    if self.oldPos != self.movingItem.pos():
-                        self.itemMoved.emit(self.movingItem, self.oldPos)
-                    self.movingItem = None
-
+    def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
+        if event.button() == Qt.LeftButton and self.oldPositions:
+            self.itemsMoved.emit(self.oldPositions,
+                {i:i.pos() for i in self.oldPositions.keys()})
+        self.oldPositions = {}
 
-    def on_move_item(self, movedItem, oldPos):
-        command = MoveItemCommand(movedItem, oldPos)
-        self.addCommand(command)
+    def on_move_item(self, oldPositions, newPositions):
+        self.addCommand(ItemMovedUndoCommand(oldPositions, newPositions))
 
     def undo(self):
         if self.undo_stack.canUndo():

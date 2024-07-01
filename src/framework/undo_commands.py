@@ -154,29 +154,19 @@ class RotateCommand(QUndoCommand):
         self.item.setRotation(self.old_value)
         self.parent.update_transform_ui()
 
-class MoveItemCommand(QUndoCommand):
-    def __init__(self, item, oldPos):
+class ItemMovedUndoCommand(QUndoCommand):
+    def __init__(self, oldPositions, newPositions):
         super().__init__()
-        self.item = item
-        self.oldPos = oldPos
-        self.newPos = item.pos()
-
-    def mergeWith(self, command):
-        moveCommand = command
-        item = moveCommand.item
-
-        if self.item != item:
-            return False
-
-        self.newPos = item.pos()
-
-        return True
-
-    def undo(self):
-        self.item.setPos(self.oldPos)
+        self.oldPositions = oldPositions
+        self.newPositions = newPositions
 
     def redo(self):
-        self.item.setPos(self.newPos)
+        for item, pos in self.newPositions.items():
+            item.setPos(pos)
+
+    def undo(self):
+        for item, pos in self.oldPositions.items():
+            item.setPos(pos)
 
 class OpacityCommand(QUndoCommand):
     def __init__(self, item, old_opacity, new_opacity):

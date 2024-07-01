@@ -61,7 +61,7 @@ class MPRUN(QMainWindow):
         self.canvas.setParentWindow(self)
         self.canvas.selectionChanged.connect(self.update_appearance_ui)
         self.canvas.selectionChanged.connect(self.update_transform_ui)
-        self.canvas.itemMoved.connect(self.update_transform_ui)
+        self.canvas.itemsMoved.connect(self.update_transform_ui)
         self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
 
     def create_menu(self):
@@ -354,8 +354,6 @@ class MPRUN(QMainWindow):
         self.actions['Sculpt Path'] = sculpt_path_action
         self.actions['Duplicate'] = duplicate_action
         self.actions['Reset Item'] = reset_action
-        self.actions['Group Selection'] = group_action
-        self.actions['Ungroup Selection'] = ungroup_action
         self.actions['Bring to Front'] = bring_to_front_action
         self.actions['Undo'] = undo_action
         self.actions['Redo'] = redo_action
