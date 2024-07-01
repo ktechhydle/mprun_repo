@@ -712,9 +712,10 @@ class CustomGraphicsScene(QGraphicsScene):
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
         if event.button() == Qt.LeftButton and self.oldPositions:
-            self.itemsMoved.emit(self.oldPositions,
-                {i:i.pos() for i in self.oldPositions.keys()})
-        self.oldPositions = {}
+            newPositions = {i: i.pos() for i in self.oldPositions.keys()}
+            if any(self.oldPositions[i] != newPositions[i] for i in self.oldPositions.keys()):
+                self.itemsMoved.emit(self.oldPositions, newPositions)
+            self.oldPositions = {}
 
     def on_move_item(self, oldPositions, newPositions):
         self.addCommand(ItemMovedUndoCommand(oldPositions, newPositions))
@@ -751,6 +752,8 @@ class CustomGraphicsScene(QGraphicsScene):
         self.undo_stack.push(command)
         self.modified = True
         self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
+
+        print(command)
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
