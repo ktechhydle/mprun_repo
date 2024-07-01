@@ -743,9 +743,6 @@ class CustomGraphicsScene(QGraphicsScene):
             self.modified = True
             self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
-        else:
-            self.modified = False
-
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
 
@@ -759,9 +756,6 @@ class CustomGraphicsScene(QGraphicsScene):
             self.undo_stack.redo()
             self.modified = True
             self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
-
-        else:
-            self.modified = False
 
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
