@@ -182,10 +182,6 @@ class MPRUN(QMainWindow):
         hard_delete_action.triggered.connect(self.use_hard_delete)
 
         # Create object actions
-        name_action = QAction('Name', self)
-        name_action.setShortcut(QKeySequence('N'))
-        name_action.triggered.connect(self.use_name_item)
-
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.setShortcut(QKeySequence("D"))
         duplicate_action.triggered.connect(self.use_duplicate)
@@ -309,7 +305,6 @@ class MPRUN(QMainWindow):
         self.object_menu.addAction(lower_layer_action)
         self.object_menu.addAction(bring_to_front_action)
         self.object_menu.addSeparator()
-        self.object_menu.addAction(name_action)
         self.object_menu.addAction(duplicate_action)
         self.object_menu.addAction(group_action)
         self.object_menu.addAction(ungroup_action)
@@ -377,6 +372,7 @@ class MPRUN(QMainWindow):
         self.actions['Redo'] = redo_action
         self.actions['Export Canvas'] = export_action
         self.actions['Export All'] = export_multiple_action
+        self.actions['New'] = new_action
         self.actions['Save'] = save_action
         self.actions['Save As'] = saveas_action
         self.actions['Open'] = open_action
@@ -1046,8 +1042,6 @@ class MPRUN(QMainWindow):
         self.update_item_fill()
 
         # Context menu for view
-        name_action = QAction('Name', self)
-        name_action.triggered.connect(self.use_name_item)
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.triggered.connect(self.use_duplicate)
         group_action = QAction('Group Selected', self)
@@ -1077,7 +1071,6 @@ class MPRUN(QMainWindow):
         sep4 = QAction(self)
         sep4.setSeparator(True)
 
-        self.canvas_view.addAction(name_action)
         self.canvas_view.addAction(sep1)
         self.canvas_view.addAction(duplicate_action)
         self.canvas_view.addAction(group_action)
@@ -2072,24 +2065,6 @@ class MPRUN(QMainWindow):
 
                 else:
                     pass
-
-    def use_name_item(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                if item.childItems():
-                    pass
-
-                else:
-                    pass
-
-            else:
-                entry, ok = QInputDialog.getText(self, 'Name Element', 'Enter a name for the selected elements:')
-
-                if ok:
-                    command = NameCommand(item, item.toolTip(), entry)
-                    self.canvas.addCommand(command)
-
-                    self.update_appearance_ui()
 
     def use_create_group(self):
         if len(self.canvas.selectedItems()) > 1:
