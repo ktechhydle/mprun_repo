@@ -910,6 +910,7 @@ class SceneManager:
 
                         self.filename = filename
                         parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+                        self.scene.modified = False
 
                         if self.repair_needed:
                             # Display a confirmation dialog
@@ -937,6 +938,7 @@ class SceneManager:
 
                         self.filename = filename
                         parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+                        self.scene.modified = False
 
                         if self.repair_needed:
                             # Display a confirmation dialog
@@ -964,6 +966,7 @@ class SceneManager:
 
                     self.filename = filename
                     parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+                    self.scene.modified = False
 
                     if self.repair_needed:
                         # Display a confirmation dialog
