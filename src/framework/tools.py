@@ -2,6 +2,66 @@ from src.scripts.imports import *
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 
+class LineAndLabelTool:
+    def __init__(self, canvas, view):
+        self.canvas = canvas
+        self.view = view
+        self.label_drawing = False
+        self.start_point = None
+
+    def on_label_start(self, event):
+        if event.button() == Qt.LeftButton:
+            self.label_drawing = True
+            self.start_point = self.view.mapToScene(event.pos())
+            self.leader_line = QPainterPath()
+            self.leader_line.moveTo(self.start_point)
+            self.view.setDragMode(QGraphicsView.NoDrag)
+            self.clicked_label_point = self.start_point
+
+            self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
+            self.pathg_item.setPen(self.view.pen)
+            self.pathg_item.setBrush(self.view.stroke_fill)
+            self.pathg_item.text_element.setFont(self.view.font)
+            self.pathg_item.text_element.setPos(self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
+
+            self.canvas.addItem(self.pathg_item)
+            self.canvas.update()
+
+    def on_label(self, event):
+        if self.label_drawing:
+            current_point = self.view.mapToScene(event.pos())
+            temp_line = QPainterPath()
+            temp_line.moveTo(self.start_point)
+            temp_line.lineTo(current_point)
+            self.pathg_item.setPath(temp_line)
+            self.pathg_item.updatePathEndPoint()
+            self.pathg_item.update()
+            self.canvas.update()
+
+    def on_label_end(self, event):
+        if event.button() == Qt.LeftButton and self.label_drawing:
+            self.label_drawing = False
+            end_point = self.view.mapToScene(event.pos())
+            self.leader_line.lineTo(end_point)
+            self.pathg_item.setPath(self.leader_line)
+            self.canvas.update()
+
+            self.pathg_item.setZValue(0)
+            self.pathg_item.text_element.select_text_and_set_cursor()
+
+            if self.leader_line.isEmpty():
+                self.view.scene().removeItem(self.pathg_item)
+
+            else:
+                command = AddItemCommand(self.canvas, self.pathg_item)
+                self.canvas.addCommand(command)
+
+            self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
+            self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+
+            self.pathg_item.setToolTip('Leader Line')
+            self.pathg_item.updatePathEndPoint()
+
 class MouseScalingTool:
     def __init__(self, canvas: QGraphicsScene, view: QGraphicsView):
         self.canvas = canvas
@@ -215,8 +275,7 @@ class AddCanvasTool:
                 self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), f'Canvas {self.view.scene().canvas_count}')
                 self.canvas_item.setPos(self.clicked_canvas_point)
 
-                command = AddItemCommand(self.view.scene(), self.canvas_item)
-                self.canvas.addCommand(command)
+                self.canvas.addItem(self.canvas_item)
             else:
                 pass
 
@@ -263,7 +322,10 @@ height: {int(self.canvas_item.rect().height())}''')
             if self.canvas_item.rect().isEmpty():
                 self.view.scene().removeItem(self.canvas_item)
                 self.view.scene().removeItem(self.canvas_item.text)
-                self.canvas.undo()
+
+            else:
+                command = AddItemCommand(self.view.scene(), self.canvas_item)
+                self.canvas.addCommand(command)
 
             self.canvas_item = None
             self.clicked_canvas_point = None
