@@ -390,8 +390,12 @@ y: {int(self.mapToScene(point).y())}''')
             path_item.setBrush(self.stroke_fill)
 
             # Add item
-            add_command = AddItemCommand(self.canvas, path_item)
-            self.canvas.addCommand(add_command)
+            if path_item.path().isEmpty():
+                self.canvas.removeItem(path_item)
+
+            else:
+                add_command = AddItemCommand(self.canvas, path_item)
+                self.canvas.addCommand(add_command)
 
             # Set Flags
             path_item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -473,8 +477,12 @@ y: {int(self.mapToScene(point).y())}''')
                         pass
 
                     # Add item
-                    add_command = AddItemCommand(self.canvas, path_item)
-                    self.canvas.addCommand(add_command)
+                    if path_item.path().isEmpty():
+                        self.canvas.removeItem(path_item)
+
+                    else:
+                        add_command = AddItemCommand(self.canvas, path_item)
+                        self.canvas.addCommand(add_command)
 
                     # Set Flags
                     path_item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -528,6 +536,7 @@ y: {int(self.mapToScene(point).y())}''')
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     item.setCanvasActive(False)
+
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
                                    Qt.LeftButton, Qt.NoButton, event.modifiers())
