@@ -59,7 +59,6 @@ class CustomGraphicsView(QGraphicsView):
         self.mouse_offset = None
         self.is_dragging = False
         self.temp_path_item = None
-        self.temp_canvas = None
         self.pen = None
         self.stroke_fill = None
         self.font = None
@@ -71,6 +70,7 @@ class CustomGraphicsView(QGraphicsView):
         # Tools
         self.scalingTool = MouseScalingTool(self.canvas, self)
         self.sculptingTool = PathSculptingTool(self.canvas, self)
+        self.canvasTool = AddCanvasTool(self.canvas, self)
 
         # Add methods for zooming
         self.zoomInFactor = 1.25
@@ -79,9 +79,6 @@ class CustomGraphicsView(QGraphicsView):
         self.zoomStep = 1
         self.zoomRange = [0, 100]
         self.zoom_spin = zoom_spin
-
-        # Canvas item
-        self.canvas_item = None
 
     def update_pen(self, pen):
         self.pen = pen
@@ -148,7 +145,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mousePressEvent(event)
 
         elif self.add_canvas_btn.isChecked():
-            self.on_add_canvas_start(event)
+            self.canvasTool.on_add_canvas_start(event)
             self.disable_item_flags()
             super().mousePressEvent(event)
 
@@ -196,7 +193,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseMoveEvent(event)
 
         elif self.add_canvas_btn.isChecked():
-            self.on_add_canvas_drag(event)
+            self.canvasTool.on_add_canvas_drag(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
@@ -233,7 +230,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseReleaseEvent(event)
 
         elif self.add_canvas_btn.isChecked():
-            self.on_add_canvas_end(event)
+            self.canvasTool.on_add_canvas_end(event)
             super().mouseReleaseEvent(event)
 
         elif self.pan_btn.isChecked():
@@ -581,74 +578,6 @@ y: {int(self.mapToScene(point).y())}''')
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     item.setCanvasActive(False)
-
-    def on_add_canvas_start(self, event):
-        if event.button() == Qt.LeftButton:
-            item_under_mouse = self.itemAt(event.pos())
-
-            if item_under_mouse is None:  # No item under mouse, create new CanvasItem
-                self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
-                self.setDragMode(QGraphicsView.NoDrag)
-
-                self.clicked_canvas_point = self.mapToScene(event.pos())
-                self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), f'Canvas {self.scene().canvas_count}')
-                self.canvas_item.setPos(self.clicked_canvas_point)
-
-                command = AddItemCommand(self.scene(), self.canvas_item)
-                self.canvas.addCommand(command)
-            else:
-                pass
-
-    def on_add_canvas_drag(self, event):
-        if self.canvas_item is not None and event.buttons() & Qt.LeftButton and self.clicked_canvas_point is not None:
-            current_pos = self.mapToScene(event.pos())
-            width = current_pos.x() - self.clicked_canvas_point.x()
-            height = current_pos.y() - self.clicked_canvas_point.y()
-
-            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
-                # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
-                size = min(abs(width), abs(height))
-                width = size if width >= 0 else -size
-                height = size if height >= 0 else -size
-
-            self.canvas_item.setRect(0, 0, width, height)
-
-            point = event.pos()
-            p = self.mapToGlobal(point)
-            p.setY(p.y())
-            p.setX(p.x() + 10)
-            QToolTip.showText(p, f'''width: {int(self.canvas_item.rect().width())} 
-height: {int(self.canvas_item.rect().height())}''')
-
-    def on_add_canvas_end(self, event):
-        if self.canvas_item is not None and event.button() == Qt.LeftButton:
-            self.setDragMode(QGraphicsView.RubberBandDrag)
-            current_pos = self.mapToScene(event.pos())
-            width = current_pos.x() - self.clicked_canvas_point.x()
-            height = current_pos.y() - self.clicked_canvas_point.y()
-
-            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
-                # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
-                size = min(abs(width), abs(height))
-                width = size if width >= 0 else -size
-                height = size if height >= 0 else -size
-
-            self.canvas_item.setRect(0, 0, width, height)
-            self.canvas_item.setPos(self.clicked_canvas_point)
-            self.canvas_item.setToolTip(f'Canvas {self.scene().canvas_count}')
-            self.canvas_item.setZValue(-1)
-            self.canvas_item.setCanvasActive(True)
-            self.scene().addItem(self.canvas_item.text)
-
-            if self.canvas_item.rect().isEmpty():
-                self.scene().removeItem(self.canvas_item)
-                self.scene().removeItem(self.canvas_item.text)
-
-            self.canvas_item = None
-            self.clicked_canvas_point = None
-
-            self.canvas.update()
-
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
                                    Qt.LeftButton, Qt.NoButton, event.modifiers())

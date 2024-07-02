@@ -196,3 +196,79 @@ class PathSculptingTool:
     def set_sculpt_radius(self, value):
         self.sculpt_radius = value
         self.sculpt_shape.setRect(0, 0, value, value)
+
+class AddCanvasTool:
+    def __init__(self, canvas, view):
+        self.canvas = canvas
+        self.view = view
+        self.temp_canvas = None
+        self.canvas_item = None
+
+    def on_add_canvas_start(self, event):
+        if event.button() == Qt.LeftButton:
+            item_under_mouse = self.view.itemAt(event.pos())
+
+            if item_under_mouse is None:  # No item under mouse, create new CanvasItem
+                self.view.setDragMode(QGraphicsView.NoDrag)
+
+                self.clicked_canvas_point = self.view.mapToScene(event.pos())
+                self.canvas_item = CanvasItem(QRectF(0, 0, 1, 1), f'Canvas {self.view.scene().canvas_count}')
+                self.canvas_item.setPos(self.clicked_canvas_point)
+
+                command = AddItemCommand(self.view.scene(), self.canvas_item)
+                self.canvas.addCommand(command)
+            else:
+                pass
+
+    def on_add_canvas_drag(self, event):
+        if self.canvas_item is not None and event.buttons() & Qt.LeftButton and self.clicked_canvas_point is not None:
+            current_pos = self.view.mapToScene(event.pos())
+            width = current_pos.x() - self.clicked_canvas_point.x()
+            height = current_pos.y() - self.clicked_canvas_point.y()
+
+            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
+                # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
+                size = min(abs(width), abs(height))
+                width = size if width >= 0 else -size
+                height = size if height >= 0 else -size
+
+            self.canvas_item.setRect(0, 0, width, height)
+
+            point = event.pos()
+            p = self.view.mapToGlobal(point)
+            p.setY(p.y())
+            p.setX(p.x() + 10)
+            QToolTip.showText(p, f'''width: {int(self.canvas_item.rect().width())} 
+height: {int(self.canvas_item.rect().height())}''')
+
+    def on_add_canvas_end(self, event):
+        if self.canvas_item is not None and event.button() == Qt.LeftButton:
+            current_pos = self.view.mapToScene(event.pos())
+            width = current_pos.x() - self.clicked_canvas_point.x()
+            height = current_pos.y() - self.clicked_canvas_point.y()
+
+            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
+                # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
+                size = min(abs(width), abs(height))
+                width = size if width >= 0 else -size
+                height = size if height >= 0 else -size
+
+            self.canvas_item.setRect(0, 0, width, height)
+            self.canvas_item.setPos(self.clicked_canvas_point)
+            self.canvas_item.setToolTip(f'Canvas {self.view.scene().canvas_count}')
+            self.canvas_item.setZValue(-1)
+            self.canvas_item.setCanvasActive(True)
+            self.view.scene().addItem(self.canvas_item.text)
+
+            if self.canvas_item.rect().isEmpty():
+                self.view.scene().removeItem(self.canvas_item)
+                self.view.scene().removeItem(self.canvas_item.text)
+                self.canvas.undo()
+
+            self.canvas_item = None
+            self.clicked_canvas_point = None
+
+            self.canvas.update()
+
+
+
