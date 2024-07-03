@@ -738,6 +738,7 @@ class SceneManager:
 
     def reset_to_default_scene(self):
         self.scene.clear()
+        self.scene.modified = False
         self.filename = 'Untitled'
         self.scene.parentWindow.setWindowTitle(f'{self.filename} - MPRUN')
         self.scene.parentWindow.create_default_objects()
