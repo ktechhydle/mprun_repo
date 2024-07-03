@@ -1,4 +1,5 @@
 import os.path
+import time
 
 from src.scripts.imports import *
 from src.scripts.app_internal import *
@@ -2408,6 +2409,11 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
 
+    splash = QSplashScreen(QIcon('ui/Main Logos/MPRUN_splash_v3.png').pixmap(QSize(600, 600)), Qt.WindowStaysOnTopHint)
+    splash.show()
+
+    app.processEvents()
+
     if sys.platform == 'darwin':
         app.setStyleSheet(windows_style)
 
@@ -2415,6 +2421,7 @@ if __name__ == '__main__':
         app.setStyleSheet(windows_style)
 
     window = MPRUN()
+    splash.finish(window)
 
     with open('internal data/user_data.mpdat', 'r') as f:
         data = json.load(f)
