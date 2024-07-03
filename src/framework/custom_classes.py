@@ -402,7 +402,7 @@ class CustomSvgItem(QGraphicsSvgItem):
 
     def mouseDoubleClickEvent(self, event):
         super().mouseDoubleClickEvent(event)
-        QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
+        QDesktopServices.openUrl(QUrl.fromLocalFile(self.source()))
 
 class CustomTextItem(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
