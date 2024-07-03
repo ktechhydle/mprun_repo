@@ -12,6 +12,24 @@ class AddItemCommand(QUndoCommand):
     def undo(self):
         self.scene.removeItem(self.item)
 
+class MultiItemPositionChangeCommand(QUndoCommand):
+    def __init__(self, parent, items, old_positions, new_positions):
+        super().__init__()
+        self.items = items
+        self.old_positions = old_positions
+        self.new_positions = new_positions
+        self.parent = parent
+
+    def redo(self):
+        for item, new_pos in zip(self.items, self.new_positions):
+            item.setPos(new_pos)
+        self.parent.update_transform_ui()
+
+    def undo(self):
+        for item, old_pos in zip(self.items, self.old_positions):
+            item.setPos(old_pos)
+        self.parent.update_transform_ui()
+
 class PositionChangeCommand(QUndoCommand):
     def __init__(self, parent, item, old, new):
         super().__init__()
@@ -70,33 +88,6 @@ class RemoveItemCommand(QUndoCommand):
     def undo(self):
         for item in self.items:
             self.canvas.addItem(item)
-
-class GraphicsEffectCommand(QUndoCommand):
-    def __init__(self, item, amount, og_effect, effect):
-        super().__init__()
-
-        self.item = item
-        self.amount = amount
-        self.og_effect = og_effect
-        self.choosenEffect = effect
-
-
-    def redo(self):
-        effect = None
-
-        if self.choosenEffect == 'blur':
-            effect = QGraphicsBlurEffect()
-            effect.setBlurRadius(self.amount)
-
-        elif self.choosenEffect == 'dropShadow':
-            effect = QGraphicsDropShadowEffect()
-            effect.setBlurRadius(self.amount)
-
-        self.item.setGraphicsEffect(effect)
-
-
-    def undo(self):
-        self.item.setGraphicsEffect(self.og_effect)
 
 class SmoothPathCommand(QUndoCommand):
     def __init__(self, scene, item, new_path, old_path):

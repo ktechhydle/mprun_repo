@@ -1780,15 +1780,28 @@ class MPRUN(QMainWindow):
             offset_x = target_x - bounding_rect.x()
             offset_y = target_y - bounding_rect.y()
 
-            # Move each selected item by the offset
+            # Prepare lists for items, old positions, and new positions
+            items = []
+            old_positions = []
+            new_positions = []
+
+            # Move each selected item by the offset and collect positions
             for item in selected_items:
                 if isinstance(item, LeaderLineItem):
                     item.childItems()[0].setSelected(False)
                     item.updatePathEndPoint()
 
+                old_pos = item.pos()
                 new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
-                command = PositionChangeCommand(self, item, item.pos(), new_pos)
-                self.canvas.addCommand(command)
+
+                items.append(item)
+                old_positions.append(old_pos)
+                new_positions.append(new_pos)
+
+            # Create and execute the command with all items
+            command = MultiItemPositionChangeCommand(self, items, old_positions, new_positions)
+            self.canvas.addCommand(command)
+
         finally:
             self.canvas.blockSignals(False)
 
