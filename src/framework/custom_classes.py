@@ -424,13 +424,17 @@ class CustomTextItem(QGraphicsTextItem):
 
     def mouseMoveEvent(self, event):
         if self.gridEnabled:
-            # Calculate the position relative to the scene's coordinate system
-            scene_pos = event.scenePos()
-            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
-            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+            if self.hasFocus():
+                super().mouseMoveEvent(event)
 
-            # Set the position relative to the scene's coordinate system
-            self.setPos(x, y)
+            else:
+                # Calculate the position relative to the scene's coordinate system
+                scene_pos = event.scenePos()
+                x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
+                y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+
+                # Set the position relative to the scene's coordinate system
+                self.setPos(x, y)
 
         else:
             super().mouseMoveEvent(event)
