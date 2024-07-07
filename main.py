@@ -2400,7 +2400,7 @@ class MPRUN(QMainWindow):
 
                             self.open_recent_menu.addAction(action)
 
-def main():
+def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
