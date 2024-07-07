@@ -775,21 +775,6 @@ class CanvasTextItem(QGraphicsTextItem):
 
         super().paint(painter, option, widget)
 
-class ControlPoint(QGraphicsEllipseItem):
-    positionChanged = pyqtSignal()
-
-    def __init__(self, x, y, parent=None):
-        super().__init__(-5, -5, 10, 10, parent)
-        self.setBrush(QBrush(Qt.blue))
-        self.setPen(QPen(Qt.black))
-        self.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemSendsGeometryChanges)
-        self.setPos(x, y)
-
-    def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemPositionChange and self.scene():
-            self.positionChanged.emit()
-        return super().itemChange(change, value)
-
 class WaterMarkItem(QGraphicsPixmapItem):
     def __init__(self, pixmap):
         super().__init__(pixmap)

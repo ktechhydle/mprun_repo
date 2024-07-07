@@ -53,6 +53,56 @@ class MPRUN(QMainWindow):
 
         self.show()
 
+    def closeEvent(self, event):
+        if self.canvas.modified:
+            # Display a confirmation dialog
+            confirmation_dialog = QMessageBox(self)
+            confirmation_dialog.setWindowTitle('Close Document')
+            confirmation_dialog.setIcon(QMessageBox.Warning)
+            confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
+            confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
+            confirmation_dialog.setDefaultButton(QMessageBox.Save)
+
+            # Get the result of the confirmation dialog
+            result = confirmation_dialog.exec_()
+
+            # If the user clicked Yes, close the window
+            if result == QMessageBox.Discard:
+                try:
+                    self.undo_stack.clear()
+                    self.w.close()
+                    event.accept()
+
+                except Exception:
+                    pass
+
+            elif result == QMessageBox.Save:
+                success = self.save()
+
+                if success:
+                    try:
+                        self.undo_stack.clear()
+                        self.w.close()
+                        event.accept()
+
+                    except Exception:
+                        pass
+
+                else:
+                    event.ignore()
+
+            else:
+                event.ignore()
+
+        else:
+            try:
+                self.undo_stack.clear()
+                self.w.close()
+                event.accept()
+
+            except Exception:
+                pass
+
     def create_actions_dict(self):
         self.actions = {}
 
@@ -806,10 +856,7 @@ class MPRUN(QMainWindow):
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
 
-        self.drawing_toolbutton = QToolButton(self)
-        self.drawing_toolbutton.setIconSize(QSize(10, 10))
-        self.drawing_toolbutton.setToolButtonStyle(Qt.ToolButtonIconOnly)
-        self.drawing_toolbutton.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
+        self.drawing_toolbutton = ToolButton()
         self.drawing_toolbutton.setDefaultAction(self.path_btn)
         self.drawing_toolbutton.addAction(self.path_btn)
         self.drawing_toolbutton.addAction(self.pen_btn)
@@ -1194,56 +1241,6 @@ class MPRUN(QMainWindow):
                         item.setTextAlongPathFont(font)
                         item.setTextAlongPathColor(QColor(self.font_color.get()))
                         item.update()
-
-    def closeEvent(self, event):
-        if self.canvas.modified:
-            # Display a confirmation dialog
-            confirmation_dialog = QMessageBox(self)
-            confirmation_dialog.setWindowTitle('Close Document')
-            confirmation_dialog.setIcon(QMessageBox.Warning)
-            confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
-            confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
-            confirmation_dialog.setDefaultButton(QMessageBox.Save)
-
-            # Get the result of the confirmation dialog
-            result = confirmation_dialog.exec_()
-
-            # If the user clicked Yes, close the window
-            if result == QMessageBox.Discard:
-                try:
-                    self.undo_stack.clear()
-                    self.w.close()
-                    event.accept()
-
-                except Exception:
-                    pass
-
-            elif result == QMessageBox.Save:
-                success = self.save()
-
-                if success:
-                    try:
-                        self.undo_stack.clear()
-                        self.w.close()
-                        event.accept()
-
-                    except Exception:
-                        pass
-
-                else:
-                    event.ignore()
-
-            else:
-                event.ignore()
-
-        else:
-            try:
-                self.undo_stack.clear()
-                self.w.close()
-                event.accept()
-
-            except Exception:
-                pass
 
     def update_transform_ui(self):
         self.x_pos_spin.blockSignals(True)

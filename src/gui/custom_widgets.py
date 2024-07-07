@@ -201,6 +201,20 @@ class ViewWidget(QGraphicsView):
 
     def keyPressEvent(self, event):
         pass
+    
+class ToolButton(QToolButton):
+    def __init__(self):
+        super().__init__()
+
+        self.setIconSize(QSize(10, 10))
+        self.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        self.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
+
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+
+        if event.button() == Qt.RightButton:
+            self.showMenu()
 
 class StrokeLabel(QLabel):
     def __init__(self, text, parent):
