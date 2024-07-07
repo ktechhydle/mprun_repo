@@ -5,6 +5,7 @@ from src.scripts.imports import *
 from src.scripts.app_internal import *
 from src.scripts.app_screens import *
 from src.scripts.styles import *
+from src.scripts.raw_functions import *
 from src.framework.custom_classes import *
 from src.framework.undo_commands import *
 from src.framework.graphics_framework import *
@@ -2399,8 +2400,7 @@ class MPRUN(QMainWindow):
 
                             self.open_recent_menu.addAction(action)
 
-
-if __name__ == '__main__':
+def main():
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
@@ -2425,3 +2425,6 @@ if __name__ == '__main__':
         window.set_user_data(data)
 
     sys.exit(app.exec_())
+
+if nameismain:
+    main()
