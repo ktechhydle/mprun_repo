@@ -1,16 +1,8 @@
 import os.path
-import time
 
-from src.scripts.imports import *
-from src.scripts.app_internal import *
-from src.scripts.app_screens import *
+from src.gui.app_screens import *
 from src.scripts.styles import *
 from src.scripts.raw_functions import *
-from src.framework.custom_classes import *
-from src.framework.undo_commands import *
-from src.framework.graphics_framework import *
-from src.gui.custom_widgets import *
-from src.gui.custom_dialogs import *
 from src.gui.libraries import *
 
 class MPRUN(QMainWindow):

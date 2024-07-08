@@ -11,26 +11,30 @@ class AboutWin(QtWidgets.QWidget):
         self.setWindowTitle('About MPRUN')
         self.setWindowIcon(QtGui.QIcon('ui/Main Logos/MPRUN_icon.ico'))
         self.setFixedSize(500, 700)
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.setStyleSheet('border-radius: 5px;')
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
 
         self.create_ui()
 
     def create_ui(self):
         # Create main layout
-        layout = QtWidgets.QVBoxLayout()
+        self.setLayout(QtWidgets.QVBoxLayout())
 
-        # App image and label
-        mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("ui/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
-                                                                              QtCore.Qt.KeepAspectRatio)
-        mprun_img_label.setPixmap(pixmap)
-        mprun_img_label.move(20, 20)
+        # Tabs, tab widget
+        self.tab_view = QTabWidget(self)
+        self.about_tab = QtWidgets.QWidget(self)
+        self.about_tab.setLayout(QtWidgets.QVBoxLayout())
+        self.licence_tab = QtWidgets.QWidget(self)
+        self.licence_tab.setLayout(QtWidgets.QVBoxLayout())
+        self.more_info_tab = QtWidgets.QWidget(self)
+        self.more_info_tab.setLayout(QtWidgets.QVBoxLayout())
+        self.tab_view.addTab(self.about_tab, 'About')
+        self.tab_view.addTab(self.licence_tab, 'Licence')
+        self.tab_view.addTab(self.more_info_tab, 'More Info')
+        self.layout().addWidget(self.tab_view)
 
-        # Text label
-        text = '''ABOUT:
-        
+        # Create about tab
+        about_text = '''
 MPRUN is a proof of concept that computer software can be useful for 
 Snowboard and Ski Athletes to help plan competition runs, tricks, or even goals.
 
@@ -41,10 +45,24 @@ Keller saw a missed opportunity when it came to Snowboard Competitions, there wa
 
 Some athletes (including Keller) struggle with creating good plans, especially for big events like Rev-Tour, and that's where MPRUN comes in. 
 
-MPRUN allows users to visualize comp runs on computer and paper, quickly and easily. It includes a proper toolset to create documents that match course setups, draw lines, and label tricks along the course. 
+MPRUN allows users to visualize comp runs on computer and paper, quickly and easily. It includes a proper toolset to create documents that match course setups, draw lines, and label tricks along the course.
+        '''
+        about_label = QtWidgets.QLabel(about_text, self)
+        about_label.setWordWrap(True)
+        about_label.setAlignment(QtCore.Qt.AlignLeft)
+        mp_software_logo = QtWidgets.QLabel('', self)
+        mp_software_logo.setPixmap(
+            QPixmap('ui/Main Logos/MP_Software_Logo.png').scaled(QSize(200, 200), Qt.KeepAspectRatio))
+        fsf_logo = QtWidgets.QLabel('', self)
+        fsf_logo.setPixmap(
+            QPixmap('ui/Main Logos/free_software_foundation_logo.svg').scaled(QSize(450, 450), Qt.KeepAspectRatio))
+        self.about_tab.layout().addWidget(about_label)
+        self.about_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        self.about_tab.layout().addWidget(mp_software_logo)
+        self.about_tab.layout().addWidget(fsf_logo)
 
-LICENCE:
-
+        # Create licence tab
+        licence_text = '''
 This program is free software and is distributed under the GNU General Public License, version 3. In short, this means you are free to use and distribute MPRUN for any purpose, commercial or non-commercial, without any restrictions. 
 
 You are also free to modify the program as you wish, with the only restriction that if you distribute the modified version, you must provide access to its source code.
@@ -55,27 +73,21 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 FILES MADE USING MPRUN:
 
 All files either saved or exported from MPRUN in any format (SVG, PNG, JPG, etc.) are owned by the creators of the work (that's you!) and/or the original authors in case you use derivative works. 
+
 You are responsible for publishing your work under a license of your choosing and for tracking your use of derivative works in the software.
         '''
-        label = QtWidgets.QLabel(text, self)
-        label.setWordWrap(True)
-        label.setAlignment(QtCore.Qt.AlignLeft)
-        label.move(20, 190)
+        licence_label = QtWidgets.QLabel(licence_text, self)
+        licence_label.setWordWrap(True)
+        licence_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.licence_tab.layout().addWidget(licence_label)
+        self.licence_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
+        # Create more info tab
         credits_label = QLinkLabel('Credits', 'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
         contact_label = QLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
-
-        # Add widgets to layout
-        layout.addWidget(mprun_img_label)
-        layout.addWidget(label)
-        layout.addWidget(credits_label)
-        layout.addWidget(contact_label)
-
-        # Set layout to the main window
-        self.setLayout(layout)
-
-    def mousePressEvent(self, event):
-        self.close()
+        self.more_info_tab.layout().addWidget(credits_label)
+        self.more_info_tab.layout().addWidget(contact_label)
+        self.more_info_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
 class VersionWin(QtWidgets.QWidget):
     def __init__(self, version):
