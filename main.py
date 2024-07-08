@@ -1163,46 +1163,43 @@ class MPRUN(QMainWindow):
 
         self.canvas_view.update_pen(pen)
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
-                if isinstance(item, CustomPathItem):
-                    try:
-                        command = PenChangeCommand(item, item.pen(), pen)
-                        self.canvas.addCommand(command)
+        selected_items = self.canvas.selectedItems()
+        if selected_items:
+            items = []
+            old_pens = []
+            for item in selected_items:
+                if isinstance(item, (CustomPathItem, LeaderLineItem)):
+                    items.append(item)
+                    old_pens.append(item.pen())
 
-                    except Exception:
-                        pass
-
-                elif isinstance(item, LeaderLineItem):
-                    try:
-                        command = PenChangeCommand(item, item.pen(), pen)
-                        self.canvas.addCommand(command)
-
-                    except Exception:
-                        pass
+            if items:
+                try:
+                    command = PenChangeCommand(items, old_pens, pen)
+                    self.canvas.addCommand(command)
+                except Exception as e:
+                    print(f"Exception: {e}")
 
     def update_item_fill(self):
         brush = QBrush(QColor(self.fill_color.get()))
 
         self.canvas_view.update_brush(brush)
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
-                if isinstance(item, CustomPathItem):
-                    try:
-                        command = BrushChangeCommand(item, item.brush(), brush)
-                        self.canvas.addCommand(command)
+        selected_items = self.canvas.selectedItems()
+        if selected_items:
+            items = []
+            old_brushes = []
+            for item in selected_items:
+                if isinstance(item, (CustomPathItem, LeaderLineItem)):
+                    items.append(item)
+                    old_brushes.append(item.brush())
 
-                    except Exception:
-                        pass
-
-                elif isinstance(item, LeaderLineItem):
-                    try:
-                        command = BrushChangeCommand(item, item.brush(), brush)
-                        self.canvas.addCommand(command)
-
-                    except Exception:
-                        pass
+            if items:
+                try:
+                    command = BrushChangeCommand(items, old_brushes, brush)
+                    self.canvas.addCommand(command)
+                except Exception as e:
+                    # Handle the exception (e.g., logging)
+                    print(f"Exception: {e}")
 
     def update_item_font(self):
         # Update font
@@ -1214,24 +1211,31 @@ class MPRUN(QMainWindow):
         font.setItalic(True if self.italic_btn.isChecked() else False)
         font.setUnderline(True if self.underline_btn.isChecked() else False)
 
-        self.canvas_view.update_font(font, QColor(self.font_color.get()))
+        new_color = QColor(self.font_color.get())
 
-        if self.canvas.selectedItems():
-            for item in self.canvas.selectedItems():
+        self.canvas_view.update_font(font, new_color)
+
+        selected_items = self.canvas.selectedItems()
+        if selected_items:
+            items = []
+            old_fonts = []
+            old_colors = []
+            for item in selected_items:
                 if isinstance(item, CustomTextItem):
-                    command = FontChangeCommand(item, item.font(), font, item.defaultTextColor(),
-                                                QColor(self.font_color.get()))
+                    items.append(item)
+                    old_fonts.append(item.font())
+                    old_colors.append(item.defaultTextColor())
+
+            if items:
+                try:
+                    command = FontChangeCommand(items, old_fonts, font, old_colors, new_color)
                     self.canvas.addCommand(command)
-
-                    if isinstance(item.parentItem(), LeaderLineItem):
-                        item.parentItem().updatePathEndPoint()
-
-                elif isinstance(item, CustomPathItem):
-                    if item.add_text == True:
-                        item.update()
-                        item.setTextAlongPathFont(font)
-                        item.setTextAlongPathColor(QColor(self.font_color.get()))
-                        item.update()
+                    for item in items:
+                        if isinstance(item.parentItem(), LeaderLineItem):
+                            item.parentItem().updatePathEndPoint()
+                except Exception as e:
+                    # Handle the exception (e.g., logging)
+                    print(f"Exception: {e}")
 
     def update_transform_ui(self):
         self.x_pos_spin.blockSignals(True)
@@ -1852,56 +1856,69 @@ class MPRUN(QMainWindow):
         if not items:
             return
 
+        canvas_items = []
+        old_rotations = []
+
         # Rotate each item around the center
         for item in items:
             if isinstance(item, CanvasItem):
                 pass
-
             else:
                 if isinstance(item, LeaderLineItem):
                     item.childItems()[0].setSelected(False)
                     item.updatePathEndPoint()
-
                 elif isinstance(item, CustomTextItem):
                     if isinstance(item.parentItem(), LeaderLineItem):
                         item.parentItem().updatePathEndPoint()
 
                 item.setTransformOriginPoint(item.boundingRect().center())
+                canvas_items.append(item)
+                old_rotations.append(item.rotation())
 
-                # Set the rotation angle
-                command = RotateCommand(self, item, item.rotation(), value)
+        if canvas_items:
+            try:
+                command = RotateCommand(self, canvas_items, old_rotations, value)
                 self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f"Exception: {e}")
 
     def use_rotate_direction(self, dir: str):
         items = self.canvas.selectedItems()
         if not items:
             return
 
+        canvas_items = []
+        old_rotations = []
+        new_rotations = []
+
+        # Determine the rotation direction and angle
+        rotation_change = -90 if dir == 'ccw' else 90
+
         # Rotate each item around the center
         for item in items:
             if isinstance(item, CanvasItem):
                 pass
-
             else:
                 if isinstance(item, LeaderLineItem):
                     item.childItems()[0].setSelected(False)
                     item.updatePathEndPoint()
-
                 elif isinstance(item, CustomTextItem):
                     if isinstance(item.parentItem(), LeaderLineItem):
                         item.parentItem().updatePathEndPoint()
 
                 item.setTransformOriginPoint(item.boundingRect().center())
+                canvas_items.append(item)
+                old_rotations.append(item.rotation())
+                new_rotations.append(item.rotation() + rotation_change)
 
-                if dir == 'ccw':
-                    # Set the rotation angle
-                    command = RotateCommand(self, item, item.rotation(), item.rotation() - 90)
-                    self.canvas.addCommand(command)
-
-                else:
-                    # Set the rotation angle
-                    command = RotateCommand(self, item, item.rotation(), item.rotation() + 90)
-                    self.canvas.addCommand(command)
+        if canvas_items:
+            try:
+                command = RotateDirectionCommand(self, canvas_items, old_rotations, new_rotations)
+                self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f"Exception: {e}")
 
     def use_flip_horizontal(self):
         for item in self.canvas.selectedItems():

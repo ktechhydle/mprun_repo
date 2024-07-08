@@ -130,19 +130,39 @@ class TransformCommand(QUndoCommand):
         self.item.setTransform(self.old_transform)
 
 class RotateCommand(QUndoCommand):
-    def __init__(self, parent, item, old_rotation, new_rotation):
+    def __init__(self, parent, items, old_rotations, new_rotation):
         super().__init__()
-        self.item = item
-        self.old_value = old_rotation
-        self.new_value = new_rotation
         self.parent = parent
+        self.items = items
+        self.old_rotations = old_rotations
+        self.new_rotation = new_rotation
 
     def redo(self):
-        self.item.setRotation(self.new_value)
+        for item in self.items:
+            item.setRotation(self.new_rotation)
         self.parent.update_transform_ui()
 
     def undo(self):
-        self.item.setRotation(self.old_value)
+        for item, old_rotation in zip(self.items, self.old_rotations):
+            item.setRotation(old_rotation)
+        self.parent.update_transform_ui()
+
+class RotateDirectionCommand(QUndoCommand):
+    def __init__(self, parent, items, old_rotations, new_rotations):
+        super().__init__()
+        self.parent = parent
+        self.items = items
+        self.old_rotations = old_rotations
+        self.new_rotations = new_rotations
+
+    def redo(self):
+        for item, new_rotation in zip(self.items, self.new_rotations):
+            item.setRotation(new_rotation)
+        self.parent.update_transform_ui()
+
+    def undo(self):
+        for item, old_rotation in zip(self.items, self.old_rotations):
+            item.setRotation(old_rotation)
         self.parent.update_transform_ui()
 
 class ItemMovedUndoCommand(QUndoCommand):
@@ -228,56 +248,62 @@ class EditPathCommand(QUndoCommand):
         self.item.setPath(self.oldPath)
 
 class FontChangeCommand(QUndoCommand):
-    def __init__(self, item, oldf, newf, oldcolor, newcolor):
+    def __init__(self, items, old_fonts, new_font, old_colors, new_color):
         super().__init__()
 
-        self.item = item
-        self.old = oldf
-        self.new = newf
-        self.oldc = oldcolor
-        self.newc = newcolor
+        self.items = items
+        self.old_fonts = old_fonts
+        self.new_font = new_font
+        self.old_colors = old_colors
+        self.new_color = new_color
 
     def redo(self):
-        self.item.setFont(self.new)
-        self.item.setDefaultTextColor(self.newc)
-        self.item.update()
+        for item in self.items:
+            item.setFont(self.new_font)
+            item.setDefaultTextColor(self.new_color)
+            item.update()
 
     def undo(self):
-        self.item.setFont(self.old)
-        self.item.setDefaultTextColor(self.oldc)
-        self.item.update()
+        for item, old_font, old_color in zip(self.items, self.old_fonts, self.old_colors):
+            item.setFont(old_font)
+            item.setDefaultTextColor(old_color)
+            item.update()
 
 class PenChangeCommand(QUndoCommand):
-    def __init__(self, item, old, new):
+    def __init__(self, items, old_pens, new_pen):
         super().__init__()
 
-        self.item = item
-        self.old = old
-        self.new = new
+        self.items = items
+        self.old_pens = old_pens
+        self.new_pen = new_pen
 
     def redo(self):
-        self.item.setPen(self.new)
-        self.item.update()
+        for item in self.items:
+            item.setPen(self.new_pen)
+            item.update()
 
     def undo(self):
-        self.item.setPen(self.old)
-        self.item.update()
+        for item, old_pen in zip(self.items, self.old_pens):
+            item.setPen(old_pen)
+            item.update()
 
 class BrushChangeCommand(QUndoCommand):
-    def __init__(self, item, old, new):
+    def __init__(self, items, old_brushes, new_brush):
         super().__init__()
 
-        self.item = item
-        self.old = old
-        self.new = new
+        self.items = items
+        self.old_brushes = old_brushes
+        self.new_brush = new_brush
 
     def redo(self):
-        self.item.setBrush(self.new)
-        self.item.update()
+        for item in self.items:
+            item.setBrush(self.new_brush)
+            item.update()
 
     def undo(self):
-        self.item.setBrush(self.old)
-        self.item.update()
+        for item, old_brush in zip(self.items, self.old_brushes):
+            item.setBrush(old_brush)
+            item.update()
 
 class ResetItemCommand(QUndoCommand):
     def __init__(self, item):
