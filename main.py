@@ -1964,17 +1964,28 @@ class MPRUN(QMainWindow):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
         opacity = value / self.opacity_spin.maximum()
 
+        items = self.canvas.selectedItems()
+        if not items:
+            return
+
+        canvas_items = []
+        old_opacities = []
+
         # Apply the effect to selected items
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
+        for item in items:
+            if isinstance(item, CanvasItem) or isinstance(item, CanvasTextItem):
                 pass
-
-            elif isinstance(item, CanvasTextItem):
-                pass
-
             else:
-                command = OpacityCommand(item, item.opacity(), opacity)
+                canvas_items.append(item)
+                old_opacities.append(item.opacity())
+
+        if canvas_items:
+            try:
+                command = OpacityCommand(canvas_items, old_opacities, opacity)
                 self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f"Exception: {e}")
 
     def use_reset_item(self):
         for item in self.canvas.selectedItems():
@@ -2013,54 +2024,89 @@ class MPRUN(QMainWindow):
             self.quick_actions_tab.gsnap_check_btn.click()
 
     def use_smooth_path(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CustomPathItem):
-                if item.smooth == True:
-                    pass
+        items = [item for item in self.canvas.selectedItems() if isinstance(item, CustomPathItem) and not item.smooth]
+        if not items:
+            return
 
-                else:
-                    try:
-                        smoothed_path = item.smooth_path(item.path(), 0.1)
+        new_paths = []
+        old_paths = []
 
-                        add_command = SmoothPathCommand(self.canvas, item, smoothed_path, item.path())
-                        self.canvas.addCommand(add_command)
+        try:
+            for item in items:
+                smoothed_path = item.smooth_path(item.path(), 0.1)
+                new_paths.append(smoothed_path)
+                old_paths.append(item.path())
 
-                    except Exception:
-                        QMessageBox.critical(self, "Smooth Path", "Cannot smooth path anymore.")
-                        self.canvas.undo()
+            command = SmoothPathCommand(self.canvas, items, new_paths, old_paths)
+            self.canvas.addCommand(command)
+        except Exception as e:
+            # Handle the exception (e.g., logging)
+            print(f"Exception: {e}")
 
     def use_close_path(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CustomPathItem):
-                command = CloseSubpathCommand(item, self.canvas)
-                self.canvas.addCommand(command)
+        items = [item for item in self.canvas.selectedItems() if isinstance(item, CustomPathItem)]
+        if not items:
+            return
+
+        try:
+            command = CloseSubpathCommand(items, self.canvas)
+            self.canvas.addCommand(command)
+        except Exception as e:
+            # Handle the exception (e.g., logging)
+            print(f"Exception: {e}")
 
     def use_hide_item(self):
-        for item in self.canvas.selectedItems():
+        items = self.canvas.selectedItems()
+        if not items:
+            return
+
+        canvas_items = []
+        old_visibilities = []
+
+        for item in items:
             if isinstance(item, LeaderLineItem):
                 item.childItems()[0].setSelected(False)
 
             elif isinstance(item, CustomTextItem):
                 if isinstance(item.parentItem(), LeaderLineItem):
-                    command = HideCommand(item.parentItem(), True, False)
-                    self.canvas.addCommand(command)
-                    return
+                    canvas_items.append(item.parentItem())
+                    old_visibilities.append(item.parentItem().isVisible())
+                    break
 
-            command = HideCommand(item, True, False)
-            self.canvas.addCommand(command)
+            canvas_items.append(item)
+            old_visibilities.append(item.isVisible())
+
+        if canvas_items:
+            try:
+                command = HideCommand(canvas_items, old_visibilities, False)
+                self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f"Exception: {e}")
 
     def use_unhide_all(self):
-        for item in self.canvas.items():
+        items = self.canvas.items()
+        if not items:
+            return
+
+        canvas_items = []
+        old_visibilities = []
+
+        for item in items:
             if isinstance(item, CanvasTextItem):
                 pass
-
             else:
                 if not item.isVisible():
-                    command = HideCommand(item, False, True)
-                    self.canvas.addCommand(command)
+                    canvas_items.append(item)
+                    old_visibilities.append(item.isVisible())
 
-                else:
-                    pass
+        if canvas_items:
+            try:
+                command = HideCommand(canvas_items, old_visibilities, True)
+                self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f"Exception: {e}")
 
     def use_align_left(self):
         if len(self.canvas.selectedItems()) > 1:

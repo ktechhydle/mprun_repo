@@ -90,18 +90,20 @@ class RemoveItemCommand(QUndoCommand):
             self.canvas.addItem(item)
 
 class SmoothPathCommand(QUndoCommand):
-    def __init__(self, scene, item, new_path, old_path):
+    def __init__(self, scene, items, new_paths, old_paths):
         super().__init__()
         self.scene = scene
-        self.item = item
-        self.new_path = new_path
-        self.old_path = old_path
+        self.items = items
+        self.new_paths = new_paths
+        self.old_paths = old_paths
 
     def redo(self):
-        self.item.setPath(self.new_path)
+        for item, new_path in zip(self.items, self.new_paths):
+            item.setPath(new_path)
 
     def undo(self):
-        self.item.setPath(self.old_path)
+        for item, old_path in zip(self.items, self.old_paths):
+            item.setPath(old_path)
 
 class ScaleCommand(QUndoCommand):
     def __init__(self, item, old_scale, new_scale):
@@ -180,59 +182,54 @@ class ItemMovedUndoCommand(QUndoCommand):
             item.setPos(pos)
 
 class OpacityCommand(QUndoCommand):
-    def __init__(self, item, old_opacity, new_opacity):
+    def __init__(self, items, old_opacities, new_opacity):
         super().__init__()
-        self.item = item
-        self.old_value = old_opacity
-        self.new_value = new_opacity
+        self.items = items
+        self.old_opacities = old_opacities
+        self.new_opacity = new_opacity
 
     def redo(self):
-        self.item.setOpacity(self.new_value)
+        for item in self.items:
+            item.setOpacity(self.new_opacity)
 
     def undo(self):
-        self.item.setOpacity(self.old_value)
+        for item, old_opacity in zip(self.items, self.old_opacities):
+            item.setOpacity(old_opacity)
 
 class HideCommand(QUndoCommand):
-    def __init__(self, item, old_visible, new_visible):
+    def __init__(self, items, old_visibilities, new_visibility):
         super().__init__()
-        self.item = item
-        self.old_value = old_visible
-        self.new_value = new_visible
+        self.items = items
+        self.old_visibilities = old_visibilities
+        self.new_visibility = new_visibility
 
     def redo(self):
-        self.item.setVisible(self.new_value)
+        for item in self.items:
+            item.setVisible(self.new_visibility)
 
     def undo(self):
-        self.item.setVisible(self.old_value)
-
-class NameCommand(QUndoCommand):
-    def __init__(self, item, old_name, new_name):
-        super().__init__()
-        self.item = item
-        self.old_value = old_name
-        self.new_value = new_name
-
-    def redo(self):
-        self.item.setToolTip(self.new_value)
-
-    def undo(self):
-        self.item.setToolTip(self.old_value)
+        for item, old_visibility in zip(self.items, self.old_visibilities):
+            item.setVisible(old_visibility)
 
 class CloseSubpathCommand(QUndoCommand):
-    def __init__(self, item, scene):
+    def __init__(self, items, scene):
         super().__init__()
-        self.item = item
+        self.items = items
         self.scene = scene
-        self.oldPath = self.item.path()
-        self.newPath = QPainterPath(self.oldPath)
+        self.old_paths = [item.path() for item in items]
+        self.new_paths = [QPainterPath(path) for path in self.old_paths]
 
     def redo(self):
-        if self.newPath.elementCount() > 0:
-            self.newPath.closeSubpath()
-            self.item.setPath(self.newPath)
+        for path in self.new_paths:
+            if path.elementCount() > 0:
+                path.closeSubpath()
+
+        for item, new_path in zip(self.items, self.new_paths):
+            item.setPath(new_path)
 
     def undo(self):
-        self.item.setPath(self.oldPath)
+        for item, old_path in zip(self.items, self.old_paths):
+            item.setPath(old_path)
 
 class EditPathCommand(QUndoCommand):
     def __init__(self, item, old, new):
