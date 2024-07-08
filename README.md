@@ -3,7 +3,7 @@
 With MPRUN, you can set up custom courses matching the competition environment, and print out these setups to achieve the best competition performance and communication between coaches and athletes[^1]
 
 > [!NOTE]
-> # Install
+> # Development
 > 1. Clone the git with `https://github.com/ktechhydle/mprun_repo.git`.
 > 2. Install the project requirements with `pip install -r requirements.txt`.
 > 3. Run `main.py`, and see the full app.
@@ -58,10 +58,6 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Name selected elements to whatever name you want (canvas items are not nameable with this tool).
 - Duplicate Tool:
 	> Duplicate selected elements (canvas items do not have the ability to duplicate).
-- Group Selected Tool:
-	> Group selected elements.
-- Ungroup Selected Tool:
-	> Ungroup selected element groups.
 - Trace Image Tool:
 	> Trace imported Bitmap images into SVG format (this tool is customizable with the `Image Trace` panel).
 - Save:
@@ -70,18 +66,19 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Save documents with a new name in an `.mp` format.
 - Open:
     > Open `.mp` documents for further editing.
+- And more...
 
-# Additional Features
+# Primary Functionality
 - Vector Graphics:
 	> MPRUN uses a Vector Graphics Engine, and recently added OpenGL functions to make rendering significantly faster.
 - Layer management:
 	> Elements can be raised and lowered.
 - Elements are named:
-	> You will often see elements named `Path` or `Group` on the Canvas. ***Hover your mouse over an element to see the element name, or name the element via the `Name` tool.***
+	> You will often see elements named `Path` or `Group` on the Canvas. ***Hover your mouse over an element to see the element name.***
 - Insert different files:
 	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
 - Export multiple file types:
-	> Export the canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
+	> Export the selected canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
 - Pen and fill customization:
 	> Customize pen styles, caps, and more, also included is the ability to change fill colors.
 - Font editing:
