@@ -115,6 +115,15 @@ class MouseScalingTool:
         self.start_pos = None
         self.scaling_command = None
 
+    def on_scale_double_click(self, event):
+        pos = self.view.mapToScene(event.pos())
+        item = self.canvas.itemAt(pos.toPoint(), self.view.transform())
+        if item and not isinstance(item, CanvasItem):
+            if isinstance(item, CustomTextItem):
+                item.clearFocus()
+
+            self.canvas.addCommand(ScaleCommand(item, item.scale(), 1))
+
 class PathSculptingTool:
     def __init__(self, canvas, view):
         self.canvas = canvas

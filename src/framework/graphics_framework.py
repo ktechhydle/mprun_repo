@@ -15,18 +15,19 @@ class CustomViewport(QOpenGLWidget):
         self.setFormat(format)
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas,
-                 button,
-                 button2,
-                 smooth_btn,
-                 button4,
-                 add_canvas_btn,
-                 select_btn,
-                 scale_btn,
-                 pan_btn,
-                 zoom_spin,
-                 grid_checkbtn,
-                 sculpt_btn):
+    def __init__(self,
+                 canvas,
+                 button: QAction,
+                 button2: QAction,
+                 smooth_btn: QAction,
+                 button4: QAction,
+                 add_canvas_btn: QAction,
+                 select_btn: QAction,
+                 scale_btn: QAction,
+                 pan_btn: QAction,
+                 zoom_spin: QAction,
+                 grid_checkbtn: QCheckBox,
+                 sculpt_btn: QAction):
 
         super().__init__()
         self.points = []
@@ -250,6 +251,9 @@ y: {int(self.mapToScene(point).y())}''')
     def mouseDoubleClickEvent(self, event):
         if self.sculpt_btn.isChecked():
             self.sculptingTool.on_sculpt_double_click(event)
+
+        if self.scale_btn.isChecked():
+            self.scalingTool.on_scale_double_click(event)
             
         else:
             super().mouseDoubleClickEvent(event)
