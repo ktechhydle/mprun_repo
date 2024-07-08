@@ -520,6 +520,9 @@ class CustomTextItem(QGraphicsTextItem):
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange and isinstance(self.parentItem(), LeaderLineItem):
             self.parentItem().updatePathEndPoint()
+
+        elif change == QGraphicsItem.ItemSelectedChange and isinstance(self.parentItem(), LeaderLineItem):
+            self.parentItem().updatePathEndPoint()
         return super().itemChange(change, value)
 
 class LeaderLineItem(QGraphicsPathItem):
