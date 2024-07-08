@@ -15,20 +15,7 @@ class CustomViewport(QOpenGLWidget):
         self.setFormat(format)
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self,
-                 canvas,
-                 button: QAction,
-                 button2: QAction,
-                 smooth_btn: QAction,
-                 button4: QAction,
-                 add_canvas_btn: QAction,
-                 select_btn: QAction,
-                 scale_btn: QAction,
-                 pan_btn: QAction,
-                 zoom_spin: QAction,
-                 grid_checkbtn: QCheckBox,
-                 sculpt_btn: QAction):
-
+    def __init__(self, canvas, actions: list, zoom_spin):
         super().__init__()
         self.points = []
 
@@ -44,21 +31,19 @@ class CustomGraphicsView(QGraphicsView):
         self.setAttribute(Qt.WA_DeleteOnClose)
 
         # Set widgets
-        self.button = button
-        self.button2 = button2
-        self.pen_btn = smooth_btn
-        self.sculpt_btn = sculpt_btn
-        self.text_btn = button4
-        self.add_canvas_btn = add_canvas_btn
-        self.select_btn = select_btn
-        self.scale_btn = scale_btn
-        self.pan_btn = pan_btn
-        self.grid_checkbtn = grid_checkbtn
+        self.select_btn = actions[0]
+        self.pan_btn = actions[1]
+        self.path_btn = actions[2]
+        self.pen_btn = actions[3]
+        self.sculpt_btn = actions[4]
+        self.line_and_label_btn = actions[5]
+        self.text_btn = actions[6]
+        self.scale_btn = actions[7]
+        self.add_canvas_btn = actions[8]
+        self.grid_checkbtn = actions[9]
 
         # Items
         self.canvas = canvas
-        self.mouse_offset = None
-        self.is_dragging = False
         self.temp_path_item = None
         self.pen = None
         self.stroke_fill = None
@@ -124,14 +109,14 @@ y: {int(self.mapToScene(point).y())}''')
 
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
-        if self.button.isChecked():
+        if self.path_btn.isChecked():
             self.on_path_draw_start(event)
 
         elif self.pen_btn.isChecked():
             self.on_smooth_path_draw_start(event)
             self.disable_item_flags()
 
-        elif self.button2.isChecked():
+        elif self.line_and_label_btn.isChecked():
             self.labelingTool.on_label_start(event)
             self.disable_item_flags()
 
@@ -165,7 +150,7 @@ y: {int(self.mapToScene(point).y())}''')
         self.on_add_canvas_trigger()
         
     def mouseMoveEvent(self, event):
-        if self.button.isChecked():
+        if self.path_btn.isChecked():
             self.show_tooltip(event)
             self.on_path_draw(event)
             self.disable_item_flags()
@@ -181,7 +166,7 @@ y: {int(self.mapToScene(point).y())}''')
             self.show_tooltip(event)
             super().mouseMoveEvent(event)
 
-        elif self.button2.isChecked():
+        elif self.line_and_label_btn.isChecked():
             self.show_tooltip(event)
             self.labelingTool.on_label(event)
             self.disable_item_flags()
@@ -214,7 +199,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
-        if self.button.isChecked():
+        if self.path_btn.isChecked():
             self.on_path_draw_end(event)
 
         elif self.pen_btn.isChecked():
@@ -223,7 +208,7 @@ y: {int(self.mapToScene(point).y())}''')
         elif self.text_btn.isChecked():
             super().mouseReleaseEvent(event)
 
-        elif self.button2.isChecked():
+        elif self.line_and_label_btn.isChecked():
             self.labelingTool.on_label_end(event)
             super().mouseReleaseEvent(event)
 

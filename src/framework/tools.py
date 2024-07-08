@@ -122,7 +122,10 @@ class MouseScalingTool:
             if isinstance(item, CustomTextItem):
                 item.clearFocus()
 
-            self.canvas.addCommand(ScaleCommand(item, item.scale(), 1))
+            if item.scale() == 1:
+                pass
+            else:
+                self.canvas.addCommand(ScaleCommand(item, item.scale(), 1))
 
 class PathSculptingTool:
     def __init__(self, canvas, view):

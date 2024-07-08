@@ -1053,18 +1053,16 @@ class MPRUN(QMainWindow):
 
     def create_view(self):
         # QGraphicsView Logic
-        self.canvas_view = CustomGraphicsView(self.canvas,
-                                              self.path_btn,
-                                              self.label_btn,
-                                              self.pen_btn,
-                                              self.add_text_btn,
-                                              self.add_canvas_btn,
-                                              self.select_btn,
-                                              self.scale_btn,
-                                              self.pan_btn,
-                                              self.view_zoom_spin,
-                                              self.quick_actions_tab.gsnap_check_btn,
-                                              self.sculpt_btn)
+        self.canvas_view = CustomGraphicsView(self.canvas,[self.select_btn,
+                                               self.pan_btn,
+                                               self.path_btn,
+                                               self.pen_btn,
+                                               self.sculpt_btn,
+                                               self.label_btn,
+                                               self.add_text_btn,
+                                               self.scale_btn,
+                                               self.add_canvas_btn,
+                                               self.quick_actions_tab.gsnap_check_btn], self.view_zoom_spin)
         self.canvas_view.setViewport(CustomViewport())
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
