@@ -1806,41 +1806,43 @@ class MPRUN(QMainWindow):
 
     def use_scale(self, x_value, y_value):
         try:
-            items = self.canvas.selectedItems()
+            items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+            if not items:
+                return
+
+            old_transforms = [item.transform() for item in items]
+            new_transforms = []
+
             for item in items:
-                if isinstance(item, CanvasItem):
-                    pass
+                if isinstance(item, LeaderLineItem):
+                    item.childItems()[0].setSelected(False)
+                    item.updatePathEndPoint()
 
-                else:
-                    if isinstance(item, LeaderLineItem):
-                        item.childItems()[0].setSelected(False)
-                        item.updatePathEndPoint()
+                elif isinstance(item, CustomTextItem):
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
 
-                    elif isinstance(item, CustomTextItem):
-                        if isinstance(item.parentItem(), LeaderLineItem):
-                            item.parentItem().updatePathEndPoint()
+                # Calculate the center of the bounding box for the selected items
+                bounding_rect = item.boundingRect()
+                center_x = bounding_rect.center().x()
+                center_y = bounding_rect.center().y()
 
-                    # Calculate the center of the bounding box for the selected items
-                    bounding_rect = item.boundingRect()
-                    center_x = bounding_rect.center().x()
-                    center_y = bounding_rect.center().y()
+                # Calculate the scaling factor for the group
+                current_width = bounding_rect.width()
+                current_height = bounding_rect.height()
 
-                    # Calculate the scaling factor for the group
-                    current_width = bounding_rect.width()
-                    current_height = bounding_rect.height()
+                scale_x = x_value / current_width if current_width != 0 else 1
+                scale_y = y_value / current_height if current_height != 0 else 1
 
-                    scale_x = x_value / current_width if current_width != 0 else 1
-                    scale_y = y_value / current_height if current_height != 0 else 1
+                # Create a transform centered on the bounding box's center
+                transform = QTransform()
+                transform.translate(center_x, center_y)
+                transform.scale(scale_x, scale_y)
+                transform.translate(-center_x, -center_y)
+                new_transforms.append(transform)
 
-                    # Create a transform centered on the bounding box's center
-                    transform = QTransform()
-                    transform.translate(center_x, center_y)
-                    transform.scale(scale_x, scale_y)
-                    transform.translate(-center_x, -center_y)
-
-                    # Apply the transform to each item
-                    command = TransformCommand(item, item.transform(), transform)
-                    self.canvas.addCommand(command)
+            command = TransformCommand(items, old_transforms, new_transforms)
+            self.canvas.addCommand(command)
 
         except Exception as e:
             print(f"Error during scaling: {e}")
@@ -1921,20 +1923,40 @@ class MPRUN(QMainWindow):
                 print(f"Exception: {e}")
 
     def use_flip_horizontal(self):
-        for item in self.canvas.selectedItems():
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+        old_transforms = [item.transform() for item in items]
+        new_transforms = []
+
+        for item in items:
             if isinstance(item, LeaderLineItem):
                 item.childItems()[0].setSelected(False)
                 item.updatePathEndPoint()
 
-        self.width_scale_spin.setValue(-self.width_scale_spin.value())
+            transform = item.transform()
+            transform.scale(-1, 1)  # Flip horizontally
+            new_transforms.append(transform)
+
+        # Push the transformation command to the undo stack
+        command = TransformCommand(items, old_transforms, new_transforms)
+        self.canvas.addCommand(command)
 
     def use_flip_vertical(self):
-        for item in self.canvas.selectedItems():
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+        old_transforms = [item.transform() for item in items]
+        new_transforms = []
+
+        for item in items:
             if isinstance(item, LeaderLineItem):
                 item.childItems()[0].setSelected(False)
                 item.updatePathEndPoint()
 
-        self.height_scale_spin.setValue(-self.height_scale_spin.value())
+            transform = item.transform()
+            transform.scale(1, -1)  # Flip vertically
+            new_transforms.append(transform)
+
+        # Push the transformation command to the undo stack
+        command = TransformCommand(items, old_transforms, new_transforms)
+        self.canvas.addCommand(command)
 
     def use_mirror(self, direction):
         for item in self.canvas.selectedItems():

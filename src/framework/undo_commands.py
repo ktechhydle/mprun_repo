@@ -119,17 +119,19 @@ class ScaleCommand(QUndoCommand):
         self.item.setScale(self.old_scale)
 
 class TransformCommand(QUndoCommand):
-    def __init__(self, item, old_t, new_t):
+    def __init__(self, items, old_transforms, new_transforms):
         super().__init__()
-        self.item = item
-        self.old_transform = old_t
-        self.new_transform = new_t
+        self.items = items
+        self.old_transforms = old_transforms
+        self.new_transforms = new_transforms
 
     def redo(self):
-        self.item.setTransform(self.new_transform)
+        for item, new_transform in zip(self.items, self.new_transforms):
+            item.setTransform(new_transform)
 
     def undo(self):
-        self.item.setTransform(self.old_transform)
+        for item, old_transform in zip(self.items, self.old_transforms):
+            item.setTransform(old_transform)
 
 class RotateCommand(QUndoCommand):
     def __init__(self, parent, items, old_rotations, new_rotation):
