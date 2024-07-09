@@ -1643,37 +1643,39 @@ class MPRUN(QMainWindow):
         self.canvas_view.rotate(self.rotate_scene_spin.value())
 
     def use_raise_layer(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                pass
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+        if not items:
+            return
 
-            else:
-                c = LayerChangeCommand(item, item.zValue(), item.zValue() + 1)
-                self.canvas.addCommand(c)
+        old_z_values = [item.zValue() for item in items]
+        new_z_values = [z + 1 for z in old_z_values]
+
+        command = LayerChangeCommand(items, old_z_values, new_z_values)
+        self.canvas.addCommand(command)
 
     def use_lower_layer(self):
-        for item in self.canvas.selectedItems():
-            if item.zValue() <= 0:
-                QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem) and item.zValue() > 0]
+        if not items:
+            QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+            return
 
-            else:
-                if isinstance(item, CanvasItem):
-                    pass
+        old_z_values = [item.zValue() for item in items]
+        new_z_values = [z - 1 for z in old_z_values]
 
-                else:
-                    c = LayerChangeCommand(item, item.zValue(), item.zValue() - 1)
-                    self.canvas.addCommand(c)
+        command = LayerChangeCommand(items, old_z_values, new_z_values)
+        self.canvas.addCommand(command)
 
     def use_bring_to_front(self):
-        selected_items = self.canvas.selectedItems()
-        if selected_items:
-            max_z = max([item.zValue() for item in self.canvas.items()])
-            for item in selected_items:
-                if isinstance(item, CanvasItem):
-                    pass
+        selected_items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+        if not selected_items:
+            return
 
-                else:
-                    item.setZValue(max_z)
+        max_z = max([item.zValue() for item in self.canvas.items()])
+        old_z_values = [item.zValue() for item in selected_items]
+        new_z_values = [max_z + 1] * len(selected_items)  # Move all selected items to the front
+
+        command = LayerChangeCommand(selected_items, old_z_values, new_z_values)
+        self.canvas.addCommand(command)
 
     def use_vectorize(self):
         for item in self.canvas.selectedItems():
@@ -1936,9 +1938,9 @@ class MPRUN(QMainWindow):
             transform.scale(-1, 1)  # Flip horizontally
             new_transforms.append(transform)
 
-        # Push the transformation command to the undo stack
-        command = TransformCommand(items, old_transforms, new_transforms)
-        self.canvas.addCommand(command)
+        if items:
+            command = TransformCommand(items, old_transforms, new_transforms)
+            self.canvas.addCommand(command)
 
     def use_flip_vertical(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1954,9 +1956,9 @@ class MPRUN(QMainWindow):
             transform.scale(1, -1)  # Flip vertically
             new_transforms.append(transform)
 
-        # Push the transformation command to the undo stack
-        command = TransformCommand(items, old_transforms, new_transforms)
-        self.canvas.addCommand(command)
+        if items:
+            command = TransformCommand(items, old_transforms, new_transforms)
+            self.canvas.addCommand(command)
 
     def use_mirror(self, direction):
         for item in self.canvas.selectedItems():
@@ -2010,11 +2012,16 @@ class MPRUN(QMainWindow):
                 print(f"Exception: {e}")
 
     def use_reset_item(self):
-        for item in self.canvas.selectedItems():
-            command = ResetItemCommand(item)
-            self.canvas.addCommand(command)
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+        if not items:
+            return
 
-        self.update_transform_ui()
+        try:
+            command = ResetItemCommand(items)
+            self.canvas.addCommand(command)
+            self.update_transform_ui()
+        except Exception as e:
+            print(f"Error during resetting items: {e}")
 
     def use_add_canvas(self):
         self.toolbox.setCurrentWidget(self.canvas_tab)

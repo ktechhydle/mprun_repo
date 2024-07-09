@@ -305,59 +305,33 @@ class BrushChangeCommand(QUndoCommand):
             item.update()
 
 class ResetItemCommand(QUndoCommand):
-    def __init__(self, item):
+    def __init__(self, items):
         super().__init__()
 
-        self.item = item
-        self.effect_type, self.effect_params = self._get_effect_params(self.item.graphicsEffect())
-        self.rotation = self.item.rotation()
-        self.scale = self.item.scale()
-        self.x_scale = self.item.transform().m11()
-        self.y_scale = self.item.transform().m22()
-        self.opacity = self.item.opacity()
-
-    def _get_effect_params(self, effect):
-        if isinstance(effect, QGraphicsDropShadowEffect):
-            return 'drop_shadow', {
-                'offset': effect.offset(),
-                'blur_radius': effect.blurRadius(),
-                'color': effect.color()
+        self.items = items
+        self.old_states = [
+            {
+                'transform': item.transform(),
+                'rotation': item.rotation(),
+                'scale': item.scale(),
+                'opacity': item.opacity()
             }
-        elif isinstance(effect, QGraphicsBlurEffect):
-            return 'blur', {
-                'blur_radius': effect.blurRadius()
-            }
-        return None, None
-
-    def _set_effect(self, effect_type, params):
-        if effect_type == 'drop_shadow':
-            effect = QGraphicsDropShadowEffect()
-            effect.setOffset(params['offset'])
-            effect.setBlurRadius(params['blur_radius'])
-            effect.setColor(params['color'])
-            return effect
-        elif effect_type == 'blur':
-            effect = QGraphicsBlurEffect()
-            effect.setBlurRadius(params['blur_radius'])
-            return effect
-        return None
+            for item in items
+        ]
 
     def redo(self):
-        self.item.setGraphicsEffect(None)
-        self.item.resetTransform()
-        self.item.setScale(1)
-        self.item.setRotation(0)
-        self.item.setOpacity(100)
+        for item in self.items:
+            item.resetTransform()
+            item.setScale(1)
+            item.setRotation(0)
+            item.setOpacity(1.0)  # Opacity should be between 0.0 and 1.0
 
     def undo(self):
-        self.item.resetTransform()
-        transform = QTransform()
-        transform.scale(self.x_scale, self.y_scale)
-        self.item.setTransform(transform)
-        self.item.setScale(self.scale)
-        self.item.setRotation(self.rotation)
-        self.item.setGraphicsEffect(self._set_effect(self.effect_type, self.effect_params))
-        self.item.setOpacity(self.opacity)
+        for item, state in zip(self.items, self.old_states):
+            item.setTransform(state['transform'])
+            item.setScale(state['scale'])
+            item.setRotation(state['rotation'])
+            item.setOpacity(state['opacity'])
 
 class CanvasSizeEditCommand(QUndoCommand):
     def __init__(self, item, og_w, og_h, new_w, new_h):
@@ -392,15 +366,17 @@ class CanvasNameEditCommand(QUndoCommand):
         self.item.setToolTip(self.og)
 
 class LayerChangeCommand(QUndoCommand):
-    def __init__(self, item, old, new):
+    def __init__(self, items, old_z_values, new_z_values):
         super().__init__()
 
-        self.item = item
-        self.old = old
-        self.new = new
+        self.items = items
+        self.old_z_values = old_z_values
+        self.new_z_values = new_z_values
 
     def redo(self):
-        self.item.setZValue(self.new)
+        for item, new_z in zip(self.items, self.new_z_values):
+            item.setZValue(new_z)
 
     def undo(self):
-        self.item.setZValue(self.old)
+        for item, old_z in zip(self.items, self.old_z_values):
+            item.setZValue(old_z)
