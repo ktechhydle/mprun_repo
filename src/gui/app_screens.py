@@ -24,12 +24,12 @@ class AboutWin(QtWidgets.QWidget):
         self.tab_view = QTabWidget(self)
         self.about_tab = QtWidgets.QWidget(self)
         self.about_tab.setLayout(QtWidgets.QVBoxLayout())
-        self.licence_tab = QtWidgets.QWidget(self)
-        self.licence_tab.setLayout(QtWidgets.QVBoxLayout())
+        self.license_tab = QtWidgets.QWidget(self)
+        self.license_tab.setLayout(QtWidgets.QVBoxLayout())
         self.more_info_tab = QtWidgets.QWidget(self)
         self.more_info_tab.setLayout(QtWidgets.QVBoxLayout())
         self.tab_view.addTab(self.about_tab, 'About')
-        self.tab_view.addTab(self.licence_tab, 'Licence')
+        self.tab_view.addTab(self.license_tab, 'License')
         self.tab_view.addTab(self.more_info_tab, 'More Info')
         self.layout().addWidget(self.tab_view)
 
@@ -62,7 +62,7 @@ MPRUN allows users to visualize comp runs on computer and paper, quickly and eas
         self.about_tab.layout().addWidget(fsf_logo)
 
         # Create licence tab
-        licence_text = '''
+        license_text = '''
 This program is free software and is distributed under the GNU General Public License, version 3. In short, this means you are free to use and distribute MPRUN for any purpose, commercial or non-commercial, without any restrictions. 
 
 You are also free to modify the program as you wish, with the only restriction that if you distribute the modified version, you must provide access to its source code.
@@ -76,11 +76,11 @@ All files either saved or exported from MPRUN in any format (SVG, PNG, JPG, etc.
 
 You are responsible for publishing your work under a license of your choosing and for tracking your use of derivative works in the software.
         '''
-        licence_label = QtWidgets.QLabel(licence_text, self)
-        licence_label.setWordWrap(True)
-        licence_label.setAlignment(QtCore.Qt.AlignLeft)
-        self.licence_tab.layout().addWidget(licence_label)
-        self.licence_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        license_label = QtWidgets.QLabel(license_text, self)
+        license_label.setWordWrap(True)
+        license_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.license_tab.layout().addWidget(license_label)
+        self.license_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
         # Create more info tab
         credits_label = QLinkLabel('Credits', 'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
