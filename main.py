@@ -440,7 +440,6 @@ class MPRUN(QMainWindow):
         # Properties Tab
         self.properties_tab = QWidget(self)
         self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.properties_tab.setFixedHeight(300)
         self.properties_tab.setFixedWidth(300)
         self.properties_tab_layout = QVBoxLayout()
         self.properties_tab.setLayout(self.properties_tab_layout)
@@ -770,6 +769,7 @@ class MPRUN(QMainWindow):
         self.properties_tab_layout.addWidget(widget5)
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
+        self.properties_tab_layout.addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
         # Elements Tab Widgets
         self.characters_tab_layout.addWidget(self.font_choice_combo)
@@ -1246,8 +1246,6 @@ class MPRUN(QMainWindow):
         self.opacity_spin.blockSignals(True)
 
         if len(self.canvas.selectedItems()) > 0:
-            self.properties_tab.setFixedHeight(425)
-
             self.transform_separator.setHidden(False)
             self.transform_label.setHidden(False)
             self.x_pos_label.setHidden(False)
@@ -1289,8 +1287,6 @@ class MPRUN(QMainWindow):
                     self.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
 
         else:
-            self.properties_tab.setFixedHeight(325)
-
             self.transform_separator.setHidden(True)
             self.transform_label.setHidden(True)
             self.x_pos_label.setHidden(True)
