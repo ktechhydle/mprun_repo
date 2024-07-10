@@ -10,7 +10,7 @@ class AboutWin(QtWidgets.QWidget):
 
         self.setWindowTitle('About MPRUN')
         self.setWindowIcon(QtGui.QIcon('ui/Main Logos/MPRUN_icon.ico'))
-        self.setFixedSize(500, 700)
+        self.setFixedWidth(500)
         self.setStyleSheet('border-radius: 5px;')
         self.setWindowModality(QtCore.Qt.ApplicationModal)
 
@@ -51,11 +51,13 @@ MPRUN allows users to visualize comp runs on computer and paper, quickly and eas
         about_label.setWordWrap(True)
         about_label.setAlignment(QtCore.Qt.AlignLeft)
         mp_software_logo = QtWidgets.QLabel('', self)
+        mp_software_logo.setAlignment(Qt.AlignCenter)
         mp_software_logo.setPixmap(
             QPixmap('ui/Main Logos/MP_Software_Logo.png').scaled(QSize(200, 200), Qt.KeepAspectRatio))
         fsf_logo = QtWidgets.QLabel('', self)
+        fsf_logo.setAlignment(Qt.AlignCenter)
         fsf_logo.setPixmap(
-            QPixmap('ui/Main Logos/free_software_foundation_logo.svg').scaled(QSize(450, 450), Qt.KeepAspectRatio))
+            QPixmap('ui/Main Logos/free_software_foundation_logo.svg').scaled(QSize(400, 400), Qt.KeepAspectRatio))
         self.about_tab.layout().addWidget(about_label)
         self.about_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
         self.about_tab.layout().addWidget(mp_software_logo)
