@@ -348,6 +348,7 @@ class CustomSvgItem(QGraphicsSvgItem):
         super().__init__(*file)
 
         self.filename = None
+        self.svg_data = None
         for f in file:
             self.render = QSvgRenderer(f)
 
@@ -373,12 +374,16 @@ class CustomSvgItem(QGraphicsSvgItem):
 
     def loadFromData(self, svg_data) -> None:
         try:
+            self.svg_data = svg_data
             renderer = QSvgRenderer(QByteArray(svg_data.encode('utf-8')))
             self.setSharedRenderer(renderer)
             self.setElementId("")  # Optional: set specific SVG element ID if needed
-
         except Exception as e:
             print(f"Error in loadFromData: {e}")
+
+    def svgData(self) -> str:
+        if self.svg_data is not None:
+            return self.svg_data
 
     def store_filename(self, file):
         self.filename = file

@@ -946,8 +946,10 @@ class SceneManager:
                         'y': item.pos().y(),
                         'name': item.toolTip(),
                         'zval': item.zValue(),
-                        'filename': item.source(),
-                        'raw_svg_data': self.serialize_file(item.source()),
+                        'filename': item.source() if
+                        os.path.exists(item.source() if item.source() is not None else '') else None,
+                        'raw_svg_data': self.serialize_file(item.source()) if
+                        os.path.exists(item.source() if item.source() is not None else '') else item.svgData(),
                         'visible': item.isVisible(),
                     }
 
@@ -972,7 +974,8 @@ class SceneManager:
                         'y': item.pos().y(),
                         'name': item.toolTip(),
                         'zval': item.zValue(),
-                        'filename': item.return_filename(),
+                        'filename': item.return_filename() if
+                        os.path.exists(item.return_filename() if item.return_filename() is not None else '') else None,
                         'data': pixmap_data,
                         'visible': item.isVisible(),
                     }
