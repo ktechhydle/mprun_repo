@@ -224,4 +224,4 @@ class DisclaimerWin(QMessageBox):
         self.setDefaultButton(QMessageBox.Yes)
 
         self.data_file = data_file
-        self.setText(data_use_disclaimer)
+        self.setText(use_disclaimer)

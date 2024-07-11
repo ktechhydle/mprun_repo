@@ -2451,7 +2451,14 @@ class MPRUN(QMainWindow):
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
 
-            for recent_file in user_data['recent_files']:
+            recent_files = []
+            seen = set()
+            for item in user_data['recent_files']:
+                if item not in seen:
+                    recent_files.append(item)
+                    seen.add(item)
+
+            for recent_file in recent_files:
                 if os.path.exists(recent_file):
                     action = QAction(os.path.basename(recent_file), self)
                     action.setToolTip(os.path.abspath(recent_file))
@@ -2468,7 +2475,14 @@ class MPRUN(QMainWindow):
                 if not user_data['disclaimer_read']:
                     self.show_disclaimer()
 
-                for recent_file in user_data['recent_files']:
+                recent_files = []
+                seen = set()
+                for item in user_data['recent_files']:
+                    if item not in seen:
+                        recent_files.append(item)
+                        seen.add(item)
+
+                for recent_file in recent_files:
                     if os.path.exists(recent_file):
                         if os.path.abspath(recent_file) not in (action.toolTip() for action in self.open_recent_menu.actions()):
                             action = QAction(os.path.basename(recent_file), self)

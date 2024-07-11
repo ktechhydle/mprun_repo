@@ -56,7 +56,7 @@ Competition:
 Athlete:
 Date:"""
 
-data_use_disclaimer = '''This app collects user data, including...
+use_disclaimer = '''This app collects user data, including...
 
 Content You Read in App:
 This app stores the content you read in app (like this dialog) so that you don't get popup after popup everytime you open the app. The content you read includes this dialog, the What's New Dialog, and the Tutorial Video Dialog.
