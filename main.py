@@ -1713,7 +1713,7 @@ class MPRUN(QMainWindow):
                         add_command = AddItemCommand(self.canvas, item)
                         self.canvas.addCommand(add_command)
                         self.create_item_attributes(item)
-                        item.setToolTip('Vector Element')
+                        item.setToolTip('Imported SVG')
 
                 except Exception as e:
                     # Set cursor back
@@ -2036,7 +2036,6 @@ class MPRUN(QMainWindow):
             else:
                 item.setFlag(QGraphicsItem.ItemIsSelectable, False)
                 item.setFlag(QGraphicsItem.ItemIsMovable, False)
-
 
     def use_exit_add_canvas(self):
         # Deactivate the add canvas tool

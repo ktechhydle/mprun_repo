@@ -65,7 +65,7 @@ class PathDrawerTool:
             # Load main path as QGraphicsItem
             path_item = CustomPathItem(self.path)
             path_item.setPen(self.view.pen)
-            path_item.setZValue(0)
+            path_item.setZValue(1)
             path_item.setBrush(self.view.stroke_fill)
             path_item.setFlag(QGraphicsItem.ItemIsSelectable)
             path_item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -129,7 +129,7 @@ class PenDrawerTool:
                 self.temp_path_item.path().setFillRule(Qt.WindingFill)
                 self.temp_path_item.setPen(self.view.pen)
                 self.temp_path_item.setBrush(self.view.stroke_fill)
-                self.temp_path_item.setZValue(0)
+                self.temp_path_item.setZValue(1)
                 self.canvas.addItem(self.temp_path_item)
 
                 try:
@@ -228,7 +228,7 @@ class LineAndLabelTool:
             self.pathg_item.setPath(self.leader_line)
             self.canvas.update()
 
-            self.pathg_item.setZValue(0)
+            self.pathg_item.setZValue(2)
             self.pathg_item.text_element.select_text_and_set_cursor()
 
             if self.leader_line.isEmpty():
