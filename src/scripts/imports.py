@@ -10,6 +10,7 @@ import numpy as np
 import markdown
 import json
 import sys
+import base64
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *

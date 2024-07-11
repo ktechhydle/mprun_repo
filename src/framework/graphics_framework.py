@@ -945,6 +945,7 @@ class SceneManager:
                         'name': item.toolTip(),
                         'zval': item.zValue(),
                         'filename': item.source(),
+                        'data': self.serialize_file(item.source()),
                         'visible': item.isVisible(),
                     }
 
@@ -955,6 +956,12 @@ class SceneManager:
                     pass
 
                 else:
+                    pixmap = item.pixmap()
+                    buffer = QBuffer()
+                    buffer.open(QIODevice.WriteOnly)
+                    pixmap.save(buffer, "PNG")
+                    pixmap_data = buffer.data().data()
+
                     data = {
                         'type': 'CustomPixmapItem',
                         'rotation': item.rotation(),
@@ -964,6 +971,7 @@ class SceneManager:
                         'name': item.toolTip(),
                         'zval': item.zValue(),
                         'filename': item.return_filename(),
+                        'data': pixmap_data,
                         'visible': item.isVisible(),
                     }
 
@@ -1113,6 +1121,10 @@ class SceneManager:
                 children.append(data)
 
         return children
+
+    def serialize_file(self, file):
+        with open(file, 'r') as f:
+            return f.read()
 
     def deserialize_items(self, items_data):
         # Handle metadata
@@ -1301,35 +1313,41 @@ class SceneManager:
         return path_item
 
     def deserialize_custom_svg_item(self, data):
-        if os.path.exists(data['filename']):
-            svg_item = CustomSvgItem(data['filename'])
-            svg_item.store_filename(data['filename'])
-            svg_item.setRotation(data['rotation'])
-            svg_item.setTransform(self.deserialize_transform(data['transform']))
-            svg_item.setPos(data['x'], data['y'])
-            svg_item.setToolTip(data['name'])
-            svg_item.setZValue(data['zval'])
-            svg_item.setVisible(data['visible'])
-            return svg_item
-        else:
-            self.repair_needed = True
-            return None
+        svg_item = CustomSvgItem(data['filename'])
+        svg_item.store_filename(data['filename'])
+        svg_item.loadFromData(data['data'].encode('utf-8'))
+        svg_item.setRotation(data['rotation'])
+        svg_item.setTransform(self.deserialize_transform(data['transform']))
+        svg_item.setPos(data['x'], data['y'])
+        svg_item.setToolTip(data['name'])
+        svg_item.setZValue(data['zval'])
+        svg_item.setVisible(data['visible'])
+
+        svg_data = self.serialize_file(data['filename'])
+        svg_item.loadFromData(svg_data.encode('utf-8'))
+
+        return svg_item
 
     def deserialize_custom_pixmap_item(self, data):
-        if os.path.exists(data['filename']):
-            pixmap = QPixmap(data['filename'])
-            pixmap_item = CustomPixmapItem(pixmap)
-            pixmap_item.store_filename(data['filename'])
-            pixmap_item.setRotation(data['rotation'])
-            pixmap_item.setTransform(self.deserialize_transform(data['transform']))
-            pixmap_item.setPos(data['x'], data['y'])
-            pixmap_item.setToolTip(data['name'])
-            pixmap_item.setZValue(data['zval'])
-            pixmap_item.setVisible(data['visible'])
-            return pixmap_item
-        else:
-            self.repair_needed = True
-            return None
+        pixmap = QPixmap(data['filename'])
+        pixmap_item = CustomPixmapItem(pixmap)
+        pixmap_item.store_filename(data['filename'])
+        pixmap_item.loadFromData(data['data'])
+        pixmap_item.setRotation(data['rotation'])
+        pixmap_item.setTransform(self.deserialize_transform(data['transform']))
+        pixmap_item.setPos(data['x'], data['y'])
+        pixmap_item.setToolTip(data['name'])
+        pixmap_item.setZValue(data['zval'])
+        pixmap_item.setVisible(data['visible'])
+
+        pixmap = pixmap_item.pixmap()
+        buffer = QBuffer()
+        buffer.open(QIODevice.WriteOnly)
+        pixmap.save(buffer, "PNG")
+        pixmap_data = buffer.data().data()
+        pixmap_item.loadFromData(pixmap_data)
+
+        return pixmap_item
 
     def repair_file(self):
         try:

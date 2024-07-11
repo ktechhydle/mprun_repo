@@ -305,6 +305,11 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         else:
             super().mouseMoveEvent(event)
 
+    def loadFromData(self, data):
+        pixmap = QPixmap()
+        pixmap.loadFromData(data)
+        self.setPixmap(pixmap)
+
     def store_filename(self, file):
         self.filename = file
 
@@ -362,6 +367,10 @@ class CustomSvgItem(QGraphicsSvgItem):
 
         else:
             super().mouseMoveEvent(event)
+
+    def loadFromData(self, svg_data):
+        byte_array = QByteArray(svg_data)
+        self.renderer().load(byte_array)
 
     def store_filename(self, file):
         self.filename = file
