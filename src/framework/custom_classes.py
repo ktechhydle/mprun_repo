@@ -319,16 +319,18 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         return self.filename
 
     def duplicate(self):
-        pixmap = QPixmap(self.return_filename())
-
-        item = CustomPixmapItem(pixmap)
+        item = CustomPixmapItem(self.pixmap())
         item.setPos(self.pos() + QPointF(10, 10))
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
         item.setTransformOriginPoint(self.transformOriginPoint())
-        item.store_filename(self.return_filename())
+
+        if os.path.exists(self.return_filename()):
+            item.store_filename(self.return_filename())
+        else:
+            item.store_filename(None)
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -341,7 +343,10 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
     def mouseDoubleClickEvent(self, event):
         super().mouseDoubleClickEvent(event)
-        QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
+
+        if event.modifiers() & Qt.ShiftModifier:
+            if os.path.exists(self.return_filename()):
+                QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
 
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, *file):
@@ -394,29 +399,48 @@ class CustomSvgItem(QGraphicsSvgItem):
     def duplicate(self):
         svg = self.source()
 
-        item = CustomSvgItem(svg)
-        item.setPos(self.pos() + QPointF(10, 10))
-        item.setScale(self.scale())
-        item.setRotation(self.rotation())
-        item.setZValue(self.zValue())
-        item.setTransform(self.transform())
-        item.setTransformOriginPoint(self.transformOriginPoint())
-        item.store_filename(svg)
+        if os.path.exists(svg):
+            item = CustomSvgItem(svg)
+            item.setPos(self.pos() + QPointF(10, 10))
+            item.setScale(self.scale())
+            item.setRotation(self.rotation())
+            item.setZValue(self.zValue())
+            item.setTransform(self.transform())
+            item.setTransformOriginPoint(self.transformOriginPoint())
+            item.store_filename(svg)
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Imported SVG')
+            item.setFlag(QGraphicsItem.ItemIsSelectable)
+            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setToolTip('Imported SVG')
 
-        add_command = AddItemCommand(self.scene(), item)
-        self.scene().addCommand(add_command)
+            add_command = AddItemCommand(self.scene(), item)
+            self.scene().addCommand(add_command)
+
+        else:
+            item = CustomSvgItem()
+            item.loadFromData(self.svgData())
+            item.setPos(self.pos() + QPointF(10, 10))
+            item.setScale(self.scale())
+            item.setRotation(self.rotation())
+            item.setZValue(self.zValue())
+            item.setTransform(self.transform())
+            item.setTransformOriginPoint(self.transformOriginPoint())
+
+            item.setFlag(QGraphicsItem.ItemIsSelectable)
+            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setToolTip('Imported SVG')
+
+            add_command = AddItemCommand(self.scene(), item)
+            self.scene().addCommand(add_command)
 
         return item
 
     def mouseDoubleClickEvent(self, event):
         super().mouseDoubleClickEvent(event)
 
-        if os.path.exists(QUrl.fromLocalFile(self.source())):
-            QDesktopServices.openUrl(QUrl.fromLocalFile(self.source()))
+        if event.modifiers() & Qt.ShiftModifier:
+            if os.path.exists(self.source()):
+                QDesktopServices.openUrl(QUrl.fromLocalFile(self.source()))
 
 class CustomTextItem(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
@@ -424,6 +448,7 @@ class CustomTextItem(QGraphicsTextItem):
 
         self.setToolTip('Text')
         self.locked = False
+        self.editing = False
         self.setAcceptHoverEvents(True)
         self.gridEnabled = False
         self.old_text = self.toPlainText()
@@ -455,9 +480,13 @@ class CustomTextItem(QGraphicsTextItem):
 
     def mouseDoubleClickEvent(self, event):
         if self.locked == False:
+            if self.editing:
+                super().mouseDoubleClickEvent(event)
+
             if event.button() == Qt.LeftButton:
                 self.setTextInteractionFlags(Qt.TextEditorInteraction)
                 self.setFocus(Qt.MouseFocusReason)
+                self.editing = True
                 event.accept()
             else:
                 super().mouseDoubleClickEvent(event)
@@ -533,6 +562,7 @@ class CustomTextItem(QGraphicsTextItem):
     def set_active(self):
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self.setFocus(Qt.MouseFocusReason)
+        self.editing = True
 
     def toMarkdown(self):
         html_text = markdown.markdown(self.toPlainText())
