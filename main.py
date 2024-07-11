@@ -2023,7 +2023,6 @@ class MPRUN(QMainWindow):
         self.toolbox.setCurrentWidget(self.canvas_tab)
         self.add_canvas_btn.setChecked(True)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
 
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):

@@ -371,6 +371,12 @@ y: {int(self.mapToScene(point).y())}''')
                 if isinstance(item, CanvasItem):
                     item.setCanvasActive(False)
 
+                else:
+                    item.setFlag(QGraphicsItem.ItemIsSelectable, True)
+                    item.setFlag(QGraphicsItem.ItemIsMovable, True)
+
+            self.canvas.setBackgroundBrush(QBrush(QColor('#606060')))
+
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
                                    Qt.LeftButton, Qt.NoButton, event.modifiers())
