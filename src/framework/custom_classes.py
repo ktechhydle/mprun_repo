@@ -342,11 +342,12 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
 
 class CustomSvgItem(QGraphicsSvgItem):
-    def __init__(self, file):
-        super().__init__(file)
+    def __init__(self, *file):
+        super().__init__(*file)
 
         self.filename = None
-        self.render = QSvgRenderer(file)
+        for f in file:
+            self.render = QSvgRenderer(f)
 
         self.gridEnabled = False
 

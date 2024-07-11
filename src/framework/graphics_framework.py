@@ -1,3 +1,5 @@
+import os.path
+
 from src.scripts.imports import *
 from src.gui.custom_dialogs import *
 from src.framework.undo_commands import *
@@ -1313,18 +1315,22 @@ class SceneManager:
         return path_item
 
     def deserialize_custom_svg_item(self, data):
-        svg_item = CustomSvgItem(data['filename'])
-        svg_item.store_filename(data['filename'])
-        svg_item.loadFromData(data['data'].encode('utf-8'))
-        svg_item.setRotation(data['rotation'])
-        svg_item.setTransform(self.deserialize_transform(data['transform']))
-        svg_item.setPos(data['x'], data['y'])
-        svg_item.setToolTip(data['name'])
-        svg_item.setZValue(data['zval'])
-        svg_item.setVisible(data['visible'])
+        try:
+            svg_item = CustomSvgItem()
+            svg_item.store_filename(data['filename'])
+            svg_item.loadFromData(data['data'].encode('utf-8'))
+            svg_item.setRotation(data['rotation'])
+            svg_item.setTransform(self.deserialize_transform(data['transform']))
+            svg_item.setPos(data['x'], data['y'])
+            svg_item.setToolTip(data['name'])
+            svg_item.setZValue(data['zval'])
+            svg_item.setVisible(data['visible'])
 
-        svg_data = self.serialize_file(data['filename'])
-        svg_item.loadFromData(svg_data.encode('utf-8'))
+            svg_data = self.serialize_file(data['filename'])
+            svg_item.loadFromData(svg_data.encode('utf-8'))
+
+        except Exception:
+            pass
 
         return svg_item
 
