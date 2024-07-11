@@ -2417,10 +2417,11 @@ class MPRUN(QMainWindow):
                     with open('internal data/user_data.mpdat', 'r') as f:
                         existing_data = json.load(f)
 
-                    # Check if 'recent_files' exists and is a list, then append the new file
+                    # Check if 'recent_files' exists and is a list, then append the new file if not already present
                     if 'recent_files' in existing_data[0]:
                         if isinstance(existing_data[0]['recent_files'], list):
-                            existing_data[0]['recent_files'].append(filename)
+                            if filename not in existing_data[0]['recent_files']:
+                                existing_data[0]['recent_files'].append(filename)
                         else:
                             existing_data[0]['recent_files'] = [existing_data[0]['recent_files'], filename]
                     else:
