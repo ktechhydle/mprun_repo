@@ -852,6 +852,8 @@ class SceneManager:
                         'color': self.serialize_color(item.defaultTextColor()),
                         'rotation': item.rotation(),
                         'transform': self.serialize_transform(item.transform()),
+                        'scale': item.scale(),
+                        'transformorigin': self.serialize_point(item.transformOriginPoint()),
                         'x': item.pos().x(),
                         'y': item.pos().y(),
                         'name': item.toolTip(),
@@ -871,6 +873,8 @@ class SceneManager:
                         'brush': self.serialize_brush(item.brush()),
                         'rotation': item.rotation(),
                         'transform': self.serialize_transform(item.transform()),
+                        'scale': item.scale(),
+                        'transformorigin': self.serialize_point(item.transformOriginPoint()),
                         'x': item.pos().x(),
                         'y': item.pos().y(),
                         'name': item.toolTip(),
@@ -897,6 +901,8 @@ class SceneManager:
                         'type': 'CustomGraphicsItemGroup',
                         'rotation': item.rotation(),
                         'transform': self.serialize_transform(item.transform()),
+                        'scale': item.scale(),
+                        'transformorigin': self.serialize_point(item.transformOriginPoint()),
                         'x': item.pos().x(),
                         'y': item.pos().y(),
                         'name': item.toolTip(),
@@ -916,6 +922,8 @@ class SceneManager:
                         'brush': self.serialize_brush(item.brush()),
                         'rotation': item.rotation(),
                         'transform': self.serialize_transform(item.transform()),
+                        'scale': item.scale(),
+                        'transformorigin': self.serialize_point(item.transformOriginPoint()),
                         'x': item.pos().x(),
                         'y': item.pos().y(),
                         'name': item.toolTip(),
@@ -927,6 +935,10 @@ class SceneManager:
                         'textposx': item.text_element.pos().x(),
                         'textposy': item.text_element.pos().y(),
                         'textzval': item.text_element.zValue(),
+                        'texttransform': self.serialize_transform(item.text_element.transform()),
+                        'textscale': item.text_element.scale(),
+                        'texttransformorigin': self.serialize_point(item.transformOriginPoint()),
+                        'textrotation': item.text_element.rotation(),
                         'visible': item.isVisible(),
                         'textvisible': item.text_element.isVisible(),
                     }
@@ -942,6 +954,8 @@ class SceneManager:
                         'type': 'CustomSvgItem',
                         'rotation': item.rotation(),
                         'transform': self.serialize_transform(item.transform()),
+                        'scale': item.scale(),
+                        'transformorigin': self.serialize_point(item.transformOriginPoint()),
                         'x': item.pos().x(),
                         'y': item.pos().y(),
                         'name': item.toolTip(),
@@ -970,6 +984,8 @@ class SceneManager:
                         'type': 'CustomPixmapItem',
                         'rotation': item.rotation(),
                         'transform': self.serialize_transform(item.transform()),
+                        'scale': item.scale(),
+                        'transformorigin': self.serialize_point(item.transformOriginPoint()),
                         'x': item.pos().x(),
                         'y': item.pos().y(),
                         'name': item.toolTip(),
@@ -1029,6 +1045,9 @@ class SceneManager:
             'm32': transform.m32(),
             'm33': transform.m33()
         }
+
+    def serialize_point(self, point: QPointF):
+        return {'x': point.x(), 'y': point.y()}
 
     def serialize_canvas(self, canvas: CanvasItem):
         return {
@@ -1194,6 +1213,9 @@ class SceneManager:
         )
         return transform
 
+    def deserialize_point(self, data):
+        return QPointF(data['x'], data['y'])
+
     def deserialize_canvas(self, data):
         rect = QRectF(*data['rect'])
         canvas = CanvasItem(rect, data['name'])
@@ -1204,8 +1226,10 @@ class SceneManager:
         text_item = CustomTextItem(data['text'])
         text_item.setFont(self.deserialize_font(data['font']))
         text_item.setDefaultTextColor(self.deserialize_color(data['color']))
+        text_item.setTransformOriginPoint(self.deserialize_point(data['transformorigin']))
         text_item.setRotation(data['rotation'])
         text_item.setTransform(self.deserialize_transform(data['transform']))
+        text_item.setScale(data['scale'])
         text_item.setPos(data['x'], data['y'])
         text_item.setToolTip(data['name'])
         text_item.setZValue(data['zval'])
@@ -1235,8 +1259,10 @@ class SceneManager:
         path_item = CustomPathItem(sub_path)
         path_item.setPen(self.deserialize_pen(data['pen']))
         path_item.setBrush(self.deserialize_brush(data['brush']))
+        path_item.setTransformOriginPoint(self.deserialize_point(data['transformorigin']))
         path_item.setRotation(data['rotation'])
         path_item.setTransform(self.deserialize_transform(data['transform']))
+        path_item.setScale(data['scale'])
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
         path_item.setZValue(data['zval'])
@@ -1263,8 +1289,10 @@ class SceneManager:
 
     def deserialize_custom_group_item(self, data):
         group_item = CustomGraphicsItemGroup()
+        group_item.setTransformOriginPoint(self.deserialize_point(data['transformorigin']))
         group_item.setRotation(data['rotation'])
         group_item.setTransform(self.deserialize_transform(data['transform']))
+        group_item.setScale(data['scale'])
         group_item.setPos(data['x'], data['y'])
         group_item.setToolTip(data['name'])
         group_item.setZValue(data['zval'])
@@ -1302,8 +1330,10 @@ class SceneManager:
         path_item = LeaderLineItem(sub_path, data['text'])
         path_item.setPen(self.deserialize_pen(data['pen']))
         path_item.setBrush(self.deserialize_brush(data['brush']))
+        path_item.setTransformOriginPoint(self.deserialize_point(data['transformorigin']))
         path_item.setRotation(data['rotation'])
         path_item.setTransform(self.deserialize_transform(data['transform']))
+        path_item.setScale(data['scale'])
         path_item.setPos(data['x'], data['y'])
         path_item.setToolTip(data['name'])
         path_item.setZValue(data['zval'])
@@ -1311,6 +1341,10 @@ class SceneManager:
         path_item.text_element.setZValue(data['textzval'])
         path_item.text_element.setDefaultTextColor(self.deserialize_color(data['textcolor']))
         path_item.text_element.setFont(self.deserialize_font(data['textfont']))
+        path_item.text_element.setTransformOriginPoint(self.deserialize_point(data['texttransformorigin']))
+        path_item.text_element.setTransform(self.deserialize_transform(data['texttransform']))
+        path_item.text_element.setScale(data['textscale'])
+        path_item.text_element.setRotation(data['textrotation'])
         path_item.setVisible(data['visible'])
         path_item.text_element.setVisible(data['textvisible'])
         path_item.updatePathEndPoint()
@@ -1322,8 +1356,10 @@ class SceneManager:
             svg_item = CustomSvgItem()
             svg_item.store_filename(data['filename'])
             svg_item.loadFromData(data['raw_svg_data'])
+            svg_item.setTransformOriginPoint(self.deserialize_point(data['transformorigin']))
             svg_item.setRotation(data['rotation'])
             svg_item.setTransform(self.deserialize_transform(data['transform']))
+            svg_item.setScale(data['scale'])
             svg_item.setPos(data['x'], data['y'])
             svg_item.setToolTip(data['name'])
             svg_item.setZValue(data['zval'])
@@ -1339,8 +1375,10 @@ class SceneManager:
         pixmap_item = CustomPixmapItem(pixmap)
         pixmap_item.store_filename(data['filename'])
         pixmap_item.loadFromData(data['data'])
+        pixmap_item.setTransformOriginPoint(self.deserialize_point(data['transformorigin']))
         pixmap_item.setRotation(data['rotation'])
         pixmap_item.setTransform(self.deserialize_transform(data['transform']))
+        pixmap_item.setScale(data['scale'])
         pixmap_item.setPos(data['x'], data['y'])
         pixmap_item.setToolTip(data['name'])
         pixmap_item.setZValue(data['zval'])
