@@ -1,3 +1,5 @@
+import os.path
+
 from src.scripts.imports import *
 from src.framework.undo_commands import *
 
@@ -369,9 +371,14 @@ class CustomSvgItem(QGraphicsSvgItem):
         else:
             super().mouseMoveEvent(event)
 
-    def loadFromData(self, svg_data):
-        byte_array = QByteArray(svg_data)
-        self.renderer().load(byte_array)
+    def loadFromData(self, svg_data) -> None:
+        try:
+            renderer = QSvgRenderer(QByteArray(svg_data.encode('utf-8')))
+            self.setSharedRenderer(renderer)
+            self.setElementId("")  # Optional: set specific SVG element ID if needed
+
+        except Exception as e:
+            print(f"Error in loadFromData: {e}")
 
     def store_filename(self, file):
         self.filename = file
@@ -402,7 +409,9 @@ class CustomSvgItem(QGraphicsSvgItem):
 
     def mouseDoubleClickEvent(self, event):
         super().mouseDoubleClickEvent(event)
-        QDesktopServices.openUrl(QUrl.fromLocalFile(self.source()))
+
+        if os.path.exists(QUrl.fromLocalFile(self.source())):
+            QDesktopServices.openUrl(QUrl.fromLocalFile(self.source()))
 
 class CustomTextItem(QGraphicsTextItem):
     def __init__(self, text="", parent=None):

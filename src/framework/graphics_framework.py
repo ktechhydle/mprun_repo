@@ -947,7 +947,7 @@ class SceneManager:
                         'name': item.toolTip(),
                         'zval': item.zValue(),
                         'filename': item.source(),
-                        'data': self.serialize_file(item.source()),
+                        'raw_svg_data': self.serialize_file(item.source()),
                         'visible': item.isVisible(),
                     }
 
@@ -1125,7 +1125,7 @@ class SceneManager:
         return children
 
     def serialize_file(self, file):
-        with open(file, 'r') as f:
+        with open(file, 'r', encoding='utf-8') as f:
             return f.read()
 
     def deserialize_items(self, items_data):
@@ -1318,7 +1318,7 @@ class SceneManager:
         try:
             svg_item = CustomSvgItem()
             svg_item.store_filename(data['filename'])
-            svg_item.loadFromData(data['data'].encode('utf-8'))
+            svg_item.loadFromData(data['raw_svg_data'])
             svg_item.setRotation(data['rotation'])
             svg_item.setTransform(self.deserialize_transform(data['transform']))
             svg_item.setPos(data['x'], data['y'])
@@ -1326,13 +1326,10 @@ class SceneManager:
             svg_item.setZValue(data['zval'])
             svg_item.setVisible(data['visible'])
 
-            svg_data = self.serialize_file(data['filename'])
-            svg_item.loadFromData(svg_data.encode('utf-8'))
+            return svg_item
 
-        except Exception:
-            pass
-
-        return svg_item
+        except Exception as e:
+            print(e)
 
     def deserialize_custom_pixmap_item(self, data):
         pixmap = QPixmap(data['filename'])
