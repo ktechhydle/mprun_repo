@@ -2,6 +2,188 @@ from src.scripts.imports import *
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 
+class PathDrawerTool:
+    def __init__(self, canvas, view):
+        self.canvas = canvas
+        self.view = view
+        self.temp_path_item = None
+        self.path = None
+        self.last_point = None
+
+    def show_tooltip(self, event):
+        point = event.pos()
+        p = self.view.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+
+        if self.path:
+            QToolTip.showText(p, f'path length: {int(self.path.length())} pt')
+
+    def on_path_draw_start(self, event):
+        # Check the button being pressed
+        if event.button() == Qt.LeftButton:
+            # Create a new path
+            self.path = QPainterPath()
+            self.path.setFillRule(Qt.WindingFill)
+            self.path.moveTo(self.view.mapToScene(event.pos()))
+            self.last_point = self.view.mapToScene(event.pos())
+
+            # Set drag mode
+            self.view.setDragMode(QGraphicsView.NoDrag)
+
+    def on_path_draw(self, event):
+        # Check the buttons
+        if event.buttons() == Qt.LeftButton:
+            self.path.lineTo(self.view.mapToScene(event.pos()))
+            self.last_point = self.view.mapToScene(event.pos())
+
+            # Remove temporary path if it exists
+            if self.temp_path_item:
+                self.canvas.removeItem(self.temp_path_item)
+
+            # Load temporary path as QGraphicsItem to view it while drawing
+            self.temp_path_item = CustomPathItem(self.path)
+            self.temp_path_item.setPen(self.view.pen)
+            self.temp_path_item.setBrush(self.view.stroke_fill)
+            self.temp_path_item.setZValue(0)
+            self.canvas.addItem(self.temp_path_item)
+
+            self.canvas.update()
+
+    def on_path_draw_end(self, event):
+        # Check the buttons
+        if event.button() == Qt.LeftButton:
+            self.path.lineTo(self.view.mapToScene(event.pos()))
+            self.last_point = self.view.mapToScene(event.pos())
+
+            # Check if there is a temporary path (if so, remove it now)
+            if self.temp_path_item:
+                self.canvas.removeItem(self.temp_path_item)
+
+            self.canvas.update()
+
+            # Load main path as QGraphicsItem
+            path_item = CustomPathItem(self.path)
+            path_item.setPen(self.view.pen)
+            path_item.setZValue(0)
+            path_item.setBrush(self.view.stroke_fill)
+            path_item.setFlag(QGraphicsItem.ItemIsSelectable)
+            path_item.setFlag(QGraphicsItem.ItemIsMovable)
+            path_item.setToolTip('Path')
+
+            # Add item
+            if path_item.path().isEmpty():
+                self.canvas.removeItem(path_item)
+
+            else:
+                add_command = AddItemCommand(self.canvas, path_item)
+                self.canvas.addCommand(add_command)
+
+            self.temp_path_item = None
+            self.path = None
+            self.last_point = None
+
+class PenDrawerTool:
+    def __init__(self, canvas, view):
+        self.canvas = canvas
+        self.view = view
+        self.path = None
+        self.temp_path_item = None
+        self.last_point = None
+
+    def show_tooltip(self, event):
+        point = event.pos()
+        p = self.view.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+
+        if self.path:
+            QToolTip.showText(p, f'path length: {int(self.path.length())}')
+
+    def on_draw_start(self, event):
+        # Check the button being pressed
+        if event.button() == Qt.LeftButton:
+            # Create a new path
+            self.path = QPainterPath()
+            self.path.setFillRule(Qt.WindingFill)
+            self.path.moveTo(self.view.mapToScene(event.pos()))
+            self.last_point = self.view.mapToScene(event.pos())
+
+            # Set drag mode
+            self.view.setDragMode(QGraphicsView.NoDrag)
+
+    def on_draw(self, event):
+        if self.path is not None:
+            # Check the buttons
+            if event.buttons() == Qt.LeftButton:
+                self.path.lineTo(self.view.mapToScene(event.pos()))
+                self.last_point = self.view.mapToScene(event.pos())
+
+                # Remove temporary path if it exists
+                if self.temp_path_item is not None:
+                    self.canvas.removeItem(self.temp_path_item)
+
+                # Load temporary path as QGraphicsItem to view it while drawing
+                self.path.setFillRule(Qt.WindingFill)
+                self.temp_path_item = CustomPathItem(self.path)
+                self.temp_path_item.path().setFillRule(Qt.WindingFill)
+                self.temp_path_item.setPen(self.view.pen)
+                self.temp_path_item.setBrush(self.view.stroke_fill)
+                self.temp_path_item.setZValue(0)
+                self.canvas.addItem(self.temp_path_item)
+
+                try:
+                    self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
+
+                except Exception:
+                    pass
+
+                self.canvas.update()
+
+    def on_draw_end(self, event):
+        if self.path is not None:
+            if self.path.isEmpty():
+                return
+
+            else:
+                # Check the buttons
+                if event.button() == Qt.LeftButton:
+                    self.path.lineTo(self.view.mapToScene(event.pos()))
+                    self.last_point = self.view.mapToScene(event.pos())
+
+                    # Check if there is a temporary path (if so, remove it now)
+                    if self.temp_path_item is not None:
+                        self.canvas.removeItem(self.temp_path_item)
+
+                    self.canvas.update()
+
+                    # Load main path as QGraphicsItem
+                    path_item = CustomPathItem(self.path)
+                    path_item.path().setFillRule(Qt.WindingFill)
+                    path_item.setPen(self.view.pen)
+                    path_item.setZValue(0)
+                    path_item.setBrush(self.view.stroke_fill)
+                    path_item.setFlag(QGraphicsItem.ItemIsSelectable)
+                    path_item.setFlag(QGraphicsItem.ItemIsMovable)
+                    path_item.setToolTip('Path')
+
+                    try:
+                        path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
+                    except Exception:
+                        pass
+
+                    # Add item
+                    if path_item.path().isEmpty():
+                        self.canvas.removeItem(path_item)
+
+                    else:
+                        add_command = AddItemCommand(self.canvas, path_item)
+                        self.canvas.addCommand(add_command)
+
+                    self.path = None
+                    self.temp_path_item = None
+                    self.last_point = None
+
 class LineAndLabelTool:
     def __init__(self, canvas, view):
         self.canvas = canvas
