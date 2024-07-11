@@ -2023,6 +2023,7 @@ class MPRUN(QMainWindow):
         self.toolbox.setCurrentWidget(self.canvas_tab)
         self.add_canvas_btn.setChecked(True)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+        self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
 
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
@@ -2031,6 +2032,11 @@ class MPRUN(QMainWindow):
                 if item.parentItem() and isinstance(item.parentItem(), CanvasItem):
                     if item.parentItem().rect().isEmpty():
                         self.canvas.removeItem(item)
+
+            else:
+                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+
 
     def use_exit_add_canvas(self):
         # Deactivate the add canvas tool
