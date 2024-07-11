@@ -98,7 +98,7 @@ class PenDrawerTool:
         p.setX(p.x() + 10)
 
         if self.path:
-            QToolTip.showText(p, f'path length: {int(self.path.length())}')
+            QToolTip.showText(p, f'path length: {int(self.path.length())} pt')
 
     def on_draw_start(self, event):
         # Check the button being pressed
