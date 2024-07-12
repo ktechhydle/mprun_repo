@@ -217,7 +217,7 @@ class DisclaimerWin(QMessageBox):
     def __init__(self, data_file, parent=None):
         super().__init__(parent)
 
-        self.setWindowTitle('Disclaimer')
+        self.setWindowTitle('DISCLAIMER')
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_logoV3.png'))
         self.setIcon(QMessageBox.Warning)
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)

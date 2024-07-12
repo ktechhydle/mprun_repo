@@ -56,15 +56,11 @@ Competition:
 Athlete:
 Date:"""
 
-use_disclaimer = '''This app collects user data, including...
+use_disclaimer = '''MPRUN does NOT guarantee any success in planning competitions, MPRUN is a tool that will HELP plan successful competitions/runs. 
 
-Content You Read in App:
-This app stores the content you read in app (like this dialog) so that you don't get popup after popup everytime you open the app. The content you read includes this dialog, the What's New Dialog, and the Tutorial Video Dialog.
+MPRUN and MP Software are NOT responsible for any mistakes, injuries, or casualties caused during any competitions/runs. 
 
-Computer Info:
-This app also stores the platform you are running for cross-platform differences.
-
-Any data you are curious about can be found in the user_data.mpdat file included with this distribution.
+YOU are responsible for your own safety and ultimately your own mindset. MPRUN is a Free, Open-Source, Competition Run Planning App that ASSISTS users.
 
 Do you accept?'''
 
