@@ -117,7 +117,6 @@ class PenDrawerTool:
             # Check the buttons
             if event.buttons() == Qt.LeftButton:
                 self.path.lineTo(self.view.mapToScene(event.pos()))
-                self.last_point = self.view.mapToScene(event.pos())
 
                 # Remove temporary path if it exists
                 if self.temp_path_item is not None:
@@ -133,7 +132,11 @@ class PenDrawerTool:
                 self.canvas.addItem(self.temp_path_item)
 
                 try:
-                    self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
+                    if event.modifiers() & Qt.ShiftModifier:
+                        self.temp_path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
+                        self.path = self.temp_path_item.path()
+                    else:
+                        self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
 
                 except Exception:
                     pass
@@ -149,7 +152,6 @@ class PenDrawerTool:
                 # Check the buttons
                 if event.button() == Qt.LeftButton:
                     self.path.lineTo(self.view.mapToScene(event.pos()))
-                    self.last_point = self.view.mapToScene(event.pos())
 
                     # Check if there is a temporary path (if so, remove it now)
                     if self.temp_path_item is not None:
@@ -168,7 +170,12 @@ class PenDrawerTool:
                     path_item.setToolTip('Path')
 
                     try:
-                        path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
+                        if event.modifiers() & Qt.ShiftModifier:
+                            path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
+                            self.path = self.temp_path_item.path()
+                        else:
+                            path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
+
                     except Exception:
                         pass
 

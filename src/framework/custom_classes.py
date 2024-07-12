@@ -184,6 +184,14 @@ class CustomPathItem(QGraphicsPathItem):
 
         return item
 
+    def simplify(self, old_pos, new_pos):
+        path = self.path()
+        path.clear()
+        path.moveTo(old_pos)
+        path.lineTo(new_pos)
+
+        self.setPath(path)
+
     def smooth_path(self, path, tolerance: float):
         vertices = [(point.x(), point.y()) for point in path.toSubpathPolygons()[0]]
         x, y = zip(*vertices)
