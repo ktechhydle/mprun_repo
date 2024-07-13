@@ -1581,16 +1581,28 @@ class ExportManager:
 
     def exportAsPDF(self, file_path, selected_item):
         try:
-            printer = QPrinter()
+            # Get the bounding rect of the selected item
+            bounding_rect = selected_item.sceneBoundingRect()
+
+            # Configure the printer
+            printer = QPrinter(QPrinter.HighResolution)
             printer.setOutputFormat(QPrinter.PdfFormat)
             printer.setOutputFileName(file_path)
+
+            # Adjust the printer's page size to match the bounding rect
+            printer.setPageSizeMM(QSizeF(bounding_rect.width(), bounding_rect.height()))
+
+            # Start painting
             painter = QPainter()
             painter.begin(printer)
 
-            # Render your content directly onto the painter
-            self.canvas.render(painter, source=selected_item.sceneBoundingRect(),
-                               target=selected_item.sceneBoundingRect())
+            # Translate painter to the bounding rect top-left
+            painter.translate(-bounding_rect.topLeft())
 
+            # Render the selected item
+            self.canvas.render(painter, QRectF(), bounding_rect)
+
+            # End painting
             painter.end()
 
         except Exception as e:
@@ -1600,7 +1612,7 @@ class ExportManager:
         QMessageBox.information(self.canvas.parentWindow, 'Export Finished', 'Export completed successfully.',
                                 QMessageBox.Ok)
 
-        # Open the image with the default image viewer
+        # Open the PDF with the default viewer
         QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
 
     def filterSelectedCanvasForExport(self, selected_item):
