@@ -399,7 +399,7 @@ class CustomGraphicsScene(QGraphicsScene):
         super().__init__()
         self.file_name = None
         self.mpversion = '1.0.0'
-        self.canvas_count = 1
+        self.canvas_count = 2
         self.undo_stack = undoStack
         self.scale_btn = None
         self.modified = False
@@ -481,6 +481,10 @@ class CustomGraphicsScene(QGraphicsScene):
         self.modified = True
         self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
+        if isinstance(command, AddItemCommand):
+            if isinstance(command.item, CanvasItem):
+                self.canvas_count += 1
+
         print(command)
 
     def selectedItemsBoundingRect(self):
@@ -557,9 +561,6 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def addItem(self, item):
         super().addItem(item)
-
-        if isinstance(item, CanvasItem):
-            self.canvas_count += 1
 
         if self.gridEnabled:
             for item in self.items():
