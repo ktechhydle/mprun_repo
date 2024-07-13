@@ -361,7 +361,7 @@ class CanvasEditorPanel(QWidget):
             self.canvas_preset_dropdown.addItem(canvas, key)
         self.canvas_preset_dropdown.setCurrentText('Custom')
         self.canvas_preset_dropdown.setFixedWidth(205)
-        self.canvas_preset_dropdown.currentIndexChanged.connect(self.update_canvas_size)
+        self.canvas_preset_dropdown.currentIndexChanged.connect(self.update_canvas_preset)
 
         self.canvas_name_entry = QLineEdit(self)
         self.canvas_name_entry.setFixedWidth(205)
@@ -389,38 +389,38 @@ class CanvasEditorPanel(QWidget):
         self.layout.addWidget(widget3)
 
     def update_canvas_size(self):
-        try:
-            choice = self.canvas_preset_dropdown.itemData(self.canvas_preset_dropdown.currentIndex())
+        items = [item for item in self.canvas.selectedItems() if isinstance(item, CanvasItem)]
+        if not items:
+            return
 
-            if choice == 'c':
-                pass
+        old_sizes = [(item.rect().width(), item.rect().height()) for item in items]
+        new_width = self.canvas_x_entry.value()
+        new_height = self.canvas_y_entry.value()
 
-            else:
-                self.canvas_x_entry.setValue(choice[0])
-                self.canvas_y_entry.setValue(choice[1])
+        command = CanvasSizeEditCommand(items, old_sizes, new_width, new_height)
+        self.canvas.addCommand(command)
 
-        except Exception as e:
-            print(e)
-
-        for item in self.canvas.selectedItems():
+        for item in items:
             if isinstance(item, CanvasItem):
-                try:
-                    command = CanvasSizeEditCommand(item,
-                                                    item.rect().width(),
-                                                    item.rect().height(),
-                                                    self.canvas_x_entry.value(),
-                                                    self.canvas_y_entry.value())
-                    self.canvas.addCommand(command)
-                    self.child.setPos(item.boundingRect().x(), item.boundingRect().y())
+                item.text.setPos(item.boundingRect().x(), item.boundingRect().y())
 
-                except Exception:
-                    pass
+    def update_canvas_preset(self):
+        choice = self.canvas_preset_dropdown.itemData(self.canvas_preset_dropdown.currentIndex())
+
+        if choice != 'c':
+            self.canvas_x_entry.setValue(choice[0])
+            self.canvas_y_entry.setValue(choice[1])
 
     def update_canvas_name(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                command = CanvasNameEditCommand(item, item.name(), self.canvas_name_entry.text())
-                self.canvas.addCommand(command)
+        items = [item for item in self.canvas.selectedItems() if isinstance(item, CanvasItem)]
+        if not items:
+            return
+
+        old_names = [item.name() for item in items]
+        new_name = self.canvas_name_entry.text()
+
+        command = CanvasNameEditCommand(items, old_names, new_name)
+        self.canvas.addCommand(command)
 
 class QuickActionsPanel(QWidget):
     def __init__(self, canvas, parent):

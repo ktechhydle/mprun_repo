@@ -334,36 +334,39 @@ class ResetItemCommand(QUndoCommand):
             item.setOpacity(state['opacity'])
 
 class CanvasSizeEditCommand(QUndoCommand):
-    def __init__(self, item, og_w, og_h, new_w, new_h):
+    def __init__(self, items, old_sizes, new_width, new_height):
         super().__init__()
 
-        self.item = item
-        self.og_w = og_w
-        self.og_h = og_h
-        self.new_w = new_w
-        self.new_h = new_h
+        self.items = items
+        self.old_sizes = old_sizes
+        self.new_width = new_width
+        self.new_height = new_height
 
     def redo(self):
-        self.item.setRect(0, 0, self.new_w, self.new_h)
+        for item in self.items:
+            item.setRect(0, 0, self.new_width, self.new_height)
 
     def undo(self):
-        self.item.setRect(0, 0, self.og_w, self.og_h)
+        for item, (old_width, old_height) in zip(self.items, self.old_sizes):
+            item.setRect(0, 0, old_width, old_height)
 
 class CanvasNameEditCommand(QUndoCommand):
-    def __init__(self, item, og, new):
+    def __init__(self, items, old_names, new_name):
         super().__init__()
 
-        self.item = item
-        self.og = og
-        self.new = new
+        self.items = items
+        self.old_names = old_names
+        self.new_name = new_name
 
     def redo(self):
-        self.item.setName(self.new)
-        self.item.setToolTip(self.new)
+        for item in self.items:
+            item.setName(self.new_name)
+            item.setToolTip(self.new_name)
 
     def undo(self):
-        self.item.setName(self.og)
-        self.item.setToolTip(self.og)
+        for item, old_name in zip(self.items, self.old_names):
+            item.setName(old_name)
+            item.setToolTip(old_name)
 
 class LayerChangeCommand(QUndoCommand):
     def __init__(self, items, old_z_values, new_z_values):
