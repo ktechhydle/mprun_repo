@@ -1470,10 +1470,10 @@ class ExportManager:
     def __init__(self, canvas):
         self.canvas = canvas
 
-
     def normalExport(self):
         # Exit add canvas tool if active
         self.canvas.parentWindow.use_exit_add_canvas()
+        self.canvas.parentWindow.select_btn.trigger()
 
         # Create a custom dialog to with a dropdown to select which canvas to export
         selector = CanvasItemSelector(self.canvas, self.canvas.parentWindow)
@@ -1617,9 +1617,6 @@ class ExportManager:
         QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
 
     def filterSelectedCanvasForExport(self, selected_item):
-        self.canvas.parentWindow.use_exit_add_canvas()
-        self.canvas.parentWindow.select_btn.trigger()
-
         # File dialog, filepath
         file_dialog = QFileDialog()
 
