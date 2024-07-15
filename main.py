@@ -230,10 +230,6 @@ class MPRUN(QMainWindow):
         duplicate_action.setShortcut(QKeySequence("D"))
         duplicate_action.triggered.connect(self.use_duplicate)
 
-        duplicate_canvas_action = QAction('Duplicate Canvas', self)
-        duplicate_canvas_action.setShortcut(QKeySequence("Ctrl+D"))
-        duplicate_canvas_action.triggered.connect(self.use_duplicate_canvas)
-
         scale_action = QAction('Scale', self)
         scale_action.setShortcut(QKeySequence('Q'))
         scale_action.triggered.connect(self.use_scale_tool)
@@ -346,7 +342,6 @@ class MPRUN(QMainWindow):
         self.object_menu.addAction(bring_to_front_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(duplicate_action)
-        self.object_menu.addAction(duplicate_canvas_action)
         self.object_menu.addAction(scale_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(flip_horizontal_action)
@@ -1735,7 +1730,14 @@ class MPRUN(QMainWindow):
         selected_items = self.canvas.selectedItems()
 
         for item in selected_items:
-            if isinstance(item, CustomTextItem):
+            if isinstance(item, CanvasItem):
+                duplicate = CanvasItem(item.rect(), f'COPY - {item.name()}')
+                duplicate.setPos(item.sceneBoundingRect().width() + 100 + item.x(), item.y())
+
+                self.canvas.addCommand(AddItemCommand(self.canvas, duplicate))
+                self.use_add_canvas()
+
+            elif isinstance(item, CustomTextItem):
                 item.duplicate()
 
             elif isinstance(item, CustomPathItem):
@@ -1758,15 +1760,6 @@ class MPRUN(QMainWindow):
 
             elif isinstance(item, LeaderLineItem):
                 item.duplicate()
-
-    def use_duplicate_canvas(self):
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CanvasItem):
-                duplicate = CanvasItem(item.rect(), f'COPY - {item.name()}')
-                duplicate.setPos(item.sceneBoundingRect().width() + 100 + item.x(), item.y())
-
-                self.canvas.addCommand(AddItemCommand(self.canvas, duplicate))
-                self.use_add_canvas()
 
     def use_set_item_pos(self):
         self.canvas.blockSignals(True)
