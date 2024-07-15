@@ -2527,7 +2527,7 @@ def main() -> None:
         app.setStyleSheet(windows_style)
 
     else:
-        app.setStyleSheet(windows_style)
+        app.setStyleSheet(mac_style)
 
     window = MPRUN()
     splash.finish(window)
