@@ -1,3 +1,4 @@
+import json
 import os.path
 
 from src.scripts.imports import *
@@ -87,16 +88,15 @@ along with MPRUN. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 user_data = [{
-    'recent_files': [os.path.abspath('examples/example_run.mp'), os.path.abspath('examples/welcome.mp')],
+    'recent_files': [],
     'disclaimer_read': False,
     'whatsnew_read': False,
     'tutorial_watched': False,
     'platform': sys.platform
 }]
 
-if os.path.exists(os.path.abspath('internal data/user_data.mpdat')):
-    pass
+with open('internal data/user_data.mpdat', 'r') as f:
+    content = json.load(f)
 
-else:
-    with open('internal data/user_data.mpdat', 'w') as f:
+    if content == user_data:
         json.dump(user_data, f)
