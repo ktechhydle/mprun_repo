@@ -11,7 +11,6 @@ class MPRUN(QMainWindow):
         super(MPRUN, self).__init__()
         # Creating the main window
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_logoV3.png'))
-        self.setGeometry(0, 0, 1500, 800)
         self.setAcceptDrops(True)
 
         # File
@@ -96,6 +95,15 @@ class MPRUN(QMainWindow):
 
             except Exception:
                 pass
+
+        data = self.read_settings()
+
+        for _data in data:
+            if self.isMaximized():
+                _data['geometry'] = ['maximized']
+            else:
+                _data['geometry'] = [self.x(), self.y(), self.width(), self.height()]
+            self.write_settings([_data])
 
     def create_actions_dict(self):
         self.actions = {}
@@ -2432,8 +2440,7 @@ class MPRUN(QMainWindow):
                     self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
 
                     # Read existing data
-                    with open('internal data/_recent_files.json', 'r') as f:
-                        existing_data = json.load(f)
+                    existing_data = self.read_recent_files()
 
                     # Check if 'recent_files' exists and is a list, then append the new file if not already present
                     if 'recent_files' in existing_data[0]:
@@ -2465,8 +2472,34 @@ class MPRUN(QMainWindow):
     def open_recent(self, filename: str):
         self.canvas.manager.load_from_file(filename, self)
 
-    def set_user_data(self, data):
-        for user_data in data:
+    def read_settings(self):
+        with open('internal data/_settings.json', 'r') as f:
+            return json.load(f)
+
+    def read_recent_files(self):
+        with open('internal data/_recent_files.json', 'r') as f:
+            return json.load(f)
+
+    def write_settings(self, data):
+        with open('internal data/_settings.json', 'w') as f:
+            return json.dump(data, f)
+
+    def write_recent_file(self, data):
+        with open('internal data/_recent_files.json', 'w') as f:
+            return json.dump(data, f)
+
+    def open_data(self):
+        for user_data in self.read_settings():
+            if user_data['geometry'][0] == 'maximized':
+                self.showMaximized()
+
+            else:
+                self.setGeometry(user_data['geometry'][0],
+                                 user_data['geometry'][1],
+                                 user_data['geometry'][2],
+                                 user_data['geometry'][3]
+                                 )
+
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
 
@@ -2532,9 +2565,7 @@ def main() -> None:
     window = MPRUN()
     splash.finish(window)
 
-    with open('internal data/_settings.json', 'r') as f:
-        data = json.load(f)
-        window.set_user_data(data)
+    window.open_data()
 
     sys.exit(app.exec_())
 

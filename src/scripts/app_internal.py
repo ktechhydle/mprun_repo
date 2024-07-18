@@ -92,12 +92,3 @@ user_data = [{
     'disclaimer_read': False,
     'tutorial_watched': False,
 }]
-
-with open('internal data/_settings.json', 'r') as f:
-    data = json.load(f)
-
-    for attr in data:
-        if attr['created']:
-            pass
-        else:
-            json.dump(user_data, f)
