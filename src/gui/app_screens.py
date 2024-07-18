@@ -225,3 +225,8 @@ class DisclaimerWin(QMessageBox):
 
         self.data_file = data_file
         self.setText(use_disclaimer)
+
+        self.show_on_startup_btn = QCheckBox()
+        self.show_on_startup_btn.setText('Show this message on startup')
+
+        self.setCheckBox(self.show_on_startup_btn)

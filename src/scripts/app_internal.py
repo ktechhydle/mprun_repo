@@ -88,15 +88,16 @@ along with MPRUN. If not, see <http://www.gnu.org/licenses/>.
 '''
 
 user_data = [{
-    'recent_files': [],
+    'created': True,
     'disclaimer_read': False,
-    'whatsnew_read': False,
     'tutorial_watched': False,
-    'platform': sys.platform
 }]
 
-with open('internal data/user_data.mpdat', 'r') as f:
-    content = json.load(f)
+with open('internal data/_settings.json', 'r') as f:
+    data = json.load(f)
 
-    if content == user_data:
-        json.dump(user_data, f)
+    for attr in data:
+        if attr['created']:
+            pass
+        else:
+            json.dump(user_data, f)

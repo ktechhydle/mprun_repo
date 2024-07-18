@@ -1,3 +1,4 @@
+import json
 import os.path
 
 from src.gui.app_screens import *
@@ -2377,21 +2378,26 @@ class MPRUN(QMainWindow):
         self.w.show()
 
     def show_disclaimer(self):
-        w = DisclaimerWin('internal data/user_data.mpdat')
+        w = DisclaimerWin('internal data/_settings.json')
 
         result = w.exec_()
 
         if result == QMessageBox.Yes:
-            # Read existing data
-            with open('internal data/user_data.mpdat', 'r') as f:
-                existing_data = json.load(f)
+            if w.show_on_startup_btn.isChecked():
+                return
 
-            # Update the data
-            existing_data[0]['disclaimer_read'] = True
+            else:
+                # Read existing data
+                with open('internal data/_settings.json', 'r') as f:
+                    existing_data = json.load(f)
 
-            # Write the updated data back to the file
-            with open('internal data/user_data.mpdat', 'w') as f:
-                json.dump(existing_data, f)
+                # Update the data
+                existing_data[0]['disclaimer_read'] = True
+
+                # Write the updated data back to the file
+                with open('internal data/_settings.json', 'w') as f:
+                    json.dump(existing_data, f)
+
         else:
             self.close()
 
@@ -2426,7 +2432,7 @@ class MPRUN(QMainWindow):
                     self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
 
                     # Read existing data
-                    with open('internal data/user_data.mpdat', 'r') as f:
+                    with open('internal data/_recent_files.json', 'r') as f:
                         existing_data = json.load(f)
 
                     # Check if 'recent_files' exists and is a list, then append the new file if not already present
@@ -2440,10 +2446,10 @@ class MPRUN(QMainWindow):
                         existing_data[0]['recent_files'] = [filename]
 
                     # Write the updated data back to the file
-                    with open('internal data/user_data.mpdat', 'w') as f:
+                    with open('internal data/_recent_files.json', 'w') as f:
                         json.dump(existing_data, f)
 
-                    self.update_user_data()
+                    self.update_recent_file_data()
 
                     return True
 
@@ -2464,33 +2470,34 @@ class MPRUN(QMainWindow):
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
 
-            recent_files = []
-            seen = set()
-            for item in user_data['recent_files']:
-                if item not in seen:
-                    recent_files.append(item)
-                    seen.add(item)
-
-            for recent_file in recent_files:
-                if os.path.exists(recent_file):
-                    action = QAction(os.path.basename(recent_file), self)
-                    action.setToolTip(os.path.abspath(recent_file))
-                    action_tooltip = action.toolTip()  # Capture the current tooltip
-                    action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
-
-                    self.open_recent_menu.addAction(action)
-
-    def update_user_data(self):
-        with open('internal data/user_data.mpdat', 'r') as f:
+        with open('internal data/_recent_files.json', 'r') as f:
             data = json.load(f)
 
-            for user_data in data:
-                if not user_data['disclaimer_read']:
-                    self.show_disclaimer()
-
+            for _data in data:
                 recent_files = []
                 seen = set()
-                for item in user_data['recent_files']:
+                for item in _data['recent_files']:
+                    if item not in seen:
+                        recent_files.append(item)
+                        seen.add(item)
+
+                for recent_file in recent_files:
+                    if os.path.exists(recent_file):
+                        action = QAction(os.path.basename(recent_file), self)
+                        action.setToolTip(os.path.abspath(recent_file))
+                        action_tooltip = action.toolTip()  # Capture the current tooltip
+                        action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
+
+                        self.open_recent_menu.addAction(action)
+
+    def update_recent_file_data(self):
+        with open('internal data/_recent_files.json', 'r') as f:
+            data = json.load(f)
+
+            for _data in data:
+                recent_files = []
+                seen = set()
+                for item in _data['recent_files']:
                     if item not in seen:
                         recent_files.append(item)
                         seen.add(item)
@@ -2517,15 +2524,15 @@ def main() -> None:
     app.processEvents()
 
     if sys.platform == 'darwin':
-        app.setStyleSheet(windows_style)
+        app.setStyleSheet(mac_style)
 
     else:
-        app.setStyleSheet(mac_style)
+        app.setStyleSheet(windows_style)
 
     window = MPRUN()
     splash.finish(window)
 
-    with open('internal data/user_data.mpdat', 'r') as f:
+    with open('internal data/_settings.json', 'r') as f:
         data = json.load(f)
         window.set_user_data(data)
 
