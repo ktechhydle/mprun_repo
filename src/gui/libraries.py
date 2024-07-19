@@ -98,6 +98,7 @@ class LibraryWidget(QWidget):
         # Clear existing items in the list widget
         self.library_list_widget.clear()
         self.library_list_widget.all_items = []
+        self.current_folder_path = folder_path
 
         # List all SVG files in the selected folder (now supports pixmap as well)
         svg_files = [f for f in os.listdir(folder_path) if f.endswith(('.svg', '.png', '.jpg', '.jpeg'))]

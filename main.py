@@ -37,9 +37,9 @@ class MPRUN(QMainWindow):
         self.create_initial_canvas()
         self.create_menu()
         self.init_toolbars()
+        self.create_toolbox()
         self.create_toolbar1()
         self.create_toolbar2()
-        self.create_toolbar3()
         self.create_view()
         self.create_default_objects()
         self.update()
@@ -434,7 +434,7 @@ class MPRUN(QMainWindow):
         self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
 
-    def create_toolbar1(self):
+    def create_toolbox(self):
         #----action toolbar widgets----#
 
         # Dock widget
@@ -472,7 +472,6 @@ class MPRUN(QMainWindow):
         # Libraries Tab
         self.libraries_tab = LibraryWidget(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.setFixedHeight(385)
         self.libraries_tab.setFixedWidth(300)
 
         # Canvas Tab
@@ -821,7 +820,7 @@ class MPRUN(QMainWindow):
         self.rotation_label.setHidden(True)
         self.rotate_item_spin.setHidden(True)
 
-    def create_toolbar2(self):
+    def create_toolbar1(self):
         self.action_group = QActionGroup(self)
 
         #----toolbar buttons----#
@@ -945,7 +944,7 @@ class MPRUN(QMainWindow):
         self.actions['Add Canvas'] = self.add_canvas_btn
         self.actions['Insert Image'] = self.insert_btn
 
-    def create_toolbar3(self):
+    def create_toolbar2(self):
         #----item toolbar widgets----#
         align_left_btn = QAction(QIcon('ui/Tool Icons/align_left_icon.png'), '', self)
         align_left_btn.setToolTip('Align the selected elements to the left')
