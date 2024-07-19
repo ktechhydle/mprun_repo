@@ -126,6 +126,7 @@ class MPRUN(QMainWindow):
         self.edit_menu = self.menu_bar.addMenu('&Edit')
         self.object_menu = self.menu_bar.addMenu('&Object')
         self.selection_menu = self.menu_bar.addMenu('&Selection')
+        self.view_menu = self.menu_bar.addMenu('&View')
         self.help_menu = self.menu_bar.addMenu('&Help')
 
         # Create file actions
@@ -314,6 +315,31 @@ class MPRUN(QMainWindow):
         select_canvases_action = QAction('Select Canvases', self)
         select_canvases_action.triggered.connect(lambda: self.use_selection_mode('canvas'))
 
+        # Creat view menu actions
+        fullscreen_view_action = QAction('Full Screen', self)
+        fullscreen_view_action.setShortcut(Qt.Key_F11)
+        fullscreen_view_action.triggered.connect(self.showMaximized)
+
+        control_toolbar_view_action = QAction('Control Toolbar', self)
+        control_toolbar_view_action.setCheckable(True)
+        control_toolbar_view_action.setChecked(True)
+        control_toolbar_view_action.setShortcut(Qt.Key_F12)
+        control_toolbar_view_action.triggered.connect(lambda: self.toggle_control_toolbar(control_toolbar_view_action))
+
+        view_options_menu = QMenu('Views', self)
+
+        read_only_view_action = QAction('Read Only', self)
+        read_only_view_action.triggered.connect(lambda: self.view_as('read_only'))
+
+        tools_only_view_action = QAction('Tools Only', self)
+        tools_only_view_action.triggered.connect(lambda: self.view_as('tools_only'))
+
+        simple_view_action = QAction('Simple', self)
+        simple_view_action.triggered.connect(lambda: self.view_as('simple'))
+
+        default_view_action = QAction('Default', self)
+        default_view_action.triggered.connect(lambda: self.view_as('normal'))
+
         # Create help menu actions
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
@@ -376,6 +402,10 @@ class MPRUN(QMainWindow):
         self.selection_menu.addSeparator()
         self.selection_menu.addAction(select_canvases_action)
 
+        self.view_menu.addAction(control_toolbar_view_action)
+        self.view_menu.addAction(fullscreen_view_action)
+        self.view_menu.addMenu(view_options_menu)
+
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
         self.help_menu.addSeparator()
@@ -398,6 +428,11 @@ class MPRUN(QMainWindow):
         view_menu.addAction(pan_action)
         view_menu.addAction(rotate_view_action)
         view_menu.addAction(zoom_view_action)
+
+        view_options_menu.addAction(read_only_view_action)
+        view_options_menu.addAction(tools_only_view_action)
+        view_options_menu.addAction(simple_view_action)
+        view_options_menu.addAction(default_view_action)
 
         # Add to actions dict
         self.actions['Trace Image'] = image_trace_action
@@ -2543,6 +2578,40 @@ class MPRUN(QMainWindow):
                             action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
 
                             self.open_recent_menu.addAction(action)
+
+    def toggle_control_toolbar(self, action: QAction) -> None:
+        if action.isChecked():
+            self.item_toolbar.setHidden(False)
+
+        else:
+            self.item_toolbar.setHidden(True)
+
+    def view_as(self, view: str) -> None:
+        if view == 'read_only':
+            self.tab_view_dock.setHidden(True)
+            self.item_toolbar.setHidden(True)
+            self.toolbar.setHidden(True)
+
+        elif view == 'tools_only':
+            self.unhide()
+            self.item_toolbar.setHidden(True)
+            self.tab_view_dock.setHidden(True)
+
+        elif view == 'simple':
+            self.unhide()
+            self.item_toolbar.setHidden(True)
+            self.tab_view_dock.collapse()
+
+        elif view == 'normal':
+            self.unhide()
+
+    def unhide(self):
+        self.tab_view_dock.setHidden(False)
+        self.item_toolbar.setHidden(False)
+        self.toolbar.setHidden(False)
+
+        if self.tab_view_dock.isCollapsed():
+            self.tab_view_dock.expand()
 
 def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)

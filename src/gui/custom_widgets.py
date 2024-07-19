@@ -485,6 +485,9 @@ class CustomDockWidget(QDockWidget):
         print(self.panel_names)
         print(self.indexes)
 
+    def isCollapsed(self):
+        return self.is_collapsed
+
 class CustomToolbox(QToolBox):
     def __init__(self, parent=None):
         super().__init__(parent)
