@@ -399,11 +399,9 @@ class CustomDockWidget(QDockWidget):
         self.setTitleBarWidget(self.title_bar)
 
     def toggle_collapse(self):
-        if self.is_collapsed:
-            self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/minimize.svg'))
+        if self.isCollapsed():
             self.expand()
         else:
-            self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/maximize.svg'))
             self.collapse()
 
     def collapse(self):
@@ -427,12 +425,14 @@ class CustomDockWidget(QDockWidget):
 
         self.setWidget(icons_widget)
         self.minimize_btn.setToolTip('Expand to panels')
+        self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/maximize.svg'))
 
     def expand(self):
         self.is_collapsed = False
         self.setWidget(self.toolbox)
         self.toolbox.setHidden(False)
         self.minimize_btn.setToolTip('Collapse to buttons')
+        self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/minimize.svg'))
 
         if len(self.panels) > 0:
             for i in range(len(self.indexes)):
