@@ -13,8 +13,8 @@ class MPRUN(QMainWindow):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_logoV3.png'))
         self.setAcceptDrops(True)
 
-        # File
-        self.file_name = None
+        # Settings
+        self.cur_view = 'normal'
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -99,11 +99,11 @@ class MPRUN(QMainWindow):
         data = self.read_settings()
 
         for _data in data:
-            if self.isMaximized():
-                _data['geometry'] = ['maximized']
-            else:
-                _data['geometry'] = [self.x(), self.y(), self.width(), self.height()]
-            self.write_settings([_data])
+            _data['geometry'] = ['maximized'] if self.isMaximized() else [self.x(), self.y(), self.width(),
+                                                                          self.height()]
+            _data['saved_view'] = self.current_view()
+
+        self.write_settings(data)
 
     def create_actions_dict(self):
         self.actions = {}
@@ -2534,6 +2534,8 @@ class MPRUN(QMainWindow):
                                  user_data['geometry'][3]
                                  )
 
+            self.view_as(user_data['saved_view'])
+
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
 
@@ -2588,24 +2590,31 @@ class MPRUN(QMainWindow):
 
     def view_as(self, view: str) -> None:
         if view == 'read_only':
+            self.cur_view = 'read_only'
             self.tab_view_dock.setHidden(True)
             self.item_toolbar.setHidden(True)
             self.toolbar.setHidden(True)
 
         elif view == 'tools_only':
+            self.cur_view = 'tools_only'
             self.unhide()
             self.item_toolbar.setHidden(True)
             self.tab_view_dock.setHidden(True)
 
         elif view == 'simple':
+            self.cur_view = 'simple'
             self.unhide()
             self.item_toolbar.setHidden(True)
             self.tab_view_dock.collapse()
 
         elif view == 'normal':
+            self.cur_view = 'normal'
             self.unhide()
 
-    def unhide(self):
+    def current_view(self) -> str:
+        return self.cur_view
+
+    def unhide(self) -> None:
         self.tab_view_dock.setHidden(False)
         self.item_toolbar.setHidden(False)
         self.toolbar.setHidden(False)
