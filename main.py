@@ -337,6 +337,9 @@ class MPRUN(QMainWindow):
         simple_view_action = QAction('ADHD Friendly', self)
         simple_view_action.triggered.connect(lambda: self.view_as('simple'))
 
+        swapped_view_action = QAction('Swapped', self)
+        swapped_view_action.triggered.connect(lambda: self.view_as('swapped'))
+
         default_view_action = QAction('Default', self)
         default_view_action.triggered.connect(lambda: self.view_as('normal'))
 
@@ -432,6 +435,7 @@ class MPRUN(QMainWindow):
         view_options_menu.addAction(read_only_view_action)
         view_options_menu.addAction(tools_only_view_action)
         view_options_menu.addAction(simple_view_action)
+        view_options_menu.addAction(swapped_view_action)
         view_options_menu.addAction(default_view_action)
 
         # Add to actions dict
@@ -458,7 +462,7 @@ class MPRUN(QMainWindow):
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setFixedWidth(60)
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-        self.toolbar.setFloatable(True)
+        self.toolbar.setFloatable(False)
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
@@ -2605,7 +2609,16 @@ class MPRUN(QMainWindow):
             self.cur_view = 'simple'
             self.unhide()
             self.item_toolbar.setHidden(True)
+            self.toolbar.setIconSize(QSize(48, 48))
+            self.toolbar.setFixedWidth(70)
+            self.drawing_toolbutton.setIconSize(QSize(48, 48))
             self.tab_view_dock.collapse()
+
+        elif view == 'swapped':
+            self.cur_view = 'swapped'
+            self.unhide()
+            self.addDockWidget(Qt.LeftDockWidgetArea, self.tab_view_dock)
+            self.addToolBar(Qt.RightToolBarArea, self.toolbar)
 
         elif view == 'normal':
             self.cur_view = 'normal'
@@ -2616,8 +2629,14 @@ class MPRUN(QMainWindow):
 
     def unhide(self) -> None:
         self.tab_view_dock.setHidden(False)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
         self.item_toolbar.setHidden(False)
+        self.item_toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setHidden(False)
+        self.toolbar.setIconSize(QSize(32, 32))
+        self.toolbar.setFixedWidth(60)
+        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
+        self.drawing_toolbutton.setIconSize(QSize(10, 10))
 
         if self.tab_view_dock.isCollapsed():
             self.tab_view_dock.expand()

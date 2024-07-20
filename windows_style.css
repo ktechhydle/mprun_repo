@@ -127,9 +127,9 @@ QToolButton:checked
 
 QLabel
 {
-  color: #c7c7c7;
-  background-color: transparent;
-  font-family: Segoe UI;
+    color: #c7c7c7;
+    background-color: transparent;
+    font-family: Segoe UI;
 }
 
 /* Line edits, spin boxes, combo boxes */

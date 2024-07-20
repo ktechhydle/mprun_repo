@@ -405,6 +405,7 @@ class CustomDockWidget(QDockWidget):
             self.collapse()
 
     def collapse(self):
+        self.setFixedWidth(100)
         self.is_collapsed = True
         self.toolbox.setHidden(True)
         self.icon_buttons = []
@@ -428,6 +429,7 @@ class CustomDockWidget(QDockWidget):
         self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/maximize.svg'))
 
     def expand(self):
+        self.setFixedWidth(300)
         self.is_collapsed = False
         self.setWidget(self.toolbox)
         self.toolbox.setHidden(False)

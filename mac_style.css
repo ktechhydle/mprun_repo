@@ -126,9 +126,9 @@ QToolButton:checked
 
 QLabel
 {
-  color: #c7c7c7;
-  background-color: transparent;
-  font-family: SF Pro;
+    color: #c7c7c7;
+    background-color: transparent;
+    font-family: SF Pro;
 }
 
 /* Line edits, spin boxes, combo boxes */
