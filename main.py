@@ -2614,6 +2614,8 @@ class MPRUN(QMainWindow):
             self.drawing_toolbutton.setIconSize(QSize(48, 48))
             self.tab_view_dock.collapse()
 
+            self.menuBar().setStyleSheet('font-size: 30px;')
+
         elif view == 'swapped':
             self.cur_view = 'swapped'
             self.unhide()
@@ -2637,6 +2639,8 @@ class MPRUN(QMainWindow):
         self.toolbar.setFixedWidth(60)
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
         self.drawing_toolbutton.setIconSize(QSize(10, 10))
+
+        self.menuBar().setStyleSheet('font-size: 16px;')
 
         if self.tab_view_dock.isCollapsed():
             self.tab_view_dock.expand()
