@@ -334,7 +334,7 @@ class MPRUN(QMainWindow):
         tools_only_view_action = QAction('Tools Only', self)
         tools_only_view_action.triggered.connect(lambda: self.view_as('tools_only'))
 
-        simple_view_action = QAction('ADHD Friendly', self)
+        simple_view_action = QAction('Dyslexia Friendly', self)
         simple_view_action.triggered.connect(lambda: self.view_as('simple'))
 
         swapped_view_action = QAction('Swapped', self)
@@ -2528,6 +2528,8 @@ class MPRUN(QMainWindow):
 
     def open_data(self):
         for user_data in self.read_settings():
+            self.view_as(user_data['saved_view'])
+
             if user_data['geometry'][0] == 'maximized':
                 self.showMaximized()
 
@@ -2537,8 +2539,6 @@ class MPRUN(QMainWindow):
                                  user_data['geometry'][2],
                                  user_data['geometry'][3]
                                  )
-
-            self.view_as(user_data['saved_view'])
 
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
