@@ -472,6 +472,7 @@ class MPRUN(QMainWindow):
         self.item_toolbar.setMovable(False)
         self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
+        self.item_toolbar.visibilityChanged.connect(self.control_toolbar_visibility_changed)
 
     def create_toolbox(self):
         #----action toolbar widgets----#
@@ -2587,27 +2588,35 @@ class MPRUN(QMainWindow):
 
     def toggle_control_toolbar(self, action: QAction) -> None:
         if action.isChecked():
-            self.unhide()
+            self.item_toolbar.setHidden(False)
 
         else:
             self.view_as('control_bar_hidden')
 
+    def control_toolbar_visibility_changed(self):
+        if self.item_toolbar.isVisible():
+            self.view_menu.actions()[0].setChecked(True)
+
+        else:
+            self.view_menu.actions()[0].setChecked(False)
+
     def view_as(self, view: str) -> None:
         if view == 'read_only':
+            self.unhide()
             self.cur_view = 'read_only'
             self.tab_view_dock.setHidden(True)
             self.item_toolbar.setHidden(True)
             self.toolbar.setHidden(True)
 
         elif view == 'tools_only':
-            self.cur_view = 'tools_only'
             self.unhide()
+            self.cur_view = 'tools_only'
             self.item_toolbar.setHidden(True)
             self.tab_view_dock.setHidden(True)
 
         elif view == 'simple':
-            self.cur_view = 'simple'
             self.unhide()
+            self.cur_view = 'simple'
             self.item_toolbar.setHidden(True)
             self.toolbar.setIconSize(QSize(48, 48))
             self.toolbar.setFixedWidth(70)
@@ -2617,20 +2626,17 @@ class MPRUN(QMainWindow):
             self.menuBar().setStyleSheet('font-size: 30px;')
 
         elif view == 'swapped':
-            self.cur_view = 'swapped'
             self.unhide()
+            self.cur_view = 'swapped'
             self.addDockWidget(Qt.LeftDockWidgetArea, self.tab_view_dock)
             self.addToolBar(Qt.RightToolBarArea, self.toolbar)
 
         elif view == 'normal':
-            self.cur_view = 'normal'
             self.unhide()
 
         elif view == 'control_bar_hidden':
-            self.cur_view = 'control_bar_hidden'
-            self.unhide()
             self.item_toolbar.setHidden(True)
-            self.view_menu.actions()[0].setChecked(False)
+            self.cur_view = 'control_bar_hidden'
 
     def current_view(self) -> str:
         return self.cur_view
