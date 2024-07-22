@@ -172,7 +172,7 @@ class MPRUN(QMainWindow):
         path_menu = self.tool_menu.addMenu('Path')
         characters_menu = self.tool_menu.addMenu('Characters')
         image_menu = self.tool_menu.addMenu('Image')
-        view_menu = self.tool_menu.addMenu('View')
+        scene_menu = self.tool_menu.addMenu('Scene')
 
         select_action = QAction('Select', self)
         select_action.setShortcut(QKeySequence(Qt.Key_Space))
@@ -427,10 +427,10 @@ class MPRUN(QMainWindow):
 
         image_menu.addAction(image_trace_action)
 
-        view_menu.addAction(select_action)
-        view_menu.addAction(pan_action)
-        view_menu.addAction(rotate_view_action)
-        view_menu.addAction(zoom_view_action)
+        scene_menu.addAction(select_action)
+        scene_menu.addAction(pan_action)
+        scene_menu.addAction(rotate_view_action)
+        scene_menu.addAction(zoom_view_action)
 
         view_options_menu.addAction(read_only_view_action)
         view_options_menu.addAction(tools_only_view_action)
