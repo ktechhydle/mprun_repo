@@ -2587,10 +2587,10 @@ class MPRUN(QMainWindow):
 
     def toggle_control_toolbar(self, action: QAction) -> None:
         if action.isChecked():
-            self.item_toolbar.setHidden(False)
+            self.unhide()
 
         else:
-            self.item_toolbar.setHidden(True)
+            self.view_as('control_bar_hidden')
 
     def view_as(self, view: str) -> None:
         if view == 'read_only':
@@ -2626,6 +2626,12 @@ class MPRUN(QMainWindow):
             self.cur_view = 'normal'
             self.unhide()
 
+        elif view == 'control_bar_hidden':
+            self.cur_view = 'control_bar_hidden'
+            self.unhide()
+            self.item_toolbar.setHidden(True)
+            self.view_menu.actions()[0].setChecked(False)
+
     def current_view(self) -> str:
         return self.cur_view
 
@@ -2644,6 +2650,8 @@ class MPRUN(QMainWindow):
 
         if self.tab_view_dock.isCollapsed():
             self.tab_view_dock.expand()
+
+        self.cur_view = 'normal'
 
 def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
