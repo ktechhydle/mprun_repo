@@ -108,7 +108,13 @@ class CustomGraphicsView(QGraphicsView):
         p = self.mapToGlobal(point)
         p.setY(p.y())
         p.setX(p.x() + 10)
-        QToolTip.showText(p, f'''x: {int(self.mapToScene(point).x())} 
+
+        if self.scene().selectedItems():
+            QToolTip.showText(p, f'''x: {int(self.canvas.selectedItemsSceneBoundingRect().x())}
+y: {int(self.canvas.selectedItemsSceneBoundingRect().y())}''')
+
+        else:
+            QToolTip.showText(p, f'''x: {int(self.mapToScene(point).x())} 
 y: {int(self.mapToScene(point).y())}''')
 
     def mousePressEvent(self, event):
