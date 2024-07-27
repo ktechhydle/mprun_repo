@@ -110,8 +110,13 @@ class CustomGraphicsView(QGraphicsView):
         p.setX(p.x() + 10)
 
         if self.scene().selectedItems():
-            QToolTip.showText(p, f'''x: {int(self.canvas.selectedItemsSceneBoundingRect().x())}
-y: {int(self.canvas.selectedItemsSceneBoundingRect().y())}''')
+            if (event.buttons() and Qt.LeftButton) and self.scene().itemAt(self.mapToScene(event.pos()), self.transform()):
+                QToolTip.showText(p, f'''position x: {int(self.canvas.selectedItemsSceneBoundingRect().x())}
+position y: {int(self.canvas.selectedItemsSceneBoundingRect().y())}''')
+
+            else:
+                QToolTip.showText(p, f'''x: {int(self.mapToScene(point).x())} 
+y: {int(self.mapToScene(point).y())}''')
 
         else:
             QToolTip.showText(p, f'''x: {int(self.mapToScene(point).x())} 
@@ -157,6 +162,9 @@ y: {int(self.mapToScene(point).y())}''')
         else:
             super().mousePressEvent(event)
 
+        if event.button() == Qt.MiddleButton:
+            self.on_pan_start(event)
+
         self.on_add_canvas_trigger()
         
     def mouseMoveEvent(self, event):
@@ -183,12 +191,13 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseMoveEvent(event)
 
         elif self.scale_btn.isChecked():
-            self.show_tooltip(event)
+            self.scalingTool.show_tooltip(event)
             self.scalingTool.on_scale(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.add_canvas_btn.isChecked():
+            self.canvasTool.show_tooltip(event)
             self.canvasTool.on_add_canvas_drag(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
@@ -241,6 +250,9 @@ y: {int(self.mapToScene(point).y())}''')
         else:
             super().mouseReleaseEvent(event)
 
+        if event.button() == Qt.MiddleButton:
+            self.on_pan_end(event)
+
         self.parent().update_transform_ui()
 
     def mouseDoubleClickEvent(self, event):
@@ -257,7 +269,6 @@ y: {int(self.mapToScene(point).y())}''')
         try:
             self.zoom_spin.blockSignals(True)
             self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-            self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
 
             # Calculate zoom Factor
             zoomOutFactor = 1 / self.zoomInFactor

@@ -19,6 +19,9 @@ class PathDrawerTool:
         if self.path:
             QToolTip.showText(p, f'path length: {int(self.path.length())} pt')
 
+        else:
+            self.view.show_tooltip(event)
+
     def on_path_draw_start(self, event):
         # Check the button being pressed
         if event.button() == Qt.LeftButton:
@@ -99,6 +102,9 @@ class PenDrawerTool:
 
         if self.path:
             QToolTip.showText(p, f'path length: {int(self.path.length())} pt')
+
+        else:
+            self.view.show_tooltip(event)
 
     def on_draw_start(self, event):
         # Check the button being pressed
@@ -262,6 +268,18 @@ class MouseScalingTool:
 
         self.view.setMouseTracking(True)
 
+    def show_tooltip(self, event):
+        point = event.pos()
+        p = self.view.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+
+        if self.scaling_item:
+            QToolTip.showText(p, f'scale: {int(self.scaling_item.scale() * 100)}%')
+
+        else:
+            self.view.show_tooltip(event)
+
     def on_scale_start(self, event):
         self.view.setDragMode(QGraphicsView.NoDrag)
         pos = self.view.mapToScene(event.pos())
@@ -273,7 +291,6 @@ class MouseScalingTool:
             self.scaling_item = item
             self.scaling_item_initial_scale = item.scale()
             self.start_pos = pos
-
 
     def on_scale(self, event):
         if self.scaling_item and self.start_pos:
@@ -465,6 +482,19 @@ class AddCanvasTool:
         self.temp_canvas = None
         self.canvas_item = None
 
+    def show_tooltip(self, event):
+        point = event.pos()
+        p = self.view.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+
+        if self.canvas_item:
+            QToolTip.showText(p, f'''width: {int(self.canvas_item.rect().width())} 
+height: {int(self.canvas_item.rect().height())}''')
+
+        else:
+            self.view.show_tooltip(event)
+
     def on_add_canvas_start(self, event):
         if event.button() == Qt.LeftButton:
             item_under_mouse = self.view.itemAt(event.pos())
@@ -493,13 +523,6 @@ class AddCanvasTool:
                 height = size if height >= 0 else -size
 
             self.canvas_item.setRect(0, 0, width, height)
-
-            point = event.pos()
-            p = self.view.mapToGlobal(point)
-            p.setY(p.y())
-            p.setX(p.x() + 10)
-            QToolTip.showText(p, f'''width: {int(self.canvas_item.rect().width())} 
-height: {int(self.canvas_item.rect().height())}''')
 
     def on_add_canvas_end(self, event):
         if self.canvas_item is not None and event.button() == Qt.LeftButton:
