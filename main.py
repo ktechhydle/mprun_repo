@@ -2477,25 +2477,7 @@ class MPRUN(QMainWindow):
                     self.canvas.manager.filename = filename
                     self.canvas.modified = False
                     self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
-
-                    # Read existing data
-                    existing_data = self.read_recent_files()
-
-                    # Check if 'recent_files' exists and is a list, then append the new file if not already present
-                    if 'recent_files' in existing_data[0]:
-                        if isinstance(existing_data[0]['recent_files'], list):
-                            if filename not in existing_data[0]['recent_files']:
-                                existing_data[0]['recent_files'].append(filename)
-                        else:
-                            existing_data[0]['recent_files'] = [existing_data[0]['recent_files'], filename]
-                    else:
-                        existing_data[0]['recent_files'] = [filename]
-
-                    # Write the updated data back to the file
-                    with open('internal data/_recent_files.json', 'w') as f:
-                        json.dump(existing_data, f)
-
-                    self.update_recent_file_data()
+                    self.update_recent_file_data(filename)
 
                     return True
 
@@ -2521,11 +2503,11 @@ class MPRUN(QMainWindow):
 
     def write_settings(self, data):
         with open('internal data/_settings.json', 'w') as f:
-            return json.dump(data, f)
+            return json.dump(data, f, indent=4)
 
     def write_recent_file(self, data):
         with open('internal data/_recent_files.json', 'w') as f:
-            return json.dump(data, f)
+            return json.dump(data, f, indent=4)
 
     def open_data(self):
         for user_data in self.read_settings():
@@ -2544,47 +2526,57 @@ class MPRUN(QMainWindow):
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
 
-        with open('internal data/_recent_files.json', 'r') as f:
-            data = json.load(f)
+        data = self.read_recent_files()
 
-            for _data in data:
-                recent_files = []
-                seen = set()
-                for item in _data['recent_files']:
-                    if item not in seen:
+        for _data in data:
+            recent_files = []
+            seen = set()
+            for item in _data['recent_files']:
+                if item not in seen:
+                    if os.path.exists(item):
                         recent_files.append(item)
-                        seen.add(item)
+                    seen.add(item)
 
-                for recent_file in recent_files:
-                    if os.path.exists(recent_file):
+            _data['recent_files'] = recent_files  # Update the recent files in the data
+
+            for recent_file in recent_files:
+                action = QAction(os.path.basename(recent_file), self)
+                action.setToolTip(os.path.abspath(recent_file))
+                action_tooltip = action.toolTip()
+                action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
+
+                self.open_recent_menu.addAction(action)
+
+        self.write_recent_file(data)
+
+    def update_recent_file_data(self, file: str):
+        data = self.read_recent_files()
+
+        for _data in data:
+            # write new data and append it
+            _data['recent_files'].append(file)
+
+            recent_files = []
+            seen = set()
+            for item in _data['recent_files']:
+                if item not in seen:
+                    recent_files.append(item)
+                    seen.add(item)
+
+            _data['recent_files'] = recent_files
+
+            self.write_recent_file(data)
+
+            # add an action to the recent files menu
+            for recent_file in recent_files:
+                if os.path.exists(recent_file):
+                    if os.path.abspath(recent_file) not in (action.toolTip() for action in self.open_recent_menu.actions()):
                         action = QAction(os.path.basename(recent_file), self)
                         action.setToolTip(os.path.abspath(recent_file))
-                        action_tooltip = action.toolTip()  # Capture the current tooltip
+                        action_tooltip = action.toolTip()
                         action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
 
                         self.open_recent_menu.addAction(action)
-
-    def update_recent_file_data(self):
-        with open('internal data/_recent_files.json', 'r') as f:
-            data = json.load(f)
-
-            for _data in data:
-                recent_files = []
-                seen = set()
-                for item in _data['recent_files']:
-                    if item not in seen:
-                        recent_files.append(item)
-                        seen.add(item)
-
-                for recent_file in recent_files:
-                    if os.path.exists(recent_file):
-                        if os.path.abspath(recent_file) not in (action.toolTip() for action in self.open_recent_menu.actions()):
-                            action = QAction(os.path.basename(recent_file), self)
-                            action.setToolTip(os.path.abspath(recent_file))
-                            action_tooltip = action.toolTip()
-                            action.triggered.connect(lambda checked, path=action_tooltip: self.open_recent(path))
-
-                            self.open_recent_menu.addAction(action)
 
     def toggle_control_toolbar(self, action: QAction) -> None:
         if action.isChecked():

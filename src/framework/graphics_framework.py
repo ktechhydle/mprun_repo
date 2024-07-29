@@ -649,6 +649,8 @@ class SceneManager:
                     if filename:
                         self.scene.undo_stack.clear()
                         self.scene.clear()
+                        self.scene.parentWindow.update_recent_file_data(filename)
+
                         with open(filename, 'rb') as f:
                             items_data = pickle.load(f)
                             self.deserialize_items(items_data)
@@ -681,6 +683,7 @@ class SceneManager:
                     if filename:
                         self.scene.undo_stack.clear()
                         self.scene.clear()
+                        self.scene.parentWindow.update_recent_file_data(filename)
 
                         with open(filename, 'rb') as f:
                             items_data = pickle.load(f)
@@ -712,6 +715,7 @@ class SceneManager:
                 if filename:
                     self.scene.undo_stack.clear()
                     self.scene.clear()
+                    self.scene.parentWindow.update_recent_file_data(filename)
 
                     with open(filename, 'rb') as f:
                         items_data = pickle.load(f)
