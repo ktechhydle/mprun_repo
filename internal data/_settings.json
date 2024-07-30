@@ -5,7 +5,11 @@
         "geometry": [
             "maximized"
         ],
-        "saved_view": "normal",
+        "saved_view": "",
+        "toolbar_pos": 1,
+        "toolbox_pos": 1,
+        "toolbox_collapsed": false,
+        "control_toolbar_hidden": false,
         "tutorial_watched": false
     }
 ]

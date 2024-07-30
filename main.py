@@ -14,7 +14,7 @@ class MPRUN(QMainWindow):
         self.setAcceptDrops(True)
 
         # Settings
-        self.cur_view = 'normal'
+        self.cur_view = ''
 
         # Drawing stroke methods
         self.outline_color = item_stack()
@@ -102,6 +102,10 @@ class MPRUN(QMainWindow):
             _data['geometry'] = ['maximized'] if self.isMaximized() else [self.x(), self.y(), self.width(),
                                                                           self.height()]
             _data['saved_view'] = self.current_view()
+            _data['toolbar_pos'] = self.current_toolbar_pos()
+            _data['toolbox_pos'] = self.current_toolbox_pos()
+            _data['toolbox_collapsed'] = self.tab_view_dock.isCollapsed()
+            _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
 
         self.write_settings(data)
 
@@ -2513,6 +2517,11 @@ class MPRUN(QMainWindow):
         for user_data in self.read_settings():
             self.view_as(user_data['saved_view'])
 
+            self.addToolBar(Qt.LeftToolBarArea if user_data['toolbar_pos'] == 1 else Qt.RightToolBarArea, self.toolbar)
+            self.addDockWidget(Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea, self.tab_view_dock)
+            self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
+            self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
+
             if user_data['geometry'][0] == 'maximized':
                 self.showMaximized()
 
@@ -2602,7 +2611,6 @@ class MPRUN(QMainWindow):
 
         elif view == 'tools_only':
             self.unhide()
-            self.cur_view = 'tools_only'
             self.item_toolbar.setHidden(True)
             self.tab_view_dock.setHidden(True)
 
@@ -2619,19 +2627,23 @@ class MPRUN(QMainWindow):
 
         elif view == 'swapped':
             self.unhide()
-            self.cur_view = 'swapped'
             self.addDockWidget(Qt.LeftDockWidgetArea, self.tab_view_dock)
             self.addToolBar(Qt.RightToolBarArea, self.toolbar)
 
-        elif view == 'normal':
-            self.unhide()
-
         elif view == 'control_bar_hidden':
             self.item_toolbar.setHidden(True)
-            self.cur_view = 'control_bar_hidden'
+
+        else:
+            self.unhide()
 
     def current_view(self) -> str:
         return self.cur_view
+
+    def current_toolbar_pos(self):
+        return 1 if self.toolBarArea(self.toolbar) == Qt.LeftToolBarArea else 2
+
+    def current_toolbox_pos(self):
+        return 1 if self.dockWidgetArea(self.tab_view_dock) == Qt.RightDockWidgetArea else 2
 
     def unhide(self) -> None:
         self.tab_view_dock.setHidden(False)
@@ -2649,7 +2661,7 @@ class MPRUN(QMainWindow):
         if self.tab_view_dock.isCollapsed():
             self.tab_view_dock.expand()
 
-        self.cur_view = 'normal'
+        self.cur_view = ''
 
 def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
