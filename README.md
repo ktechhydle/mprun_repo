@@ -1,9 +1,9 @@
-# Introducing MPRUN, the ultimate snowboard and ski competion run planning software.
+# Introducing MPRUN, the ultimate snowboard and ski competition run planning software.
 
 With MPRUN, you can set up custom courses matching the competition environment, and print out these setups to achieve the best competition performance and communication between coaches and athletes[^1]
 
 > [!NOTE]
-> # Development
+> # Building from Source
 > 1. Clone the git with `https://github.com/ktechhydle/mprun_repo.git`.
 > 2. Install the project requirements with `pip install -r requirements.txt`.
 > 3. Run `main.py`, and see the full app.
@@ -27,7 +27,7 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Select Tool:
 	> Select elements by dragging.
 - Pan Tool:
-	> Pan the canvas with the left mouse button with the tool active.
+	> Pan the scene with the left mouse button with the tool active.
 - Path Draw Tool:
 	> Draw paths and shapes with the path tool, use different colors, pen styles and more.
 - Pen Draw Tool:
@@ -35,11 +35,11 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 - Line and Label Tool:
 	> Draw AutoCAD like leader lines and labels with editable text.
 - Text Tool:
-	> Place text anywhere on the canvas, click and drag to position the text before placing.
+	> Place text anywhere on the scene, click and drag to position the text before placing.
 - Scale Tool:
 	> Interactively scale elements with the mouse by clicking and dragging on the element.
 - Hide Element Tool:
-	> Hide selected elements from the canvas (they will not show on export).
+	> Hide selected elements from the scene (they will not show on export).
 - Unhide All Tool:
 	> Unhide any previously hidden elements.
 - Add Canvas Tool:
@@ -52,8 +52,6 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 	> Smooth selected path elements (if not already smoothed) with the Savitzky–Golay Filter.
 - Close Path Tool:
 	> Close selected path elements into solid shapes.
-- Add Text Along Path Tool:
-	> Brings up the `Text Along Path` panel, and allows you to type text along selected path elements (the text font and color is also customizable with the `Characters` panel).
 - Name Tool:
 	> Name selected elements to whatever name you want (canvas items are not nameable with this tool).
 - Duplicate Tool:
@@ -70,13 +68,13 @@ With MPRUN, you can set up custom courses matching the competition environment, 
 
 # Primary Functionality
 - Vector Graphics:
-	> MPRUN uses a Vector Graphics Engine, and recently added OpenGL functions to make rendering significantly faster.
+	> MPRUN uses a Vector Graphics Engine, and OpenGL functions to make rendering significantly faster using your GPU (if you have it).
 - Layer management:
 	> Elements can be raised and lowered.
 - Elements are named:
-	> You will often see elements named `Path` or `Group` on the Canvas. ***Hover your mouse over an element to see the element name.***
+	> You will often see elements tagged `Path` or `Text` on the scene. ***Hover your mouse over an element to see the element name.***
 - Insert different files:
-	> Insert PNG, JPEG, SVG, or even TIFF files onto the canvas.
+	> Insert PNG, JPEG, SVG, or even TIFF files onto the scene.
 - Export multiple file types:
 	> Export the selected canvas as a PNG, JPEG, SVG, or even a PDF file ***(beta)***.
 - Pen and fill customization:

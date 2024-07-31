@@ -1,5 +1,5 @@
 # Commit Message Standards
-## Iteration 1.0.0
+## Iteration 1.0.3
 
 > [!NOTE]
 > This document defines the standards for commit messages in the software repository
@@ -13,18 +13,18 @@ The first sentence should include the commit number as so:
 ### Section 2: Building the commit description
 The first sentence should also include the commit description, and what's changed as so:
 
-`#257 Fixed error on export`
+`#257 fixed error on export`
 
 ### Section 3 (Optional): Adding any issues
 As this is optional (sometimes there aren't issues) but if there are issues, define them with an 'ISSUE:' as so:
 
-`#257 Fixed error on export ISSUE: Export doesn't work for PDF files`
+`#257 fixed error on export ISSUE: export doesn't work for PDF files`
 
 ### Section 4: Describing Changes
 Define changes with a list using '-' and all lowercase as so:
 
 ```
-#257 Fixed error on export ISSUE: Export doesn't work for PDF files
+#257 fixed error on export ISSUE: export doesn't work for PDF files
 
 -export issues now support error dialogs
 -error dialogs include options for helping the user combat any errors
