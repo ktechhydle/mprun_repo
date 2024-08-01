@@ -307,9 +307,6 @@ class MPRUN(QMainWindow):
         select_leaderline_action = QAction('Select Leader Lines', self)
         select_leaderline_action.triggered.connect(lambda: self.use_selection_mode('leaderline'))
 
-        select_groups_action = QAction('Select Groups', self)
-        select_groups_action.triggered.connect(lambda: self.use_selection_mode('group'))
-
         select_pixmaps_action = QAction('Select Pixmaps', self)
         select_pixmaps_action.triggered.connect(lambda: self.use_selection_mode('pixmap'))
 
@@ -403,7 +400,6 @@ class MPRUN(QMainWindow):
         self.selection_menu.addAction(select_text_action)
         self.selection_menu.addAction(select_leaderline_action)
         self.selection_menu.addSeparator()
-        self.selection_menu.addAction(select_groups_action)
         self.selection_menu.addAction(select_pixmaps_action)
         self.selection_menu.addAction(select_svgs_action)
         self.selection_menu.addSeparator()
