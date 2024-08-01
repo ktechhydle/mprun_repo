@@ -79,9 +79,9 @@ QToolBar
     padding: 1px; /* Padding */
 }
 
-/* QToolButton::menu-indicator {
-    image: url(ui/UI Icons/Minor/down-arrow.svg);
-} */
+QToolButton::menu-indicator {
+    image: url(ui/UI Icons/Minor/chevron_down.svg);
+}
 
 #customToolBar
 {
