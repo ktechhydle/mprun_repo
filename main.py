@@ -10,7 +10,7 @@ class MPRUN(QMainWindow):
     def __init__(self):
         super(MPRUN, self).__init__()
         # Creating the main window
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_logoV3.png'))
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setAcceptDrops(True)
 
         # Settings

@@ -4,30 +4,29 @@ from src.scripts.app_internal import *
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 
-class AboutWin(QtWidgets.QWidget):
+class AboutWin(QWidget):
     def __init__(self):
         super().__init__()
-
         self.setWindowTitle('About MPRUN')
-        self.setWindowIcon(QtGui.QIcon('ui/Main Logos/MPRUN_icon.ico'))
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setFixedWidth(500)
         self.setStyleSheet('border-radius: 5px;')
-        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.setWindowModality(Qt.ApplicationModal)
 
         self.create_ui()
 
     def create_ui(self):
         # Create main layout
-        self.setLayout(QtWidgets.QVBoxLayout())
+        self.setLayout(QVBoxLayout())
 
         # Tabs, tab widget
         self.tab_view = QTabWidget(self)
-        self.about_tab = QtWidgets.QWidget(self)
-        self.about_tab.setLayout(QtWidgets.QVBoxLayout())
-        self.license_tab = QtWidgets.QWidget(self)
-        self.license_tab.setLayout(QtWidgets.QVBoxLayout())
-        self.more_info_tab = QtWidgets.QWidget(self)
-        self.more_info_tab.setLayout(QtWidgets.QVBoxLayout())
+        self.about_tab = QWidget(self)
+        self.about_tab.setLayout(QVBoxLayout())
+        self.license_tab = QWidget(self)
+        self.license_tab.setLayout(QVBoxLayout())
+        self.more_info_tab = QWidget(self)
+        self.more_info_tab.setLayout(QVBoxLayout())
         self.tab_view.addTab(self.about_tab, 'About')
         self.tab_view.addTab(self.license_tab, 'License')
         self.tab_view.addTab(self.more_info_tab, 'More Info')
@@ -47,14 +46,14 @@ Some athletes (including Keller) struggle with creating good plans, especially f
 
 MPRUN allows users to visualize comp runs on computer and paper, quickly and easily. It includes a proper toolset to create documents that match course setups, draw lines, and label tricks along the course.
         '''
-        about_label = QtWidgets.QLabel(about_text, self)
+        about_label = QLabel(about_text, self)
         about_label.setWordWrap(True)
-        about_label.setAlignment(QtCore.Qt.AlignLeft)
-        mp_software_logo = QtWidgets.QLabel('', self)
+        about_label.setAlignment(Qt.AlignLeft)
+        mp_software_logo = QLabel('', self)
         mp_software_logo.setAlignment(Qt.AlignCenter)
         mp_software_logo.setPixmap(
             QPixmap('ui/Main Logos/MP_Software_Logo.png').scaled(QSize(200, 200), Qt.KeepAspectRatio))
-        fsf_logo = QtWidgets.QLabel('', self)
+        fsf_logo = QLabel('', self)
         fsf_logo.setAlignment(Qt.AlignCenter)
         fsf_logo.setPixmap(
             QPixmap('ui/Main Logos/free_software_foundation_logo.svg').scaled(QSize(400, 400), Qt.KeepAspectRatio))
@@ -78,9 +77,9 @@ All files either saved or exported from MPRUN in any format (SVG, PNG, JPG, etc.
 
 You are responsible for publishing your work under a license of your choosing and for tracking your use of derivative works in the software.
         '''
-        license_label = QtWidgets.QLabel(license_text, self)
+        license_label = QLabel(license_text, self)
         license_label.setWordWrap(True)
-        license_label.setAlignment(QtCore.Qt.AlignLeft)
+        license_label.setAlignment(Qt.AlignLeft)
         self.license_tab.layout().addWidget(license_label)
         self.license_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
@@ -91,15 +90,14 @@ You are responsible for publishing your work under a license of your choosing an
         self.more_info_tab.layout().addWidget(contact_label)
         self.more_info_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
 
-class VersionWin(QtWidgets.QWidget):
+class VersionWin(QWidget):
     def __init__(self, version):
         super().__init__()
-
         self.setWindowTitle('MPRUN Version')
-        self.setWindowIcon(QtGui.QIcon('ui/Main Logos/MPRUN_icon.ico'))
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setFixedSize(500, 250)
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.FramelessWindowHint)
 
         self.version = version
 
@@ -107,12 +105,12 @@ class VersionWin(QtWidgets.QWidget):
 
     def create_ui(self):
         # Create main layout
-        layout = QtWidgets.QVBoxLayout()
+        layout = QVBoxLayout()
 
         # App image and label
-        mprun_img_label = QtWidgets.QLabel(self)
-        pixmap = QtGui.QPixmap("ui/Main Logos/MPRUN_logoV3.png").scaled(80, 80,
-                                                                              QtCore.Qt.KeepAspectRatio)
+        mprun_img_label = QLabel(self)
+        pixmap = QPixmap("ui/Main Logos/MPRUN_icon.png").scaled(80, 80,
+                                                                              Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
 
@@ -124,9 +122,9 @@ Copyright © K-TECH Industries 2024, All rights reserved.
 
 If you encounter any issues or have suggestions for improvements, contact us at:
         '''
-        label = QtWidgets.QLabel(text, self)
+        label = QLabel(text, self)
         label.setWordWrap(True)
-        label.setAlignment(QtCore.Qt.AlignLeft)
+        label.setAlignment(Qt.AlignLeft)
         label.move(20, 190)
 
         email_label = QLinkLabel('K-TECH Industries', 'mailto:ktechindustries2019@gmail.com')
@@ -142,26 +140,25 @@ If you encounter any issues or have suggestions for improvements, contact us at:
     def mousePressEvent(self, e):
         self.close()
 
-class FindActionWin(QtWidgets.QWidget):
+class FindActionWin(QWidget):
     def __init__(self, actions, parent=None):
         super().__init__(parent)
-
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.ico'))
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('Find Action')
         self.setFixedHeight(500)
         self.setFixedWidth(300)
 
         # Create a QVBoxLayout and set it as the layout for the QWidget
-        layout = QtWidgets.QVBoxLayout()
+        layout = QVBoxLayout()
         self.setLayout(layout)
 
         # Create a QLineEdit for searching
-        self.searchInput = QtWidgets.QLineEdit()
+        self.searchInput = QLineEdit()
         self.searchInput.setObjectName('modernLineEdit')
         self.searchInput.setPlaceholderText("Search actions...")
 
         # Create a QListWidget
-        self.listWidget = QtWidgets.QListWidget()
+        self.listWidget = QListWidget()
 
         # Add some items to the QListWidget
         self.actions = actions
@@ -216,9 +213,8 @@ class FindActionWin(QtWidgets.QWidget):
 class DisclaimerWin(QMessageBox):
     def __init__(self, data_file, parent=None):
         super().__init__(parent)
-
         self.setWindowTitle('DISCLAIMER')
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_logoV3.png'))
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setIcon(QMessageBox.Warning)
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         self.setDefaultButton(QMessageBox.Yes)
