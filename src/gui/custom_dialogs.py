@@ -314,9 +314,7 @@ class AllCanvasExporter(QDialog):
 class CanvasEditorPanel(QWidget):
     def __init__(self, canvas):
         super().__init__()
-
         self.setFixedHeight(185)
-        self.setFixedWidth(285)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.canvas = canvas
@@ -425,12 +423,12 @@ class CanvasEditorPanel(QWidget):
 class QuickActionsPanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__(parent)
+        self.setFixedHeight(115)
 
         self.canvas = canvas
         self.parent = parent
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-        self.setFixedHeight(115)
 
         self.createUI()
 
