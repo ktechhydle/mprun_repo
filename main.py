@@ -152,6 +152,9 @@ class MPRUN(QMainWindow):
 
         self.open_recent_menu = QMenu('Open Recent')
 
+        open_template_action = QAction('Open Template', self)
+        open_template_action.triggered.connect(self.canvas.template_manager.load_template)
+
         save_action = QAction('Save', self)
         save_action.setShortcut(QKeySequence('Ctrl+S'))
         save_action.triggered.connect(self.save)
@@ -159,6 +162,9 @@ class MPRUN(QMainWindow):
         saveas_action = QAction('Save As', self)
         saveas_action.setShortcut(QKeySequence('Ctrl+Shift+S'))
         saveas_action.triggered.connect(self.saveas)
+
+        saveas_template_action = QAction('Save As Template', self)
+        saveas_template_action.triggered.connect(self.canvas.template_manager.save_template)
 
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
@@ -361,9 +367,11 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(new_action)
         self.file_menu.addAction(open_action)
         self.file_menu.addMenu(self.open_recent_menu)
+        self.file_menu.addAction(open_template_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(save_action)
         self.file_menu.addAction(saveas_action)
+        self.file_menu.addAction(saveas_template_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
         self.file_menu.addAction(export_multiple_action)
