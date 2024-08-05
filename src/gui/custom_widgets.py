@@ -505,6 +505,35 @@ class CustomToolbox(QToolBox):
         self.removeItem(index)
         self.insertItem(index, widget, name)
 
+class CustomListWidget(QListWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setDragEnabled(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.all_items = []
+
+    def startDrag(self, supportedActions):
+        item = self.currentItem()
+        if item:
+            drag = QDrag(self)
+            mime_data = QMimeData()
+            mime_data.setUrls([QUrl.fromLocalFile(item.data(Qt.UserRole))])
+            drag.setMimeData(mime_data)
+
+            # Optional: set a drag image
+            pixmap = QPixmap(100, 100)
+            pixmap.fill(Qt.transparent)
+            drag.setPixmap(pixmap)
+
+            drag.exec_(Qt.CopyAction | Qt.MoveAction)
+
+    def filter_items(self, text):
+        for item in self.all_items:
+            item.setHidden(True)
+
+            if text.lower() in item.text().lower():
+               item.setHidden(False)
+
 
 
 

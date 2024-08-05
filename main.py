@@ -1,10 +1,11 @@
-import json
-import os.path
-
-from src.gui.app_screens import *
-from src.scripts.styles import *
-from src.scripts.raw_functions import *
-from src.gui.libraries import *
+from src.scripts.imports import *
+from src.scripts.styles import WindowsCSS, MacCSS
+from src.scripts.raw_functions import nameismain, ItemStack
+from src.scripts.app_internal import *
+from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin
+from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, CanvasEditorPanel
+from src.gui.custom_widgets import *
+from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -17,11 +18,11 @@ class MPRUN(QMainWindow):
         self.cur_view = ''
 
         # Drawing stroke methods
-        self.outline_color = item_stack()
-        self.fill_color = item_stack()
+        self.outline_color = ItemStack()
+        self.fill_color = ItemStack()
         self.outline_color.set('red')
         self.fill_color.set('white')
-        self.font_color = item_stack()
+        self.font_color = ItemStack()
         self.font_color.set('black')
 
         # Grid Size and rotating screens
@@ -495,30 +496,23 @@ class MPRUN(QMainWindow):
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
 
         # Properties Tab
-        self.properties_tab = QWidget(self)
-        self.properties_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.properties_tab = PropertiesPanel(self.canvas, self)
         self.properties_tab.setFixedWidth(300)
-        self.properties_tab_layout = QVBoxLayout()
-        self.properties_tab.setLayout(self.properties_tab_layout)
 
         # Characters Tab
-        self.characters_tab = QWidget()
+        self.characters_tab = CharactersPanel(self.canvas, self)
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.characters_tab.setFixedHeight(185)
         self.characters_tab.setFixedWidth(300)
-        self.characters_tab_layout = QVBoxLayout()
-        self.characters_tab.setLayout(self.characters_tab_layout)
 
         # Vectorize Tab
-        self.image_trace = QWidget()
+        self.image_trace = ImageTracingPanel(self.canvas, self)
         self.image_trace.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.image_trace.setFixedHeight(375)
         self.image_trace.setFixedWidth(300)
-        self.image_trace_layout = QVBoxLayout()
-        self.image_trace.setLayout(self.image_trace_layout)
 
         # Libraries Tab
-        self.libraries_tab = LibraryWidget(self.canvas)
+        self.libraries_tab = LibrariesPanel(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setFixedWidth(300)
 
@@ -538,335 +532,19 @@ class MPRUN(QMainWindow):
         self.toolbox.addItem(self.canvas_tab, 'Canvas')
         self.toolbox.addItem(self.quick_actions_tab, 'Quick Actions')
 
-        # This next section is basically all the widgets for each tab
-        # Some tabs don't have many widgets as they are subclassed in other files.
-
-        # _____ Properties tab widgets _____
-        self.selection_label = QLabel('No Selection')
-        self.selection_label.setStyleSheet("QLabel { font-size: 12px; }")
-        self.transform_separator = HorizontalSeparator()
-        self.transform_label = QLabel('Transform', self)
-        self.transform_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
-        self.transform_label.setAlignment(Qt.AlignLeft)
-        appearence_label = QLabel('Appearance', self)
-        appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
-        appearence_label.setAlignment(Qt.AlignLeft)
-
-        self.rotation_label = QIconWidget('', 'ui/Tool Icons/rotate_icon.png', 20, 20)
-        self.rotation_label.setAlignment(Qt.AlignRight)
-        self.rotation_label.setStyleSheet('font-size: 10px;')
-        self.rotation_label.setContentsMargins(0, 0, 0, 0)
-
-        self.x_pos_label = QLabel('X:')
-        self.y_pos_label = QLabel('Y:')
-        self.width_transform_label = QLabel('W:')
-        self.height_transform_label = QLabel('H:')
-        self.x_pos_spin = QSpinBox(self)
-        self.x_pos_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.x_pos_spin.setFixedWidth(75)
-        self.x_pos_spin.setMaximum(10000)
-        self.x_pos_spin.setMinimum(-10000)
-        self.x_pos_spin.setSuffix(' pt')
-        self.x_pos_spin.setToolTip('Change the x position')
-        self.y_pos_spin = QSpinBox(self)
-        self.y_pos_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.y_pos_spin.setFixedWidth(75)
-        self.y_pos_spin.setMaximum(10000)
-        self.y_pos_spin.setMinimum(-10000)
-        self.y_pos_spin.setSuffix(' pt')
-        self.y_pos_spin.setToolTip('Change the y position')
-        self.width_scale_spin = QDoubleSpinBox(self)
-        self.width_scale_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.width_scale_spin.setFixedWidth(75)
-        self.width_scale_spin.setValue(0.0)
-        self.width_scale_spin.setDecimals(2)
-        self.width_scale_spin.setRange(-10000.00, 10000.00)
-        self.width_scale_spin.setSingleStep(1.0)
-        self.width_scale_spin.setSuffix(' pt')
-        self.width_scale_spin.setToolTip('Change the width')
-        self.height_scale_spin = QDoubleSpinBox(self)
-        self.height_scale_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.height_scale_spin.setFixedWidth(75)
-        self.height_scale_spin.setValue(0.0)
-        self.height_scale_spin.setDecimals(2)
-        self.height_scale_spin.setRange(-10000.00, 10000.00)
-        self.height_scale_spin.setSingleStep(1.0)
-        self.height_scale_spin.setSuffix(' pt')
-        self.height_scale_spin.setToolTip('Change the height')
-        self.rotate_item_spin = QSpinBox(self)
-        self.rotate_item_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.rotate_item_spin.setFixedWidth(70)
-        self.rotate_item_spin.setRange(-360, 360)
-        self.rotate_item_spin.setSuffix('°')
-        self.rotate_item_spin.setToolTip('Change the rotation')
-        self.flip_horizontal_btn = QPushButton(QIcon('ui/Tool Icons/flip_horizontal_icon.png'), '')
-        self.flip_horizontal_btn.setToolTip('Flip horizontal')
-        self.flip_horizontal_btn.setStyleSheet('border: none;')
-        self.flip_horizontal_btn.clicked.connect(self.use_flip_horizontal)
-        self.flip_vertical_btn = QPushButton(QIcon('ui/Tool Icons/flip_vertical_icon.png'), '')
-        self.flip_vertical_btn.setToolTip('Flip vertical')
-        self.flip_vertical_btn.setStyleSheet('border: none;')
-        self.flip_vertical_btn.clicked.connect(self.use_flip_vertical)
-        widget7 = ToolbarHorizontalLayout()
-        widget7.layout.addWidget(self.x_pos_label)
-        widget7.layout.addWidget(self.x_pos_spin)
-        widget7.layout.addWidget(self.width_transform_label)
-        widget7.layout.addWidget(self.width_scale_spin)
-        widget7.layout.addSpacing(25)
-        widget7.layout.addWidget(self.flip_horizontal_btn)
-        widget8 = ToolbarHorizontalLayout()
-        widget8.layout.addWidget(self.y_pos_label)
-        widget8.layout.addWidget(self.y_pos_spin)
-        widget8.layout.addWidget(self.height_transform_label)
-        widget8.layout.addWidget(self.height_scale_spin)
-        widget8.layout.addSpacing(25)
-        widget8.layout.addWidget(self.flip_vertical_btn)
-        widget9 = ToolbarHorizontalLayout()
-        widget9.layout.addWidget(self.rotation_label)
-        widget9.layout.addWidget(self.rotate_item_spin)
-        widget9.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
-
-        fill_label = QLabel('Fill')
-        fill_label.setStyleSheet('color: white;')
-        self.fill_color_btn = QColorButton(self)
-        self.fill_color_btn.setButtonColor('#00ff00')
-        self.fill_color_btn.setFixedWidth(28)
-        self.fill_color_btn.setFixedHeight(26)
-        self.fill_color_btn.setToolTip('Change the fill color')
-        self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
-        self.fill_color.set('#00ff00')
-        self.fill_color_btn.clicked.connect(self.fill_color_chooser)
-        self.fill_color_btn.clicked.connect(self.update_item_fill)
-        widget5 = ToolbarHorizontalLayout()
-        widget5.layout.addWidget(self.fill_color_btn)
-        widget5.layout.addWidget(fill_label)
-        widget5.layout.setContentsMargins(0, 14, 0, 0)
-
-        self.stroke_color_btn = QColorButton(self)
-        self.stroke_color_btn.setButtonColor(self.outline_color.get())
-        self.stroke_color_btn.setFixedWidth(28)
-        self.stroke_color_btn.setFixedHeight(26)
-        self.stroke_color_btn.setToolTip('Change the stroke color')
-        self.stroke_color_btn.setShortcut(QKeySequence('Ctrl+1'))
-        self.stroke_color_btn.clicked.connect(self.stroke_color_chooser)
-        self.stroke_color_btn.clicked.connect(self.update_item_pen)
-        self.stroke_size_spin = QSpinBox(self)
-        self.stroke_size_spin.setValue(3)
-        self.stroke_size_spin.setMaximum(1000)
-        self.stroke_size_spin.setMinimum(1)
-        self.stroke_size_spin.setSuffix(' pt')
-        self.stroke_size_spin.setToolTip('Change the stroke width')
-        stroke_label = StrokeLabel('Stroke', self)
-        self.stroke_style_combo = stroke_label.stroke_combo
-        self.stroke_style_options = stroke_label.stroke_options
-        self.stroke_pencap_combo = stroke_label.pencap_combo
-        self.stroke_pencap_options = stroke_label.pencap_options
-        self.join_style_combo = stroke_label.join_style_combo
-        self.join_style_options = stroke_label.join_style_options
-        widget6 = ToolbarHorizontalLayout()
-        widget6.layout.addWidget(self.stroke_color_btn)
-        widget6.layout.addWidget(stroke_label)
-        widget6.layout.addWidget(self.stroke_size_spin)
-        widget6.layout.addSpacing(100)
-        widget6.layout.setContentsMargins(0, 14, 0, 0)
-
-        opacity_label = QLabel('Opacity')
-        opacity_label.setStyleSheet('color: white;')
-        self.opacity_btn = QPushButton('')
-        self.opacity_btn.setFixedWidth(28)
-        self.opacity_btn.setFixedHeight(26)
-        self.opacity_btn.setIcon(QIcon('ui/UI Icons/opacity_icon.png'))
-        self.opacity_btn.setIconSize(QSize(24, 24))
-        self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
-        self.opacity_spin = QSpinBox()
-        self.opacity_spin.setRange(0, 100)
-        self.opacity_spin.setValue(100)
-        self.opacity_spin.setSuffix('%')
-        self.opacity_spin.setToolTip('Change the opacity')
-        self.opacity_spin.valueChanged.connect(self.use_change_opacity)
-        opacity_hlayout = ToolbarHorizontalLayout()
-        opacity_hlayout.layout.addWidget(self.opacity_btn)
-        opacity_hlayout.layout.addWidget(opacity_label)
-        opacity_hlayout.layout.addWidget(self.opacity_spin)
-        opacity_hlayout.layout.addSpacing(100)
-        opacity_hlayout.layout.setContentsMargins(0, 14, 0, 0)
-
-        #_____ Characters tab widgets _____
-        self.font_choice_combo = QFontComboBox(self)
-        self.font_choice_combo.setToolTip('Change the font style')
-        self.font_size_spin = QSpinBox(self)
-        self.font_size_spin.setValue(20)
-        self.font_size_spin.setMaximum(1000)
-        self.font_size_spin.setMinimum(1)
-        self.font_size_spin.setFixedWidth(105)
-        self.font_size_spin.setSuffix(' pt')
-        self.font_size_spin.setToolTip('Change the font size')
-        self.font_letter_spacing_spin = QSpinBox(self)
-        self.font_letter_spacing_spin.setValue(1)
-        self.font_letter_spacing_spin.setMaximum(1000)
-        self.font_letter_spacing_spin.setMinimum(-100)
-        self.font_letter_spacing_spin.setFixedWidth(105)
-        self.font_letter_spacing_spin.setSuffix(' pt')
-        self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
-        self.font_color_btn = QColorButton(self)
-        self.font_color_btn.setFixedWidth(90)
-        self.font_color_btn.setToolTip('Change the font color')
-        self.font_color_btn.setStyleSheet(f'background-color: black;')
-        self.font_color_btn.clicked.connect(self.font_color_chooser)
-        self.font_color_btn.clicked.connect(self.update_item_font)
-        self.bold_btn = QPushButton('B', self)
-        self.bold_btn.setToolTip('Set the font bold')
-        self.bold_btn.setStyleSheet('font-weight: bold; font-size: 15px;')
-        self.italic_btn = QPushButton('I', self)
-        self.italic_btn.setToolTip('Set the font italic')
-        self.italic_btn.setStyleSheet('font-style: italic; font-size: 15px;')
-        self.underline_btn = QPushButton('U', self)
-        self.underline_btn.setToolTip('Set the font underlined')
-        self.underline_btn.setStyleSheet('text-decoration: underline; font-size: 15px;')
-        self.bold_btn.setCheckable(True)
-        self.italic_btn.setCheckable(True)
-        self.underline_btn.setCheckable(True)
-        self.bold_btn.clicked.connect(self.update_item_font)
-        self.italic_btn.clicked.connect(self.update_item_font)
-        self.underline_btn.clicked.connect(self.update_item_font)
-        font_size_and_spacing_hlayout = ToolbarHorizontalLayout()
-        font_size_and_spacing_hlayout.layout.addWidget(
-            QIconWidget('', 'ui/UI Icons/Major/font_size_icon.svg', 20, 20))
-        font_size_and_spacing_hlayout.layout.addWidget(self.font_size_spin)
-        font_size_and_spacing_hlayout.layout.addWidget(
-            QIconWidget('', 'ui/UI Icons/Major/font_spacing_icon.svg', 20, 20))
-        font_size_and_spacing_hlayout.layout.addWidget(self.font_letter_spacing_spin)
-        font_size_and_spacing_hlayout.layout.setContentsMargins(0, 0, 0, 0)
-        font_style_hlayout = ToolbarHorizontalLayout()
-        font_style_hlayout.layout.addWidget(self.bold_btn)
-        font_style_hlayout.layout.addWidget(self.italic_btn)
-        font_style_hlayout.layout.addWidget(self.underline_btn)
-        font_style_hlayout.layout.setContentsMargins(0, 0, 0, 0)
-        font_color_hlayout = ToolbarHorizontalLayout()
-        font_color_hlayout.layout.setContentsMargins(0, 0, 0, 0)
-        font_color_hlayout.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
-        font_color_hlayout.layout.addWidget(QLabel('Color:'))
-        font_color_hlayout.layout.addWidget(self.font_color_btn)
-
-        #_____ Image Trace tab widgets _____
-        colormode_label = QLabel('Preset:')
-        mode_label = QLabel('Mode:')
-        color_precision_label = QLabel('Color Precision (More Accurate):', self)
-        corner_threshold_label = QLabel('Corner Threshold (Smoother):', self)
-        path_precision_label = QLabel('Path Precision (More Accurate):', self)
-
-        self.colormode_combo = QComboBox(self)
-        self.colormode_combo.setToolTip('Change the color mode')
-        self.colormode_combo.addItem('Color', 'color')
-        self.colormode_combo.addItem('Black and White', 'binary')
-        self.mode_combo = QComboBox(self)
-        self.mode_combo.setToolTip('Change the geometry mode')
-        self.mode_combo.addItem('Spline', 'spline')
-        self.mode_combo.addItem('Polygon', 'polygon')
-        self.mode_combo.addItem('None', 'none')
-        self.mode_combo.setMinimumWidth(200)
-
-        self.color_precision_spin = QSpinBox(self)
-        self.color_precision_spin.setMaximum(8)
-        self.color_precision_spin.setMinimum(1)
-        self.color_precision_spin.setValue(6)
-        self.color_precision_spin.setToolTip('Change the color precision')
-        self.corner_threshold_spin = QSpinBox(self)
-        self.corner_threshold_spin.setMaximum(180)
-        self.corner_threshold_spin.setMinimum(1)
-        self.corner_threshold_spin.setValue(60)
-        self.corner_threshold_spin.setToolTip('Change the corner threshold')
-        self.path_precision_spin = QSlider(self)
-        self.path_precision_spin.setOrientation(Qt.Horizontal)
-        self.path_precision_spin.setMaximum(10)
-        self.path_precision_spin.setMinimum(1)
-        self.path_precision_spin.setSliderPosition(3)
-        self.path_precision_spin.setToolTip('Change the path precision')
-
-        image_tracehlayout1 = ToolbarHorizontalLayout()
-        image_tracehlayout1.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
-        image_tracehlayout1.layout.addWidget(colormode_label)
-        image_tracehlayout1.layout.addWidget(self.colormode_combo)
-        image_tracehlayout1.layout.setContentsMargins(0, 0, 0, 0)
-        image_tracehlayout2 = ToolbarHorizontalLayout()
-        image_tracehlayout2.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
-        image_tracehlayout2.layout.addWidget(mode_label)
-        image_tracehlayout2.layout.addWidget(self.mode_combo)
-        image_tracehlayout2.layout.setContentsMargins(0, 0, 0, 0)
-
-        # If any changes are made, update them
-        self.stroke_size_spin.valueChanged.connect(self.update_item_pen)
-        self.stroke_style_combo.currentIndexChanged.connect(self.update_item_pen)
-        self.stroke_pencap_combo.currentIndexChanged.connect(self.update_item_pen)
-        self.join_style_combo.currentIndexChanged.connect(self.update_item_pen)
-        self.font_size_spin.valueChanged.connect(self.update_item_font)
-        self.font_letter_spacing_spin.valueChanged.connect(self.update_item_font)
-        self.font_choice_combo.currentFontChanged.connect(self.update_item_font)
-        self.font_choice_combo.currentTextChanged.connect(self.update_item_font)
-        self.x_pos_spin.valueChanged.connect(self.use_set_item_pos)
-        self.y_pos_spin.valueChanged.connect(self.use_set_item_pos)
-        self.width_scale_spin.valueChanged.connect(self.use_scale_x)
-        self.height_scale_spin.valueChanged.connect(self.use_scale_y)
-        self.rotate_item_spin.valueChanged.connect(self.use_rotate)
-
         # Add action toolbar actions
         self.tab_view_dock.setWidget(self.toolbox)
         self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
 
-        # Properties Tab Widgets
-        self.properties_tab_layout.addWidget(self.selection_label)
-        self.properties_tab_layout.addWidget(self.transform_separator)
-        self.properties_tab_layout.addWidget(self.transform_label)
-        self.properties_tab_layout.addWidget(widget7)
-        self.properties_tab_layout.addWidget(widget8)
-        self.properties_tab_layout.addWidget(widget9)
-        self.properties_tab_layout.addWidget(HorizontalSeparator())
-        self.properties_tab_layout.addWidget(appearence_label)
-        self.properties_tab_layout.addWidget(widget5)
-        self.properties_tab_layout.addWidget(widget6)
-        self.properties_tab_layout.addWidget(opacity_hlayout)
-        self.properties_tab_layout.addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
-
-        # Elements Tab Widgets
-        self.characters_tab_layout.addWidget(self.font_choice_combo)
-        self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
-        self.characters_tab_layout.addWidget(font_style_hlayout)
-        self.characters_tab_layout.addWidget(font_color_hlayout)
-
-        # Vectorize Tab Widgets
-        self.image_trace_layout.addWidget(image_tracehlayout1)
-        self.image_trace_layout.addWidget(image_tracehlayout2)
-        self.image_trace_layout.addWidget(path_precision_label)
-        self.image_trace_layout.addWidget(self.path_precision_spin)
-        self.image_trace_layout.addWidget(QMoreOrLessLabel(self))
-        self.image_trace_layout.addWidget(color_precision_label)
-        self.image_trace_layout.addWidget(self.color_precision_spin)
-        self.image_trace_layout.addWidget(corner_threshold_label)
-        self.image_trace_layout.addWidget(self.corner_threshold_spin)
-
         # Add to actions dict
-        self.actions['Change Stroke Color'] = self.stroke_color_btn
-        self.actions['Change Fill Color'] = self.fill_color_btn
-        self.actions['Change Font Color'] = self.font_color_btn
+        self.actions['Change Stroke Color'] = self.properties_tab.stroke_color_btn
+        self.actions['Change Fill Color'] = self.properties_tab.fill_color_btn
+        self.actions['Change Font Color'] = self.characters_tab.font_color_btn
         self.actions['Open Library'] = self.libraries_tab.open_library_button
         self.actions['Reload Library'] = self.libraries_tab.reload_library_button
         self.actions['Enable Grid'] = self.quick_actions_tab.gsnap_check_btn
 
-        # Default widget settings
-        self.transform_separator.setHidden(True)
-        self.transform_label.setHidden(True)
-        self.x_pos_label.setHidden(True)
-        self.x_pos_spin.setHidden(True)
-        self.y_pos_label.setHidden(True)
-        self.y_pos_spin.setHidden(True)
-        self.width_transform_label.setHidden(True)
-        self.height_transform_label.setHidden(True)
-        self.width_scale_spin.setHidden(True)
-        self.height_scale_spin.setHidden(True)
-        self.flip_horizontal_btn.setHidden(True)
-        self.flip_vertical_btn.setHidden(True)
-        self.rotation_label.setHidden(True)
-        self.rotate_item_spin.setHidden(True)
+        self.set_properties_tab_enabled(False)
 
     def create_toolbar1(self):
         self.action_group = QActionGroup(self)
@@ -1160,12 +838,12 @@ class MPRUN(QMainWindow):
 
     def create_default_objects(self):
         font = QFont()
-        font.setFamily(self.font_choice_combo.currentText())
-        font.setPixelSize(self.font_size_spin.value())
-        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
-        font.setBold(True if self.bold_btn.isChecked() else False)
-        font.setItalic(True if self.italic_btn.isChecked() else False)
-        font.setUnderline(True if self.underline_btn.isChecked() else False)
+        font.setFamily(self.characters_tab.font_choice_combo.currentText())
+        font.setPixelSize(self.characters_tab.font_size_spin.value())
+        font.setLetterSpacing(QFont.AbsoluteSpacing, self.characters_tab.font_letter_spacing_spin.value())
+        font.setBold(True if self.characters_tab.bold_btn.isChecked() else False)
+        font.setItalic(True if self.characters_tab.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.characters_tab.underline_btn.isChecked() else False)
 
         # Drawing paper
         self.paper = CanvasItem(QRectF(0, 0, 1000, 700), 'Canvas 1')
@@ -1205,15 +883,15 @@ class MPRUN(QMainWindow):
 
     def update_item_pen(self):
         # Update pen and brush
-        index1 = self.stroke_style_combo.currentIndex()
-        data1 = self.stroke_style_combo.itemData(index1)
-        index2 = self.stroke_pencap_combo.currentIndex()
-        data2 = self.stroke_pencap_combo.itemData(index2)
+        index1 = self.properties_tab.stroke_style_combo.currentIndex()
+        data1 = self.properties_tab.stroke_style_combo.itemData(index1)
+        index2 = self.properties_tab.stroke_pencap_combo.currentIndex()
+        data2 = self.properties_tab.stroke_pencap_combo.itemData(index2)
 
         pen = QPen()
         pen.setColor(QColor(self.outline_color.get()))
-        pen.setWidth(self.stroke_size_spin.value())
-        pen.setJoinStyle(self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
+        pen.setWidth(self.properties_tab.stroke_size_spin.value())
+        pen.setJoinStyle(self.properties_tab.join_style_combo.itemData(self.properties_tab.join_style_combo.currentIndex()))
         pen.setStyle(data1)
         pen.setCapStyle(data2)
 
@@ -1260,12 +938,12 @@ class MPRUN(QMainWindow):
     def update_item_font(self):
         # Update font
         font = QFont()
-        font.setFamily(self.font_choice_combo.currentText())
-        font.setPixelSize(self.font_size_spin.value())
-        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
-        font.setBold(True if self.bold_btn.isChecked() else False)
-        font.setItalic(True if self.italic_btn.isChecked() else False)
-        font.setUnderline(True if self.underline_btn.isChecked() else False)
+        font.setFamily(self.characters_tab.font_choice_combo.currentText())
+        font.setPixelSize(self.characters_tab.font_size_spin.value())
+        font.setLetterSpacing(QFont.AbsoluteSpacing, self.characters_tab.font_letter_spacing_spin.value())
+        font.setBold(True if self.characters_tab.bold_btn.isChecked() else False)
+        font.setItalic(True if self.characters_tab.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.characters_tab.underline_btn.isChecked() else False)
 
         new_color = QColor(self.font_color.get())
 
@@ -1294,236 +972,230 @@ class MPRUN(QMainWindow):
                     print(f"Exception: {e}")
 
     def update_transform_ui(self):
-        self.x_pos_spin.blockSignals(True)
-        self.y_pos_spin.blockSignals(True)
-        self.width_scale_spin.blockSignals(True)
-        self.height_scale_spin.blockSignals(True)
-        self.rotate_item_spin.blockSignals(True)
-        self.opacity_spin.blockSignals(True)
+        self.properties_tab.x_pos_spin.blockSignals(True)
+        self.properties_tab.y_pos_spin.blockSignals(True)
+        self.properties_tab.width_scale_spin.blockSignals(True)
+        self.properties_tab.height_scale_spin.blockSignals(True)
+        self.properties_tab.rotate_item_spin.blockSignals(True)
+        self.properties_tab.opacity_spin.blockSignals(True)
 
         if len(self.canvas.selectedItems()) > 0:
-            self.transform_separator.setHidden(False)
-            self.transform_label.setHidden(False)
-            self.x_pos_label.setHidden(False)
-            self.x_pos_spin.setHidden(False)
-            self.y_pos_label.setHidden(False)
-            self.y_pos_spin.setHidden(False)
-            self.width_transform_label.setHidden(False)
-            self.height_transform_label.setHidden(False)
-            self.width_scale_spin.setHidden(False)
-            self.height_scale_spin.setHidden(False)
-            self.flip_horizontal_btn.setHidden(False)
-            self.flip_vertical_btn.setHidden(False)
-            self.rotation_label.setHidden(False)
-            self.rotate_item_spin.setHidden(False)
+            self.set_properties_tab_enabled(False)
 
             for item in self.canvas.selectedItems():
-                self.x_pos_spin.setValue(int(item.sceneBoundingRect().x()))
-                self.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
-                self.rotate_item_spin.setValue(int(item.rotation()))
-                self.opacity_spin.setValue(int(item.opacity() * 100))
+                self.properties_tab.x_pos_spin.setValue(int(item.sceneBoundingRect().x()))
+                self.properties_tab.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
+                self.properties_tab.rotate_item_spin.setValue(int(item.rotation()))
+                self.properties_tab.opacity_spin.setValue(int(item.opacity() * 100))
 
                 if item.transform().m11() < 0:
-                    self.width_scale_spin.setValue(-item.boundingRect().width())
+                    self.properties_tab.width_scale_spin.setValue(-item.boundingRect().width())
 
                 else:
-                    self.width_scale_spin.setValue(item.boundingRect().width())
+                    self.properties_tab.width_scale_spin.setValue(item.boundingRect().width())
 
                 if item.transform().m22() < 0:
-                    self.height_scale_spin.setValue(-item.boundingRect().height())
+                    self.properties_tab.height_scale_spin.setValue(-item.boundingRect().height())
 
                 else:
-                    self.height_scale_spin.setValue(item.boundingRect().height())
+                    self.properties_tab.height_scale_spin.setValue(item.boundingRect().height())
 
-                self.selection_label.setText(item.toolTip())
+                self.properties_tab.selection_label.setText(item.toolTip())
 
                 if len(self.canvas.selectedItems()) > 1:
-                    self.selection_label.setText('Combined Selection')
-                    self.x_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().x()))
-                    self.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
+                    self.properties_tab.selection_label.setText('Combined Selection')
+                    self.properties_tab.x_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().x()))
+                    self.properties_tab.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
 
         else:
-            self.transform_separator.setHidden(True)
-            self.transform_label.setHidden(True)
-            self.x_pos_label.setHidden(True)
-            self.x_pos_spin.setHidden(True)
-            self.y_pos_label.setHidden(True)
-            self.y_pos_spin.setHidden(True)
-            self.width_transform_label.setHidden(True)
-            self.height_transform_label.setHidden(True)
-            self.width_scale_spin.setHidden(True)
-            self.height_scale_spin.setHidden(True)
-            self.flip_horizontal_btn.setHidden(True)
-            self.flip_vertical_btn.setHidden(True)
-            self.rotation_label.setHidden(True)
-            self.rotate_item_spin.setHidden(True)
+            self.set_properties_tab_enabled(True)
 
-            self.selection_label.setText('No Selection')
-            self.x_pos_spin.setValue(0)
-            self.y_pos_spin.setValue(0)
-            self.rotate_item_spin.setValue(0)
-            self.opacity_spin.setValue(100)
-            self.width_scale_spin.setValue(0.0)
-            self.height_scale_spin.setValue(0.0)
-
-        self.x_pos_spin.blockSignals(False)
-        self.y_pos_spin.blockSignals(False)
-        self.rotate_item_spin.blockSignals(False)
-        self.opacity_spin.blockSignals(False)
-        self.width_scale_spin.blockSignals(False)
-        self.height_scale_spin.blockSignals(False)
+        self.properties_tab.x_pos_spin.blockSignals(False)
+        self.properties_tab.y_pos_spin.blockSignals(False)
+        self.properties_tab.rotate_item_spin.blockSignals(False)
+        self.properties_tab.opacity_spin.blockSignals(False)
+        self.properties_tab.width_scale_spin.blockSignals(False)
+        self.properties_tab.height_scale_spin.blockSignals(False)
 
     def update_appearance_ui(self):
         self.canvas_tab.canvas_x_entry.blockSignals(True)
         self.canvas_tab.canvas_y_entry.blockSignals(True)
         self.canvas_tab.canvas_name_entry.blockSignals(True)
         self.canvas_tab.canvas_preset_dropdown.blockSignals(True)
-        self.stroke_size_spin.blockSignals(True)
-        self.stroke_style_combo.blockSignals(True)
-        self.stroke_pencap_combo.blockSignals(True)
-        self.join_style_combo.blockSignals(True)
-        self.fill_color_btn.blockSignals(True)
-        self.stroke_color_btn.blockSignals(True)
-        self.font_choice_combo.blockSignals(True)
-        self.font_color_btn.blockSignals(True)
-        self.font_size_spin.blockSignals(True)
-        self.font_letter_spacing_spin.blockSignals(True)
-        self.bold_btn.blockSignals(True)
-        self.italic_btn.blockSignals(True)
-        self.underline_btn.blockSignals(True)
+        self.properties_tab.stroke_size_spin.blockSignals(True)
+        self.properties_tab.stroke_style_combo.blockSignals(True)
+        self.properties_tab.stroke_pencap_combo.blockSignals(True)
+        self.properties_tab.join_style_combo.blockSignals(True)
+        self.properties_tab.fill_color_btn.blockSignals(True)
+        self.properties_tab.stroke_color_btn.blockSignals(True)
+        self.characters_tab.font_choice_combo.blockSignals(True)
+        self.characters_tab.font_color_btn.blockSignals(True)
+        self.characters_tab.font_size_spin.blockSignals(True)
+        self.characters_tab.font_letter_spacing_spin.blockSignals(True)
+        self.characters_tab.bold_btn.blockSignals(True)
+        self.characters_tab.italic_btn.blockSignals(True)
+        self.characters_tab.underline_btn.blockSignals(True)
 
-        for item in self.canvas.selectedItems():
-            if isinstance(item, CustomPathItem):
-                pen = item.pen()
-                brush = item.brush()
+        try:
+            for item in self.canvas.selectedItems():
+                if isinstance(item, CustomPathItem):
+                    pen = item.pen()
+                    brush = item.brush()
 
-                # Set Colors
-                if pen.color().alpha() != 0:
-                    self.stroke_color_btn.setButtonColor(pen.color().name())
-                    self.outline_color.set(pen.color().name())
+                    # Set Colors
+                    if pen.color().alpha() != 0:
+                        self.properties_tab.stroke_color_btn.setButtonColor(pen.color().name())
+                        self.outline_color.set(pen.color().name())
 
-                else:
-                    self.stroke_color_btn.setTransparent(True)
-                    self.outline_color.set(Qt.transparent)
+                    else:
+                        self.properties_tab.stroke_color_btn.setTransparent(True)
+                        self.outline_color.set(Qt.transparent)
 
-                if brush.color().alpha() != 0:
-                    self.fill_color_btn.setButtonColor(brush.color().name())
-                    self.fill_color.set(brush.color().name())
+                    if brush.color().alpha() != 0:
+                        self.properties_tab.fill_color_btn.setButtonColor(brush.color().name())
+                        self.fill_color.set(brush.color().name())
 
-                else:
-                    self.fill_color_btn.setTransparent(True)
-                    self.fill_color.set(Qt.transparent)
+                    else:
+                        self.properties_tab.fill_color_btn.setTransparent(True)
+                        self.fill_color.set(Qt.transparent)
 
-                # Set Values
-                self.stroke_size_spin.setValue(pen.width())
+                    # Set Values
+                    self.properties_tab.stroke_size_spin.setValue(pen.width())
 
-                for index, (style, value) in enumerate(self.stroke_style_options.items()):
-                    if pen.style() == value:
-                        self.stroke_style_combo.setCurrentIndex(index)
+                    for index, (style, value) in enumerate(self.properties_tab.stroke_style_options.items()):
+                        if pen.style() == value:
+                            self.properties_tab.stroke_style_combo.setCurrentIndex(index)
 
-                for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
-                    if pen.capStyle() == v:
-                        self.stroke_pencap_combo.setCurrentIndex(i)
+                    for i, (s, v) in enumerate(self.properties_tab.stroke_pencap_options.items()):
+                        if pen.capStyle() == v:
+                            self.properties_tab.stroke_pencap_combo.setCurrentIndex(i)
 
-                for index, (s, v) in enumerate(self.join_style_options.items()):
-                    if pen.joinStyle() == v:
-                        self.join_style_combo.setCurrentIndex(i)
+                    for index, (s, v) in enumerate(self.properties_tab.join_style_options.items()):
+                        if pen.joinStyle() == v:
+                            self.properties_tab.join_style_combo.setCurrentIndex(i)
 
-                self.canvas_view.update_pen(item.pen())
-                self.canvas_view.update_brush(item.brush())
+                    self.canvas_view.update_pen(item.pen())
+                    self.canvas_view.update_brush(item.brush())
 
-            elif isinstance(item, CanvasItem):
-                self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
-                self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
-                self.canvas_tab.canvas_name_entry.setText(item.name())
+                elif isinstance(item, CanvasItem):
+                    self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
+                    self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
+                    self.canvas_tab.canvas_name_entry.setText(item.name())
 
-                # Update the canvas preset dropdown
-                for index, (preset, size) in enumerate(self.canvas_tab.canvas_presets.items()):
-                    if (item.boundingRect().width(), item.boundingRect().height()) == size:
-                        self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(index)
-                        break  # Exit the loop once the matching preset is found
-                else:
-                    # If no matching preset is found, set to 'Custom'
-                    custom_index = self.canvas_tab.canvas_preset_dropdown.findText('Custom')
-                    self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(custom_index)
+                    # Update the canvas preset dropdown
+                    for index, (preset, size) in enumerate(self.canvas_tab.canvas_presets.items()):
+                        if (item.boundingRect().width(), item.boundingRect().height()) == size:
+                            self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(index)
+                            break  # Exit the loop once the matching preset is found
+                    else:
+                        # If no matching preset is found, set to 'Custom'
+                        custom_index = self.canvas_tab.canvas_preset_dropdown.findText('Custom')
+                        self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(custom_index)
 
-            elif isinstance(item, LeaderLineItem):
-                pen = item.pen()
-                brush = item.brush()
+                elif isinstance(item, LeaderLineItem):
+                    pen = item.pen()
+                    brush = item.brush()
 
-                # Set Colors
-                if pen.color().alpha() != 0:
-                    self.stroke_color_btn.setButtonColor(pen.color().name())
-                    self.outline_color.set(pen.color().name())
+                    # Set Colors
+                    if pen.color().alpha() != 0:
+                        self.properties_tab.stroke_color_btn.setButtonColor(pen.color().name())
+                        self.outline_color.set(pen.color().name())
 
-                else:
-                    self.stroke_color_btn.setTransparent(True)
-                    self.outline_color.set(Qt.transparent)
+                    else:
+                        self.properties_tab.stroke_color_btn.setTransparent(True)
+                        self.outline_color.set(Qt.transparent)
 
-                if brush.color().alpha() != 0:
-                    self.fill_color_btn.setButtonColor(brush.color().name())
-                    self.fill_color.set(brush.color().name())
+                    if brush.color().alpha() != 0:
+                        self.properties_tab.fill_color_btn.setButtonColor(brush.color().name())
+                        self.fill_color.set(brush.color().name())
 
-                else:
-                    self.fill_color_btn.setTransparent(True)
-                    self.fill_color.set(Qt.transparent)
+                    else:
+                        self.properties_tab.fill_color_btn.setTransparent(True)
+                        self.fill_color.set(Qt.transparent)
 
-                # Set Values
-                self.stroke_size_spin.setValue(pen.width())
+                    # Set Values
+                    self.properties_tab.stroke_size_spin.setValue(pen.width())
 
-                for index, (style, value) in enumerate(self.stroke_style_options.items()):
-                    if pen.style() == value:
-                        self.stroke_style_combo.setCurrentIndex(index)
+                    for index, (style, value) in enumerate(self.properties_tab.stroke_style_options.items()):
+                        if pen.style() == value:
+                            self.properties_tab.stroke_style_combo.setCurrentIndex(index)
 
-                for i, (s, v) in enumerate(self.stroke_pencap_options.items()):
-                    if pen.capStyle() == v:
-                        self.stroke_pencap_combo.setCurrentIndex(i)
+                    for i, (s, v) in enumerate(self.properties_tab.stroke_pencap_options.items()):
+                        if pen.capStyle() == v:
+                            self.properties_tab.stroke_pencap_combo.setCurrentIndex(i)
 
-                for index, (s, v) in enumerate(self.join_style_options.items()):
-                    if pen.joinStyle() == v:
-                        self.join_style_combo.setCurrentIndex(i)
+                    for index, (s, v) in enumerate(self.properties_tab.join_style_options.items()):
+                        if pen.joinStyle() == v:
+                            self.properties_tab.join_style_combo.setCurrentIndex(i)
 
-                self.canvas_view.update_pen(item.pen())
-                self.canvas_view.update_brush(item.brush())
+                    self.canvas_view.update_pen(item.pen())
+                    self.canvas_view.update_brush(item.brush())
 
-            elif isinstance(item, CustomTextItem):
-                font = item.font()
-                color = item.defaultTextColor()
+                elif isinstance(item, CustomTextItem):
+                    font = item.font()
+                    color = item.defaultTextColor()
 
-                if color.alpha() != 0:
-                    self.font_color_btn.setButtonColor(color.name())
-                    self.font_color.set(color.name())
+                    if color.alpha() != 0:
+                        self.characters_tab.font_color_btn.setButtonColor(color.name())
+                        self.font_color.set(color.name())
 
-                else:
-                    self.font_color_btn.setTransparent(True)
-                    self.font_color.set(Qt.transparent)
+                    else:
+                        self.characters_tab.font_color_btn.setTransparent(True)
+                        self.font_color.set(Qt.transparent)
 
-                self.font_choice_combo.setCurrentText(font.family())
-                self.font_size_spin.setValue(font.pixelSize())
-                self.font_letter_spacing_spin.setValue(int(font.letterSpacing()))
-                self.bold_btn.setChecked(True if font.bold() else False)
-                self.italic_btn.setChecked(True if font.italic() else False)
-                self.underline_btn.setChecked(True if font.underline() else False)
+                    self.characters_tab.font_choice_combo.setCurrentText(font.family())
+                    self.characters_tab.font_size_spin.setValue(font.pixelSize())
+                    self.characters_tab.font_letter_spacing_spin.setValue(int(font.letterSpacing()))
+                    self.characters_tab.bold_btn.setChecked(True if font.bold() else False)
+                    self.characters_tab.italic_btn.setChecked(True if font.italic() else False)
+                    self.characters_tab.underline_btn.setChecked(True if font.underline() else False)
 
-                self.canvas_view.update_font(item.font(), item.defaultTextColor())
+                    self.canvas_view.update_font(item.font(), item.defaultTextColor())
+        except Exception as e:
+            print(e)
 
         self.canvas_tab.canvas_x_entry.blockSignals(False)
         self.canvas_tab.canvas_y_entry.blockSignals(False)
         self.canvas_tab.canvas_name_entry.blockSignals(False)
         self.canvas_tab.canvas_preset_dropdown.blockSignals(False)
-        self.stroke_size_spin.blockSignals(False)
-        self.stroke_style_combo.blockSignals(False)
-        self.stroke_pencap_combo.blockSignals(False)
-        self.join_style_combo.blockSignals(False)
-        self.fill_color_btn.blockSignals(False)
-        self.stroke_color_btn.blockSignals(False)
-        self.font_choice_combo.blockSignals(False)
-        self.font_color_btn.blockSignals(False)
-        self.font_size_spin.blockSignals(False)
-        self.font_letter_spacing_spin.blockSignals(False)
-        self.bold_btn.blockSignals(False)
-        self.italic_btn.blockSignals(False)
-        self.underline_btn.blockSignals(False)
+        self.properties_tab.stroke_size_spin.blockSignals(False)
+        self.properties_tab.stroke_style_combo.blockSignals(False)
+        self.properties_tab.stroke_pencap_combo.blockSignals(False)
+        self.properties_tab.join_style_combo.blockSignals(False)
+        self.properties_tab.fill_color_btn.blockSignals(False)
+        self.properties_tab.stroke_color_btn.blockSignals(False)
+        self.characters_tab.font_choice_combo.blockSignals(False)
+        self.characters_tab.font_color_btn.blockSignals(False)
+        self.characters_tab.font_size_spin.blockSignals(False)
+        self.characters_tab.font_letter_spacing_spin.blockSignals(False)
+        self.characters_tab.bold_btn.blockSignals(False)
+        self.characters_tab.italic_btn.blockSignals(False)
+        self.characters_tab.underline_btn.blockSignals(False)
+
+    def set_properties_tab_enabled(self, enabled: bool):
+        self.properties_tab.transform_separator.setHidden(enabled)
+        self.properties_tab.transform_label.setHidden(enabled)
+        self.properties_tab.x_pos_label.setHidden(enabled)
+        self.properties_tab.x_pos_spin.setHidden(enabled)
+        self.properties_tab.y_pos_label.setHidden(enabled)
+        self.properties_tab.y_pos_spin.setHidden(enabled)
+        self.properties_tab.width_transform_label.setHidden(enabled)
+        self.properties_tab.height_transform_label.setHidden(enabled)
+        self.properties_tab.width_scale_spin.setHidden(enabled)
+        self.properties_tab.height_scale_spin.setHidden(enabled)
+        self.properties_tab.flip_horizontal_btn.setHidden(enabled)
+        self.properties_tab.flip_vertical_btn.setHidden(enabled)
+        self.properties_tab.rotation_label.setHidden(enabled)
+        self.properties_tab.rotate_item_spin.setHidden(enabled)
+
+        if enabled is False:
+            self.properties_tab.selection_label.setText('No Selection')
+            self.properties_tab.x_pos_spin.setValue(0)
+            self.properties_tab.y_pos_spin.setValue(0)
+            self.properties_tab.rotate_item_spin.setValue(0)
+            self.properties_tab.opacity_spin.setValue(100)
+            self.properties_tab.width_scale_spin.setValue(0.0)
+            self.properties_tab.height_scale_spin.setValue(0.0)
 
     def stroke_color_chooser(self):
         color_dialog = CustomColorPicker(self)
@@ -1534,11 +1206,11 @@ class MPRUN(QMainWindow):
         if color_dialog.exec_():
             color = color_dialog.currentColor()
             if color.alpha() != 0:
-                self.stroke_color_btn.setTransparent(False)
-                self.stroke_color_btn.setStyleSheet(
+                self.properties_tab.stroke_color_btn.setTransparent(False)
+                self.properties_tab.stroke_color_btn.setStyleSheet(
                     f'background-color: {color.name()};')
             else:
-                self.stroke_color_btn.setTransparent(True)
+                self.properties_tab.stroke_color_btn.setTransparent(True)
 
             self.outline_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
@@ -1551,13 +1223,13 @@ class MPRUN(QMainWindow):
         if color_dialog.exec_():
             color = color_dialog.currentColor()
             if color.alpha() != 0:
-                self.fill_color_btn.setTransparent(False)
-                self.fill_color_btn.setStyleSheet(
+                self.properties_tab.fill_color_btn.setTransparent(False)
+                self.properties_tab.fill_color_btn.setStyleSheet(
                     f'background-color: {color.name()};')
-                self.fill_color_btn.repaint()
+                self.properties_tab.fill_color_btn.repaint()
 
             else:
-                self.fill_color_btn.setTransparent(True)
+                self.properties_tab.fill_color_btn.setTransparent(True)
 
             self.fill_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
@@ -1570,12 +1242,12 @@ class MPRUN(QMainWindow):
         if color_dialog.exec_():
             color = color_dialog.currentColor()
             if color.alpha() != 0:
-                self.font_color_btn.setTransparent(False)
-                self.font_color_btn.setStyleSheet(
+                self.characters_tab.font_color_btn.setTransparent(False)
+                self.characters_tab.font_color_btn.setStyleSheet(
                     f'background-color: {color.name()};')
 
             else:
-                self.font_color_btn.setTransparent(True)
+                self.characters_tab.font_color_btn.setTransparent(True)
 
             self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
@@ -2679,10 +2351,10 @@ def main() -> None:
     app.processEvents()
 
     if sys.platform == 'darwin':
-        app.setStyleSheet(mac_style)
+        app.setStyleSheet(MacCSS)
 
     else:
-        app.setStyleSheet(windows_style)
+        app.setStyleSheet(WindowsCSS)
 
     window = MPRUN()
     splash.finish(window)
