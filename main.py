@@ -1506,8 +1506,8 @@ class MPRUN(QMainWindow):
         self.canvas.blockSignals(True)
         try:
             # Get target position from spin boxes
-            target_x = self.x_pos_spin.value()
-            target_y = self.y_pos_spin.value()
+            target_x = self.properties_tab.x_pos_spin.value()
+            target_y = self.properties_tab.y_pos_spin.value()
 
             # Get the bounding rect of selected items
             selected_items = self.canvas.selectedItems()
@@ -1546,10 +1546,10 @@ class MPRUN(QMainWindow):
             self.canvas.blockSignals(False)
 
     def use_scale_x(self, value):
-        self.use_scale(self.width_scale_spin.value(), self.height_scale_spin.value())
+        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
 
     def use_scale_y(self, value):
-        self.use_scale(self.width_scale_spin.value(), self.height_scale_spin.value())
+        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
 
     def use_scale(self, x_value, y_value):
         try:
@@ -1716,7 +1716,7 @@ class MPRUN(QMainWindow):
                 if direction == 'h':
                     self.use_flip_horizontal()
 
-                    if self.width_scale_spin.value() < 0:
+                    if self.properties_tab.width_scale_spin.value() < 0:
                         child.setX(child.pos().x() - child.boundingRect().width())
                     else:
                         child.setX(child.pos().x() + child.boundingRect().width())
@@ -1724,14 +1724,14 @@ class MPRUN(QMainWindow):
                 elif direction == 'v':
                     self.use_flip_vertical()
 
-                    if self.height_scale_spin.value() < 0:
+                    if self.properties_tab.height_scale_spin.value() < 0:
                         child.setY(child.pos().y() - child.boundingRect().height())
                     else:
                         child.setY(child.pos().y() + child.boundingRect().height())
 
     def use_change_opacity(self, value):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
-        opacity = value / self.opacity_spin.maximum()
+        opacity = value / self.properties_tab.opacity_spin.maximum()
 
         items = self.canvas.selectedItems()
         if not items:
@@ -2065,7 +2065,7 @@ class MPRUN(QMainWindow):
         self.update('item_update')
 
     def use_enable_grid(self):
-        if self.gsnap_check_btn.isChecked():
+        if self.quick_actions_tab.gsnap_check_btn.isChecked():
             self.canvas.setGridEnabled(True)
             self.canvas.update()
 
@@ -2104,10 +2104,15 @@ class MPRUN(QMainWindow):
 
         elif shape == "triangle":
             poly = QPolygonF()
-            poly.append(QPointF(-100., 0))
-            poly.append(QPointF(0., -100))
-            poly.append(QPointF(100., 0))
-            poly.append(QPointF(-100., 0))
+            half_width = 50
+            # Calculate the height of the equilateral triangle
+            height = (math.sqrt(3) / 2) * 100
+            # Add the points to the polygon
+            poly.append(QPointF(-half_width, height / 2))
+            poly.append(QPointF(half_width, height / 2))
+            poly.append(QPointF(0., -height / 2))
+            poly.append(QPointF(-half_width, height / 2))
+
             path.addPolygon(poly)
             item = CustomPathItem(path)
             item.setPen(self.canvas_view.pen)
