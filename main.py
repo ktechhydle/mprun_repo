@@ -229,6 +229,18 @@ class MPRUN(QMainWindow):
         sculpt_path_action.setShortcut(QKeySequence('S'))
         sculpt_path_action.triggered.connect(self.use_sculpt_path)
 
+        add_shape_menu = QMenu('Add Shape', self)
+        add_shape_rect = QAction('Add Rectangle', self)
+        add_shape_rect.triggered.connect(lambda: self.use_insert_shape('rect'))
+        add_shape_circle = QAction('Add Circle', self)
+        add_shape_circle.triggered.connect(lambda: self.use_insert_shape('circle'))
+        add_shape_tri = QAction('Add Triangle', self)
+        add_shape_tri.triggered.connect(lambda: self.use_insert_shape('triangle'))
+
+        add_shape_menu.addAction(add_shape_rect)
+        add_shape_menu.addAction(add_shape_circle)
+        add_shape_menu.addAction(add_shape_tri)
+
         # Create edit actions
         undo_action = QAction('Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
@@ -427,6 +439,7 @@ class MPRUN(QMainWindow):
         drawing_menu.addAction(path_action)
         drawing_menu.addAction(pen_action)
         drawing_menu.addAction(linelabel_action)
+        drawing_menu.addMenu(add_shape_menu)
 
         path_menu.addAction(smooth_action)
         path_menu.addAction(close_subpath_action)
@@ -2073,6 +2086,36 @@ class MPRUN(QMainWindow):
 
                 else:
                     item.gridEnabled = False
+
+    def use_insert_shape(self, shape: str):
+        path = QPainterPath()
+
+        if shape == "rect":
+            path.addRect(QRectF(0, 0, 100, 100))
+            item = CustomPathItem(path)
+            item.setPen(self.canvas_view.pen)
+            item.setBrush(self.canvas_view.stroke_fill)
+
+        elif shape == "circle":
+            path.addEllipse(QRectF(0, 0, 100, 100))
+            item = CustomPathItem(path)
+            item.setPen(self.canvas_view.pen)
+            item.setBrush(self.canvas_view.stroke_fill)
+
+        elif shape == "triangle":
+            poly = QPolygonF()
+            poly.append(QPointF(-100., 0))
+            poly.append(QPointF(0., -100))
+            poly.append(QPointF(100., 0))
+            poly.append(QPointF(-100., 0))
+            path.addPolygon(poly)
+            item = CustomPathItem(path)
+            item.setPen(self.canvas_view.pen)
+            item.setBrush(self.canvas_view.stroke_fill)
+
+
+        self.canvas.addCommand(AddItemCommand(self.canvas, item))
+        self.create_item_attributes(item)
 
     def insert_image(self):
         self.canvas.importManager.importFile()
