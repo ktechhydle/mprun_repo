@@ -1201,7 +1201,7 @@ class MPRUN(QMainWindow):
         self.properties_tab.rotation_label.setHidden(enabled)
         self.properties_tab.rotate_item_spin.setHidden(enabled)
 
-        if enabled is False:
+        if enabled is True:
             self.properties_tab.selection_label.setText('No Selection')
             self.properties_tab.x_pos_spin.setValue(0)
             self.properties_tab.y_pos_spin.setValue(0)

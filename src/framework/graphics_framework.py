@@ -110,7 +110,7 @@ class CustomGraphicsView(QGraphicsView):
         p.setX(p.x() + 10)
 
         if self.scene().selectedItems():
-            if (event.buttons() and Qt.LeftButton) and self.scene().itemAt(self.mapToScene(event.pos()), self.transform()):
+            if (event.buttons() and Qt.LeftButton) and self.scene().itemAt(self.mapToScene(event.pos()), self.transform()) == self.scene().selectedItems()[0]:
                 QToolTip.showText(p, f'''position x: {int(self.canvas.selectedItemsSceneBoundingRect().x())}
 position y: {int(self.canvas.selectedItemsSceneBoundingRect().y())}''')
 
