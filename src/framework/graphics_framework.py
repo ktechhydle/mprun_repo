@@ -41,8 +41,9 @@ class CustomGraphicsView(QGraphicsView):
         self.line_and_label_btn = actions[5]
         self.text_btn = actions[6]
         self.scale_btn = actions[7]
-        self.add_canvas_btn = actions[8]
-        self.grid_checkbtn = actions[9]
+        self.rotate_btn = actions[8]
+        self.add_canvas_btn = actions[9]
+        self.grid_checkbtn = actions[10]
 
         # Items
         self.canvas = canvas
@@ -59,6 +60,7 @@ class CustomGraphicsView(QGraphicsView):
         self.penDrawingTool = PenDrawerTool(self.canvas, self)
         self.labelingTool = LineAndLabelTool(self.canvas, self)
         self.scalingTool = MouseScalingTool(self.canvas, self)
+        self.rotatingTool = MouseRotatingTool(self.canvas, self)
         self.sculptingTool = PathSculptingTool(self.canvas, self)
         self.canvasTool = AddCanvasTool(self.canvas, self)
 
@@ -145,6 +147,11 @@ y: {int(self.mapToScene(point).y())}''')
             self.disable_item_flags()
             super().mousePressEvent(event)
 
+        elif self.rotate_btn.isChecked():
+            self.rotatingTool.on_rotate_start(event)
+            self.disable_item_flags()
+            super().mousePressEvent(event)
+
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.on_add_canvas_start(event)
             self.disable_item_flags()
@@ -196,6 +203,12 @@ y: {int(self.mapToScene(point).y())}''')
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
+        elif self.rotate_btn.isChecked():
+            self.rotatingTool.on_rotate(event)
+            self.rotatingTool.show_tooltip(event)
+            self.disable_item_flags()
+            super().mousePressEvent(event)
+
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.show_tooltip(event)
             self.canvasTool.on_add_canvas_drag(event)
@@ -235,6 +248,10 @@ y: {int(self.mapToScene(point).y())}''')
             self.scalingTool.on_scale_end(event)
             super().mouseReleaseEvent(event)
 
+        elif self.rotate_btn.isChecked():
+            self.rotatingTool.on_rotate_end(event)
+            super().mousePressEvent(event)
+
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.on_add_canvas_end(event)
             super().mouseReleaseEvent(event)
@@ -261,6 +278,9 @@ y: {int(self.mapToScene(point).y())}''')
 
         if self.scale_btn.isChecked():
             self.scalingTool.on_scale_double_click(event)
+
+        elif self.rotate_btn.isChecked():
+            self.rotatingTool.on_rotate_double_click(event)
             
         else:
             super().mouseDoubleClickEvent(event)

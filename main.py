@@ -267,6 +267,10 @@ class MPRUN(QMainWindow):
         scale_action.setShortcut(QKeySequence('Q'))
         scale_action.triggered.connect(self.use_scale_tool)
 
+        rotate_action = QAction('Rotate', self)
+        rotate_action.setShortcut(QKeySequence('R'))
+        rotate_action.triggered.connect(self.use_rotate_tool)
+
         flip_horizontal_action = QAction('Flip Horizontal', self)
         flip_horizontal_action.setShortcut(QKeySequence(''))
         flip_horizontal_action.triggered.connect(self.use_flip_horizontal)
@@ -276,11 +280,9 @@ class MPRUN(QMainWindow):
         flip_vertical_action.triggered.connect(self.use_flip_vertical)
 
         mirror_horizontal_action = QAction('Mirror Horizontal', self)
-        mirror_horizontal_action.setShortcut(QKeySequence('M+H'))
         mirror_horizontal_action.triggered.connect(lambda: self.use_mirror('h'))
 
         mirror_vertical_action = QAction('Mirror Vertical', self)
-        mirror_vertical_action.setShortcut(QKeySequence('M+V'))
         mirror_vertical_action.triggered.connect(lambda: self.use_mirror('v'))
 
         image_trace_action = QAction('Trace Image', self)
@@ -403,6 +405,7 @@ class MPRUN(QMainWindow):
         self.object_menu.addSeparator()
         self.object_menu.addAction(duplicate_action)
         self.object_menu.addAction(scale_action)
+        self.object_menu.addAction(rotate_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(flip_horizontal_action)
         self.object_menu.addAction(flip_vertical_action)
@@ -622,6 +625,12 @@ class MPRUN(QMainWindow):
         self.scale_btn.setCheckable(True)
         self.scale_btn.triggered.connect(self.use_scale_tool)
 
+        # Rotate Button
+        self.rotate_btn = QAction(QIcon('ui/Tool Icons/scale_icon.png'), 'Rotate Tool (R)', self)
+        self.rotate_btn.setToolTip('Rotate Tool (R)')
+        self.rotate_btn.setCheckable(True)
+        self.rotate_btn.triggered.connect(self.use_rotate_tool)
+
         # Hide Button
         self.hide_btn = QAction(QIcon('ui/Tool Icons/hide_icon.png'), 'Hide Element Tool (H)', self)
         self.hide_btn.setToolTip('''Hide Element Tool (H)''')
@@ -652,6 +661,7 @@ class MPRUN(QMainWindow):
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
         self.toolbar.addAction(self.scale_btn)
+        self.toolbar.addAction(self.rotate_btn)
         self.toolbar.addAction(self.hide_btn)
         self.toolbar.addAction(self.unhide_btn)
         self.toolbar.addAction(self.add_canvas_btn)
@@ -666,18 +676,20 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
         self.action_group.addAction(self.scale_btn)
+        self.action_group.addAction(self.rotate_btn)
         self.action_group.addAction(self.hide_btn)
         self.action_group.addAction(self.unhide_btn)
         self.action_group.addAction(self.add_canvas_btn)
 
         # Add to actions dict
-        self.actions['''Select'''] = self.select_btn
+        self.actions['Select'] = self.select_btn
         self.actions['Pan'] = self.pan_btn
         self.actions['Path Draw'] = self.path_btn
         self.actions['Pen Draw'] = self.pen_btn
         self.actions['Line and Label'] = self.label_btn
         self.actions['Add Text'] = self.add_text_btn
         self.actions['Scale'] = self.scale_btn
+        self.actions['Rotate'] = self.rotate_btn
         self.actions['Hide'] = self.hide_btn
         self.actions['Unhide'] = self.unhide_btn
         self.actions['Add Canvas'] = self.add_canvas_btn
@@ -800,6 +812,7 @@ class MPRUN(QMainWindow):
                                                self.label_btn,
                                                self.add_text_btn,
                                                self.scale_btn,
+                                               self.rotate_btn,
                                                self.add_canvas_btn,
                                                self.quick_actions_tab.gsnap_check_btn], self.view_zoom_spin)
         self.canvas_view.setViewport(CustomViewport())
@@ -1596,6 +1609,12 @@ class MPRUN(QMainWindow):
 
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
+
+        self.use_exit_grid()
+
+    def use_rotate_tool(self):
+        self.rotate_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
 
         self.use_exit_grid()

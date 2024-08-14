@@ -296,9 +296,9 @@ class MouseScalingTool:
         if self.scaling_item and self.start_pos:
             current_pos = self.view.mapToScene(event.pos())
             delta = current_pos - self.start_pos
-            scale_factor = 1 + delta.y() / 100.0  # Adjust the scale sensitivity here
+            scale_factor = 1 + delta.y() / 100.0
 
-            # Scale around the center of the item
+
             self.scaling_item.setTransformOriginPoint(self.scaling_item.boundingRect().center())
 
             new_scale = self.scaling_item.scale() * scale_factor
@@ -332,6 +332,84 @@ class MouseScalingTool:
                 pass
             else:
                 self.canvas.addCommand(ScaleCommand(item, item.scale(), 1))
+
+class MouseRotatingTool:
+    def __init__(self, canvas: QGraphicsScene, view: QGraphicsView):
+        self.canvas = canvas
+        self.view = view
+        self.rotating_item = None
+        self.start_angle = None
+        self.start_pos = None
+        self.rotation_command = None
+
+        self.view.setMouseTracking(True)
+
+    def show_tooltip(self, event):
+        point = event.pos()
+        p = self.view.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+
+        if self.rotating_item:
+            QToolTip.showText(p, f'rotation: {int(self.rotating_item.rotation())}°')
+
+        else:
+            self.view.show_tooltip(event)
+
+    def on_rotate_start(self, event):
+        self.view.setDragMode(QGraphicsView.NoDrag)
+        pos = self.view.mapToScene(event.pos())
+        item = self.canvas.itemAt(pos.toPoint(), self.view.transform())
+        if item and not isinstance(item, CanvasItem):
+            if isinstance(item, CustomTextItem):
+                item.clearFocus()
+
+            self.rotating_item = item
+            self.start_angle = item.rotation()
+            self.start_pos = pos
+
+    def on_rotate(self, event):
+        if self.rotating_item and self.start_pos:
+            current_pos = self.view.mapToScene(event.pos())
+            item_center = self.rotating_item.boundingRect().center()
+
+            vector_start = self.start_pos - item_center
+            vector_current = current_pos - item_center
+
+            angle_start = math.atan2(vector_start.y(), vector_start.x())
+            angle_current = math.atan2(vector_current.y(), vector_current.x())
+            angle_change = math.degrees(angle_current - angle_start)
+
+            new_angle = self.start_angle + angle_change
+
+            if event.modifiers() & Qt.ShiftModifier:
+                new_angle = round(new_angle / 45) * 45
+
+            self.rotating_item.setTransformOriginPoint(item_center)
+            self.rotating_item.setRotation(new_angle)
+
+            self.rotation_command = MouseRotationCommand(self.rotating_item, self.start_angle, new_angle)
+
+    def on_rotate_end(self, event):
+        if self.rotation_command:
+            self.canvas.addCommand(self.rotation_command)
+
+        self.rotating_item = None
+        self.start_angle = None
+        self.start_pos = None
+        self.rotation_command = None
+
+    def on_rotate_double_click(self, event):
+        pos = self.view.mapToScene(event.pos())
+        item = self.canvas.itemAt(pos.toPoint(), self.view.transform())
+        if item and not isinstance(item, CanvasItem):
+            if isinstance(item, CustomTextItem):
+                item.clearFocus()
+
+            if item.rotation() == 0:
+                pass
+            else:
+                self.canvas.addCommand(MouseRotationCommand(item, item.rotation(), 0))
 
 class PathSculptingTool:
     def __init__(self, canvas, view):
