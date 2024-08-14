@@ -522,10 +522,10 @@ class MPRUN(QMainWindow):
         self.characters_tab.setFixedWidth(300)
 
         # Vectorize Tab
-        self.image_trace = ImageTracingPanel(self.canvas, self)
-        self.image_trace.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.image_trace.setFixedHeight(375)
-        self.image_trace.setFixedWidth(300)
+        self.image_trace_tab = ImageTracingPanel(self.canvas, self)
+        self.image_trace_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.image_trace_tab.setFixedHeight(375)
+        self.image_trace_tab.setFixedWidth(300)
 
         # Libraries Tab
         self.libraries_tab = LibrariesPanel(self.canvas)
@@ -544,7 +544,7 @@ class MPRUN(QMainWindow):
         self.toolbox.addItem(self.properties_tab, 'Properties')
         self.toolbox.addItem(self.libraries_tab, 'Libraries')
         self.toolbox.addItem(self.characters_tab, 'Characters')
-        self.toolbox.addItem(self.image_trace, 'Image Trace')
+        self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
         self.toolbox.addItem(self.canvas_tab, 'Canvas')
         self.toolbox.addItem(self.quick_actions_tab, 'Quick Actions')
 
@@ -1437,15 +1437,15 @@ class MPRUN(QMainWindow):
                     # Convert the pixmap to SVG
                     vtracer.convert_image_to_svg_py(temp_pixmap_path,
                                                     'internal data/output.svg',
-                                                    colormode=self.colormode_combo.itemData(
-                                                        self.colormode_combo.currentIndex()),  # ["color"] or "binary"
+                                                    colormode=self.image_trace_tab.colormode_combo.itemData(
+                                                        self.image_trace_tab.colormode_combo.currentIndex()),  # ["color"] or "binary"
                                                     hierarchical='cutout',  # ["stacked"] or "cutout"
-                                                    mode=self.mode_combo.itemData(self.mode_combo.currentIndex()),
+                                                    mode=self.image_trace_tab.mode_combo.itemData(self.image_trace_tab.mode_combo.currentIndex()),
                                                     # ["spline"] "polygon", or "none"
                                                     filter_speckle=4,  # default: 4
                                                     color_precision=6,  # default: 6
                                                     layer_difference=16,  # default: 16
-                                                    corner_threshold=self.corner_threshold_spin.value(),  # default: 60
+                                                    corner_threshold=self.image_trace_tab.corner_threshold_spin.value(),  # default: 60
                                                     length_threshold=4.0,  # in [3.5, 10] default: 4.0
                                                     max_iterations=10,  # default: 10
                                                     splice_threshold=45,  # default: 45
