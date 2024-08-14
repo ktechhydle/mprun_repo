@@ -375,6 +375,10 @@ class MPRUN(QMainWindow):
         find_action_action = QAction('Find Action', self)
         find_action_action.triggered.connect(self.show_find_action)
 
+        browse_tutorials_action = QAction('Browse Tutorials', self)
+        browse_tutorials_action.setShortcut(Qt.Key_F1)
+        browse_tutorials_action.triggered.connect(lambda: webbrowser.open('https://sites.google.com/view/mprun/learn#h.dhbfsx84043q'))
+
         # Add actions
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addAction(insert_action)
@@ -437,6 +441,7 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(show_version_action)
         self.help_menu.addSeparator()
         self.help_menu.addAction(find_action_action)
+        self.help_menu.addAction(browse_tutorials_action)
 
         # Sub menu actions
         drawing_menu.addAction(path_action)
@@ -569,33 +574,64 @@ class MPRUN(QMainWindow):
 
         # Select Button
         self.select_btn = QAction(QIcon('ui/Tool Icons/selection_icon.png'), 'Select Tool (Spacebar)', self)
-        self.select_btn.setToolTip('''Select Tool (Spacebar)''')
+        self.select_btn.setToolTip(
+            '<b>Select (Spacebar)</b><br>'
+            'Select items on the scene by clicking and dragging a selection rectangle.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
+
         self.select_btn.setCheckable(True)
         self.select_btn.setChecked(True)
         self.select_btn.triggered.connect(self.use_select)
 
         # Pan Button
         self.pan_btn = QAction(QIcon('ui/Tool Icons/pan_icon.png'), 'Pan Tool (P)', self)
-        self.pan_btn.setToolTip('''Pan Tool (P)''')
+        self.pan_btn.setToolTip(
+            '<b>Pan (P)</b><br>'
+            'Pan around the scene by clicking and dragging.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.pan_btn.setCheckable(True)
         self.pan_btn.triggered.connect(self.use_pan)
 
         # Drawing/editing tools
         self.path_btn = QAction(QIcon('ui/Tool Icons/pen_tool_icon.png'), 'Path Draw Tool (L)', self)
         self.path_btn.setCheckable(True)
-        self.path_btn.setToolTip('''Path Draw Tool (L)''')
+        self.path_btn.setToolTip(
+            '<b>Path (L)</b><br>'
+            'Draw path items on the scene by clicking and drawing.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.path_btn.triggered.connect(self.update)
         self.path_btn.triggered.connect(self.use_path)
 
         self.pen_btn = QAction(QIcon('ui/Tool Icons/pen_draw_icon.png'), 'Pen Draw Tool (Ctrl+L)', self)
         self.pen_btn.setCheckable(True)
-        self.pen_btn.setToolTip('''Pen Draw Tool (Ctrl+L)''')
+        self.pen_btn.setToolTip(
+            '<b>Pen (Ctrl+L)</b><br>'
+            'Draw smooth path items on the scene by clicking and drawing.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.pen_btn.triggered.connect(self.update)
         self.pen_btn.triggered.connect(self.use_pen_tool)
 
         self.sculpt_btn = QAction(QIcon('ui/Tool Icons/sculpt_icon.png'), 'Sculpt Tool (S)', self)
         self.sculpt_btn.setCheckable(True)
-        self.sculpt_btn.setToolTip('''Sculpt Tool (S)''')
+        self.sculpt_btn.setToolTip(
+            '<b>Sculpt (S)</b><br>'
+            'Edit path items by clicking and dragging on them to "sculpt" them.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
 
@@ -608,48 +644,96 @@ class MPRUN(QMainWindow):
         # Label draw button
         self.label_btn = QAction(QIcon('ui/Tool Icons/label_icon.png'), "Line and Label Tool (T)", self)
         self.label_btn.setCheckable(True)
-        self.label_btn.setToolTip('''Line and Label Tool (T)''')
+        self.label_btn.setToolTip(
+            '<b>Line and Label (T)</b><br>'
+            'Draw line and label items by clicking and dragging.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.label_btn.triggered.connect(self.update)
         self.label_btn.triggered.connect(self.use_label)
 
         # Add Text Button
         self.add_text_btn = QAction(QIcon('ui/Tool Icons/text_icon.png'), 'Text Tool (Ctrl+T)', self)
-        self.add_text_btn.setToolTip('''Text Tool (Ctrl+T)''')
+        self.add_text_btn.setToolTip(
+            '<b>Text (Ctrl+T)</b><br>'
+            'Add text items to the scene by clicking a point.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.add_text_btn.setCheckable(True)
         self.add_text_btn.triggered.connect(self.update)
         self.add_text_btn.triggered.connect(self.use_text)
 
         # Scale Button
         self.scale_btn = QAction(QIcon('ui/Tool Icons/scale_icon.png'), 'Scale Tool (Q)', self)
-        self.scale_btn.setToolTip('''Scale Tool (Q)''')
+        self.scale_btn.setToolTip(
+            '<b>Scale (Q)</b><br>'
+            'Scale items in the scene by clicking and dragging on them.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.scale_btn.setCheckable(True)
         self.scale_btn.triggered.connect(self.use_scale_tool)
 
         # Rotate Button
         self.rotate_btn = QAction(QIcon('ui/Tool Icons/scale_icon.png'), 'Rotate Tool (R)', self)
-        self.rotate_btn.setToolTip('Rotate Tool (R)')
+        self.rotate_btn.setToolTip(
+            '<b>Rotate (R)</b><br>'
+            'Rotate items in the scene by clicking and dragging on them.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.rotate_btn.setCheckable(True)
         self.rotate_btn.triggered.connect(self.use_rotate_tool)
 
         # Hide Button
         self.hide_btn = QAction(QIcon('ui/Tool Icons/hide_icon.png'), 'Hide Element Tool (H)', self)
-        self.hide_btn.setToolTip('''Hide Element Tool (H)''')
+        self.hide_btn.setToolTip(
+            '<b>Hide (H)</b><br>'
+            'Hide the selected items in the scene.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.hide_btn.triggered.connect(self.use_hide_item)
 
         # Unhide Button
         self.unhide_btn = QAction(QIcon('ui/Tool Icons/unhide_icon.png'), 'Unhide All Tool (Ctrl+H)', self)
-        self.unhide_btn.setToolTip('''Unhide All Tool (Ctrl+H)''')
+        self.unhide_btn.setToolTip(
+            '<b>Unhide All (Ctrl+H)</b><br>'
+            'Unhide all hidden items in the scene.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.unhide_btn.triggered.connect(self.use_unhide_all)
 
         # Add Canvas Button
         self.add_canvas_btn = QAction(QIcon('ui/Tool Icons/add_canvas_icon.png'), 'Add Canvas Tool (A)', self)
-        self.add_canvas_btn.setToolTip('''Add Canvas Tool (A)''')
+        self.add_canvas_btn.setToolTip(
+            '<b>Add Canvas (A)</b><br>'
+            'Add canvas items to the scene by clicking and dragging.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.add_canvas_btn.setCheckable(True)
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
         # Insert Image Button
         self.insert_btn = QAction(QIcon('ui/Tool Icons/insert_image_icon2.png'), 'Insert Element Tool (I)', self)
-        self.insert_btn.setToolTip('''Insert Tool (I)''')
+        self.insert_btn.setToolTip(
+            '<b>Insert (I)</b><br>'
+            'Insert a supported file type on to the scene.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         self.insert_btn.triggered.connect(self.insert_image)
 
         # ----add actions----#
@@ -698,43 +782,103 @@ class MPRUN(QMainWindow):
     def create_toolbar2(self):
         #----item toolbar widgets----#
         align_left_btn = QAction(QIcon('ui/Tool Icons/align_left_icon.png'), '', self)
-        align_left_btn.setToolTip('Align the selected elements to the left')
+        align_left_btn.setToolTip(
+            '<b>Align Left</b><br>'
+            'Align the selected items to the left.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         align_left_btn.triggered.connect(self.use_align_left)
 
         align_right_btn = QAction(QIcon('ui/Tool Icons/align_right_icon.png'), '', self)
-        align_right_btn.setToolTip('Align the selected elements to the right')
+        align_right_btn.setToolTip(
+            '<b>Align Right</b><br>'
+            'Align the selected items to the right.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         align_right_btn.triggered.connect(self.use_align_right)
 
         align_center_btn = QAction(QIcon('ui/Tool Icons/align_center_icon.png'), '', self)
-        align_center_btn.setToolTip('Align the selected elements to the center')
+        align_center_btn.setToolTip(
+            '<b>Align Center</b><br>'
+            'Align the selected items to the center.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         align_center_btn.triggered.connect(self.use_align_center)
 
         align_middle_btn = QAction(QIcon('ui/Tool Icons/align_middle_icon.png'), '', self)
-        align_middle_btn.setToolTip('Align the selected elements to the middle')
+        align_middle_btn.setToolTip(
+            '<b>Align Middle</b><br>'
+            'Align the selected items to the middle.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         align_middle_btn.triggered.connect(self.use_align_middle)
 
         align_top_btn = QAction(QIcon('ui/Tool Icons/align_top_icon.png'), '', self)
-        align_top_btn.setToolTip('Align the selected elements to the top')
+        align_top_btn.setToolTip(
+            '<b>Align Top</b><br>'
+            'Align the selected items to the top.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         align_top_btn.triggered.connect(self.use_align_top)
 
         align_bottom_btn = QAction(QIcon('ui/Tool Icons/align_bottom_icon.png'), '', self)
-        align_bottom_btn.setToolTip('Align the selected elements to the center')
+        align_bottom_btn.setToolTip(
+            '<b>Align Bottom</b><br>'
+            'Align the selected items to the bottom.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         align_bottom_btn.triggered.connect(self.use_align_bottom)
 
         rotate_ccw_action = QAction(QIcon('ui/Tool Icons/rotate_ccw_icon.png'), '', self)
-        rotate_ccw_action.setToolTip('Rotate the selected elements 90° counter-clockwise')
+        rotate_ccw_action.setToolTip(
+            '<b>Rotate Left</b><br>'
+            'Rotate the selected items 90° counter-clockwise.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         rotate_ccw_action.triggered.connect(lambda: self.use_rotate_direction('ccw'))
 
         rotate_cw_action = QAction(QIcon('ui/Tool Icons/rotate_cw_icon.png'), '', self)
-        rotate_cw_action.setToolTip('Rotate the selected elements 90° clockwise')
+        rotate_cw_action.setToolTip(
+            '<b>Rotate Right</b><br>'
+            'Rotate the selected items 90° clockwise.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         rotate_cw_action.triggered.connect(lambda: self.use_rotate_direction('cw'))
 
         raise_layer_action = QAction(QIcon('ui/Tool Icons/raise_layer_icon.png'), '', self)
-        raise_layer_action.setToolTip('Raise the selected elements a layer up')
+        raise_layer_action.setToolTip(
+            '<b>Raise</b><br>'
+            'Raise the selected items a leyer up.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         raise_layer_action.triggered.connect(self.use_raise_layer)
 
         lower_layer_action = QAction(QIcon('ui/Tool Icons/lower_layer_icon.png'), '', self)
-        lower_layer_action.setToolTip('Lower the selected elements a layer down')
+        lower_layer_action.setToolTip(
+            '<b>Lower</b><br>'
+            'Lower the selected items a leyer down.<br>'
+            '<img src="ui/Main Logos/MPRUN_icon.png">'
+            '<hr>'
+            '<b>Press F1 for more help.</b><br>'
+        )
         lower_layer_action.triggered.connect(self.use_lower_layer)
 
         self.view_zoom_spin = QSpinBox(self)
