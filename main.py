@@ -1629,9 +1629,7 @@ class MPRUN(QMainWindow):
 
         # Rotate each item around the center
         for item in items:
-            if isinstance(item, CanvasItem):
-                pass
-            else:
+            if not isinstance(item, CanvasItem):
                 if isinstance(item, LeaderLineItem):
                     item.childItems()[0].setSelected(False)
                     item.updatePathEndPoint()
@@ -1665,9 +1663,7 @@ class MPRUN(QMainWindow):
 
         # Rotate each item around the center
         for item in items:
-            if isinstance(item, CanvasItem):
-                pass
-            else:
+            if not isinstance(item, CanvasItem):
                 if isinstance(item, LeaderLineItem):
                     item.childItems()[0].setSelected(False)
                     item.updatePathEndPoint()
@@ -1761,9 +1757,7 @@ class MPRUN(QMainWindow):
 
         # Apply the effect to selected items
         for item in items:
-            if isinstance(item, CanvasItem) or isinstance(item, CanvasTextItem):
-                pass
-            else:
+            if not isinstance(item, CanvasItem):
                 canvas_items.append(item)
                 old_opacities.append(item.opacity())
 
@@ -1890,9 +1884,7 @@ class MPRUN(QMainWindow):
         old_visibilities = []
 
         for item in items:
-            if isinstance(item, CanvasTextItem):
-                pass
-            else:
+            if not isinstance(item, CanvasTextItem):
                 if not item.isVisible():
                     canvas_items.append(item)
                     old_visibilities.append(item.isVisible())
@@ -1918,10 +1910,7 @@ class MPRUN(QMainWindow):
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
+                if not isinstance(item, CanvasItem):
                     for i in self.canvas.items():
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
@@ -1947,10 +1936,7 @@ class MPRUN(QMainWindow):
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
+                if not isinstance(item, CanvasItem):
                     for i in self.canvas.items():
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
@@ -1978,10 +1964,7 @@ class MPRUN(QMainWindow):
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
+                if not isinstance(item, CanvasItem):
                     for i in self.canvas.items():
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
@@ -2008,10 +1991,7 @@ class MPRUN(QMainWindow):
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
+                if not isinstance(item, CanvasItem):
                     for i in self.canvas.items():
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
@@ -2038,10 +2018,7 @@ class MPRUN(QMainWindow):
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
+                if not isinstance(item, CanvasItem):
                     for i in self.canvas.items():
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():
@@ -2068,10 +2045,7 @@ class MPRUN(QMainWindow):
 
         elif len(self.canvas.selectedItems()) == 1:
             for item in self.canvas.selectedItems():
-                if isinstance(item, CanvasItem):
-                    pass
-
-                else:
+                if not isinstance(item, CanvasItem):
                     for i in self.canvas.items():
                         if isinstance(i, CanvasItem):
                             for colision in i.collidingItems():

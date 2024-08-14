@@ -48,7 +48,7 @@ class PathDrawerTool:
             self.temp_path_item = CustomPathItem(self.path)
             self.temp_path_item.setPen(self.view.pen)
             self.temp_path_item.setBrush(self.view.stroke_fill)
-            self.temp_path_item.setZValue(0)
+            self.temp_path_item.setZValue(1)
             self.canvas.addItem(self.temp_path_item)
 
             self.canvas.update()
@@ -169,7 +169,7 @@ class PenDrawerTool:
                     path_item = CustomPathItem(self.path)
                     path_item.path().setFillRule(Qt.WindingFill)
                     path_item.setPen(self.view.pen)
-                    path_item.setZValue(0)
+                    path_item.setZValue(1)
                     path_item.setBrush(self.view.stroke_fill)
                     path_item.setFlag(QGraphicsItem.ItemIsSelectable)
                     path_item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -214,6 +214,7 @@ class LineAndLabelTool:
             self.clicked_label_point = self.start_point
 
             self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
+            self.pathg_item.setZValue(2)
             self.pathg_item.setPen(self.view.pen)
             self.pathg_item.setBrush(self.view.stroke_fill)
             self.pathg_item.text_element.setFont(self.view.font)
@@ -241,7 +242,6 @@ class LineAndLabelTool:
             self.pathg_item.setPath(self.leader_line)
             self.canvas.update()
 
-            self.pathg_item.setZValue(2)
             self.pathg_item.text_element.select_text_and_set_cursor()
 
             if self.leader_line.isEmpty():

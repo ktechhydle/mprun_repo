@@ -207,7 +207,7 @@ y: {int(self.mapToScene(point).y())}''')
             self.rotatingTool.on_rotate(event)
             self.rotatingTool.show_tooltip(event)
             self.disable_item_flags()
-            super().mousePressEvent(event)
+            super().mouseMoveEvent(event)
 
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.show_tooltip(event)
@@ -250,7 +250,7 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.rotate_btn.isChecked():
             self.rotatingTool.on_rotate_end(event)
-            super().mousePressEvent(event)
+            super().mouseReleaseEvent(event)
 
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.on_add_canvas_end(event)
