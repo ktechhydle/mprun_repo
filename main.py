@@ -976,7 +976,6 @@ class MPRUN(QMainWindow):
                                                self.rotate_btn,
                                                self.add_canvas_btn,
                                                self.quick_actions_tab.gsnap_check_btn], self.view_zoom_spin)
-        self.canvas_view.setViewport(CustomViewport())
         self.canvas_view.setScene(self.canvas)
         self.canvas.set_widget(self.scale_btn)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
@@ -2395,7 +2394,7 @@ class MPRUN(QMainWindow):
         with open('internal data/_recent_files.json', 'w') as f:
             return json.dump(data, f, indent=4)
 
-    def open_data(self):
+    def open_settings_data(self):
         for user_data in self.read_settings():
             self.view_as(user_data['saved_view'])
 
@@ -2419,13 +2418,17 @@ class MPRUN(QMainWindow):
 
             self.undo_stack.setUndoLimit(user_data['undo_limit'])
 
+            if user_data['use_gpu']:
+                self.canvas_view.setViewport(CustomViewport())
+
             if user_data['show_daily_tips']:
                 with open('internal data/_tips.txt', 'r') as f:
-                    line = random.randint(0, 3)
+                    line = random.randint(0, 7)
                     content = f.readlines()
 
                     self.canvas_view.showTip(content[line])
 
+    def open_recent_file_data(self):
         data = self.read_recent_files()
 
         for _data in data:
@@ -2574,7 +2577,8 @@ def main() -> None:
     window = MPRUN()
     splash.finish(window)
 
-    window.open_data()
+    window.open_settings_data()
+    window.open_recent_file_data()
 
     sys.exit(app.exec_())
 

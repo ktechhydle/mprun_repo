@@ -1,4 +1,8 @@
+This app was made with ~12000 lines of code and 45 gallons of coffee.
 You can use the <b>Sculpt Tool (S)</b> to edit path items easily.
-While using the <b>Scale Tool (Q)</b> you can double click an item to reset it's scale.
-Hold the "Shift" key down while using the <b>Rotate Tool (R)</b> to rotate items in increments of 45°.
+While using the <b>Scale Tool (Q)</b> you can double click an item to reset its scale.
+Hold the "Shift" key down while using the <b>Rotate Tool (R)</b> to rotate items in increments of 45 degrees.
 On an imported pixmap image, navigate to <b>Tools > Image > Image Trace</b> to convert it to an SVG file.
+Edit canvas item names, sizes, and presets in the <b>Canvas</b> panel.
+This dialog can be hidden on startup by navigating to <b>Help > Settings > General</b>.
+Hold the "Shift" key down while using the <b>Pen Tool (Ctrl+L)</b> to draw straight lines.

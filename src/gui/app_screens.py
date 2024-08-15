@@ -1,3 +1,5 @@
+import sys
+
 from src.scripts.imports import *
 from src.gui.custom_widgets import *
 from src.scripts.app_internal import *
@@ -252,7 +254,6 @@ class SettingsWin(QDialog):
             gui_gb.setLayout(QVBoxLayout())
 
             self.show_tip_of_day_checkbtn = QCheckBox('Show tip of the day')
-            self.show_tip_of_day_checkbtn.setChecked(True)
             gui_gb.layout().addWidget(self.show_tip_of_day_checkbtn)
             gui_gb.layout().addStretch()
 
@@ -279,12 +280,29 @@ class SettingsWin(QDialog):
             undo_hlayout.layout.addWidget(self.undo_limit_spin)
             undo_hlayout.layout.addStretch()
             memory_gb_layout.addWidget(undo_hlayout)
-            memory_gb_layout.addStretch()
 
             self.performance_tab.layout().addWidget(memory_gb)
-            self.performance_tab.layout().addStretch()
+        def createGPUGB():
+            gpu_gb = QGroupBox('GPU')
+            gpu_gb.setLayout(QVBoxLayout())
+
+            compatible_label = QLabel()
+            try:
+                subprocess.check_output('nvidia-smi')
+                compatible_label.setText('<i>Compatible GPU available.</i>')
+            except Exception:  # this command not being found can raise quite a few different errors depending on the configuration
+                compatible_label.setText('<i>No compatible GPU available.</i>')
+
+            self.use_gpu_checkbtn = QCheckBox('Use GPU Acceleration')
+
+            gpu_gb.layout().addWidget(compatible_label)
+            gpu_gb.layout().addWidget(self.use_gpu_checkbtn)
+            self.performance_tab.layout().addWidget(gpu_gb)
 
         createMemoryGB()
+        createGPUGB()
+
+        self.performance_tab.layout().addStretch()
 
     def createUI(self):
         self.tab_view = QTabWidget(self)
@@ -308,6 +326,7 @@ class SettingsWin(QDialog):
         for data in _data:
             self.undo_limit_spin.setValue(data['undo_limit'])
             self.show_tip_of_day_checkbtn.setChecked(data['show_daily_tips'])
+            self.use_gpu_checkbtn.setChecked(data['use_gpu'])
 
     def accept(self):
         _data = self.p.read_settings()
@@ -315,6 +334,7 @@ class SettingsWin(QDialog):
         for data in _data:
             data['undo_limit'] = self.undo_limit_spin.value()
             data['show_daily_tips'] = self.show_tip_of_day_checkbtn.isChecked()
+            data['use_gpu'] = self.use_gpu_checkbtn.isChecked()
 
         self.p.write_settings(_data)
 
@@ -326,6 +346,7 @@ class SettingsWin(QDialog):
     def restore(self):
         self.undo_limit_spin.setValue(200)
         self.show_tip_of_day_checkbtn.setChecked(True)
+        self.use_gpu_checkbtn.setChecked(True)
 
 class TipWin(QDialog):
     def __init__(self, tip: str, parent):
