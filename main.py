@@ -1,3 +1,5 @@
+import random
+
 from src.scripts.imports import *
 from src.scripts.styles import WindowsCSS, MacCSS
 from src.scripts.raw_functions import nameismain, ItemStack
@@ -108,6 +110,16 @@ class MPRUN(QMainWindow):
             _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
 
         self.write_settings(data)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        print(f'Window Resize at {event}')
+        self.canvas_view.updateTip()
+
+    def moveEvent(self, event):
+        super().moveEvent(event)
+        print(f'Window Move at {event}')
+        self.canvas_view.updateTip()
 
     def create_actions_dict(self):
         self.actions = {}
@@ -374,13 +386,14 @@ class MPRUN(QMainWindow):
         find_action_action = QAction('Find Action', self)
         find_action_action.triggered.connect(self.show_find_action)
 
+        browse_tutorials_action = QAction('Browse Tutorials', self)
+        browse_tutorials_action.setShortcut(Qt.Key_F1)
+        browse_tutorials_action.triggered.connect(
+            lambda: webbrowser.open('https://sites.google.com/view/mprun/learn#h.dhbfsx84043q'))
+
         view_settings_action = QAction('Settings', self)
         view_settings_action.setShortcut(Qt.Key_F2)
         view_settings_action.triggered.connect(self.show_settings)
-
-        browse_tutorials_action = QAction('Browse Tutorials', self)
-        browse_tutorials_action.setShortcut(Qt.Key_F1)
-        browse_tutorials_action.triggered.connect(lambda: webbrowser.open('https://sites.google.com/view/mprun/learn#h.dhbfsx84043q'))
 
         # Add actions
         self.file_menu.addAction(add_canvas_action)
@@ -444,8 +457,8 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(show_version_action)
         self.help_menu.addSeparator()
         self.help_menu.addAction(find_action_action)
-        self.help_menu.addAction(view_settings_action)
         self.help_menu.addAction(browse_tutorials_action)
+        self.help_menu.addAction(view_settings_action)
 
         # Sub menu actions
         drawing_menu.addAction(path_action)
@@ -2405,6 +2418,13 @@ class MPRUN(QMainWindow):
                 self.show_disclaimer()
 
             self.undo_stack.setUndoLimit(user_data['undo_limit'])
+
+            if user_data['show_daily_tips']:
+                with open('internal data/_tips.txt', 'r') as f:
+                    line = random.randint(0, 3)
+                    content = f.readlines()
+
+                    self.canvas_view.showTip(content[line])
 
         data = self.read_recent_files()
 

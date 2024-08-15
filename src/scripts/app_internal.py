@@ -86,9 +86,3 @@ along with MPRUN. If not, see <http://www.gnu.org/licenses/>.
 !DO NOT EDIT ANY INFORMATION FOUND IN THIS DOCUMENT!
 
 '''
-
-user_data = [{
-    'created': True,
-    'disclaimer_read': False,
-    'tutorial_watched': False,
-}]

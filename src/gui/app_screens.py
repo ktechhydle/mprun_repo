@@ -247,6 +247,20 @@ class SettingsWin(QDialog):
         self.general_tab = QWidget(self)
         self.general_tab.setLayout(QVBoxLayout())
 
+        def createDialogAndGuiGB():
+            gui_gb = QGroupBox('Dialogs and GUI')
+            gui_gb.setLayout(QVBoxLayout())
+
+            self.show_tip_of_day_checkbtn = QCheckBox('Show tip of the day')
+            self.show_tip_of_day_checkbtn.setChecked(True)
+            gui_gb.layout().addWidget(self.show_tip_of_day_checkbtn)
+            gui_gb.layout().addStretch()
+
+            self.general_tab.layout().addWidget(gui_gb)
+            self.general_tab.layout().addStretch()
+
+        createDialogAndGuiGB()
+
     def createPerformanceSettings(self):
         self.performance_tab = QWidget(self)
         self.performance_tab.setLayout(QVBoxLayout())
@@ -277,26 +291,30 @@ class SettingsWin(QDialog):
         self.tab_view.addTab(self.general_tab, 'General')
         self.tab_view.addTab(self.performance_tab, 'Performance')
 
-        self.ok_btn = QPushButton('Apply Changes')
-        self.ok_btn.clicked.connect(self.accept)
-        self.cancel_btn = QPushButton('Discard Changes')
-        self.cancel_btn.clicked.connect(self.accept)
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Apply', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Discard', QDialogButtonBox.RejectRole)
+        self.button_group.addButton('Reset', QDialogButtonBox.HelpRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(self.decline)
+        self.button_group.helpRequested.connect(self.restore)
 
         self.layout().addWidget(self.tab_view)
-        self.layout().addWidget(self.ok_btn)
-        self.layout().addWidget(self.cancel_btn)
+        self.layout().addWidget(self.button_group)
 
     def setDefaults(self):
         _data = self.p.read_settings()
 
         for data in _data:
             self.undo_limit_spin.setValue(data['undo_limit'])
+            self.show_tip_of_day_checkbtn.setChecked(data['show_daily_tips'])
 
     def accept(self):
         _data = self.p.read_settings()
 
         for data in _data:
             data['undo_limit'] = self.undo_limit_spin.value()
+            data['show_daily_tips'] = self.show_tip_of_day_checkbtn.isChecked()
 
         self.p.write_settings(_data)
 
@@ -304,3 +322,43 @@ class SettingsWin(QDialog):
 
     def decline(self):
         self.close()
+
+    def restore(self):
+        self.undo_limit_spin.setValue(200)
+        self.show_tip_of_day_checkbtn.setChecked(True)
+
+class TipWin(QDialog):
+    def __init__(self, tip: str, parent):
+        super().__init__(parent)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.setLayout(QHBoxLayout())
+
+        img = QLabel('')
+        img.setPixmap(QPixmap('ui/UI Icons/Major/info_circle.svg').scaled(35, 35,
+                                                                          Qt.KeepAspectRatio,
+                                                                          Qt.SmoothTransformation))
+        main_label = QLabel('<b>Daily Tip</b>')
+        text = QLabel(tip)
+
+        layout1 = QVBoxLayout()
+        layout1.addWidget(main_label)
+        layout1.addWidget(text)
+        layout1.setContentsMargins(0, 0, 0, 0)
+        widget = QWidget()
+        widget.setLayout(layout1)
+
+        close_btn = QPushButton('X')
+        close_btn.setStyleSheet('font-family: Source Code Pro')
+        close_btn.setFixedWidth(20)
+        close_btn.clicked.connect(self.delete)
+
+        self.layout().addWidget(img)
+        self.layout().addWidget(widget)
+        self.layout().addWidget(close_btn)
+
+        self.show()
+
+    def delete(self):
+        self.close()
+        del self  # clear from memory

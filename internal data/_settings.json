@@ -10,6 +10,7 @@
         "toolbox_collapsed": false,
         "control_toolbar_hidden": false,
         "undo_limit": 200,
+        "show_daily_tips": true,
         "tutorial_watched": false
     }
 ]

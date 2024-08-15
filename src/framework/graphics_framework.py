@@ -1,11 +1,12 @@
 import os.path
-
-from src.scripts.imports import *
 from src.gui.custom_dialogs import *
+from src.gui.app_screens import TipWin
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
-from src.scripts.app_internal import *
 from src.framework.tools import *
+from src.scripts.app_internal import *
+from src.scripts.imports import *
+
 
 class CustomViewport(QOpenGLWidget):
     def __init__(self):
@@ -369,6 +370,23 @@ y: {int(self.mapToScene(point).y())}''')
         self.resetTransform()
         zoomFactor = self.zoomInFactor ** (self.zoom - 10)  # 15 is the initial zoom level
         self.scale(zoomFactor, zoomFactor)
+
+    def showTip(self, tip: str):
+        self.w = TipWin(tip, self.parent())
+
+        pos = self.mapToGlobal(self.rect().bottomLeft())
+        posy = (pos.y() - self.w.height()) - 17  # account for scrollbar
+
+        self.w.move(pos.x() + 4, posy)
+
+    def updateTip(self):
+        try:
+            pos = self.mapToGlobal(self.rect().bottomLeft())
+            posy = (pos.y() - self.w.height()) - 17  # account for scrollbar
+
+            self.w.move(pos.x() + 4, posy)
+        except:
+            pass
 
     def on_add_text(self, event):
         if event.button() == Qt.LeftButton:
