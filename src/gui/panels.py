@@ -184,7 +184,7 @@ class PropertiesPanel(QWidget):
         self.properties_tab_layout.addWidget(widget5)
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
-        self.properties_tab_layout.addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        self.properties_tab_layout.addStretch()
 
 class LibrariesPanel(QWidget):
     def __init__(self, canvas, parent=None):

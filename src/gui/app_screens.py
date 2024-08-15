@@ -58,7 +58,7 @@ MPRUN allows users to visualize comp runs on computer and paper, quickly and eas
         fsf_logo.setPixmap(
             QPixmap('ui/Main Logos/free_software_foundation_logo.svg').scaled(QSize(400, 400), Qt.KeepAspectRatio))
         self.about_tab.layout().addWidget(about_label)
-        self.about_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        self.about_tab.layout().addStretch()
         self.about_tab.layout().addWidget(mp_software_logo)
         self.about_tab.layout().addWidget(fsf_logo)
 
@@ -81,14 +81,14 @@ You are responsible for publishing your work under a license of your choosing an
         license_label.setWordWrap(True)
         license_label.setAlignment(Qt.AlignLeft)
         self.license_tab.layout().addWidget(license_label)
-        self.license_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        self.license_tab.layout().addStretch()
 
         # Create more info tab
         credits_label = QLinkLabel('Credits', 'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
         contact_label = QLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
         self.more_info_tab.layout().addWidget(credits_label)
         self.more_info_tab.layout().addWidget(contact_label)
-        self.more_info_tab.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        self.more_info_tab.layout().addStretch()
 
 class VersionWin(QWidget):
     def __init__(self, version):
@@ -226,3 +226,81 @@ class DisclaimerWin(QMessageBox):
         self.show_on_startup_btn.setText('Show this message on startup')
 
         self.setCheckBox(self.show_on_startup_btn)
+
+class SettingsWin(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Settings')
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setFixedWidth(700)
+
+        self.p = parent
+        self.setLayout(QVBoxLayout())
+
+        self.createGeneralSettings()
+        self.createPerformanceSettings()
+        self.createUI()
+        self.setDefaults()
+
+    def createGeneralSettings(self):
+        self.general_tab = QWidget(self)
+        self.general_tab.setLayout(QVBoxLayout())
+
+    def createPerformanceSettings(self):
+        self.performance_tab = QWidget(self)
+        self.performance_tab.setLayout(QVBoxLayout())
+
+        def createMemoryGB():
+            memory_gb = QGroupBox('Memory')
+            memory_gb_layout = QVBoxLayout()
+            memory_gb.setLayout(memory_gb_layout)
+
+            undo_limit_label = QLabel('Undo limit <i>(a higher value increases memory usage)</i>:')
+            self.undo_limit_spin = QSpinBox(self)
+            self.undo_limit_spin.setRange(5, 1000)
+            self.undo_limit_spin.setFixedWidth(100)
+            undo_hlayout = ToolbarHorizontalLayout()
+            undo_hlayout.layout.addWidget(undo_limit_label)
+            undo_hlayout.layout.addWidget(self.undo_limit_spin)
+            undo_hlayout.layout.addStretch()
+            memory_gb_layout.addWidget(undo_hlayout)
+            memory_gb_layout.addStretch()
+
+            self.performance_tab.layout().addWidget(memory_gb)
+            self.performance_tab.layout().addStretch()
+
+        createMemoryGB()
+
+    def createUI(self):
+        self.tab_view = QTabWidget(self)
+        self.tab_view.addTab(self.general_tab, 'General')
+        self.tab_view.addTab(self.performance_tab, 'Performance')
+
+        self.ok_btn = QPushButton('Apply Changes')
+        self.ok_btn.clicked.connect(self.accept)
+        self.cancel_btn = QPushButton('Discard Changes')
+        self.cancel_btn.clicked.connect(self.accept)
+
+        self.layout().addWidget(self.tab_view)
+        self.layout().addWidget(self.ok_btn)
+        self.layout().addWidget(self.cancel_btn)
+
+    def setDefaults(self):
+        _data = self.p.read_settings()
+
+        for data in _data:
+            self.undo_limit_spin.setValue(data['undo_limit'])
+
+    def accept(self):
+        _data = self.p.read_settings()
+
+        for data in _data:
+            data['undo_limit'] = self.undo_limit_spin.value()
+
+        self.p.write_settings(_data)
+
+        self.close()
+
+    def decline(self):
+        self.close()

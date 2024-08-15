@@ -269,6 +269,8 @@ y: {int(self.mapToScene(point).y())}''')
 
         if event.button() == Qt.MiddleButton:
             self.on_pan_end(event)
+            if self.select_btn.isChecked():
+                self.parent().use_select()
 
         self.parent().update_transform_ui()
 

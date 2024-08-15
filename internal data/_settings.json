@@ -1,6 +1,5 @@
 [
     {
-        "created": true,
         "disclaimer_read": false,
         "geometry": [
             "maximized"
@@ -10,6 +9,7 @@
         "toolbox_pos": 1,
         "toolbox_collapsed": false,
         "control_toolbar_hidden": false,
+        "undo_limit": 200,
         "tutorial_watched": false
     }
 ]

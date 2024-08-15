@@ -2,7 +2,7 @@ from src.scripts.imports import *
 from src.scripts.styles import WindowsCSS, MacCSS
 from src.scripts.raw_functions import nameismain, ItemStack
 from src.scripts.app_internal import *
-from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin
+from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, CanvasEditorPanel
 from src.gui.custom_widgets import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
@@ -31,7 +31,6 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
-        self.undo_stack.setUndoLimit(200)
 
         # Create GUI
         self.create_actions_dict()
@@ -375,6 +374,10 @@ class MPRUN(QMainWindow):
         find_action_action = QAction('Find Action', self)
         find_action_action.triggered.connect(self.show_find_action)
 
+        view_settings_action = QAction('Settings', self)
+        view_settings_action.setShortcut(Qt.Key_F2)
+        view_settings_action.triggered.connect(self.show_settings)
+
         browse_tutorials_action = QAction('Browse Tutorials', self)
         browse_tutorials_action.setShortcut(Qt.Key_F1)
         browse_tutorials_action.triggered.connect(lambda: webbrowser.open('https://sites.google.com/view/mprun/learn#h.dhbfsx84043q'))
@@ -441,6 +444,7 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(show_version_action)
         self.help_menu.addSeparator()
         self.help_menu.addAction(find_action_action)
+        self.help_menu.addAction(view_settings_action)
         self.help_menu.addAction(browse_tutorials_action)
 
         # Sub menu actions
@@ -2313,6 +2317,10 @@ class MPRUN(QMainWindow):
         else:
             self.close()
 
+    def show_settings(self):
+        self.w = SettingsWin(self)
+        self.w.show()
+
     def new(self):
         self.canvas.manager.restore()
 
@@ -2395,6 +2403,8 @@ class MPRUN(QMainWindow):
 
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
+
+            self.undo_stack.setUndoLimit(user_data['undo_limit'])
 
         data = self.read_recent_files()
 
