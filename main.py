@@ -1617,7 +1617,7 @@ class MPRUN(QMainWindow):
 
                     # Add the item to the scene
                     item = CustomSvgItem()
-                    item.store_filename(None)
+                    item.store_filename('')
                     item.setToolTip('Imported SVG')
 
                     with open(os.path.abspath('internal data/output.svg'), 'r', encoding='utf-8') as f:
@@ -2423,7 +2423,7 @@ class MPRUN(QMainWindow):
 
             if user_data['show_daily_tips']:
                 with open('internal data/_tips.txt', 'r') as f:
-                    line = random.randint(0, 7)
+                    line = random.randint(0, 10)
                     content = f.readlines()
 
                     self.canvas_view.showTip(content[line])

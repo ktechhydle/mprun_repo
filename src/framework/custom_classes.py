@@ -360,7 +360,7 @@ class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, *file):
         super().__init__(*file)
 
-        self.filename = None
+        self.filename = ''
         self.svg_data = None
         for f in file:
             self.render = QSvgRenderer(f)

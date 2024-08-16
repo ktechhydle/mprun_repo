@@ -1535,7 +1535,10 @@ class ImportManager:
         # Deactivate the add canvas tool
         self.canvas.parentWindow.use_exit_add_canvas()
 
-        file_path, _ = QFileDialog().getOpenFileName(self.canvas.parentWindow, "Insert Element", "", supported_file_importing)
+        file_path, _ = QFileDialog().getOpenFileName(self.canvas.parentWindow,
+                                                     "Insert Element",
+                                                     "",
+                                                     'Supported types (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.tiff *.tif *.xbm *.xpm *.svg *.md *.txt)')
 
         if file_path:
             if file_path.endswith('.svg'):
