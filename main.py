@@ -2423,8 +2423,8 @@ class MPRUN(QMainWindow):
 
             if user_data['show_daily_tips']:
                 with open('internal data/_tips.txt', 'r') as f:
-                    line = random.randint(0, 10)
                     content = f.readlines()
+                    line = random.randint(0, len(content) - 1)
 
                     self.canvas_view.showTip(content[line])
 
