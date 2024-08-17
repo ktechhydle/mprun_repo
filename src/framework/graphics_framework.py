@@ -361,8 +361,8 @@ y: {int(self.mapToScene(point).y())}''')
         zoomFactor = self.zoomInFactor ** (self.zoom - 10)  # 15 is the initial zoom level
         self.scale(zoomFactor, zoomFactor)
 
-    def showTip(self, tip: str):
-        self.w = TipWin(tip, self.parent())
+    def showMessage(self, label: str, tip: str):
+        self.w = TipWin(label, tip, self.parent())
 
         pos = self.mapToGlobal(self.rect().bottomLeft())
         posy = (pos.y() - self.w.height()) - 17  # account for scrollbar

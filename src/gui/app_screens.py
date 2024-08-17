@@ -255,12 +255,11 @@ class SettingsWin(QDialog):
 
             self.show_tip_of_day_checkbtn = QCheckBox('Show tip of the day')
             gui_gb.layout().addWidget(self.show_tip_of_day_checkbtn)
-            gui_gb.layout().addStretch()
 
             self.general_tab.layout().addWidget(gui_gb)
-            self.general_tab.layout().addStretch()
 
         createDialogAndGuiGB()
+        self.general_tab.layout().addStretch()
 
     def createPerformanceSettings(self):
         self.performance_tab = QWidget(self)
@@ -349,7 +348,7 @@ class SettingsWin(QDialog):
         self.use_gpu_checkbtn.setChecked(True)
 
 class TipWin(QDialog):
-    def __init__(self, tip: str, parent):
+    def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
@@ -359,7 +358,7 @@ class TipWin(QDialog):
         img.setPixmap(QPixmap('ui/UI Icons/Major/info_circle.svg').scaled(35, 35,
                                                                           Qt.KeepAspectRatio,
                                                                           Qt.SmoothTransformation))
-        main_label = QLabel('<b>Daily Tip</b>')
+        main_label = QLabel(f'<b>{label}</b>')
         text = QLabel(tip)
 
         layout1 = QVBoxLayout()

@@ -2426,7 +2426,7 @@ class MPRUN(QMainWindow):
                     content = f.readlines()
                     line = random.randint(0, len(content) - 1)
 
-                    self.canvas_view.showTip(content[line])
+                    self.canvas_view.showMessage('Tip of the Day', content[line])
 
     def open_recent_file_data(self):
         data = self.read_recent_files()
