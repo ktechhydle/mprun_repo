@@ -11,4 +11,5 @@ Hover over any tool for a brief description of its functionality.
 Use <b>Ctrl+Z</b> to undo any recent changes and <b>Ctrl+Shift+Z</b> to redo them.
 Use the middle mouse button to pan around the scene quickly.
 When the <b>Text Tool (Ctrl+T)</b> is active, click on any text item to edit it.
-Double click and text item to edit its contents.
+Double click any text item to edit its contents.
+Hold the <b>Shift</b> key down while using the <b>Add Canvas Tool (A)</b> to constrain a canvases size to a square.

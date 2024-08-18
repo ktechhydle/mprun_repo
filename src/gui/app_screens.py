@@ -232,7 +232,7 @@ class DisclaimerWin(QMessageBox):
 class SettingsWin(QDialog):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setWindowTitle('Settings')
+        self.setWindowTitle('Settings (Beta)')
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(700)
@@ -360,6 +360,7 @@ class TipWin(QDialog):
                                                                           Qt.SmoothTransformation))
         main_label = QLabel(f'<b>{label}</b>')
         text = QLabel(tip)
+        text.setWordWrap(True)
 
         layout1 = QVBoxLayout()
         layout1.addWidget(main_label)
