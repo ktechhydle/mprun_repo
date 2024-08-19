@@ -2315,16 +2315,12 @@ class MPRUN(QMainWindow):
                 return
 
             else:
-                # Read existing data
-                with open('internal data/_settings.json', 'r') as f:
-                    existing_data = json.load(f)
+                _data = self.read_settings()
 
-                # Update the data
-                existing_data[0]['disclaimer_read'] = True
+                for data in _data:
+                    data['disclaimer_read'] = True
 
-                # Write the updated data back to the file
-                with open('internal data/_settings.json', 'w') as f:
-                    json.dump(existing_data, f)
+                self.write_settings(_data)
 
         else:
             self.close()
@@ -2565,7 +2561,7 @@ def main() -> None:
 
     app = QApplication(sys.argv)
 
-    splash = QSplashScreen(QIcon('ui/Main Logos/MPRUN_splash_v3.png').pixmap(QSize(600, 600)), Qt.WindowStaysOnTopHint)
+    splash = QSplashScreen(QIcon('ui/Main Logos/mprun_splash.png').pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
     splash.show()
 
     app.processEvents()

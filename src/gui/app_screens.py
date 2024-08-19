@@ -254,7 +254,12 @@ class SettingsWin(QDialog):
             gui_gb.setLayout(QVBoxLayout())
 
             self.show_tip_of_day_checkbtn = QCheckBox('Show tip of the day')
+            reset_dialogs_btn = QPushButton('Reset all dialogs')
+            reset_dialogs_btn.setFixedWidth(200)
+            reset_dialogs_btn.clicked.connect(self.restore_dialogs)
+
             gui_gb.layout().addWidget(self.show_tip_of_day_checkbtn)
+            gui_gb.layout().addWidget(reset_dialogs_btn)
 
             self.general_tab.layout().addWidget(gui_gb)
 
@@ -341,6 +346,17 @@ class SettingsWin(QDialog):
 
     def decline(self):
         self.close()
+
+    def restore_dialogs(self):
+        self.show_tip_of_day_checkbtn.setChecked(True)
+
+        _data = self.p.read_settings()
+
+        for data in _data:
+            data['disclaimer_read'] = False
+            data['show_daily_tips'] = True
+
+        self.p.write_settings(_data)
 
     def restore(self):
         self.undo_limit_spin.setValue(200)
