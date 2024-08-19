@@ -371,7 +371,7 @@ class MouseRotatingTool:
     def on_rotate(self, event):
         if self.rotating_item and self.start_pos:
             current_pos = self.view.mapToScene(event.pos())
-            item_center = self.rotating_item.boundingRect().center()
+            item_center = self.rotating_item.sceneBoundingRect().center()
 
             vector_start = self.start_pos - item_center
             vector_current = current_pos - item_center
@@ -385,7 +385,7 @@ class MouseRotatingTool:
             if event.modifiers() & Qt.ShiftModifier:
                 new_angle = round(new_angle / 45) * 45
 
-            self.rotating_item.setTransformOriginPoint(item_center)
+            self.rotating_item.setTransformOriginPoint(self.rotating_item.boundingRect().center())
             self.rotating_item.setRotation(new_angle)
 
             self.rotation_command = MouseRotationCommand(self.rotating_item, self.start_angle, new_angle)

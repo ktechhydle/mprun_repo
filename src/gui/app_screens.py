@@ -310,6 +310,8 @@ class SettingsWin(QDialog):
 
     def createUI(self):
         self.tab_view = QTabWidget(self)
+        self.tab_view.setDocumentMode(True)
+        self.tab_view.setUsesScrollButtons(False)
         self.tab_view.addTab(self.general_tab, 'General')
         self.tab_view.addTab(self.performance_tab, 'Performance')
 
