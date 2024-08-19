@@ -81,7 +81,7 @@ QToolBar
 }
 
 QToolButton::menu-indicator {
-    image: url(ui/UI Icons/Minor/chevron_down.svg);
+    image: url('ui/UI Icons/Minor/chevron_down.svg');
 }
 
 #customToolBar
@@ -187,7 +187,7 @@ QComboBox::drop-down
 
 QComboBox::down-arrow
 {
-    image: url("UI/UI Icons/down_arrow_combo.png");
+    image: url("UI/UI Icons/Minor/down_arrow_combo.png");
     width: 20px; /* Adjust width to fit better */
     height: 27px; /* Adjust height to fit better */
     margin: 6px; /* Adjust margin to align center */
@@ -195,7 +195,7 @@ QComboBox::down-arrow
 
 QComboBox::down-arrow:hover
 {
-    image: url("UI/UI Icons/down_arrow_combo.png");
+    image: url("UI/UI Icons/Minor/down_arrow_combo.png");
     background: #595959;
     margin: 6px; /* Adjust margin to align center */
 }
@@ -216,13 +216,13 @@ QComboBox QAbstractItemView
 
 QAbstractSpinBox::up-button
 {
-    image: url(UI/UI Icons/up_arrow.png);
+    image: url('UI/UI Icons/Minor/up_arrow.png');
     background: #5f5f5f;
 }
 
 QAbstractSpinBox::down-button
 {
-    image: url("UI/UI Icons/down_arrow.png");
+    image: url("UI/UI Icons/Minor/down_arrow.png");
     background: #5f5f5f;
 }
 
@@ -532,7 +532,7 @@ QTabBar::scroller
 
 QTabBar::close-button
 {
-    image: url(UI/UI Icons/close_icon.png);
+    image: url(UI/UI Icons/Minor/close_icon.png);
 }
 
 QTabBar::close-button:hover

@@ -351,6 +351,7 @@ class TipWin(QDialog):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
         self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setWindowModality(Qt.ApplicationModal)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setLayout(QHBoxLayout())
 

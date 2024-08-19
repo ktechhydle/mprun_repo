@@ -146,7 +146,7 @@ class PropertiesPanel(QWidget):
         self.opacity_btn = QPushButton('')
         self.opacity_btn.setFixedWidth(28)
         self.opacity_btn.setFixedHeight(26)
-        self.opacity_btn.setIcon(QIcon('ui/UI Icons/opacity_icon.png'))
+        self.opacity_btn.setIcon(QIcon('ui/UI Icons/Major/opacity_icon.png'))
         self.opacity_btn.setIconSize(QSize(24, 24))
         self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
         self.opacity_spin = QSpinBox()
@@ -208,7 +208,7 @@ class LibrariesPanel(QWidget):
         self.reload_library_button = QPushButton("")
         self.reload_library_button.setFixedWidth(28)
         self.reload_library_button.setStyleSheet('border: none')
-        self.reload_library_button.setIcon(QIcon('ui/UI Icons/refresh_icon.svg'))
+        self.reload_library_button.setIcon(QIcon('ui/UI Icons/Minor/refresh_icon.svg'))
         self.reload_library_button.setToolTip('Reload the current library')
 
         # Search bar

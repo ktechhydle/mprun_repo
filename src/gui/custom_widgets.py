@@ -285,9 +285,9 @@ class StrokeLabel(QLabel):
         for join, v in self.join_style_options.items():
             self.join_style_combo.addItem(join, v)
 
-        self.join_style_combo.setItemData(0, QIcon('ui/UI Icons/Major/bevel_join.png'), Qt.DecorationRole)
-        self.join_style_combo.setItemData(1, QIcon('ui/UI Icons/Major/round_join.png'), Qt.DecorationRole)
-        self.join_style_combo.setItemData(2, QIcon('ui/UI Icons/Major/miter_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(0, QIcon('ui/UI Icons/Combobox Images/bevel_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(1, QIcon('ui/UI Icons/Combobox Images/round_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(2, QIcon('ui/UI Icons/Combobox Images/miter_join.png'), Qt.DecorationRole)
 
         widget1.setDefaultWidget(self.stroke_style_combo)
         widget2.setDefaultWidget(self.stroke_pencap_combo)
