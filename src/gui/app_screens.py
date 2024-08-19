@@ -351,7 +351,6 @@ class TipWin(QDialog):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setWindowModality(Qt.ApplicationModal)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setLayout(QHBoxLayout())
 
@@ -371,6 +370,7 @@ class TipWin(QDialog):
         widget.setLayout(layout1)
 
         close_btn = QPushButton('X')
+        close_btn.setToolTip('Close')
         close_btn.setStyleSheet('font-family: Source Code Pro')
         close_btn.setFixedWidth(20)
         close_btn.clicked.connect(self.delete)

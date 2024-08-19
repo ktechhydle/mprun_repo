@@ -1612,7 +1612,6 @@ class ExportManager:
         # Create a function to choose the selected item
         def export():
             index = selector.canvas_chooser_combo.currentIndex()
-            data = selector.canvas_chooser_combo.itemData(index)
             selected_item = selector.canvas_chooser_combo.itemData(index)
 
             if selected_item:
@@ -1657,8 +1656,7 @@ class ExportManager:
             success = image.save(filename)
 
             if success:
-                # If saving was successful, show a notification
-                QMessageBox.information(self.canvas.parentWindow, "Export Finished", "Export completed successfully.")
+                self.show_export_finished()
 
                 # Open the image with the default image viewer
                 QDesktopServices.openUrl(QUrl.fromLocalFile(filename))
@@ -1693,9 +1691,7 @@ class ExportManager:
             # End painting
             painter.end()
 
-            # Show export finished notification
-            QMessageBox.information(self.canvas.parentWindow, 'Export Finished', 'Export completed successfully.',
-                                    QMessageBox.Ok)
+            self.show_export_finished()
 
             # Open the image with the default image viewer
             QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
@@ -1734,9 +1730,7 @@ class ExportManager:
         except Exception as e:
             print(e)
 
-        # Show export finished notification
-        QMessageBox.information(self.canvas.parentWindow, 'Export Finished', 'Export completed successfully.',
-                                QMessageBox.Ok)
+        self.show_export_finished()
 
         # Open the PDF with the default viewer
         QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
@@ -1770,3 +1764,6 @@ class ExportManager:
                     print(e)
 
             self.canvas.parentWindow.use_exit_add_canvas()
+
+    def show_export_finished(self):
+        self.canvas.views()[0].showMessage('Export', 'Export completed successfully.')

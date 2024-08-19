@@ -697,7 +697,7 @@ class MPRUN(QMainWindow):
         self.scale_btn.triggered.connect(self.use_scale_tool)
 
         # Rotate Button
-        self.rotate_btn = QAction(QIcon('ui/Tool Icons/scale_icon.png'), 'Rotate Tool (R)', self)
+        self.rotate_btn = QAction(QIcon('ui/Tool Icons/rotate_tool_icon.png'), 'Rotate Tool (R)', self)
         self.rotate_btn.setToolTip(
             '<b>Rotate (R)</b><br>'
             'Rotate items in the scene by clicking and dragging on them.<br>'
@@ -2343,6 +2343,7 @@ class MPRUN(QMainWindow):
                     pickle.dump(self.canvas.manager.serialize_items(), f)
                     self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
                     self.canvas.modified = False
+
                     return True
 
             else:
@@ -2363,6 +2364,7 @@ class MPRUN(QMainWindow):
                     self.canvas.modified = False
                     self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
                     self.update_recent_file_data(filename)
+                    self.canvas_view.showMessage('File', f'File {self.canvas.manager.filename} saved successfully.')
 
                     return True
 

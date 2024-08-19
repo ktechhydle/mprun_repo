@@ -244,7 +244,7 @@ class AllCanvasExporter(QDialog):
                             self.export_canvases_as_bitmap(filename, item)
 
                 # If saving was successful, show a notification
-                QMessageBox.information(self, "Export Finished", f"Export to {subdirectory} completed successfully.")
+                self.canvas.views()[0].showMessage('Export Finished', f'Export to {subdirectory} completed successfully.')
 
                 # Open the folder on the computer
                 QDesktopServices.openUrl(QUrl.fromLocalFile(subdirectory))
