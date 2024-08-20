@@ -108,6 +108,7 @@ class MPRUN(QMainWindow):
             _data['toolbox_pos'] = self.current_toolbox_pos()
             _data['toolbox_collapsed'] = self.tab_view_dock.isCollapsed()
             _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
+            _data['last_used_tool'] = self.action_group.checkedAction().text()
 
         self.write_settings(data)
 
@@ -2314,13 +2315,12 @@ class MPRUN(QMainWindow):
             if w.show_on_startup_btn.isChecked():
                 return
 
-            else:
-                _data = self.read_settings()
+            _data = self.read_settings()
 
-                for data in _data:
-                    data['disclaimer_read'] = True
+            for data in _data:
+                data['disclaimer_read'] = True
 
-                self.write_settings(_data)
+            self.write_settings(_data)
 
         else:
             self.close()
@@ -2410,6 +2410,10 @@ class MPRUN(QMainWindow):
                                  user_data['geometry'][2],
                                  user_data['geometry'][3]
                                  )
+
+            for action in self.action_group.actions():
+                if action.text() == user_data['last_used_tool']:
+                    action.trigger()
 
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
