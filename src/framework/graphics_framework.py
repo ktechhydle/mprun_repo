@@ -1,6 +1,5 @@
 import os.path
-from src.gui.custom_dialogs import *
-from src.gui.app_screens import TipWin
+from src.gui.app_screens import TipWin, CanvasItemSelector, AllCanvasExporter
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 from src.framework.tools import *
@@ -618,6 +617,30 @@ class CustomGraphicsScene(QGraphicsScene):
                 else:
                     item.gridEnabled = True
 
+    def selectBelow(self):
+        selected_items = self.selectedItems()
+        for selected_item in selected_items:
+            for i in self.items():
+                if not isinstance(i, CanvasItem) and i.collidesWithItem(selected_item):
+                    if i.zValue() <= selected_item.zValue() and i != selected_item:
+                        i.setSelected(True)
+
+    def selectAbove(self):
+        selected_items = self.selectedItems()
+        for selected_item in selected_items:
+            for i in self.items():
+                if not isinstance(i, CanvasItem) and i.collidesWithItem(selected_item):
+                    if i.zValue() >= selected_item.zValue() and i != selected_item:
+                        i.setSelected(True)
+
+    def selectColliding(self):
+        selected_items = self.selectedItems()
+        for selected_item in selected_items:
+            for i in self.items():
+                if not isinstance(i, CanvasItem) and i.collidesWithItem(selected_item):
+                    if i != selected_item:
+                        i.setSelected(True)
+
 class SceneManager:
     def __init__(self, scene):
         self.scene = scene
@@ -1177,7 +1200,10 @@ class SceneManager:
     def deserialize_items(self, items_data):
         # Handle metadata
         metadata = items_data.pop(0)
-        self.scene.mpversion = metadata.get('mpversion', 'unknown')
+        if metadata.get('mpversion', 'unknown') != self.scene.mpversion:
+            QMessageBox.warning(self.scene.parentWindow, 'Open', 'You are attempting to open a file saved in an '
+                                                                 'different version of MPRUN, are you sure you want '
+                                                                 'to do this?')
 
         for item_data in items_data:
             item = None
