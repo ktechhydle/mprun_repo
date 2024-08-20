@@ -390,6 +390,10 @@ class MouseRotatingTool:
 
             self.rotation_command = MouseRotationCommand(self.rotating_item, self.start_angle, new_angle)
 
+            if (isinstance(self.rotating_item, CustomTextItem) and
+                    isinstance(self.rotating_item.parentItem(), LeaderLineItem)):
+                self.rotating_item.parentItem().updatePathEndPoint()
+
     def on_rotate_end(self, event):
         if self.rotation_command:
             self.canvas.addCommand(self.rotation_command)

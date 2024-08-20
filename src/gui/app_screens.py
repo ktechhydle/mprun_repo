@@ -1,9 +1,9 @@
 import sys
 
-from src.scripts.imports import *
+from src.framework.undo_commands import MultiItemPositionChangeCommand
 from src.gui.custom_widgets import *
 from src.scripts.app_internal import *
-from PyQt5 import QtWidgets, QtGui, QtCore
+from src.scripts.imports import *
 
 
 class CanvasItemSelector(QDialog):
@@ -316,6 +316,120 @@ class AllCanvasExporter(QDialog):
             if isinstance(item, WaterMarkItem):
                 self.canvas.removeItem(item)
                 self.watermark_item = None
+
+class ArrangeWin(QDialog):
+    def __init__(self, canvas, parent):
+        super().__init__(parent)
+        self.setWindowTitle("Arrange Canvases")
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setFixedWidth(300)
+        self.setFixedHeight(300)
+
+        self.canvas = canvas
+        self.canvas.parentWindow.use_exit_add_canvas()
+
+        self.setLayout(QVBoxLayout())
+
+        self.createUI()
+
+    def createUI(self):
+        canvas_count_label = QLabel(f'Canvases: {[item for item in self.canvas.items() if isinstance(item, CanvasItem)]}')
+        rows_label = QLabel('Rows:')
+        columns_label = QLabel('Columns:')
+        spacing_label = QLabel('Spacing:')
+
+        self.rows_spin = QSpinBox()
+        self.rows_spin.setRange(1, 10000)
+        self.columns_spin = QSpinBox()
+        self.columns_spin.setRange(1, 10000)
+        self.spacing_spin = QSpinBox()
+        self.spacing_spin.setSuffix(' pt')
+        self.spacing_spin.setRange(1, 10000)
+
+        self.button_group = QDialogButtonBox(self)
+        self.button_group.addButton('Ok', QDialogButtonBox.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.accepted.connect(self.accept)
+        self.button_group.rejected.connect(self.close)
+
+        # Add canvas count label
+        self.layout().addWidget(canvas_count_label)
+
+        # Add rows label and spinbox
+        rows_layout = QWidget()
+        rows_layout.setLayout(QHBoxLayout())
+        rows_layout.layout().addWidget(rows_label)
+        rows_layout.layout().addWidget(self.rows_spin)
+        rows_layout.layout().addStretch()
+        self.layout().addWidget(rows_layout)
+
+        # Add columns label and spinbox
+        columns_layout = QWidget()
+        columns_layout.setLayout(QHBoxLayout())
+        columns_layout.layout().addWidget(columns_label)
+        columns_layout.layout().addWidget(self.columns_spin)
+        columns_layout.layout().addStretch()
+        self.layout().addWidget(columns_layout)
+
+        # Add spacing label and spinbox
+        spacing_layout = QWidget()
+        spacing_layout.setLayout(QHBoxLayout())
+        spacing_layout.layout().addWidget(spacing_label)
+        spacing_layout.layout().addWidget(self.spacing_spin)
+        spacing_layout.layout().addStretch()
+        self.layout().addWidget(spacing_layout)
+
+        # Add buttons at the bottom
+        self.layout().addWidget(self.button_group)
+
+    def accept(self):
+        rows = self.rows_spin.value()
+        columns = self.columns_spin.value()
+        spacing = self.spacing_spin.value()
+
+        canvas_items = [item for item in self.canvas.items() if isinstance(item, CanvasItem)]
+        old_positions = [item.pos() for item in canvas_items]  # Store original positions
+        new_positions = []
+
+        current_row = 0
+        current_column = 0
+        max_height_in_row = 0
+        x = 0
+        y = 0
+
+        for i, item in enumerate(canvas_items):
+            item_width = item.boundingRect().width()
+            item_height = item.boundingRect().height()
+
+            if current_column >= columns:
+                # Move to the next row
+                current_column = 0
+                current_row += 1
+                x = 0
+                y += max_height_in_row + spacing
+                max_height_in_row = 0
+
+            # Calculate new position and store it
+            new_pos = QPointF(x, y)
+            new_positions.append(new_pos)
+
+            # Position the item
+            item.setPos(new_pos)
+
+            # Update the x position for the next item
+            x += item_width + spacing
+
+            # Track the maximum height in the current row
+            max_height_in_row = max(max_height_in_row, item_height)
+
+            current_column += 1
+
+        # Create and push the undo command
+        command = MultiItemPositionChangeCommand(self.canvas.parentWindow, canvas_items, old_positions, new_positions)
+        self.canvas.addCommand(command)
+
+        self.close()
 
 class AboutWin(QWidget):
     def __init__(self):

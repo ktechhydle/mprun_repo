@@ -1,5 +1,5 @@
 import os.path
-from src.gui.app_screens import TipWin, CanvasItemSelector, AllCanvasExporter
+from src.gui.app_screens import TipWin, CanvasItemSelector, AllCanvasExporter, ArrangeWin
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 from src.framework.tools import *
@@ -640,6 +640,10 @@ class CustomGraphicsScene(QGraphicsScene):
                 if not isinstance(i, CanvasItem) and i.collidesWithItem(selected_item):
                     if i != selected_item:
                         i.setSelected(True)
+
+    def arrange(self):
+        self.w = ArrangeWin(self, self.parentWindow)
+        self.w.show()
 
 class SceneManager:
     def __init__(self, scene):

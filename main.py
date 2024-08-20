@@ -188,7 +188,7 @@ class MPRUN(QMainWindow):
         export_multiple_action.triggered.connect(self.choose_multiple_export)
 
         close_action = QAction('Close', self)
-        close_action.triggered.connect(lambda: self.close())
+        close_action.triggered.connect(self.close)
 
         # Create tools submenus and actions
         drawing_menu = self.tool_menu.addMenu('Drawing')
@@ -210,6 +210,10 @@ class MPRUN(QMainWindow):
 
         zoom_view_action = QAction('Zoom', self)
         zoom_view_action.triggered.connect(lambda: self.view_zoom_spin.setFocus())
+
+        arrange_canvases_action = QAction('Arrange Canvases', self)
+        arrange_canvases_action.setShortcut(Qt.Key_F3)
+        arrange_canvases_action.triggered.connect(self.canvas.arrange)
 
         path_action = QAction('Path Draw', self)
         path_action.setShortcut(QKeySequence('L'))
@@ -479,6 +483,7 @@ class MPRUN(QMainWindow):
         scene_menu.addAction(pan_action)
         scene_menu.addAction(rotate_view_action)
         scene_menu.addAction(zoom_view_action)
+        scene_menu.addAction(arrange_canvases_action)
 
         view_options_menu.addAction(read_only_view_action)
         view_options_menu.addAction(tools_only_view_action)
