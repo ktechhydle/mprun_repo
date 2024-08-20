@@ -54,7 +54,7 @@ class MPRUN(QMainWindow):
             confirmation_dialog = QMessageBox(self)
             confirmation_dialog.setWindowTitle('Close Document')
             confirmation_dialog.setIcon(QMessageBox.Warning)
-            confirmation_dialog.setText("The document has been modified. Do you want to save your changes?")
+            confirmation_dialog.setText('The document has been modified. Do you want to save your changes?')
             confirmation_dialog.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
             confirmation_dialog.setDefaultButton(QMessageBox.Save)
 
@@ -272,7 +272,7 @@ class MPRUN(QMainWindow):
 
         # Create object actions
         duplicate_action = QAction('Duplicate', self)
-        duplicate_action.setShortcut(QKeySequence("D"))
+        duplicate_action.setShortcut(QKeySequence('D'))
         duplicate_action.triggered.connect(self.use_duplicate)
 
         scale_action = QAction('Scale', self)
@@ -660,7 +660,7 @@ class MPRUN(QMainWindow):
         self.drawing_toolbutton.addAction(self.sculpt_btn)
 
         # Label draw button
-        self.label_btn = QAction(QIcon('ui/Tool Icons/label_icon.png'), "Line and Label Tool (T)", self)
+        self.label_btn = QAction(QIcon('ui/Tool Icons/label_icon.png'), 'Line and Label Tool (T)', self)
         self.label_btn.setCheckable(True)
         self.label_btn.setToolTip(
             '<b>Line and Label (T)</b><br>'
@@ -1098,7 +1098,7 @@ class MPRUN(QMainWindow):
                     command = PenChangeCommand(items, old_pens, pen)
                     self.canvas.addCommand(command)
                 except Exception as e:
-                    print(f"Exception: {e}")
+                    print(f'Exception: {e}')
 
     def update_item_fill(self):
         brush = QBrush(QColor(self.fill_color.get()))
@@ -1120,7 +1120,7 @@ class MPRUN(QMainWindow):
                     self.canvas.addCommand(command)
                 except Exception as e:
                     # Handle the exception (e.g., logging)
-                    print(f"Exception: {e}")
+                    print(f'Exception: {e}')
 
     def update_item_font(self):
         # Update font
@@ -1156,7 +1156,7 @@ class MPRUN(QMainWindow):
                             item.parentItem().updatePathEndPoint()
                 except Exception as e:
                     # Handle the exception (e.g., logging)
-                    print(f"Exception: {e}")
+                    print(f'Exception: {e}')
 
     def update_transform_ui(self):
         self.properties_tab.x_pos_spin.blockSignals(True)
@@ -1567,7 +1567,7 @@ class MPRUN(QMainWindow):
     def use_lower_layer(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem) and item.zValue() > 0]
         if not items:
-            QMessageBox.critical(self, 'Lower Layer', "You cannot lower this Element any lower.")
+            QMessageBox.critical(self, 'Lower Layer', 'You cannot lower this Element any lower.')
             return
 
         old_z_values = [item.zValue() for item in items]
@@ -1614,7 +1614,7 @@ class MPRUN(QMainWindow):
                                                     )
 
                     # Display information
-                    QMessageBox.information(self, "Convert Finished", "Vector converted successfully.")
+                    QMessageBox.information(self, 'Convert Finished', 'Vector converted successfully.')
 
                     # Add the item to the scene
                     item = CustomSvgItem()
@@ -1638,7 +1638,7 @@ class MPRUN(QMainWindow):
                     # Set cursor back
                     self.setCursor(Qt.ArrowCursor)
 
-                    QMessageBox.critical(self, "Convert Error", f"Failed to convert bitmap to vector: {e}")
+                    QMessageBox.critical(self, 'Convert Error', f'Failed to convert bitmap to vector: {e}')
 
     def use_duplicate(self):
         # Get selected items and create a copy
@@ -1766,7 +1766,7 @@ class MPRUN(QMainWindow):
             self.canvas.addCommand(command)
 
         except Exception as e:
-            print(f"Error during scaling: {e}")
+            print(f'Error during scaling: {e}')
 
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
@@ -1808,7 +1808,7 @@ class MPRUN(QMainWindow):
                 self.canvas.addCommand(command)
             except Exception as e:
                 # Handle the exception (e.g., logging)
-                print(f"Exception: {e}")
+                print(f'Exception: {e}')
 
     def use_rotate_direction(self, dir: str):
         items = self.canvas.selectedItems()
@@ -1843,7 +1843,7 @@ class MPRUN(QMainWindow):
                 self.canvas.addCommand(command)
             except Exception as e:
                 # Handle the exception (e.g., logging)
-                print(f"Exception: {e}")
+                print(f'Exception: {e}')
 
     def use_flip_horizontal(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1928,7 +1928,7 @@ class MPRUN(QMainWindow):
                 self.canvas.addCommand(command)
             except Exception as e:
                 # Handle the exception (e.g., logging)
-                print(f"Exception: {e}")
+                print(f'Exception: {e}')
 
     def use_reset_item(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1940,7 +1940,7 @@ class MPRUN(QMainWindow):
             self.canvas.addCommand(command)
             self.update_transform_ui()
         except Exception as e:
-            print(f"Error during resetting items: {e}")
+            print(f'Error during resetting items: {e}')
 
     def use_add_canvas(self):
         self.toolbox.setCurrentWidget(self.canvas_tab)
@@ -1993,7 +1993,7 @@ class MPRUN(QMainWindow):
             self.canvas.addCommand(command)
         except Exception as e:
             # Handle the exception (e.g., logging)
-            print(f"Exception: {e}")
+            print(f'Exception: {e}')
 
     def use_close_path(self):
         items = [item for item in self.canvas.selectedItems() if isinstance(item, CustomPathItem)]
@@ -2005,7 +2005,7 @@ class MPRUN(QMainWindow):
             self.canvas.addCommand(command)
         except Exception as e:
             # Handle the exception (e.g., logging)
-            print(f"Exception: {e}")
+            print(f'Exception: {e}')
 
     def use_hide_item(self):
         items = self.canvas.selectedItems()
@@ -2034,7 +2034,7 @@ class MPRUN(QMainWindow):
                 self.canvas.addCommand(command)
             except Exception as e:
                 # Handle the exception (e.g., logging)
-                print(f"Exception: {e}")
+                print(f'Exception: {e}')
 
     def use_unhide_all(self):
         items = self.canvas.items()
@@ -2056,7 +2056,7 @@ class MPRUN(QMainWindow):
                 self.canvas.addCommand(command)
             except Exception as e:
                 # Handle the exception (e.g., logging)
-                print(f"Exception: {e}")
+                print(f'Exception: {e}')
 
     def use_align_left(self):
         if len(self.canvas.selectedItems()) > 1:
@@ -2244,19 +2244,19 @@ class MPRUN(QMainWindow):
     def use_insert_shape(self, shape: str):
         path = QPainterPath()
 
-        if shape == "rect":
+        if shape == 'rect':
             path.addRect(QRectF(0, 0, 100, 100))
             item = CustomPathItem(path)
             item.setPen(self.canvas_view.pen)
             item.setBrush(self.canvas_view.stroke_fill)
 
-        elif shape == "circle":
+        elif shape == 'circle':
             path.addEllipse(QRectF(0, 0, 100, 100))
             item = CustomPathItem(path)
             item.setPen(self.canvas_view.pen)
             item.setBrush(self.canvas_view.stroke_fill)
 
-        elif shape == "triangle":
+        elif shape == 'triangle':
             poly = QPolygonF()
             half_width = 50
             # Calculate the height of the equilateral triangle
@@ -2346,7 +2346,7 @@ class MPRUN(QMainWindow):
                 self.saveas()
 
         except Exception as e:
-            QMessageBox.critical(self, 'Open File Error', f"Error saving scene: {e}", QMessageBox.Ok)
+            QMessageBox.critical(self, 'Open File Error', f'Error saving scene: {e}', QMessageBox.Ok)
 
     def saveas(self):
         filename, _ = QFileDialog.getSaveFileName(self, 'Save As', '', 'MPRUN files (*.mp)')
