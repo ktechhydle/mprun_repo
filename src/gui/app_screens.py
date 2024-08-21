@@ -138,6 +138,7 @@ class CanvasItemSelector(QDialog):
                 self.canvas.removeItem(item)
                 self.watermark_item = None
 
+
 class AllCanvasExporter(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
@@ -317,6 +318,7 @@ class AllCanvasExporter(QDialog):
                 self.canvas.removeItem(item)
                 self.watermark_item = None
 
+
 class ArrangeWin(QDialog):
     def __init__(self, canvas, parent):
         super().__init__(parent)
@@ -324,7 +326,7 @@ class ArrangeWin(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(300)
-        self.setFixedHeight(300)
+        self.setFixedHeight(250)
 
         self.canvas = canvas
         self.canvas.parentWindow.use_exit_add_canvas()
@@ -334,16 +336,25 @@ class ArrangeWin(QDialog):
         self.createUI()
 
     def createUI(self):
-        canvas_count_label = QLabel(f'Canvases: {[item for item in self.canvas.items() if isinstance(item, CanvasItem)]}')
+        count = 0
+
+        for i in self.canvas.items():
+            if isinstance(i, CanvasItem):
+                count += 1
+
+        canvas_count_label = QLabel(f'<b>Canvases: {count}</b>')
         rows_label = QLabel('Rows:')
         columns_label = QLabel('Columns:')
         spacing_label = QLabel('Spacing:')
 
         self.rows_spin = QSpinBox()
+        self.rows_spin.setFixedWidth(100)
         self.rows_spin.setRange(1, 10000)
         self.columns_spin = QSpinBox()
+        self.columns_spin.setFixedWidth(100)
         self.columns_spin.setRange(1, 10000)
         self.spacing_spin = QSpinBox()
+        self.spacing_spin.setFixedWidth(100)
         self.spacing_spin.setSuffix(' pt')
         self.spacing_spin.setRange(1, 10000)
 
@@ -354,30 +365,33 @@ class ArrangeWin(QDialog):
         self.button_group.rejected.connect(self.close)
 
         # Add canvas count label
-        self.layout().addWidget(canvas_count_label)
+        canvas_count_layout = ToolbarHorizontalLayout()
+        canvas_count_layout.layout.addWidget(canvas_count_label)
+        canvas_count_layout.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout().addWidget(canvas_count_layout)
+
+        # Add seperator
+        self.layout().addWidget(HorizontalSeparator())
 
         # Add rows label and spinbox
-        rows_layout = QWidget()
-        rows_layout.setLayout(QHBoxLayout())
-        rows_layout.layout().addWidget(rows_label)
-        rows_layout.layout().addWidget(self.rows_spin)
-        rows_layout.layout().addStretch()
+        rows_layout = ToolbarHorizontalLayout()
+        rows_layout.layout.addWidget(rows_label)
+        rows_layout.layout.addWidget(self.rows_spin)
+        rows_layout.layout.setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(rows_layout)
 
         # Add columns label and spinbox
-        columns_layout = QWidget()
-        columns_layout.setLayout(QHBoxLayout())
-        columns_layout.layout().addWidget(columns_label)
-        columns_layout.layout().addWidget(self.columns_spin)
-        columns_layout.layout().addStretch()
+        columns_layout = ToolbarHorizontalLayout()
+        columns_layout.layout.addWidget(columns_label)
+        columns_layout.layout.addWidget(self.columns_spin)
+        columns_layout.layout.setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(columns_layout)
 
         # Add spacing label and spinbox
-        spacing_layout = QWidget()
-        spacing_layout.setLayout(QHBoxLayout())
-        spacing_layout.layout().addWidget(spacing_label)
-        spacing_layout.layout().addWidget(self.spacing_spin)
-        spacing_layout.layout().addStretch()
+        spacing_layout = ToolbarHorizontalLayout()
+        spacing_layout.layout.addWidget(spacing_label)
+        spacing_layout.layout.addWidget(self.spacing_spin)
+        spacing_layout.layout.setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(spacing_layout)
 
         # Add buttons at the bottom
@@ -430,6 +444,7 @@ class ArrangeWin(QDialog):
         self.canvas.addCommand(command)
 
         self.close()
+
 
 class AboutWin(QWidget):
     def __init__(self):
@@ -511,11 +526,13 @@ You are responsible for publishing your work under a license of your choosing an
         self.license_tab.layout().addStretch()
 
         # Create more info tab
-        credits_label = QLinkLabel('Credits', 'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
+        credits_label = QLinkLabel('Credits',
+                                   'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
         contact_label = QLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
         self.more_info_tab.layout().addWidget(credits_label)
         self.more_info_tab.layout().addWidget(contact_label)
         self.more_info_tab.layout().addStretch()
+
 
 class VersionWin(QWidget):
     def __init__(self, version):
@@ -537,7 +554,7 @@ class VersionWin(QWidget):
         # App image and label
         mprun_img_label = QLabel(self)
         pixmap = QPixmap("ui/Main Logos/MPRUN_icon.png").scaled(80, 80,
-                                                                              Qt.KeepAspectRatio)
+                                                                Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
 
@@ -566,6 +583,7 @@ If you encounter any issues or have suggestions for improvements, contact us at:
 
     def mousePressEvent(self, e):
         self.close()
+
 
 class FindActionWin(QWidget):
     def __init__(self, actions, parent=None):
@@ -637,6 +655,7 @@ class FindActionWin(QWidget):
 
             self.close()
 
+
 class DisclaimerWin(QMessageBox):
     def __init__(self, data_file, parent=None):
         super().__init__(parent)
@@ -653,6 +672,7 @@ class DisclaimerWin(QMessageBox):
         self.show_on_startup_btn.setText('Show this message on startup')
 
         self.setCheckBox(self.show_on_startup_btn)
+
 
 class SettingsWin(QDialog):
     def __init__(self, parent):
@@ -711,6 +731,7 @@ class SettingsWin(QDialog):
             memory_gb_layout.addWidget(undo_hlayout)
 
             self.performance_tab.layout().addWidget(memory_gb)
+
         def createGPUGB():
             gpu_gb = QGroupBox('GPU')
             gpu_gb.setLayout(QVBoxLayout())
@@ -789,6 +810,7 @@ class SettingsWin(QDialog):
         self.undo_limit_spin.setValue(200)
         self.show_tip_of_day_checkbtn.setChecked(True)
         self.use_gpu_checkbtn.setChecked(True)
+
 
 class TipWin(QDialog):
     def __init__(self, label: str, tip: str, parent):
