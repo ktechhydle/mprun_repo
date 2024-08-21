@@ -161,11 +161,11 @@ class CustomPathItem(QGraphicsPathItem):
         item.setPen(self.pen())
         item.setBrush(self.brush())
         item.setPos(self.pos() + QPointF(10, 10))
+        item.setTransformOriginPoint(self.transformOriginPoint())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
-        item.setTransformOriginPoint(self.transformOriginPoint())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -181,6 +181,24 @@ class CustomPathItem(QGraphicsPathItem):
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
+
+    def copy(self):
+        path = self.path()
+        item = CustomPathItem(path)
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+        item.setPos(self.pos())
+        item.setTransformOriginPoint(self.transformOriginPoint())
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Path')
 
         return item
 
@@ -329,11 +347,11 @@ class CustomPixmapItem(QGraphicsPixmapItem):
     def duplicate(self):
         item = CustomPixmapItem(self.pixmap())
         item.setPos(self.pos() + QPointF(10, 10))
+        item.setTransformOriginPoint(self.transformOriginPoint())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
-        item.setTransformOriginPoint(self.transformOriginPoint())
 
         if os.path.exists(self.return_filename()):
             item.store_filename(self.return_filename())
@@ -346,6 +364,26 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
+
+    def copy(self):
+        item = CustomPixmapItem(self.pixmap())
+        item.setPos(self.pos())
+        item.setTransformOriginPoint(self.transformOriginPoint())
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+
+        if os.path.exists(self.return_filename()):
+            item.store_filename(self.return_filename())
+        else:
+            item.store_filename(None)
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Imported Pixmap')
 
         return item
 
@@ -410,11 +448,11 @@ class CustomSvgItem(QGraphicsSvgItem):
         if os.path.exists(svg):
             item = CustomSvgItem(svg)
             item.setPos(self.pos() + QPointF(10, 10))
+            item.setTransformOriginPoint(self.transformOriginPoint())
             item.setScale(self.scale())
             item.setRotation(self.rotation())
             item.setZValue(self.zValue())
             item.setTransform(self.transform())
-            item.setTransformOriginPoint(self.transformOriginPoint())
             item.store_filename(svg)
 
             item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -428,11 +466,11 @@ class CustomSvgItem(QGraphicsSvgItem):
             item = CustomSvgItem()
             item.loadFromData(self.svgData())
             item.setPos(self.pos() + QPointF(10, 10))
+            item.setTransformOriginPoint(self.transformOriginPoint())
             item.setScale(self.scale())
             item.setRotation(self.rotation())
             item.setZValue(self.zValue())
             item.setTransform(self.transform())
-            item.setTransformOriginPoint(self.transformOriginPoint())
 
             item.setFlag(QGraphicsItem.ItemIsSelectable)
             item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -440,6 +478,39 @@ class CustomSvgItem(QGraphicsSvgItem):
 
             add_command = AddItemCommand(self.scene(), item)
             self.scene().addCommand(add_command)
+
+        return item
+
+    def copy(self):
+        svg = self.source()
+
+        if os.path.exists(svg):
+            item = CustomSvgItem(svg)
+            item.setPos(self.pos())
+            item.setTransformOriginPoint(self.transformOriginPoint())
+            item.setScale(self.scale())
+            item.setRotation(self.rotation())
+            item.setZValue(self.zValue())
+            item.setTransform(self.transform())
+            item.store_filename(svg)
+
+            item.setFlag(QGraphicsItem.ItemIsSelectable)
+            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setToolTip('Imported SVG')
+
+        else:
+            item = CustomSvgItem()
+            item.loadFromData(self.svgData())
+            item.setPos(self.pos())
+            item.setTransformOriginPoint(self.transformOriginPoint())
+            item.setScale(self.scale())
+            item.setRotation(self.rotation())
+            item.setZValue(self.zValue())
+            item.setTransform(self.transform())
+
+            item.setFlag(QGraphicsItem.ItemIsSelectable)
+            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setToolTip('Imported SVG')
 
         return item
 
@@ -535,11 +606,11 @@ class CustomTextItem(QGraphicsTextItem):
         item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
         item.setPos(self.pos() + QPointF(10, 10))
+        item.setTransformOriginPoint(self.transformOriginPoint())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
-        item.setTransformOriginPoint(self.transformOriginPoint())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -556,6 +627,32 @@ class CustomTextItem(QGraphicsTextItem):
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
+
+    def copy(self):
+        item = CustomTextItem()
+        item.setFont(self.font())
+        item.setDefaultTextColor(self.defaultTextColor())
+        item.setPos(self.pos())
+        item.setTransformOriginPoint(self.transformOriginPoint())
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Text')
+
+        if self.markdownEnabled:
+            item.markdownEnabled = True
+            item.setPlainText(self.old_text)
+            item.old_text = item.toPlainText()
+            item.toMarkdown()
+
+        else:
+            item.setPlainText(self.toPlainText())
 
         return item
 
@@ -694,11 +791,11 @@ class LeaderLineItem(QGraphicsPathItem):
         item.setPen(self.pen())
         item.setBrush(self.brush())
         item.setPos(self.pos() + QPointF(10, 10))
+        item.setTransformOriginPoint(self.transformOriginPoint())
         item.setScale(self.scale())
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
-        item.setTransformOriginPoint(self.transformOriginPoint())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -714,6 +811,33 @@ class LeaderLineItem(QGraphicsPathItem):
 
         add_command = AddItemCommand(self.scene(), item)
         self.scene().addCommand(add_command)
+
+        return item
+
+    def copy(self):
+        path = self.path()
+
+        item = LeaderLineItem(path, self.text_element.toPlainText())
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+        item.setPos(self.pos())
+        item.setTransformOriginPoint(self.transformOriginPoint())
+        item.setScale(self.scale())
+        item.setRotation(self.rotation())
+        item.setZValue(self.zValue())
+        item.setTransform(self.transform())
+
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setToolTip('Leader Line')
+
+        item.text_element.setFont(self.text_element.font())
+        item.text_element.setDefaultTextColor(self.text_element.defaultTextColor())
+        item.text_element.setTransform(self.text_element.transform())
+        item.text_element.setRotation(self.text_element.rotation())
+        item.text_element.setPos(self.text_element.pos())
+
+        item.updatePathEndPoint()
 
         return item
 
@@ -806,6 +930,19 @@ class CanvasItem(QGraphicsRectItem):
         pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
         self.setBrush(brush)
         self.setPen(pen)
+
+    def duplicate(self):
+        duplicate = CanvasItem(self.rect(), f'COPY - {self.name()}')
+        duplicate.setPos(self.sceneBoundingRect().width() + 100 + self.x(), self.y())
+
+        self.scene().addCommand(AddItemCommand(self.scene(), duplicate))
+        self.scene().parentWindow.use_add_canvas()
+
+    def copy(self):
+        duplicate = CanvasItem(self.rect(), f'COPY - {self.name()}')
+        duplicate.setPos(self.pos())
+
+        return duplicate
 
 class CanvasTextItem(QGraphicsTextItem):
     def __init__(self, text, parent):

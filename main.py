@@ -108,6 +108,7 @@ class MPRUN(QMainWindow):
             _data['toolbox_pos'] = self.current_toolbox_pos()
             _data['toolbox_collapsed'] = self.tab_view_dock.isCollapsed()
             _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
+            _data['toolbar_hidden'] = self.toolbar.isHidden()
             _data['last_used_tool'] = self.action_group.checkedAction().text()
 
         self.write_settings(data)
@@ -266,6 +267,14 @@ class MPRUN(QMainWindow):
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
         redo_action.triggered.connect(self.canvas.redo)
 
+        copy_action = QAction('Copy', self)
+        copy_action.setShortcut(QKeySequence('Ctrl+C'))
+        copy_action.triggered.connect(self.canvas.copy)
+
+        paste_action = QAction('Paste', self)
+        paste_action.setShortcut(QKeySequence('Ctrl+V'))
+        paste_action.triggered.connect(self.canvas.paste)
+
         delete_action = QAction('Delete', self)
         delete_action.setShortcut(QKeySequence('Backspace'))
         delete_action.triggered.connect(self.use_delete)
@@ -421,7 +430,10 @@ class MPRUN(QMainWindow):
         self.edit_menu.addAction(undo_action)
         self.edit_menu.addAction(redo_action)
         self.edit_menu.addSeparator()
+        self.edit_menu.addAction(copy_action)
+        self.edit_menu.addAction(paste_action)
         self.edit_menu.addAction(delete_action)
+        self.edit_menu.addSeparator()
         self.edit_menu.addAction(hard_delete_action)
 
         self.object_menu.addAction(raise_layer_action)
@@ -983,7 +995,6 @@ class MPRUN(QMainWindow):
                                                self.add_canvas_btn,
                                                self.quick_actions_tab.gsnap_check_btn], self.view_zoom_spin)
         self.canvas_view.setScene(self.canvas)
-        self.canvas.set_widget(self.scale_btn)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
         self.setCentralWidget(self.canvas_view)
 
@@ -994,6 +1005,10 @@ class MPRUN(QMainWindow):
         self.update_item_fill()
 
         # Context menu for view
+        copy_action = QAction('Copy', self)
+        copy_action.triggered.connect(self.canvas.copy)
+        paste_action = QAction('Paste', self)
+        paste_action.triggered.connect(self.canvas.paste)
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.triggered.connect(self.use_duplicate)
         vectorize_action = QAction('Vectorize', self)
@@ -1031,6 +1046,8 @@ class MPRUN(QMainWindow):
         sep5 = QAction(self)
         sep5.setSeparator(True)
 
+        self.canvas_view.addAction(copy_action)
+        self.canvas_view.addAction(paste_action)
         self.canvas_view.addAction(duplicate_action)
         self.canvas_view.addAction(sep1)
         self.canvas_view.addAction(raise_layer_action)
@@ -1669,11 +1686,7 @@ class MPRUN(QMainWindow):
 
         for item in selected_items:
             if isinstance(item, CanvasItem):
-                duplicate = CanvasItem(item.rect(), f'COPY - {item.name()}')
-                duplicate.setPos(item.sceneBoundingRect().width() + 100 + item.x(), item.y())
-
-                self.canvas.addCommand(AddItemCommand(self.canvas, duplicate))
-                self.use_add_canvas()
+                item.duplicate()
 
             elif isinstance(item, CustomTextItem):
                 item.duplicate()
@@ -2422,6 +2435,7 @@ class MPRUN(QMainWindow):
             self.addToolBar(Qt.LeftToolBarArea if user_data['toolbar_pos'] == 1 else Qt.RightToolBarArea, self.toolbar)
             self.addDockWidget(Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea, self.tab_view_dock)
             self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
+            self.toolbar.setHidden(user_data['toolbar_hidden'])
             self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
 
             if user_data['geometry'][0] == 'maximized':

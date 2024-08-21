@@ -9,6 +9,7 @@
         "toolbox_pos": 1,
         "toolbox_collapsed": false,
         "control_toolbar_hidden": false,
+        "toolbar_hidden": false,
         "last_used_tool": "Select Tool (Spacebar)",
         "undo_limit": 200,
         "show_daily_tips": true,

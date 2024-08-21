@@ -12,6 +12,20 @@ class AddItemCommand(QUndoCommand):
     def undo(self):
         self.scene.removeItem(self.item)
 
+class MultiAddItemCommand(QUndoCommand):
+    def __init__(self, scene, items):
+        super().__init__()
+        self.scene = scene
+        self.items = items
+
+    def redo(self):
+        for item in self.items:
+            self.scene.addItem(item)
+
+    def undo(self):
+        for item in self.items:
+            self.scene.removeItem(item)
+
 class MultiItemPositionChangeCommand(QUndoCommand):
     def __init__(self, parent, items, old_positions, new_positions):
         super().__init__()

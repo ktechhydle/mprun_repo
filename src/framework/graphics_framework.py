@@ -447,7 +447,7 @@ class CustomGraphicsScene(QGraphicsScene):
         self.mpversion = '1.0.0'
         self.canvas_count = 2
         self.undo_stack = undoStack
-        self.scale_btn = None
+        self.copy_stack = []
         self.modified = False
         self.parentWindow = None
 
@@ -465,16 +465,13 @@ class CustomGraphicsScene(QGraphicsScene):
         self.oldPositions = {}
         self.movingItem = None
         self.oldPos = QPointF()
-        self.itemsMoved.connect(self.on_move_item)
+        self.itemsMoved.connect(self.onItemMoved)
 
         # Managers
         self.manager = SceneManager(self)
         self.template_manager = TemplateManager(self)
         self.importManager = ImportManager(self)
         self.exportManager = ExportManager(self)
-
-    def set_widget(self, w):
-        self.scale_btn = w
 
     def setParentWindow(self, parent: QMainWindow):
         self.parentWindow = parent
@@ -491,73 +488,6 @@ class CustomGraphicsScene(QGraphicsScene):
             if any(self.oldPositions[i] != newPositions[i] for i in self.oldPositions.keys()):
                 self.itemsMoved.emit(self.oldPositions, newPositions)
             self.oldPositions = {}
-
-    def on_move_item(self, oldPositions, newPositions):
-        self.addCommand(ItemMovedUndoCommand(oldPositions, newPositions))
-
-    def undo(self):
-        if self.undo_stack.canUndo():
-            self.undo_stack.undo()
-            self.modified = True
-            self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
-
-        self.parentWindow.update_transform_ui()
-        self.parentWindow.update_appearance_ui()
-
-        for item in self.items():
-            if isinstance(item, CustomTextItem):
-                if isinstance(item.parentItem(), LeaderLineItem):
-                    item.parentItem().updatePathEndPoint()
-
-    def redo(self):
-        if self.undo_stack.canRedo():
-            self.undo_stack.redo()
-            self.modified = True
-            self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
-
-        self.parentWindow.update_transform_ui()
-        self.parentWindow.update_appearance_ui()
-
-        for item in self.items():
-            if isinstance(item, CustomTextItem):
-                if isinstance(item.parentItem(), LeaderLineItem):
-                    item.parentItem().updatePathEndPoint()
-
-    def addCommand(self, command):
-        self.undo_stack.push(command)
-        self.modified = True
-        self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
-
-        if isinstance(command, AddItemCommand):
-            if isinstance(command.item, CanvasItem):
-                self.canvas_count += 1
-
-        print(command)
-
-    def selectedItemsBoundingRect(self):
-        bounding_rect = QRectF()
-        for item in self.selectedItems():
-            bounding_rect = bounding_rect.united(item.boundingRect())
-        return bounding_rect
-
-    def selectedItemsSceneBoundingRect(self):
-        bounding_rect = QRectF()
-        for item in self.selectedItems():
-            bounding_rect = bounding_rect.united(item.sceneBoundingRect())
-        return bounding_rect
-
-    def update(self, rect=None):
-        super().update()
-
-        for item in self.items():
-            item.update()
-
-    def setGridEnabled(self, enabled: bool):
-        self.gridEnabled = enabled
-
-    def setGridSize(self, grid_size: int):
-        self.gridSize = grid_size
-        self.update()
 
     def drawBackground(self, painter, rect):
         try:
@@ -617,6 +547,73 @@ class CustomGraphicsScene(QGraphicsScene):
                 else:
                     item.gridEnabled = True
 
+    def update(self, rect=None):
+        super().update()
+
+        for item in self.items():
+            item.update()
+
+    def onItemMoved(self, oldPositions, newPositions):
+        self.addCommand(ItemMovedUndoCommand(oldPositions, newPositions))
+
+    def undo(self):
+        if self.undo_stack.canUndo():
+            self.undo_stack.undo()
+            self.modified = True
+            self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
+
+        self.parentWindow.update_transform_ui()
+        self.parentWindow.update_appearance_ui()
+
+        for item in self.items():
+            if isinstance(item, CustomTextItem):
+                if isinstance(item.parentItem(), LeaderLineItem):
+                    item.parentItem().updatePathEndPoint()
+
+    def redo(self):
+        if self.undo_stack.canRedo():
+            self.undo_stack.redo()
+            self.modified = True
+            self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
+
+        self.parentWindow.update_transform_ui()
+        self.parentWindow.update_appearance_ui()
+
+        for item in self.items():
+            if isinstance(item, CustomTextItem):
+                if isinstance(item.parentItem(), LeaderLineItem):
+                    item.parentItem().updatePathEndPoint()
+
+    def addCommand(self, command):
+        self.undo_stack.push(command)
+        self.modified = True
+        self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
+
+        if isinstance(command, AddItemCommand):
+            if isinstance(command.item, CanvasItem):
+                self.canvas_count += 1
+
+        print(command)
+
+    def selectedItemsBoundingRect(self):
+        bounding_rect = QRectF()
+        for item in self.selectedItems():
+            bounding_rect = bounding_rect.united(item.boundingRect())
+        return bounding_rect
+
+    def selectedItemsSceneBoundingRect(self):
+        bounding_rect = QRectF()
+        for item in self.selectedItems():
+            bounding_rect = bounding_rect.united(item.sceneBoundingRect())
+        return bounding_rect
+
+    def setGridEnabled(self, enabled: bool):
+        self.gridEnabled = enabled
+
+    def setGridSize(self, grid_size: int):
+        self.gridSize = grid_size
+        self.update()
+
     def selectBelow(self):
         selected_items = self.selectedItems()
         for selected_item in selected_items:
@@ -644,6 +641,23 @@ class CustomGraphicsScene(QGraphicsScene):
     def arrange(self):
         self.w = ArrangeWin(self, self.parentWindow)
         self.w.show()
+
+    def copy(self):
+        self.copy_stack.clear()
+
+        for item in self.selectedItems():
+            self.copy_stack.append(item.copy())
+
+    def paste(self):
+        new_items = []
+
+        for item in self.copy_stack:
+            new_items.append(item.copy())
+
+            if isinstance(item, CanvasItem):
+                self.parentWindow.use_add_canvas()
+
+        self.addCommand(MultiAddItemCommand(self, new_items))
 
 class SceneManager:
     def __init__(self, scene):
