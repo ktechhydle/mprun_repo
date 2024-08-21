@@ -325,7 +325,7 @@ class ArrangeWin(QDialog):
         self.setWindowTitle("Arrange Canvases")
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowModality(Qt.ApplicationModal)
-        self.setFixedWidth(300)
+        self.setFixedWidth(325)
         self.setFixedHeight(250)
 
         self.canvas = canvas
@@ -343,6 +343,10 @@ class ArrangeWin(QDialog):
                 count += 1
 
         canvas_count_label = QLabel(f'<b>Canvases: {count}</b>')
+        recommended_label = QLabel(f'<i>Recommended solution: 2 rows, {int(count / 2)} columns, {count * 10 if count < 12 else 50} pt spacing</i>')
+        recommended_label.setWordWrap(True)
+        apply_recommended_btn = QPushButton('Apply')
+        apply_recommended_btn.clicked.connect(lambda: self.apply_recommended(count))
         rows_label = QLabel('Rows:')
         columns_label = QLabel('Columns:')
         spacing_label = QLabel('Spacing:')
@@ -370,7 +374,12 @@ class ArrangeWin(QDialog):
         canvas_count_layout.layout.setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(canvas_count_layout)
 
-        # Add seperator
+        # Add recommended solution label and btn
+        recommended_layout = ToolbarHorizontalLayout()
+        recommended_layout.layout.addWidget(recommended_label)
+        recommended_layout.layout.addWidget(apply_recommended_btn)
+        recommended_layout.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout().addWidget(recommended_layout)
         self.layout().addWidget(HorizontalSeparator())
 
         # Add rows label and spinbox
@@ -444,6 +453,11 @@ class ArrangeWin(QDialog):
         self.canvas.addCommand(command)
 
         self.close()
+
+    def apply_recommended(self, count):
+        self.rows_spin.setValue(2)
+        self.columns_spin.setValue(int(count / 2))
+        self.spacing_spin.setValue(count * 10 if count < 12 else 50)
 
 
 class AboutWin(QWidget):
