@@ -329,7 +329,6 @@ class ArrangeWin(QDialog):
         self.setFixedHeight(250)
 
         self.canvas = canvas
-        self.canvas.parentWindow.use_exit_add_canvas()
 
         self.setLayout(QVBoxLayout())
 
@@ -343,9 +342,7 @@ class ArrangeWin(QDialog):
                 count += 1
 
         canvas_count_label = QLabel(f'<b>Canvases: {count}</b>')
-        recommended_label = QLabel(f'<i>Recommended solution: 2 rows, {int(count / 2)} columns, {count * 10 if count < 12 else 50} pt spacing</i>')
-        recommended_label.setWordWrap(True)
-        apply_recommended_btn = QPushButton('Apply')
+        apply_recommended_btn = QPushButton('Apply Recommended Settings')
         apply_recommended_btn.clicked.connect(lambda: self.apply_recommended(count))
         rows_label = QLabel('Rows:')
         columns_label = QLabel('Columns:')
@@ -374,9 +371,8 @@ class ArrangeWin(QDialog):
         canvas_count_layout.layout.setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(canvas_count_layout)
 
-        # Add recommended solution label and btn
+        # Add recommended solution btn
         recommended_layout = ToolbarHorizontalLayout()
-        recommended_layout.layout.addWidget(recommended_label)
         recommended_layout.layout.addWidget(apply_recommended_btn)
         recommended_layout.layout.setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(recommended_layout)
