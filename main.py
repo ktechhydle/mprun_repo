@@ -157,11 +157,11 @@ class MPRUN(QMainWindow):
 
         new_action = QAction('New', self)
         new_action.setShortcut(QKeySequence('Ctrl+N'))
-        new_action.triggered.connect(self.new)
+        new_action.triggered.connect(self.canvas.manager.restore)
 
         open_action = QAction('Open', self)
         open_action.setShortcut(QKeySequence('Ctrl+O'))
-        open_action.triggered.connect(self.open)
+        open_action.triggered.connect(lambda: self.canvas.manager.load(self))
 
         self.open_recent_menu = QMenu('Open Recent')
 
@@ -170,22 +170,22 @@ class MPRUN(QMainWindow):
 
         save_action = QAction('Save', self)
         save_action.setShortcut(QKeySequence('Ctrl+S'))
-        save_action.triggered.connect(self.save)
+        save_action.triggered.connect(self.canvas.manager.save)
 
         saveas_action = QAction('Save As', self)
         saveas_action.setShortcut(QKeySequence('Ctrl+Shift+S'))
-        saveas_action.triggered.connect(self.saveas)
+        saveas_action.triggered.connect(self.canvas.manager.saveas)
 
         saveas_template_action = QAction('Save As Template', self)
         saveas_template_action.triggered.connect(self.canvas.template_manager.save_template)
 
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
-        export_action.triggered.connect(self.choose_export)
+        export_action.triggered.connect(self.canvas.exportManager.normalExport)
 
         export_multiple_action = QAction('Export All', self)
         export_multiple_action.setShortcut(QKeySequence('Ctrl+Shift+E'))
-        export_multiple_action.triggered.connect(self.choose_multiple_export)
+        export_multiple_action.triggered.connect(self.canvas.exportManager.multipleExport)
 
         close_action = QAction('Close', self)
         close_action.triggered.connect(self.close)
@@ -2324,17 +2324,14 @@ class MPRUN(QMainWindow):
     def insert_image(self):
         self.canvas.importManager.importFile()
 
-    def choose_export(self):
-        self.canvas.exportManager.normalExport()
-
-    def choose_multiple_export(self):
-        self.canvas.exportManager.multipleExport()
-
     def create_item_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setFlag(QGraphicsItem.ItemIsSelectable)
 
         item.setZValue(0)
+
+    def open_recent(self, filename: str):
+        self.canvas.manager.load_from_file(filename, self)
 
     def show_version(self):
         self.w = VersionWin(self.canvas.mpversion)
@@ -2373,53 +2370,6 @@ class MPRUN(QMainWindow):
     def show_settings(self):
         self.w = SettingsWin(self)
         self.w.show()
-
-    def new(self):
-        self.canvas.manager.restore()
-
-    def save(self):
-        try:
-            if self.canvas.manager.filename != 'Untitled':
-                with open(self.canvas.manager.filename, 'wb') as f:
-                    pickle.dump(self.canvas.manager.serialize_items(), f)
-                    self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
-                    self.canvas.modified = False
-
-                    return True
-
-            else:
-                self.saveas()
-
-        except Exception as e:
-            QMessageBox.critical(self, 'Open File Error', f'Error saving scene: {e}', QMessageBox.Ok)
-
-    def saveas(self):
-        filename, _ = QFileDialog.getSaveFileName(self, 'Save As', '', 'MPRUN files (*.mp)')
-
-        if filename:
-            try:
-                with open(filename, 'wb') as f:
-                    pickle.dump(self.canvas.manager.serialize_items(), f)
-
-                    self.canvas.manager.filename = filename
-                    self.canvas.modified = False
-                    self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
-                    self.update_recent_file_data(filename)
-                    self.canvas_view.showMessage('File', f'File {self.canvas.manager.filename} saved successfully.')
-
-                    return True
-
-            except Exception as e:
-                print(e)
-
-        else:
-            return False
-
-    def open(self):
-        self.canvas.manager.load(self)
-
-    def open_recent(self, filename: str):
-        self.canvas.manager.load_from_file(filename, self)
 
     def read_settings(self):
         with open('internal data/_settings.json', 'r') as f:

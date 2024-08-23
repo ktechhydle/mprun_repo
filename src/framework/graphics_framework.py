@@ -698,6 +698,44 @@ class SceneManager:
         else:
             self.reset_to_default_scene()
 
+    def save(self):
+        try:
+            if self.filename != 'Untitled':
+                with open(self.filename, 'wb') as f:
+                    pickle.dump(self.serialize_items(), f)
+                    self.scene.parentWindow.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+                    self.scene.modified = False
+
+                    return True
+
+            else:
+                self.saveas()
+
+        except Exception as e:
+            QMessageBox.critical(self.scene.parentWindow, 'Open File Error', f'Error saving scene: {e}', QMessageBox.Ok)
+
+    def saveas(self):
+        filename, _ = QFileDialog.getSaveFileName(self.scene.parentWindow, 'Save As', '', 'MPRUN files (*.mp)')
+
+        if filename:
+            try:
+                with open(filename, 'wb') as f:
+                    pickle.dump(self.serialize_items(), f)
+
+                    self.filename = filename
+                    self.scene.modified = False
+                    self.scene.parentWindow.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+                    self.scene.parentWindow.update_recent_file_data(filename)
+                    self.scene.parentWindow.canvas_view.showMessage('File', f'File {self.filename} saved successfully.')
+
+                    return True
+
+            except Exception as e:
+                print(e)
+
+        else:
+            return False
+
     def load(self, parent):
         try:
             self.scene.parentWindow.use_exit_add_canvas()
