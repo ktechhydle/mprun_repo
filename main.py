@@ -408,6 +408,13 @@ class MPRUN(QMainWindow):
         view_settings_action.setShortcut(Qt.Key_F2)
         view_settings_action.triggered.connect(self.show_settings)
 
+        reload_ui_action = QAction('Restart User Interface', self)
+        reload_ui_action.setShortcut(Qt.Key_F4)
+        reload_ui_action.triggered.connect(self.open_settings_data)
+
+        show_tip_of_the_day_action = QAction('Show Tip Of The Day', self)
+        show_tip_of_the_day_action.triggered.connect(self.show_tip_of_the_day)
+
         # Add actions
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addAction(insert_action)
@@ -475,6 +482,9 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(find_action_action)
         self.help_menu.addAction(browse_tutorials_action)
         self.help_menu.addAction(view_settings_action)
+        self.help_menu.addAction(reload_ui_action)
+        self.help_menu.addSeparator()
+        self.help_menu.addAction(show_tip_of_the_day_action)
 
         # Sub menu actions
         drawing_menu.addAction(path_action)
@@ -2436,6 +2446,7 @@ class MPRUN(QMainWindow):
             self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
             self.toolbar.setHidden(user_data['toolbar_hidden'])
             self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
+            self.undo_stack.setUndoLimit(user_data['undo_limit'])
 
             if user_data['geometry'][0] == 'maximized':
                 self.showMaximized()
@@ -2454,17 +2465,12 @@ class MPRUN(QMainWindow):
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
 
-            self.undo_stack.setUndoLimit(user_data['undo_limit'])
 
             if user_data['use_gpu']:
                 self.canvas_view.setViewport(CustomViewport())
 
             if user_data['show_daily_tips']:
-                with open('internal data/_tips.txt', 'r') as f:
-                    content = f.readlines()
-                    line = random.randint(0, len(content) - 1)
-
-                    self.canvas_view.showMessage('Tip of the Day', content[line])
+                self.show_tip_of_the_day()
 
     def open_recent_file_data(self):
         data = self.read_recent_files()
@@ -2532,6 +2538,13 @@ class MPRUN(QMainWindow):
 
         else:
             self.view_menu.actions()[0].setChecked(False)
+
+    def show_tip_of_the_day(self):
+        with open('internal data/_tips.txt', 'r') as f:
+            content = f.readlines()
+            line = random.randint(0, len(content) - 1)
+
+            self.canvas_view.showMessage('Tip of the Day', content[line])
 
     def view_as(self, view: str) -> None:
         if view == 'read_only':
