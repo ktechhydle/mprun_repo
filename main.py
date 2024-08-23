@@ -1,7 +1,6 @@
 import random
-
 from src.scripts.imports import *
-from src.scripts.styles import WindowsCSS, MacCSS
+from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.scripts.raw_functions import nameismain, ItemStack
 from src.scripts.app_internal import *
 from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin
@@ -2608,10 +2607,10 @@ def main() -> None:
     app.processEvents()
 
     if sys.platform == 'darwin':
-        app.setStyleSheet(MacCSS)
+        app.setStyleSheet(macCSS)
 
     else:
-        app.setStyleSheet(WindowsCSS)
+        app.setStyleSheet(windowsCSS)
 
     window = MPRUN()
     splash.finish(window)
