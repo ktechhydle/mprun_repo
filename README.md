@@ -1,13 +1,13 @@
-# Introducing MPRUN, the ultimate snowboard and ski competition run planning software.
-
-With MPRUN, you can set up custom courses matching the competition environment, and print out these setups to achieve the best competition performance and communication between coaches and athletes[^1]
+# Introducing MPRUN - the ultimate competition run planning software for on snow athletes
+With MPRUN, you can set up custom courses matching the competition environment, and print out these setups 
+to achieve the best competition performance and communication between coaches and athletes[^1]
 
 > [!NOTE]
-> ## Building from Source
+> ### Building from Source
 > 1. Clone the git with `https://github.com/ktechhydle/mprun_repo.git`.
 > 2. Install the project requirements with `pip install -r requirements.txt`.
 > 3. Run `main.py`, and see the full app.
-> 4. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it.***](license.txt)
+> 4. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it***](license.txt).
 
 ## How It Works...
 ### 1. Set up the course:
