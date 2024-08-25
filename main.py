@@ -621,7 +621,6 @@ class MPRUN(QMainWindow):
         self.select_btn.setToolTip(
             '<b>Select (Spacebar)</b><br>'
             'Select items on the scene by clicking and dragging a selection rectangle.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -635,7 +634,6 @@ class MPRUN(QMainWindow):
         self.pan_btn.setToolTip(
             '<b>Pan (P)</b><br>'
             'Pan around the scene by clicking and dragging.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -648,7 +646,6 @@ class MPRUN(QMainWindow):
         self.path_btn.setToolTip(
             '<b>Path (L)</b><br>'
             'Draw path items on the scene by clicking and drawing.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -660,7 +657,6 @@ class MPRUN(QMainWindow):
         self.pen_btn.setToolTip(
             '<b>Pen (Ctrl+L)</b><br>'
             'Draw smooth path items on the scene by clicking and drawing.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -672,7 +668,6 @@ class MPRUN(QMainWindow):
         self.sculpt_btn.setToolTip(
             '<b>Sculpt (S)</b><br>'
             'Edit path items by clicking and dragging on them to "sculpt" them.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -691,7 +686,6 @@ class MPRUN(QMainWindow):
         self.label_btn.setToolTip(
             '<b>Line and Label (T)</b><br>'
             'Draw line and label items by clicking and dragging.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -703,7 +697,6 @@ class MPRUN(QMainWindow):
         self.add_text_btn.setToolTip(
             '<b>Text (Ctrl+T)</b><br>'
             'Add text items to the scene by clicking a point.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -716,7 +709,6 @@ class MPRUN(QMainWindow):
         self.scale_btn.setToolTip(
             '<b>Scale (Q)</b><br>'
             'Scale items in the scene by clicking and dragging on them.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -728,7 +720,6 @@ class MPRUN(QMainWindow):
         self.rotate_btn.setToolTip(
             '<b>Rotate (R)</b><br>'
             'Rotate items in the scene by clicking and dragging on them.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -740,7 +731,6 @@ class MPRUN(QMainWindow):
         self.hide_btn.setToolTip(
             '<b>Hide (H)</b><br>'
             'Hide the selected items in the scene.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -751,7 +741,6 @@ class MPRUN(QMainWindow):
         self.unhide_btn.setToolTip(
             '<b>Unhide All (Ctrl+H)</b><br>'
             'Unhide all hidden items in the scene.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -762,7 +751,6 @@ class MPRUN(QMainWindow):
         self.add_canvas_btn.setToolTip(
             '<b>Add Canvas (A)</b><br>'
             'Add canvas items to the scene by clicking and dragging.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -774,7 +762,6 @@ class MPRUN(QMainWindow):
         self.insert_btn.setToolTip(
             '<b>Insert (I)</b><br>'
             'Insert a supported file type on to the scene.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -829,7 +816,6 @@ class MPRUN(QMainWindow):
         align_left_btn.setToolTip(
             '<b>Align Left</b><br>'
             'Align the selected items to the left.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -839,7 +825,6 @@ class MPRUN(QMainWindow):
         align_right_btn.setToolTip(
             '<b>Align Right</b><br>'
             'Align the selected items to the right.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -849,7 +834,6 @@ class MPRUN(QMainWindow):
         align_center_btn.setToolTip(
             '<b>Align Center</b><br>'
             'Align the selected items to the center.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -859,7 +843,6 @@ class MPRUN(QMainWindow):
         align_middle_btn.setToolTip(
             '<b>Align Middle</b><br>'
             'Align the selected items to the middle.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -869,7 +852,6 @@ class MPRUN(QMainWindow):
         align_top_btn.setToolTip(
             '<b>Align Top</b><br>'
             'Align the selected items to the top.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -879,7 +861,6 @@ class MPRUN(QMainWindow):
         align_bottom_btn.setToolTip(
             '<b>Align Bottom</b><br>'
             'Align the selected items to the bottom.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -889,7 +870,6 @@ class MPRUN(QMainWindow):
         rotate_ccw_action.setToolTip(
             '<b>Rotate Left</b><br>'
             'Rotate the selected items 90° counter-clockwise.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -899,7 +879,6 @@ class MPRUN(QMainWindow):
         rotate_cw_action.setToolTip(
             '<b>Rotate Right</b><br>'
             'Rotate the selected items 90° clockwise.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -909,7 +888,6 @@ class MPRUN(QMainWindow):
         raise_layer_action.setToolTip(
             '<b>Raise</b><br>'
             'Raise the selected items a leyer up.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -919,7 +897,6 @@ class MPRUN(QMainWindow):
         lower_layer_action.setToolTip(
             '<b>Lower</b><br>'
             'Lower the selected items a leyer down.<br>'
-            '<img src="ui/Main Logos/MPRUN_icon.png">'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
