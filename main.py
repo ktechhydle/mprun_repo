@@ -285,7 +285,7 @@ class MPRUN(QMainWindow):
         # Create object actions
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.setShortcut(QKeySequence('D'))
-        duplicate_action.triggered.connect(self.use_duplicate)
+        duplicate_action.triggered.connect(self.canvas.duplicate)
 
         scale_action = QAction('Scale', self)
         scale_action.setShortcut(QKeySequence('Q'))
@@ -996,7 +996,7 @@ class MPRUN(QMainWindow):
         paste_action = QAction('Paste', self)
         paste_action.triggered.connect(self.canvas.paste)
         duplicate_action = QAction('Duplicate', self)
-        duplicate_action.triggered.connect(self.use_duplicate)
+        duplicate_action.triggered.connect(self.canvas.duplicate)
         vectorize_action = QAction('Vectorize', self)
         vectorize_action.triggered.connect(self.use_vectorize)
         raise_layer_action = QAction('Raise Layer', self)

@@ -3,6 +3,7 @@ import os.path
 from src.scripts.imports import *
 from src.framework.undo_commands import *
 
+
 class CustomGraphicsItemGroup(QGraphicsItemGroup):
     def __init__(self):
         super().__init__()
@@ -64,6 +65,7 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
 
         return group
 
+
 class CustomRectangleItem(QGraphicsRectItem):
     def __init__(self, *coords):
         super().__init__(*coords)
@@ -82,10 +84,10 @@ class CustomRectangleItem(QGraphicsRectItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Rectangle')
 
-        add_command = AddItemCommand(self.scene(), item)
-        self.scene().addCommand(add_command)
+
 
         return item
+
 
 class CustomCircleItem(QGraphicsEllipseItem):
     def __init__(self, *coords):
@@ -118,10 +120,10 @@ class CustomCircleItem(QGraphicsEllipseItem):
 
                 copy.setParentItem(item)
 
-        add_command = AddItemCommand(self.scene(), item)
-        self.scene().addCommand(add_command)
+
 
         return item
+
 
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
@@ -178,9 +180,6 @@ class CustomPathItem(QGraphicsPathItem):
             item.setTextAlongPathSpacingFromPath(self.text_along_path_spacing)
             item.setTextAlongPathFont(self.text_along_path_font)
             item.setTextAlongPathColor(self.text_along_path_color)
-
-        add_command = AddItemCommand(self.scene(), item)
-        self.scene().addCommand(add_command)
 
         return item
 
@@ -307,6 +306,7 @@ class CustomPathItem(QGraphicsPathItem):
                     painter.drawText(QPointF(0, -pen.width()), char)
                     painter.restore()
 
+
 class CustomPixmapItem(QGraphicsPixmapItem):
     def __init__(self, file):
         super().__init__(file)
@@ -362,9 +362,6 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Imported Pixmap')
 
-        add_command = AddItemCommand(self.scene(), item)
-        self.scene().addCommand(add_command)
-
         return item
 
     def copy(self):
@@ -393,6 +390,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         if event.modifiers() & Qt.ShiftModifier:
             if os.path.exists(self.return_filename() if self.return_filename() is not None else ''):
                 QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
+
 
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, *file):
@@ -459,9 +457,6 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setFlag(QGraphicsItem.ItemIsMovable)
             item.setToolTip('Imported SVG')
 
-            add_command = AddItemCommand(self.scene(), item)
-            self.scene().addCommand(add_command)
-
         else:
             item = CustomSvgItem()
             item.loadFromData(self.svgData())
@@ -475,9 +470,6 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setFlag(QGraphicsItem.ItemIsSelectable)
             item.setFlag(QGraphicsItem.ItemIsMovable)
             item.setToolTip('Imported SVG')
-
-            add_command = AddItemCommand(self.scene(), item)
-            self.scene().addCommand(add_command)
 
         return item
 
@@ -520,6 +512,7 @@ class CustomSvgItem(QGraphicsSvgItem):
         if event.modifiers() & Qt.ShiftModifier:
             if os.path.exists(self.source() if self.source() is not None else ''):
                 QDesktopServices.openUrl(QUrl.fromLocalFile(self.source()))
+
 
 class CustomTextItem(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
@@ -625,9 +618,6 @@ class CustomTextItem(QGraphicsTextItem):
         else:
             item.setPlainText(self.toPlainText())
 
-        add_command = AddItemCommand(self.scene(), item)
-        self.scene().addCommand(add_command)
-
         return item
 
     def copy(self):
@@ -683,6 +673,7 @@ class CustomTextItem(QGraphicsTextItem):
         elif change == QGraphicsItem.ItemSelectedChange and isinstance(self.parentItem(), LeaderLineItem):
             self.parentItem().updatePathEndPoint()
         return super().itemChange(change, value)
+
 
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path, text: str):
@@ -809,9 +800,6 @@ class LeaderLineItem(QGraphicsPathItem):
 
         item.updatePathEndPoint()
 
-        add_command = AddItemCommand(self.scene(), item)
-        self.scene().addCommand(add_command)
-
         return item
 
     def copy(self):
@@ -840,6 +828,7 @@ class LeaderLineItem(QGraphicsPathItem):
         item.updatePathEndPoint()
 
         return item
+
 
 class CanvasItem(QGraphicsRectItem):
     def __init__(self, coords: QRectF, name):
@@ -944,6 +933,7 @@ class CanvasItem(QGraphicsRectItem):
 
         return duplicate
 
+
 class CanvasTextItem(QGraphicsTextItem):
     def __init__(self, text, parent):
         super().__init__()
@@ -966,6 +956,7 @@ class CanvasTextItem(QGraphicsTextItem):
         painter.drawRect(self.boundingRect())
 
         super().paint(painter, option, widget)
+
 
 class WaterMarkItem(QGraphicsPixmapItem):
     def __init__(self, pixmap):
@@ -990,5 +981,3 @@ class WaterMarkItem(QGraphicsPixmapItem):
 
         else:
             super().mouseMoveEvent(event)
-
-

@@ -659,6 +659,17 @@ class CustomGraphicsScene(QGraphicsScene):
 
         self.addCommand(MultiAddItemCommand(self, new_items))
 
+    def duplicate(self):
+        new_items = []
+
+        for item in self.selectedItems():
+            new_items.append(item.duplicate())
+
+            if isinstance(item, CanvasItem):
+                self.parentWindow.use_add_canvas()
+
+        self.addCommand(MultiAddItemCommand(self, new_items))
+
 class SceneManager:
     def __init__(self, scene):
         self.scene = scene
