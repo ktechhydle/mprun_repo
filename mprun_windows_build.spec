@@ -1,12 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-from PyInstaller.utils.hooks import collect_data_files
-import os
-
-
 a = Analysis(
     ['main.py'],
-    pathex=[r'C:\Users\kelle\PycharmProjects\mprun_repo\main.py'],
     binaries=[],
     datas=[],
     hiddenimports=[],
