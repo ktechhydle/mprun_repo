@@ -66,65 +66,6 @@ class CustomGraphicsItemGroup(QGraphicsItemGroup):
         return group
 
 
-class CustomRectangleItem(QGraphicsRectItem):
-    def __init__(self, *coords):
-        super().__init__(*coords)
-
-    def duplicate(self):
-        rect = self.rect()
-
-        item = CustomRectangleItem(rect)
-        item.setPen(self.pen())
-        item.setPos(self.pos())
-        item.setScale(self.scale())
-        item.setRotation(self.rotation())
-        item.setZValue(0)
-
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Rectangle')
-
-
-
-        return item
-
-
-class CustomCircleItem(QGraphicsEllipseItem):
-    def __init__(self, *coords):
-        super().__init__(*coords)
-
-    def duplicate(self):
-        rect = self.rect()
-
-        item = CustomCircleItem(rect)
-        item.setPen(self.pen())
-        item.setPos(self.pos())
-        item.setScale(self.scale())
-        item.setRotation(self.rotation())
-        item.setZValue(0)
-
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Ellipse')
-
-        if self.childItems():
-            for child in self.childItems():
-                copy = child.duplicate()
-
-                if isinstance(copy, CustomTextItem):
-                    pass
-
-                else:
-                    copy.setFlag(QGraphicsItem.ItemIsMovable, False)
-                    copy.setFlag(QGraphicsItem.ItemIsSelectable, False)
-
-                copy.setParentItem(item)
-
-
-
-        return item
-
-
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)
@@ -884,10 +825,11 @@ class CanvasItem(QGraphicsRectItem):
         self.setFlag(QGraphicsItem.ItemIsSelectable, enabled)
         self.text.setVisible(enabled)
         self.active = enabled
-        self.setCursor(Qt.SizeAllCursor)
-        if enabled is False:
+        if enabled:
+            self.setCursor(Qt.SizeAllCursor)
+        else:
+            self.unsetCursor()
             self.scene().setBackgroundBrush(QBrush(QColor('#606060')))
-            self.setCursor(Qt.CursorShape.ArrowCursor)
             brush = QBrush(QColor('white'))
             pen = QPen(QColor('white'), 2, Qt.SolidLine)
             pen.setWidthF(0)
@@ -898,7 +840,6 @@ class CanvasItem(QGraphicsRectItem):
         for item in self.scene().items():
             if isinstance(item, CanvasItem):
                 pass
-
             else:
                 item.setFlag(QGraphicsItem.ItemIsSelectable, not enabled)
                 item.setFlag(QGraphicsItem.ItemIsMovable, not enabled)

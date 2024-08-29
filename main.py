@@ -1680,12 +1680,6 @@ class MPRUN(QMainWindow):
             elif isinstance(item, CustomPathItem):
                 item.duplicate()
 
-            elif isinstance(item, CustomRectangleItem):
-                item.duplicate()
-
-            elif isinstance(item, CustomCircleItem):
-                item.duplicate()
-
             elif isinstance(item, CustomPixmapItem):
                 item.duplicate()
 
