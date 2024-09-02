@@ -369,7 +369,7 @@ class CustomDockWidget(QDockWidget):
     def paint(self):
         self.close_btn = QPushButton('', self)
         self.close_btn.setToolTip('Close')
-        self.close_btn.setIcon(QIcon('ui/UI Icons/Minor/cross.svg'))
+        self.close_btn.setIcon(QIcon('mp_software_stylesheets/assets/cross.svg'))
         self.close_btn.setIconSize(QSize(16, 16))
         self.close_btn.clicked.connect(self.close)
         self.close_btn.setStyleSheet('QPushButton { background: #424242;'
@@ -380,7 +380,7 @@ class CustomDockWidget(QDockWidget):
 
         self.minimize_btn = QPushButton('', self)
         self.minimize_btn.setToolTip('Collapse')
-        self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/minimize.svg'))
+        self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/minimize.svg'))
         self.minimize_btn.setIconSize(QSize(16, 16))
         self.minimize_btn.clicked.connect(self.toggle_collapse)
         self.minimize_btn.setStyleSheet('QPushButton { background: #424242;'
@@ -429,7 +429,7 @@ class CustomDockWidget(QDockWidget):
 
         self.setWidget(icons_widget)
         self.minimize_btn.setToolTip('Expand to panels')
-        self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/maximize.svg'))
+        self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/maximize.svg'))
 
     def expand(self):
         self.setFixedWidth(300)
@@ -437,7 +437,7 @@ class CustomDockWidget(QDockWidget):
         self.setWidget(self.toolbox)
         self.toolbox.setHidden(False)
         self.minimize_btn.setToolTip('Collapse to buttons')
-        self.minimize_btn.setIcon(QIcon('ui/UI Icons/Minor/minimize.svg'))
+        self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/minimize.svg'))
 
         if len(self.panels) > 0:
             for i in range(len(self.indexes)):
