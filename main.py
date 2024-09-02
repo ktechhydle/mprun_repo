@@ -1,3 +1,5 @@
+# This file is the "main" script that can be run to see the full app
+
 import random
 from src.scripts.imports import *
 from mp_software_stylesheets.styles import macCSS, windowsCSS
