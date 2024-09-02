@@ -1,6 +1,9 @@
 from src.scripts.imports import *
 from src.gui.custom_widgets import *
 
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+
 class PropertiesPanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__()

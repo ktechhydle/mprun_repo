@@ -10,6 +10,9 @@ from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, Ima
 from src.gui.custom_widgets import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+
 class MPRUN(QMainWindow):
     def __init__(self):
         super(MPRUN, self).__init__()

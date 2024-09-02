@@ -1,6 +1,9 @@
 from src.scripts.imports import *
 from src.framework.custom_classes import *
 
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+
 class ToolbarHorizontalLayout(QWidget):
     def __init__(self):
         super().__init__()

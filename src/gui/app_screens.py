@@ -5,6 +5,9 @@ from src.gui.custom_widgets import *
 from src.scripts.app_internal import *
 from src.scripts.imports import *
 
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+
 
 class CanvasItemSelector(QDialog):
     def __init__(self, canvas, parent=None):
