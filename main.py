@@ -1221,7 +1221,7 @@ class MPRUN(QMainWindow):
                 self.properties_tab.selection_label.setText(item.toolTip())
 
                 if len(self.canvas.selectedItems()) > 1:
-                    self.properties_tab.selection_label.setText('Combined Selection')
+                    self.properties_tab.selection_label.setText(f'Combined Selection ({len(self.canvas.selectedItems())} Items)')
                     self.properties_tab.x_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().x()))
                     self.properties_tab.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
 
