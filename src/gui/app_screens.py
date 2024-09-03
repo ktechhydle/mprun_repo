@@ -244,9 +244,19 @@ class AllCanvasExporter(QDialog):
                 os.makedirs(subdirectory, exist_ok=True)
 
                 file_extension = self.file_type_combo.itemData(self.file_type_combo.currentIndex())
+                tooltip_count = {}
+
                 for item in self.canvas.items():
                     if isinstance(item, CanvasItem):
-                        filename = os.path.join(subdirectory, item.toolTip() + file_extension)
+                        tooltip = item.toolTip()
+                        if tooltip in tooltip_count:
+                            tooltip_count[tooltip] += 1
+                        else:
+                            tooltip_count[tooltip] = 1
+
+                        unique_filename = f"{tooltip}_{tooltip_count[tooltip]}{file_extension}"
+                        filename = os.path.join(subdirectory, unique_filename)
+
                         if file_extension == '.svg':
                             self.export_canvases_as_svg(filename, item)
                         else:
