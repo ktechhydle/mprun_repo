@@ -896,7 +896,7 @@ class SceneManager:
                         with open(filename, 'r') as f:
                             data = json.load(f)
 
-                            self.scene.template_manager.deserialize(data)
+                            self.scene.template_manager.deserialize_items(data)
 
                     elif filename.endswith('.mp'):
                         self.scene.undo_stack.clear()
@@ -934,7 +934,7 @@ class SceneManager:
                             with open(filename, 'r') as f:
                                 data = json.load(f)
 
-                                self.scene.template_manager.deserialize(data)
+                                self.scene.template_manager.deserialize_items(data)
 
                         elif filename.endswith('.mp'):
                             self.scene.undo_stack.clear()
@@ -969,7 +969,7 @@ class SceneManager:
                     with open(filename, 'r') as f:
                         data = json.load(f)
 
-                        self.scene.template_manager.deserialize(data)
+                        self.scene.template_manager.deserialize_items(data)
 
                 elif filename.endswith('.mp'):
                     self.scene.undo_stack.clear()
