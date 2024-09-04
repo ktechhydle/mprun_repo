@@ -2579,6 +2579,10 @@ def main() -> None:
     window.open_settings_data()
     window.open_recent_file_data()
 
+    if len(sys.argv) > 1:
+        file_path = sys.argv[1]
+        window.open_recent(file_path)
+
     sys.exit(app.exec_())
 
 if nameismain:
