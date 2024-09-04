@@ -1,5 +1,6 @@
 from pyicloud import PyiCloudService
 from pyicloud.exceptions import PyiCloudFailedLoginException
+from pathlib import Path
 from src.scripts.imports import *
 from src.gui.custom_widgets import ToolbarHorizontalLayout
 from src.gui.app_screens import AllCanvasExporter
@@ -7,6 +8,8 @@ from src.framework.custom_classes import *
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
+
+downloads_path = str(Path.home() / "Downloads")
 
 
 class iCloudIntegraterWin(QDialog):
@@ -87,7 +90,7 @@ class iCloudIntegraterWin(QDialog):
     def export(self):
         try:
             # Get the user's Downloads folder
-            downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
+            downloads_folder = downloads_path
 
             # Create a subdirectory in Downloads
             subdirectory = os.path.join(downloads_folder,
