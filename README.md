@@ -44,7 +44,7 @@ courses, draw their path, label tricks, and do so much more. It promotes strateg
 a 'whatever' mentality and fostering a focused mindset for competitions.
 
 ## TODO
-- [ ] Fix align tools creating multiple QUndoCommands
+- [x] Fix align tools creating multiple QUndoCommands
 - [ ] Combine Export/Export All dialogs into one main dialog
 - [ ] Add erase tool
  

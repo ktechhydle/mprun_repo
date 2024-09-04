@@ -60,21 +60,24 @@ class PositionChangeCommand(QUndoCommand):
         self.item.setPos(self.old)
         self.parent.update_transform_ui()
 
-class AlignItemCommand(QUndoCommand):
-    def __init__(self, parent, item, old, new):
+class AlignMultipleItemsCommand(QUndoCommand):
+    def __init__(self, parent, items, old_positions, new_positions):
         super().__init__()
-        self.item = item
-        self.old = old
-        self.new = new
+        self.items = items
+        self.old_positions = old_positions
+        self.new_positions = new_positions
         self.parent = parent
 
     def redo(self):
-        self.item.moveBy(self.new.x(), self.new.y())
+        for item, new_pos in zip(self.items, self.new_positions):
+            item.moveBy(new_pos.x(), new_pos.y())
         self.parent.update_transform_ui()
 
     def undo(self):
-        self.item.setPos(self.old)
+        for item, old_pos in zip(self.items, self.old_positions):
+            item.setPos(old_pos)
         self.parent.update_transform_ui()
+
 
 class EditTextCommand(QUndoCommand):
     def __init__(self, item, old_text, new_text):
