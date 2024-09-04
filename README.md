@@ -1,65 +1,48 @@
-# Introducing MPRUN - the ultimate competition run planning software for on snow athletes
-With MPRUN, you can set up custom courses matching the competition environment, and print out these setups 
-to achieve the best competition performance and communication between coaches and athletes[^1]
+# Introducing MPRUN - the ultimate competition run planning software for on-snow athletes
+## But what is that?
+
+MPRUN's intention is to **help athletes create proper mindsets** going into competitions.
+
+Tricks are getting harder in competitions, and nowadays _mental game is 90% part of it_. Our main goal is to help increase the performance of your mental game by using a simple technic, **Physical Visualization**.
+
+**Physical Visualization (PZ)**, is the process of taking something we normally visualize in our brain and putting it on a physical object (like a piece of paper). MPRUN does exactly that, where you draw your competition run and print it out to a piece of paper. You can even export your run and save it to your phone.
+
+> [!WARNING]
+> PZ does not guarantee perfect results; it is a tool that can be used to ASSIST athletes (our full disclaimer can be found in the "DISCLAIMER" window shown on startup of MPRUN).
+
+## Why does it exist?
+
+As you may know, everything is in a constant change. That's why MPRUN was created, to help improve adapting to this constant change. 
+
+It doesn't help everybody, but as an on-snow athlete myself, I know it can assist those that struggle in competition environments reduce stress and pressure to perform.
+
+## How does it work? 
+
+_You can find a demo video on <kbd>[MPRUN's website↗️](https://sites.google.com/view/mprun/home)</kbd>, but here's a simplification on how the process works._
+
+1. Create your course
+> Use a drag and drop editor to drag **Course Elements** on to the scene (**Course Elements** are just SVG items representing course features like rails, jumps, and even halfpipes)
+
+2. Draw your line
+> Use line drawing tools to draw your "path" along the course (where your going to ride, what features your going to hit)
+
+3. Label your line
+> Use labelling tools to label your tricks along your "path" (what tricks you do on each feature)
+
+And that's it! You can then export your run and print it out to a piece of paper.
 
 > [!NOTE]
 > ### Building from Source
-> 1. Clone the git with `https://github.com/ktechhydle/mprun_repo.git`.
+> 1. Clone the git with `git clone https://github.com/ktechhydle/mprun_repo.git`.
 > 2. Install the project requirements with `pip install -r requirements.txt`.
 > 3. Run `main.py`, and see the full app.
 > 4. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it***](license.txt).
 
-## How It Works...
-### 1. Set up the course:
-- Use the libraries tab to add course features as needed, such as rails or jumps. You can also
-import your own SVG files to add features to the scene.
-- Scale, rotate, or edit items to achieve the desired course setup.
-### 2. Draw your path:
-- Use the `Path` tool to draw your line along the course.
-- The path item colors and stroke styles can be changed for any reason you find necessary.
-### 3. Label your path:
-- Use the `Line and Label` tool to label tricks along your path.
-### 4. And it's that simple. 
-> [!IMPORTANT]
-> A full tutorial of all these steps can be found on [our website](https://sites.google.com/view/mprun/home).
-
-## Included Tools
-- Select Tool:
-	> Select items by dragging.
-- Pan Tool:
-	> Pan the scene with the left mouse button.
-- Path Draw Tool:
-	> Draw paths and shapes with the path tool, use different colors, pen styles and more.
-- Pen Draw Tool:
-	> Similar to the Path Draw Tool, but as you draw, the path smooths via a Savitzky–Golay Filter resulting in beautiful curves (less hand drawn appearance).
-- Sculpt Tool:
-	> Sculpt (edit) path items by clicking and dragging.
-- Line and Label Tool:
-	> Draw AutoCAD like leader lines and labels with editable text.
-- Text Tool:
-	> Place text anywhere on the scene, click and drag to position the text before placing.
-- Scale Tool:
-	> Interactively scale items with the mouse.
-- Rotate Tool:
-	> Interactively rotate items with the mouse.
-- Hide Element Tool:
-	> Hide selected items from the scene (they will not show on export).
-- Unhide All Tool:
-	> Unhide any hidden items.
-- Add Canvas Tool:
-	> Rearrange or add canvases to the scene by clicking and dragging.
-- Insert Image Tool:
-	> Insert various image types into the scene (including SVG!).
-
-# Why MPRUN Though?
-MPRUN can build a solid plan going into competitions, creating a proper mindset for athletes. This is important
-because it ensures athletes don't go into competitions without a plan and a 'just wing it' mindset.
-
-# TL;DR
+## TL;DR
 > [!IMPORTANT]
 > MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize 
 > courses, draw their path, label tricks, and do so much more. It promotes strategic planning for athletes, preventing 
 > a 'whatever' mentality and fostering a focused mindset for competitions.
 
-# See also
+## See also
 [^1]: Read the acknowledgments at: https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit
