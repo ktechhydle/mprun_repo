@@ -84,6 +84,8 @@ class iCloudIntegraterWin(QDialog):
                                                                 'transferred to iCloud. It has been saved '
                                                                 'to your "Downloads" folder.')
 
+            self.close()
+
         except Exception as e:
             QMessageBox.critical(self.parent, 'Error', f'An unexpected error occurred: {e}')
 
