@@ -42,3 +42,9 @@ _You can find a demo video on <kbd>[MPRUN's website↗️](https://sites.google.
 MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize 
 courses, draw their path, label tricks, and do so much more. It promotes strategic planning for athletes, preventing 
 a 'whatever' mentality and fostering a focused mindset for competitions.
+
+## TODO
+- [ ] Fix align tools creating multiple QUndoCommands
+- [ ] Combine Export/Export All dialogs into one main dialog
+- [ ] Add erase tool
+ 
