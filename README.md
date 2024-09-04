@@ -45,6 +45,7 @@ a 'whatever' mentality and fostering a focused mindset for competitions.
 
 ## TODO
 - [x] Fix align tools creating multiple QUndoCommands
+- [ ] Fix arrange tool not moving items with canvases
 - [ ] Combine Export/Export All dialogs into one main dialog
 - [ ] Add erase tool
  
