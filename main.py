@@ -7,6 +7,7 @@ from src.scripts.raw_functions import nameismain, ItemStack
 from src.scripts.app_internal import *
 from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, CanvasEditorPanel
+from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.custom_widgets import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 
@@ -183,6 +184,9 @@ class MPRUN(QMainWindow):
 
         saveas_template_action = QAction('Save As Template', self)
         saveas_template_action.triggered.connect(self.canvas.template_manager.save_template)
+
+        save_to_icloud_action = QAction('Save To iCloud', self)
+        save_to_icloud_action.triggered.connect(self.send_to_icloud)
 
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
@@ -432,6 +436,7 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(save_action)
         self.file_menu.addAction(saveas_action)
         self.file_menu.addAction(saveas_template_action)
+        self.file_menu.addAction(save_to_icloud_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
         self.file_menu.addAction(export_multiple_action)
@@ -2305,6 +2310,10 @@ class MPRUN(QMainWindow):
         item.setFlag(QGraphicsItem.ItemIsSelectable)
 
         item.setZValue(0)
+
+    def send_to_icloud(self):
+        self.w = iCloudIntegraterWin(self.canvas, self)
+        self.w.show()
 
     def open_recent(self, filename: str):
         self.canvas.manager.load_from_file(filename, self)
