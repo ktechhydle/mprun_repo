@@ -892,33 +892,86 @@ class SceneManager:
                 result = confirmation_dialog.exec_()
 
                 if result == QMessageBox.Discard:
-                    self.scene.undo_stack.clear()
-                    self.scene.clear()
-                    with open(filename, 'rb') as f:
-                        items_data = pickle.load(f)
-                        self.deserializer.deserialize_items(items_data)
+                    if filename.endswith('.mpt'):
+                        with open(filename, 'r') as f:
+                            data = json.load(f)
 
-                        self.filename = filename
-                        parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
-                        self.scene.modified = False
+                            self.scene.template_manager.deserialize(data)
 
-                        if self.repair_needed:
-                            # Display a confirmation dialog
-                            confirmation_dialog = QMessageBox(self.scene.parentWindow)
-                            confirmation_dialog.setWindowTitle('Open Document Error')
-                            confirmation_dialog.setIcon(QMessageBox.Warning)
-                            confirmation_dialog.setText(
-                                f"The document has file directories that could not be found. Do you want to do a file repair?")
-                            confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-                            confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+                    elif filename.endswith('.mp'):
+                        self.scene.undo_stack.clear()
+                        self.scene.clear()
 
-                            # Get the result of the confirmation dialog
-                            result = confirmation_dialog.exec_()
+                        with open(filename, 'rb') as f:
+                            items_data = pickle.load(f)
+                            self.deserializer.deserialize_items(items_data)
 
-                            if result == QMessageBox.Yes:
-                                self.repair_file()
+                            self.filename = filename
+                            parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+                            self.scene.modified = False
+
+                            if self.repair_needed:
+                                # Display a confirmation dialog
+                                confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                                confirmation_dialog.setWindowTitle('Open Document Error')
+                                confirmation_dialog.setIcon(QMessageBox.Warning)
+                                confirmation_dialog.setText(
+                                    f"The document has file directories that could not be found. Do you want to do a file repair?")
+                                confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                                confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                                # Get the result of the confirmation dialog
+                                result = confirmation_dialog.exec_()
+
+                                if result == QMessageBox.Yes:
+                                    self.repair_file()
 
                 elif result == QMessageBox.Save:
+                    success = self.save()
+
+                    if success:
+                        if filename.endswith('.mpt'):
+                            with open(filename, 'r') as f:
+                                data = json.load(f)
+
+                                self.scene.template_manager.deserialize(data)
+
+                        elif filename.endswith('.mp'):
+                            self.scene.undo_stack.clear()
+                            self.scene.clear()
+
+                            with open(filename, 'rb') as f:
+                                items_data = pickle.load(f)
+                                self.deserializer.deserialize_items(items_data)
+
+                                self.filename = filename
+                                parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
+                                self.scene.modified = False
+
+                                if self.repair_needed:
+                                    # Display a confirmation dialog
+                                    confirmation_dialog = QMessageBox(self.scene.parentWindow)
+                                    confirmation_dialog.setWindowTitle('Open Document Error')
+                                    confirmation_dialog.setIcon(QMessageBox.Warning)
+                                    confirmation_dialog.setText(
+                                        f"The document has file directories that could not be found. Do you want to do a file repair?")
+                                    confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                                    confirmation_dialog.setDefaultButton(QMessageBox.Yes)
+
+                                    # Get the result of the confirmation dialog
+                                    result = confirmation_dialog.exec_()
+
+                                    if result == QMessageBox.Yes:
+                                        self.repair_file()
+
+            else:
+                if filename.endswith('.mpt'):
+                    with open(filename, 'r') as f:
+                        data = json.load(f)
+
+                        self.scene.template_manager.deserialize(data)
+
+                elif filename.endswith('.mp'):
                     self.scene.undo_stack.clear()
                     self.scene.clear()
 
@@ -945,34 +998,6 @@ class SceneManager:
 
                             if result == QMessageBox.Yes:
                                 self.repair_file()
-
-            else:
-                self.scene.undo_stack.clear()
-                self.scene.clear()
-
-                with open(filename, 'rb') as f:
-                    items_data = pickle.load(f)
-                    self.deserializer.deserialize_items(items_data)
-
-                    self.filename = filename
-                    parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
-                    self.scene.modified = False
-
-                    if self.repair_needed:
-                        # Display a confirmation dialog
-                        confirmation_dialog = QMessageBox(self.scene.parentWindow)
-                        confirmation_dialog.setWindowTitle('Open Document Error')
-                        confirmation_dialog.setIcon(QMessageBox.Warning)
-                        confirmation_dialog.setText(
-                            f"The document has file directories that could not be found. Do you want to do a file repair?")
-                        confirmation_dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-                        confirmation_dialog.setDefaultButton(QMessageBox.Yes)
-
-                        # Get the result of the confirmation dialog
-                        result = confirmation_dialog.exec_()
-
-                        if result == QMessageBox.Yes:
-                            self.repair_file()
 
         except Exception as e:
             QMessageBox.critical(self.scene.parentWindow,
