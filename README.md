@@ -31,12 +31,27 @@ _You can find a demo video on <kbd>[MPRUN's website↗️](https://sites.google.
 
 #### And that's it! You can then export your run and print it out to a piece of paper.
 
-> [!NOTE]
-> ### Building from Source
+## How can I get involved?
+There's two ways you can develop and work off of MPRUN. You can either:
+
+### Build from source
 > 1. Clone the git with `git clone https://github.com/ktechhydle/mprun_repo.git`.
 > 2. Install the project requirements with `pip install -r requirements.txt`.
 > 3. Run `main.py`, and see the full app.
 > 4. MPRUN is licensed under the GNU General Public Licence v3.0. [***If you are not familiar with this license, read it***](license.txt).
+
+**Or...**
+
+### Fork the repository
+> 1. Navigate to _Fork_ on this repository.
+> 2. Create a new fork and copy the `master` branch only.
+> 3. If you are trying to edit the source code, make sure you install the project requirements with 
+`pip install -r requirements.txt`, or you can also just use GitHub's website tools to make changes.
+> 4. Submit a _Pull Request (PR)_ for your edits, and we will potentially merge your code.
+
+## Do you have an something to report (bug, issue, or feature request)?
+Report it to the _Issues_ section on this repository by clicking `New`, and follow 
+the instructions.
 
 ## TL;DR
 MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize 
