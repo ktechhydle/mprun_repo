@@ -706,6 +706,13 @@ class SettingsWin(QDialog):
         self.setFixedWidth(700)
 
         self.p = parent
+        self.colors = {'White': 'white',
+                       'Black': 'black',
+                       'Red': 'red',
+                       'Green': '#00ff00',
+                       'Blue': 'blue',
+                       'Yellow': 'yellow',
+                       'Transparent': 'transparent'}
         self.setLayout(QVBoxLayout())
 
         self.createGeneralSettings()
@@ -731,7 +738,44 @@ class SettingsWin(QDialog):
 
             self.general_tab.layout().addWidget(gui_gb)
 
+        def createOnStartupGB():
+            startup_gb = QGroupBox('On Startup')
+            startup_gb.setLayout(QVBoxLayout())
+
+            default_stroke_label = QLabel('Default Stroke Color:')
+            self.default_stroke_combo = QComboBox()
+            stroke_hlyaout = ToolbarHorizontalLayout()
+            stroke_hlyaout.layout.addWidget(default_stroke_label)
+            stroke_hlyaout.layout.addWidget(self.default_stroke_combo)
+            stroke_hlyaout.layout.addStretch()
+
+            default_fill_label = QLabel('Default Fill Color:')
+            self.default_fill_combo = QComboBox()
+            fill_hlyaout = ToolbarHorizontalLayout()
+            fill_hlyaout.layout.addWidget(default_fill_label)
+            fill_hlyaout.layout.addWidget(self.default_fill_combo)
+            fill_hlyaout.layout.addStretch()
+
+            default_font_label = QLabel('Default Font Color:')
+            self.default_font_combo = QComboBox()
+            font_hlyaout = ToolbarHorizontalLayout()
+            font_hlyaout.layout.addWidget(default_font_label)
+            font_hlyaout.layout.addWidget(self.default_font_combo)
+            font_hlyaout.layout.addStretch()
+
+            for k, v in self.colors.items():
+                self.default_stroke_combo.addItem(k, v)
+                self.default_fill_combo.addItem(k, v)
+                self.default_font_combo.addItem(k, v)
+
+            startup_gb.layout().addWidget(stroke_hlyaout)
+            startup_gb.layout().addWidget(fill_hlyaout)
+            startup_gb.layout().addWidget(font_hlyaout)
+
+            self.general_tab.layout().addWidget(startup_gb)
+
         createDialogAndGuiGB()
+        createOnStartupGB()
         self.general_tab.layout().addStretch()
 
     def createPerformanceSettings(self):
@@ -802,6 +846,13 @@ class SettingsWin(QDialog):
             self.undo_limit_spin.setValue(data['undo_limit'])
             self.show_tip_of_day_checkbtn.setChecked(data['show_daily_tips'])
             self.use_gpu_checkbtn.setChecked(data['use_gpu'])
+            for k, v in self.colors.items():
+                if v == data['default_stroke']:
+                    self.default_stroke_combo.setCurrentText(k)
+                elif v == data['default_fill']:
+                    self.default_fill_combo.setCurrentText(k)
+                elif v == data['default_font']:
+                    self.default_font_combo.setCurrentText(k)
 
     def accept(self):
         _data = self.p.read_settings()
@@ -810,6 +861,9 @@ class SettingsWin(QDialog):
             data['undo_limit'] = self.undo_limit_spin.value()
             data['show_daily_tips'] = self.show_tip_of_day_checkbtn.isChecked()
             data['use_gpu'] = self.use_gpu_checkbtn.isChecked()
+            data['default_stroke'] = self.default_stroke_combo.itemData(self.default_stroke_combo.currentIndex())
+            data['default_fill'] = self.default_fill_combo.itemData(self.default_fill_combo.currentIndex())
+            data['default_font'] = self.default_font_combo.itemData(self.default_font_combo.currentIndex())
 
         self.p.write_settings(_data)
 
