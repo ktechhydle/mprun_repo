@@ -24,13 +24,14 @@ class MPRUN(QMainWindow):
         # Settings
         self.cur_view = ''
 
-        # Drawing stroke methods
-        self.outline_color = ItemStack()
-        self.fill_color = ItemStack()
-        self.outline_color.set('red')
-        self.fill_color.set('white')
-        self.font_color = ItemStack()
-        self.font_color.set('black')
+        # Colors
+        for data in self.read_settings():
+            self.outline_color = ItemStack()
+            self.outline_color.set(data['default_stroke'])
+            self.fill_color = ItemStack()
+            self.fill_color.set(data['default_fill'])
+            self.font_color = ItemStack()
+            self.font_color.set(data['default_font'])
 
         # Grid Size and rotating screens
         self.gsnap_grid_size = 10
@@ -2412,7 +2413,6 @@ class MPRUN(QMainWindow):
 
             if not user_data['disclaimer_read']:
                 self.show_disclaimer()
-
 
             if user_data['use_gpu']:
                 self.canvas_view.setViewport(CustomViewport())

@@ -39,6 +39,10 @@ class QColorButton(QPushButton):
 
     def setButtonColor(self, color: str):
         self.setTransparent(False)
+        if color == 'transparent':
+            self.setTransparent(True)
+            return
+
         self.setStyleSheet(f'background: {color};')
 
     def paintEvent(self, event):

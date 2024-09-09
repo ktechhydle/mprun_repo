@@ -1,3 +1,5 @@
+![MPRUN_Logo_Github.png](..%2F..%2FDownloads%2FMPRUN_Logo_Github.png)
+
 # Introducing MPRUN - the ultimate competition run planning software for on-snow athletes
 ## But what is that?
 
@@ -29,7 +31,11 @@ _You can find a demo video on <kbd>[MPRUN's website↗️](https://sites.google.
 3. Label your line
 > Use labelling tools to label your tricks along your "path" (what tricks you do on each feature)
 
-#### And that's it! You can then export your run and print it out to a piece of paper.
+**And that's it! You can then export your run and send it to your phone or print it out to a piece of paper.**
+
+## Install
+You may want to check the <kbd>[MPRUN website↗️](https://sites.google.com/view/mprun/home)</kbd>. Prebuilt Windows and MacOS binaries are available through 
+the <kbd>[git releases page↗️](https://github.com/ktechhydle/mprun_repo/releases)</kbd> or from the MPRUN downloads page.
 
 ## How can I get involved?
 There's two ways you can develop and work off of MPRUN. You can either:
@@ -56,11 +62,4 @@ the instructions.
 ## TL;DR
 MPRUN is a comprehensive software designed for planning snowboard and ski competition runs. Users can customize 
 courses, draw their path, label tricks, and do so much more. It promotes strategic planning for athletes, preventing 
-a 'whatever' mentality and fostering a focused mindset for competitions.
-
-## TODO
-- [x] Fix align tools creating multiple QUndoCommands
-- [ ] Fix arrange tool not moving items with canvases
-- [ ] Combine Export/Export All dialogs into one main dialog
-- [ ] Add erase tool
- 
+a 'just wing it' mentality and fostering a focused mindset for competitions.
