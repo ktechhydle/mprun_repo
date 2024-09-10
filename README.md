@@ -1,4 +1,4 @@
-![MPRUN_Logo_Github.png](..%2F..%2FDownloads%2FMPRUN_Logo_Github.png)
+![MPRUN_Logo_Github](https://github.com/user-attachments/assets/328e63e0-25d1-4f9a-87b5-5e5fc2c931fd)
 
 # Introducing MPRUN - the ultimate competition run planning software for on-snow athletes
 ## But what is that?
