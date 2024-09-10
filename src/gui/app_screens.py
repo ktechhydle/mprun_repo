@@ -849,9 +849,9 @@ class SettingsWin(QDialog):
             for k, v in self.colors.items():
                 if v == data['default_stroke']:
                     self.default_stroke_combo.setCurrentText(k)
-                elif v == data['default_fill']:
+                if v == data['default_fill']:
                     self.default_fill_combo.setCurrentText(k)
-                elif v == data['default_font']:
+                if v == data['default_font']:
                     self.default_font_combo.setCurrentText(k)
 
     def accept(self):
@@ -887,6 +887,13 @@ class SettingsWin(QDialog):
         self.undo_limit_spin.setValue(200)
         self.show_tip_of_day_checkbtn.setChecked(True)
         self.use_gpu_checkbtn.setChecked(True)
+        for k, v in self.colors.items():
+            if v == 'red':
+                self.default_stroke_combo.setCurrentText(k)
+            if v == '#00ff00':
+                self.default_fill_combo.setCurrentText(k)
+            if v == 'black':
+                self.default_font_combo.setCurrentText(k)
 
 
 class TipWin(QDialog):
