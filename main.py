@@ -6,7 +6,8 @@ from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.scripts.raw_functions import nameismain, ItemStack
 from src.scripts.app_internal import *
 from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin
-from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, CanvasEditorPanel
+from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, \
+    CanvasEditorPanel
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.custom_widgets import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
@@ -14,6 +15,7 @@ from src.framework.serializer import MPDataRepairer
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
+
 
 class MPRUN(QMainWindow):
     def __init__(self):
@@ -220,7 +222,7 @@ class MPRUN(QMainWindow):
         pan_action.triggered.connect(self.use_pan)
 
         rotate_view_action = QAction('Rotate', self)
-        rotate_view_action.triggered.connect(lambda: self.rotate_scene_spin.setFocus())
+        rotate_view_action.triggered.connect(lambda: self.view_rotate_spin.setFocus())
 
         zoom_view_action = QAction('Zoom', self)
         zoom_view_action.triggered.connect(lambda: self.view_zoom_spin.setFocus())
@@ -403,6 +405,38 @@ class MPRUN(QMainWindow):
         default_view_action = QAction('Default', self)
         default_view_action.triggered.connect(lambda: self.view_as('normal'))
 
+        zoom_and_rotate_action = QWidgetAction(self.menu_bar)
+
+        self.view_zoom_spin = QSpinBox()
+        self.view_zoom_spin.setToolTip('Zoom view')
+        self.view_zoom_spin.setRange(1, 5000)
+        # self.view_zoom_spin.setFixedWidth(50)
+        self.view_zoom_spin.setSuffix('%')
+        self.view_zoom_spin.setValue(100)
+        self.view_zoom_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.view_zoom_spin.valueChanged.connect(self.use_change_view)
+
+        self.view_rotate_spin = QSpinBox()
+        self.view_rotate_spin.setToolTip('Rotate view')
+        # self.view_rotate_spin.setFixedWidth(50)
+        self.view_rotate_spin.setMinimum(-10000)
+        self.view_rotate_spin.setMaximum(10000)
+        self.view_rotate_spin.setSuffix('°')
+        self.view_rotate_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.view_rotate_spin.valueChanged.connect(self.use_change_view)
+
+        zoom_and_rotate_hlayout1 = ToolbarHorizontalLayout()
+        zoom_and_rotate_hlayout1.layout.addWidget(QLabel('<i>Zoom:</i>'))
+        zoom_and_rotate_hlayout1.layout.addWidget(self.view_zoom_spin)
+        zoom_and_rotate_hlayout2 = ToolbarHorizontalLayout()
+        zoom_and_rotate_hlayout2.layout.addWidget(QLabel('<i>Rotation:</i>'))
+        zoom_and_rotate_hlayout2.layout.addWidget(self.view_rotate_spin)
+        zoom_and_rotate_widget = QWidget()
+        zoom_and_rotate_widget.setLayout(QVBoxLayout())
+        zoom_and_rotate_widget.layout().addWidget(zoom_and_rotate_hlayout1)
+        zoom_and_rotate_widget.layout().addWidget(zoom_and_rotate_hlayout2)
+        zoom_and_rotate_action.setDefaultWidget(zoom_and_rotate_widget)
+
         # Create help menu actions
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
@@ -491,6 +525,7 @@ class MPRUN(QMainWindow):
         self.view_menu.addAction(control_toolbar_view_action)
         self.view_menu.addAction(fullscreen_view_action)
         self.view_menu.addMenu(view_options_menu)
+        self.view_menu.addAction(zoom_and_rotate_action)
 
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
@@ -529,6 +564,45 @@ class MPRUN(QMainWindow):
         view_options_menu.addAction(default_view_action)
 
         # Add to actions dict
+        self.actions['Insert'] = insert_action
+        self.actions['Add Canvas'] = add_canvas_action
+        self.actions['Open Template'] = open_template_action
+        self.actions['Save As Template'] = saveas_template_action
+        self.actions['Save To iCloud'] = save_to_icloud_action
+        self.actions['Repair File'] = repair_file_action
+        self.actions['Close'] = close_action
+        self.actions['Select'] = select_action
+        self.actions['Pan'] = pan_action
+        self.actions['Rotate'] = rotate_view_action
+        self.actions['Zoom'] = zoom_view_action
+        self.actions['Arrange Canvases'] = arrange_canvases_action
+        self.actions['Pen Draw'] = pen_action
+        self.actions['Line and Label'] = linelabel_action
+        self.actions['Text'] = text_action
+        self.actions['Flip Horizontal'] = flip_horizontal_action
+        self.actions['Flip Vertical'] = flip_vertical_action
+        self.actions['Mirror Horizontal'] = mirror_horizontal_action
+        self.actions['Mirror Vertical'] = mirror_vertical_action
+        self.actions['Hide'] = hide_action
+        self.actions['Unhide All'] = unhide_action
+        self.actions['Raise Layer'] = raise_layer_action
+        self.actions['Lower Layer'] = lower_layer_action
+        self.actions['Clear Selection'] = clear_selection_action
+        self.actions['Select Paths'] = select_paths_action
+        self.actions['Select Text'] = select_text_action
+        self.actions['Select Leader Lines'] = select_leaderline_action
+        self.actions['Select Pixmaps'] = select_pixmaps_action
+        self.actions['Select SVGs'] = select_svgs_action
+        self.actions['Select Canvases'] = select_canvases_action
+        self.actions['Full Screen'] = fullscreen_view_action
+        self.actions['Control Toolbar'] = control_toolbar_view_action
+        self.actions['About'] = about_action
+        self.actions['Version'] = show_version_action
+        self.actions['Find Action'] = find_action_action
+        self.actions['Browse Tutorials'] = browse_tutorials_action
+        self.actions['Settings'] = view_settings_action
+        self.actions['Restart User Interface'] = reload_ui_action
+        self.actions['Tip Of The Day'] = show_tip_of_the_day_action
         self.actions['Trace Image'] = image_trace_action
         self.actions['Select All'] = select_all_action
         self.actions['Smooth Path'] = smooth_action
@@ -545,6 +619,8 @@ class MPRUN(QMainWindow):
         self.actions['Save'] = save_action
         self.actions['Save As'] = saveas_action
         self.actions['Open'] = open_action
+        self.actions['Zoom View'] = self.view_zoom_spin
+        self.actions['Rotate View'] = self.view_rotate_spin
 
     def init_toolbars(self):
         # Toolbar
@@ -565,7 +641,7 @@ class MPRUN(QMainWindow):
         self.item_toolbar.visibilityChanged.connect(self.control_toolbar_visibility_changed)
 
     def create_toolbox(self):
-        #----action toolbar widgets----#
+        # ----action toolbar widgets----#
 
         # Dock widget
         self.toolbox = CustomToolbox(self)
@@ -630,7 +706,7 @@ class MPRUN(QMainWindow):
     def create_toolbar1(self):
         self.action_group = QActionGroup(self)
 
-        #----toolbar buttons----#
+        # ----toolbar buttons----#
 
         # Select Button
         self.select_btn = QAction(QIcon('ui/Tool Icons/selection_icon.png'), 'Select Tool (Spacebar)', self)
@@ -827,7 +903,7 @@ class MPRUN(QMainWindow):
         self.actions['Insert Image'] = self.insert_btn
 
     def create_toolbar2(self):
-        #----item toolbar widgets----#
+        # ----item toolbar widgets----#
         align_left_btn = QAction(QIcon('ui/Tool Icons/align_left_icon.png'), '', self)
         align_left_btn.setToolTip(
             '<b>Align Left</b><br>'
@@ -918,24 +994,6 @@ class MPRUN(QMainWindow):
         )
         lower_layer_action.triggered.connect(self.use_lower_layer)
 
-        self.view_zoom_spin = QSpinBox(self)
-        self.view_zoom_spin.setToolTip('Zoom view')
-        self.view_zoom_spin.setRange(1, 5000)
-        self.view_zoom_spin.setFixedWidth(50)
-        self.view_zoom_spin.setSuffix('%')
-        self.view_zoom_spin.setValue(100)
-        self.view_zoom_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.view_zoom_spin.valueChanged.connect(self.use_change_view)
-
-        self.rotate_scene_spin = QSpinBox(self)
-        self.rotate_scene_spin.setToolTip('Rotate view')
-        self.rotate_scene_spin.setFixedWidth(50)
-        self.rotate_scene_spin.setMinimum(-10000)
-        self.rotate_scene_spin.setMaximum(10000)
-        self.rotate_scene_spin.setSuffix('°')
-        self.rotate_scene_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.rotate_scene_spin.valueChanged.connect(self.use_change_view)
-
         sculpt_label = QLabel('Sculpt Radius:')
         self.sculpt_radius_spin = QSpinBox(self)
         self.sculpt_radius_spin.setSuffix(' pt')
@@ -966,12 +1024,8 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addSeparator()
         self.item_toolbar.addWidget(sculpt_hlayout)
         self.item_toolbar.addWidget(spacer)
-        self.item_toolbar.addWidget(self.rotate_scene_spin)
-        self.item_toolbar.addWidget(self.view_zoom_spin)
 
         # Add to actions dict
-        self.actions['Zoom View'] = self.view_zoom_spin
-        self.actions['Rotate View'] = self.rotate_scene_spin
         self.actions['Align Left'] = align_left_btn
         self.actions['Align Right'] = align_right_btn
         self.actions['Align Middle'] = align_middle_btn
@@ -985,17 +1039,18 @@ class MPRUN(QMainWindow):
 
     def create_view(self):
         # QGraphicsView Logic
-        self.canvas_view = CustomGraphicsView(self.canvas,[self.select_btn,
-                                               self.pan_btn,
-                                               self.path_btn,
-                                               self.pen_btn,
-                                               self.sculpt_btn,
-                                               self.label_btn,
-                                               self.add_text_btn,
-                                               self.scale_btn,
-                                               self.rotate_btn,
-                                               self.add_canvas_btn,
-                                               self.quick_actions_tab.gsnap_check_btn], self.view_zoom_spin)
+        self.canvas_view = CustomGraphicsView(self.canvas, [self.select_btn,
+                                                            self.pan_btn,
+                                                            self.path_btn,
+                                                            self.pen_btn,
+                                                            self.sculpt_btn,
+                                                            self.label_btn,
+                                                            self.add_text_btn,
+                                                            self.scale_btn,
+                                                            self.rotate_btn,
+                                                            self.add_canvas_btn,
+                                                            self.quick_actions_tab.gsnap_check_btn],
+                                              self.view_zoom_spin)
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
         self.setCentralWidget(self.canvas_view)
@@ -1120,7 +1175,8 @@ class MPRUN(QMainWindow):
         pen = QPen()
         pen.setColor(QColor(self.outline_color.get()))
         pen.setWidth(self.properties_tab.stroke_size_spin.value())
-        pen.setJoinStyle(self.properties_tab.join_style_combo.itemData(self.properties_tab.join_style_combo.currentIndex()))
+        pen.setJoinStyle(
+            self.properties_tab.join_style_combo.itemData(self.properties_tab.join_style_combo.currentIndex()))
         pen.setStyle(data1)
         pen.setCapStyle(data2)
 
@@ -1232,7 +1288,8 @@ class MPRUN(QMainWindow):
                 self.properties_tab.selection_label.setText(item.toolTip())
 
                 if len(self.canvas.selectedItems()) > 1:
-                    self.properties_tab.selection_label.setText(f'Combined Selection ({len(self.canvas.selectedItems())} Items)')
+                    self.properties_tab.selection_label.setText(
+                        f'Combined Selection ({len(self.canvas.selectedItems())} Items)')
                     self.properties_tab.x_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().x()))
                     self.properties_tab.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
 
@@ -1593,7 +1650,7 @@ class MPRUN(QMainWindow):
 
         self.canvas_view.resetTransform()
         self.canvas_view.scale(value, value)
-        self.canvas_view.rotate(self.rotate_scene_spin.value())
+        self.canvas_view.rotate(self.view_rotate_spin.value())
 
     def use_raise_layer(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1641,14 +1698,17 @@ class MPRUN(QMainWindow):
                     vtracer.convert_image_to_svg_py(temp_pixmap_path,
                                                     'internal data/output.svg',
                                                     colormode=self.image_trace_tab.colormode_combo.itemData(
-                                                        self.image_trace_tab.colormode_combo.currentIndex()),  # ["color"] or "binary"
+                                                        self.image_trace_tab.colormode_combo.currentIndex()),
+                                                    # ["color"] or "binary"
                                                     hierarchical='cutout',  # ["stacked"] or "cutout"
-                                                    mode=self.image_trace_tab.mode_combo.itemData(self.image_trace_tab.mode_combo.currentIndex()),
+                                                    mode=self.image_trace_tab.mode_combo.itemData(
+                                                        self.image_trace_tab.mode_combo.currentIndex()),
                                                     # ["spline"] "polygon", or "none"
                                                     filter_speckle=4,  # default: 4
                                                     color_precision=6,  # default: 6
                                                     layer_difference=16,  # default: 16
-                                                    corner_threshold=self.image_trace_tab.corner_threshold_spin.value(),  # default: 60
+                                                    corner_threshold=self.image_trace_tab.corner_threshold_spin.value(),
+                                                    # default: 60
                                                     length_threshold=4.0,  # in [3.5, 10] default: 4.0
                                                     max_iterations=10,  # default: 10
                                                     splice_threshold=45,  # default: 45
@@ -2145,7 +2205,7 @@ class MPRUN(QMainWindow):
                             if colision == item:
                                 new = QPointF(
                                     (
-                                                i.sceneBoundingRect().x() + i.sceneBoundingRect().width()) - item.sceneBoundingRect().width(),
+                                            i.sceneBoundingRect().x() + i.sceneBoundingRect().width()) - item.sceneBoundingRect().width(),
                                     item.y()
                                 )
                                 command = PositionChangeCommand(self, item, item.pos(), new)
@@ -2317,7 +2377,6 @@ class MPRUN(QMainWindow):
             item.setPen(self.canvas_view.pen)
             item.setBrush(self.canvas_view.stroke_fill)
 
-
         self.canvas.addCommand(AddItemCommand(self.canvas, item))
         self.create_item_attributes(item)
 
@@ -2399,7 +2458,8 @@ class MPRUN(QMainWindow):
             self.view_as(user_data['saved_view'])
 
             self.addToolBar(Qt.LeftToolBarArea if user_data['toolbar_pos'] == 1 else Qt.RightToolBarArea, self.toolbar)
-            self.addDockWidget(Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea, self.tab_view_dock)
+            self.addDockWidget(Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea,
+                               self.tab_view_dock)
             self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
             self.toolbar.setHidden(user_data['toolbar_hidden'])
             self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
@@ -2473,7 +2533,8 @@ class MPRUN(QMainWindow):
             # add an action to the recent files menu
             for recent_file in recent_files:
                 if os.path.exists(recent_file):
-                    if os.path.abspath(recent_file) not in (action.toolTip() for action in self.open_recent_menu.actions()):
+                    if os.path.abspath(recent_file) not in (action.toolTip() for action in
+                                                            self.open_recent_menu.actions()):
                         action = QAction(os.path.basename(recent_file), self)
                         action.setToolTip(os.path.abspath(recent_file))
                         action_tooltip = action.toolTip()
@@ -2564,6 +2625,7 @@ class MPRUN(QMainWindow):
 
         self.cur_view = ''
 
+
 def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
@@ -2592,6 +2654,7 @@ def main() -> None:
         window.open_recent(file_path)
 
     sys.exit(app.exec_())
+
 
 if nameismain:
     main()
