@@ -2,7 +2,7 @@ import os.path
 from src.gui.app_screens import TipWin, CanvasItemSelector, AllCanvasExporter, ArrangeWin
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
-from src.framework.serializer import MPSerializer, MPDeserializer
+from src.framework.serializer import MPSerializer, MPDeserializer, MPDataRepairer
 from src.framework.tools import *
 from src.scripts.app_internal import *
 from src.scripts.imports import *
@@ -16,6 +16,7 @@ class CustomViewport(QOpenGLWidget):
         format.setSamples(4)
         format.setRenderableType(QSurfaceFormat.OpenGL)
         self.setFormat(format)
+
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, actions: list, zoom_spin):
@@ -164,7 +165,7 @@ y: {int(self.mapToScene(point).y())}''')
             self.on_pan_start(event)
 
         self.on_add_canvas_trigger()
-        
+
     def mouseMoveEvent(self, event):
         if self.path_btn.isChecked():
             self.pathDrawingTool.show_tooltip(event)
@@ -177,7 +178,7 @@ y: {int(self.mapToScene(point).y())}''')
             self.penDrawingTool.on_draw(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
-            
+
         elif self.text_btn.isChecked():
             self.show_tooltip(event)
             super().mouseMoveEvent(event)
@@ -227,7 +228,7 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.pen_btn.isChecked():
             self.penDrawingTool.on_draw_end(event)
-            
+
         elif self.text_btn.isChecked():
             super().mouseReleaseEvent(event)
 
@@ -274,7 +275,7 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.rotate_btn.isChecked():
             self.rotatingTool.on_rotate_double_click(event)
-            
+
         else:
             super().mouseDoubleClickEvent(event)
 
@@ -402,7 +403,8 @@ y: {int(self.mapToScene(point).y())}''')
                 add_command = AddItemCommand(self.canvas, self.text)
                 self.canvas.addCommand(add_command)
 
-                self.text.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+                self.text.setFlags(
+                    QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
                 self.text.setZValue(0)
                 self.text.setPos(pos)
                 self.text.select_text_and_set_cursor()
@@ -438,6 +440,7 @@ y: {int(self.mapToScene(point).y())}''')
                                 Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
+
 
 class CustomGraphicsScene(QGraphicsScene):
     itemsMoved = pyqtSignal(object, object)
@@ -672,6 +675,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
         if new_items:
             self.addCommand(MultiAddItemCommand(self, new_items))
+
 
 class SceneManager:
     def __init__(self, scene):
@@ -1008,31 +1012,8 @@ class SceneManager:
             print(e)
 
     def repair_file(self):
-        try:
-            with open(self.filename, 'rb') as f:
-                items_data = pickle.load(f)
+        self.w = MPDataRepairer(self.scene.parentWindow, filename=self.filename)
 
-            # Handle metadata
-            metadata = items_data.pop(0)
-            self.scene.mpversion = metadata.get('mpversion', 'unknown')
-
-            repaired_items_data = []
-            removed_files = []
-            for item_data in items_data:
-                if item_data['type'] in ('CustomPixmapItem', 'CustomSvgItem') and not os.path.exists(
-                        item_data['filename']):
-                    removed_files.append(item_data['filename'])
-                else:
-                    repaired_items_data.append(item_data)
-
-            with open(self.filename, 'wb') as f:
-                pickle.dump(repaired_items_data, f)
-
-                QMessageBox.information(self.scene.parentWindow, 'File Repair', f"""File repair completed: 
-Removed missing items with filenames: {', '.join(removed_files)}""")
-
-        except Exception as e:
-            print(f"Error repairing file: {e}")
 
 class TemplateManager:
     def __init__(self, scene):
@@ -1104,6 +1085,7 @@ class TemplateManager:
 
         return canvas
 
+
 class ImportManager:
     def __init__(self, scene):
         self.canvas = scene
@@ -1167,6 +1149,7 @@ class ImportManager:
         item.setFlag(QGraphicsItem.ItemIsSelectable)
 
         item.setZValue(0)
+
 
 class ExportManager:
     def __init__(self, canvas):

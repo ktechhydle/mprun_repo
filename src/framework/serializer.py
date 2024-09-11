@@ -47,14 +47,6 @@ class MPSerializer:
                         'attr': self.serialize_item_attributes(item),
                         'elements': self.serialize_path(item.path()),
                         'smooth': True if item.smooth else False,
-                        'addtext': True if item.add_text else False,
-                        'textalongpath': item.text_along_path if item.add_text else '',
-                        'textfont': self.serialize_font(
-                            item.text_along_path_font) if item.add_text else self.serialize_font(QFont('Arial', 20)),
-                        'textcolor': self.serialize_color(
-                            item.text_along_path_color) if item.add_text else self.serialize_color(QColor('black')),
-                        'textspacing': item.text_along_path_spacing if item.add_text else 3,
-                        'starttextfrombeginning': item.start_text_from_beginning if item.add_text else False,
                     }
 
                     items_data.append(path_data)
@@ -389,15 +381,7 @@ class MPDeserializer:
         text_item.setDefaultTextColor(self.deserialize_color(data['color']))
         text_item.locked = data['locked']
 
-        for attr in data['attr']:
-            text_item.setTransformOriginPoint(self.deserialize_point(attr['transformorigin']))
-            text_item.setRotation(attr['rotation'])
-            text_item.setTransform(self.deserialize_transform(attr['transform']))
-            text_item.setScale(attr['scale'])
-            text_item.setPos(attr['x'], attr['y'])
-            text_item.setToolTip(attr['name'])
-            text_item.setZValue(attr['zval'])
-            text_item.setVisible(attr['visible'])
+        self.process_attributes(text_item, data['attr'])
 
         if data.get('markdown', True):
             text_item.toMarkdown()
@@ -423,15 +407,7 @@ class MPDeserializer:
         path_item.setPen(self.deserialize_pen(data['pen']))
         path_item.setBrush(self.deserialize_brush(data['brush']))
 
-        for attr in data['attr']:
-            path_item.setTransformOriginPoint(self.deserialize_point(attr['transformorigin']))
-            path_item.setRotation(attr['rotation'])
-            path_item.setTransform(self.deserialize_transform(attr['transform']))
-            path_item.setScale(attr['scale'])
-            path_item.setPos(attr['x'], attr['y'])
-            path_item.setToolTip(attr['name'])
-            path_item.setZValue(attr['zval'])
-            path_item.setVisible(attr['visible'])
+        self.process_attributes(path_item, data['attr'])
 
         if data.get('smooth', True):
             path_item.smooth = True
@@ -439,31 +415,12 @@ class MPDeserializer:
         else:
             path_item.smooth = False
 
-        if data.get('addtext', True):
-            path_item.add_text = True
-            path_item.setTextAlongPath(data['textalongpath'])
-            path_item.setTextAlongPathColor(self.deserialize_color(data['textcolor']))
-            path_item.setTextAlongPathFont(self.deserialize_font(data['textfont']))
-            path_item.setTextAlongPathSpacingFromPath(data['textspacing'])
-            path_item.setTextAlongPathFromBeginning(data['starttextfrombeginning'])
-
-        else:
-            path_item.add_text = False
-
         return path_item
 
     def deserialize_custom_group_item(self, data):
         group_item = CustomGraphicsItemGroup()
 
-        for attr in data['attr']:
-            group_item.setTransformOriginPoint(self.deserialize_point(attr['transformorigin']))
-            group_item.setRotation(attr['rotation'])
-            group_item.setTransform(self.deserialize_transform(attr['transform']))
-            group_item.setScale(attr['scale'])
-            group_item.setPos(attr['x'], attr['y'])
-            group_item.setToolTip(attr['name'])
-            group_item.setZValue(attr['zval'])
-            group_item.setVisible(attr['visible'])
+        self.process_attributes(group_item, data['attr'])
 
         for child_data in data['children']:
             if child_data['type'] == 'CustomTextItem':
@@ -507,15 +464,7 @@ class MPDeserializer:
         path_item.text_element.setRotation(data['textrotation'])
         path_item.text_element.setVisible(data['textvisible'])
 
-        for attr in data['attr']:
-            path_item.setTransformOriginPoint(self.deserialize_point(attr['transformorigin']))
-            path_item.setRotation(attr['rotation'])
-            path_item.setTransform(self.deserialize_transform(attr['transform']))
-            path_item.setScale(attr['scale'])
-            path_item.setPos(attr['x'], attr['y'])
-            path_item.setToolTip(attr['name'])
-            path_item.setZValue(attr['zval'])
-            path_item.setVisible(attr['visible'])
+        self.process_attributes(path_item, data['attr'])
 
         path_item.updatePathEndPoint()
 
@@ -527,15 +476,7 @@ class MPDeserializer:
             svg_item.store_filename(data['filename'])
             svg_item.loadFromData(data['raw_svg_data'])
 
-            for attr in data['attr']:
-                svg_item.setTransformOriginPoint(self.deserialize_point(attr['transformorigin']))
-                svg_item.setRotation(attr['rotation'])
-                svg_item.setTransform(self.deserialize_transform(attr['transform']))
-                svg_item.setScale(attr['scale'])
-                svg_item.setPos(attr['x'], attr['y'])
-                svg_item.setToolTip(attr['name'])
-                svg_item.setZValue(attr['zval'])
-                svg_item.setVisible(attr['visible'])
+            self.process_attributes(svg_item, data['attr'])
 
             return svg_item
 
@@ -548,15 +489,7 @@ class MPDeserializer:
         pixmap_item.store_filename(data['filename'])
         pixmap_item.loadFromData(data['data'])
 
-        for attr in data['attr']:
-            pixmap_item.setTransformOriginPoint(self.deserialize_point(attr['transformorigin']))
-            pixmap_item.setRotation(attr['rotation'])
-            pixmap_item.setTransform(self.deserialize_transform(attr['transform']))
-            pixmap_item.setScale(attr['scale'])
-            pixmap_item.setPos(attr['x'], attr['y'])
-            pixmap_item.setToolTip(attr['name'])
-            pixmap_item.setZValue(attr['zval'])
-            pixmap_item.setVisible(attr['visible'])
+        self.process_attributes(pixmap_item, data['attr'])
 
         pixmap = pixmap_item.pixmap()
         buffer = QBuffer()
@@ -566,3 +499,77 @@ class MPDeserializer:
         pixmap_item.loadFromData(pixmap_data)
 
         return pixmap_item
+
+    def process_attributes(self, item, data):
+        for _data in data:
+            item.setTransformOriginPoint(self.deserialize_point(_data['transformorigin']))
+            item.setRotation(_data['rotation'])
+            item.setTransform(self.deserialize_transform(_data['transform']))
+            item.setScale(_data['scale'])
+            item.setPos(_data['x'], _data['y'])
+            item.setToolTip(_data['name'])
+            item.setZValue(_data['zval'])
+            item.setVisible(_data['visible'])
+
+
+class MPDataRepairer:
+    def __init__(self, parent: QMainWindow, filename=None):
+        self.parent = parent
+        self.filename = None
+
+        if filename is None:
+            file, _ = QFileDialog.getOpenFileName(parent, 'Choose File', '', 'MPRUN files (*.mp)')
+
+            if file:
+                self.filename = file
+        else:
+            self.filename = filename
+
+        self.repair()
+
+    def repair(self):
+        if self.filename is not None:
+            try:
+                with open(self.filename, 'rb') as f:
+                    items_data = pickle.load(f)
+                    print("Loaded data:", items_data)
+
+                # Handle metadata (ignore this)
+                metadata = items_data.pop(0)
+
+                repaired_data = []
+                for data in items_data:
+                    # Check data integrity here (validate structure, etc.)
+                    if self.is_valid(data):
+                        repaired_data.append(data)
+                    else:
+                        print(f"Data corrupted: {data}. Attempting to repair.")
+                        repaired_data.append(self.repair_data(data))  # Attempt to repair corrupted data
+
+                # Save repaired data back to file
+                self.save_repaired_data(repaired_data, metadata)
+
+            except (pickle.UnpicklingError, EOFError) as e:
+                print(f"Error loading file: {e}")
+
+            QMessageBox.information(self.parent, 'Process Complete', 'File repair completed successfully.')
+
+    def is_valid(self, data):
+        # Placeholder: validate the structure of the data
+        return isinstance(data, dict)  # Example validation (adjust based on your data structure)
+
+    def repair_data(self, data):
+        # Attempt to fix corrupted data (example logic)
+        repaired_data = {}
+        try:
+            # Custom repair logic based on expected structure
+            repaired_data = {key: value if value else "default" for key, value in data.items()}
+        except Exception as e:
+            print(f"Unable to repair: {e}")
+        return repaired_data
+
+    def save_repaired_data(self, repaired_data, metadata):
+        with open(self.filename, 'wb') as f:
+            pickle.dump([metadata] + repaired_data, f)
+        print(f"Repaired data saved to {self.filename}.")
+

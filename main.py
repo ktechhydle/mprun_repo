@@ -10,6 +10,7 @@ from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, Ima
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.custom_widgets import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
+from src.framework.serializer import MPDataRepairer
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
@@ -196,6 +197,9 @@ class MPRUN(QMainWindow):
         export_multiple_action = QAction('Export All', self)
         export_multiple_action.setShortcut(QKeySequence('Ctrl+Shift+E'))
         export_multiple_action.triggered.connect(self.canvas.exportManager.multipleExport)
+
+        repair_file_action = QAction('Repair File', self)
+        repair_file_action.triggered.connect(self.use_repair_file)
 
         close_action = QAction('Close', self)
         close_action.triggered.connect(self.close)
@@ -442,6 +446,7 @@ class MPRUN(QMainWindow):
         self.file_menu.addAction(export_action)
         self.file_menu.addAction(export_multiple_action)
         self.file_menu.addSeparator()
+        self.file_menu.addAction(repair_file_action)
         self.file_menu.addAction(close_action)
 
         self.edit_menu.addAction(undo_action)
@@ -2315,6 +2320,9 @@ class MPRUN(QMainWindow):
 
         self.canvas.addCommand(AddItemCommand(self.canvas, item))
         self.create_item_attributes(item)
+
+    def use_repair_file(self):
+        self.w = MPDataRepairer(self)
 
     def insert_image(self):
         self.canvas.importManager.importFile()
