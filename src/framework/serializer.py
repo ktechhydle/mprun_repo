@@ -13,6 +13,7 @@ class MPSerializer:
         items_data.append({
             'mpversion': self.scene.mpversion,
             'copyright': copyright_message,
+            'item_count': len(self.scene.items()),
         })
 
         for item in self.scene.items():
@@ -306,9 +307,14 @@ class MPDeserializer:
         # Handle metadata
         metadata = items_data.pop(0)
         if metadata.get('mpversion', 'unknown') != self.scene.mpversion:
-            QMessageBox.warning(self.scene.parentWindow, 'Open', 'You are attempting to open a file saved in an '
-                                                                 'different version of MPRUN, are you sure you want '
-                                                                 'to do this?')
+            QMessageBox.warning(self.scene.parentWindow, 'Open File', 'You are attempting to open a file saved in an '
+                                                                      'different version of MPRUN, this may cause '
+                                                                      'errors.')
+
+        if metadata.get('item_count', 'unknown') >= 500:
+            QMessageBox.warning(self.scene.parentWindow, 'Open File', 'You are attempting to open a file with a large '
+                                                                      'amount of items, this can cause your computer '
+                                                                      'to slow down.')
 
         for item_data in items_data:
             item = None
