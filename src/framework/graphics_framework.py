@@ -21,7 +21,7 @@ class CustomViewport(QOpenGLWidget):
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, actions: list, zoom_spin):
         super().__init__()
-        self.points = []
+        self.w = None
 
         # Set flags
         self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
@@ -363,6 +363,9 @@ y: {int(self.mapToScene(point).y())}''')
         self.scale(zoomFactor, zoomFactor)
 
     def showMessage(self, label: str, tip: str):
+        if self.w is not None:
+            self.w.close()
+
         self.w = TipWin(label, tip, self.parent())
 
         pos = self.mapToGlobal(self.rect().bottomLeft())
@@ -590,7 +593,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def addCommand(self, command):
         self.undo_stack.push(command)
-        self.modified = True
+        self.setHasChanges(True)
         self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
         if isinstance(command, AddItemCommand):
@@ -676,9 +679,15 @@ class CustomGraphicsScene(QGraphicsScene):
         if new_items:
             self.addCommand(MultiAddItemCommand(self, new_items))
 
+    def hasChanges(self):
+        return self.modified
+
+    def setHasChanges(self, has: bool):
+        self.modified = has
+
 
 class SceneManager:
-    def __init__(self, scene):
+    def __init__(self, scene: CustomGraphicsScene):
         self.scene = scene
         self.filename = 'Untitled'
         self.parent = None
@@ -689,13 +698,13 @@ class SceneManager:
 
     def reset_to_default_scene(self):
         self.scene.clear()
-        self.scene.modified = False
+        self.scene.setHasChanges(False)
         self.filename = 'Untitled'
         self.scene.parentWindow.setWindowTitle(f'{self.filename} - MPRUN')
         self.scene.parentWindow.create_default_objects()
 
     def restore(self):
-        if self.scene.modified:
+        if self.scene.hasChanges():
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox(self.scene.parentWindow)
             confirmation_dialog.setWindowTitle('Close Document')
@@ -725,7 +734,7 @@ class SceneManager:
                 with open(self.filename, 'wb') as f:
                     pickle.dump(self.serializer.serialize_items(), f)
                     self.scene.parentWindow.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
-                    self.scene.modified = False
+                    self.scene.setHasChanges(False)
 
                     return True
 
@@ -744,7 +753,7 @@ class SceneManager:
                     pickle.dump(self.serializer.serialize_items(), f)
 
                     self.filename = filename
-                    self.scene.modified = False
+                    self.scene.setHasChanges(False)
                     self.scene.parentWindow.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
                     self.scene.parentWindow.update_recent_file_data(filename)
                     self.scene.parentWindow.canvas_view.showMessage('File', f'File {self.filename} saved successfully.')
@@ -761,7 +770,7 @@ class SceneManager:
         try:
             self.scene.parentWindow.use_exit_add_canvas()
 
-            if self.scene.modified:
+            if self.scene.hasChanges():
                 # Display a confirmation dialog
                 confirmation_dialog = QMessageBox(self.scene.parentWindow)
                 confirmation_dialog.setWindowTitle('Close Document')
@@ -774,7 +783,7 @@ class SceneManager:
                 result = confirmation_dialog.exec_()
 
                 if result == QMessageBox.Discard:
-                    filename, _ = QFileDialog.getOpenFileName(self.scene.parent(), 'Open File', '',
+                    filename, _ = QFileDialog.getOpenFileName(self.scene.parentWindow, 'Open File', '',
                                                               'MPRUN files (*.mp)')
 
                     if filename:
@@ -818,7 +827,7 @@ class SceneManager:
 
                         with open(filename, 'rb') as f:
                             items_data = pickle.load(f)
-                            self.deserialize_items(items_data)
+                            self.deserializer.deserialize_items(items_data)
 
                             self.filename = filename
                             parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
@@ -883,7 +892,7 @@ class SceneManager:
         try:
             self.scene.parentWindow.use_exit_add_canvas()
 
-            if self.scene.modified:
+            if self.scene.hasChanges():
                 # Display a confirmation dialog
                 confirmation_dialog = QMessageBox(self.scene.parentWindow)
                 confirmation_dialog.setWindowTitle('Close Document')
@@ -912,7 +921,7 @@ class SceneManager:
 
                             self.filename = filename
                             parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
-                            self.scene.modified = False
+                            self.scene.setHasChanges(False)
 
                             if self.repair_needed:
                                 # Display a confirmation dialog
@@ -950,7 +959,7 @@ class SceneManager:
 
                                 self.filename = filename
                                 parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
-                                self.scene.modified = False
+                                self.scene.setHasChanges(False)
 
                                 if self.repair_needed:
                                     # Display a confirmation dialog
@@ -985,7 +994,7 @@ class SceneManager:
 
                         self.filename = filename
                         parent.setWindowTitle(f'{os.path.basename(self.filename)} - MPRUN')
-                        self.scene.modified = False
+                        self.scene.setHasChanges(False)
 
                         if self.repair_needed:
                             # Display a confirmation dialog
@@ -1016,7 +1025,7 @@ class SceneManager:
 
 
 class TemplateManager:
-    def __init__(self, scene):
+    def __init__(self, scene: CustomGraphicsScene):
         self.scene = scene
 
     def load_template(self):
@@ -1087,7 +1096,7 @@ class TemplateManager:
 
 
 class ImportManager:
-    def __init__(self, scene):
+    def __init__(self, scene: CustomGraphicsScene):
         self.canvas = scene
 
     def importFile(self):
@@ -1152,7 +1161,7 @@ class ImportManager:
 
 
 class ExportManager:
-    def __init__(self, canvas):
+    def __init__(self, canvas: CustomGraphicsScene):
         self.canvas = canvas
 
     def normalExport(self):
