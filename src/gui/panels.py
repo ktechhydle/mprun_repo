@@ -4,6 +4,7 @@ from src.gui.custom_widgets import *
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
+
 class PropertiesPanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__()
@@ -188,6 +189,7 @@ class PropertiesPanel(QWidget):
         self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addStretch()
 
+
 class LibrariesPanel(QWidget):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
@@ -285,6 +287,7 @@ class LibrariesPanel(QWidget):
         except Exception as e:
             print(e)
 
+
 class CharactersPanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__()
@@ -364,6 +367,7 @@ class CharactersPanel(QWidget):
         self.characters_tab_layout.addWidget(font_style_hlayout)
         self.characters_tab_layout.addWidget(font_color_hlayout)
 
+
 class ImageTracingPanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__()
@@ -433,6 +437,7 @@ class ImageTracingPanel(QWidget):
         self.image_trace_layout.addWidget(corner_threshold_label)
         self.image_trace_layout.addWidget(self.corner_threshold_spin)
 
+
 class CanvasEditorPanel(QWidget):
     def __init__(self, canvas):
         super().__init__()
@@ -487,7 +492,7 @@ class CanvasEditorPanel(QWidget):
         self.canvas_name_entry.setFixedWidth(205)
         self.canvas_name_entry.setPlaceholderText('Canvas Name')
         self.canvas_name_entry.setToolTip('Change the name of the canvas')
-        self.canvas_name_entry.textChanged.connect(self.update_canvas_name)
+        self.canvas_name_entry.editingFinished.connect(self.update_canvas_name)
 
         widget1 = ToolbarHorizontalLayout()
         widget1.layout.addSpacing(25)
@@ -541,6 +546,7 @@ class CanvasEditorPanel(QWidget):
 
         command = CanvasNameEditCommand(items, old_names, new_name)
         self.canvas.addCommand(command)
+
 
 class QuickActionsPanel(QWidget):
     def __init__(self, canvas, parent):
