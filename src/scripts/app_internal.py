@@ -3,6 +3,9 @@ import os.path
 
 from src.scripts.imports import *
 
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+
 supported_file_importing = '''
 SVG files (*.svg);;
 PNG files (*.png);;
@@ -65,24 +68,4 @@ YOU are responsible for your own safety and ultimately your own mindset. MPRUN i
 
 Do you accept?'''
 
-copyright_message = '''
-
-Copyright (C) 2023-2024 MPRUN Document
-<https://github.com/ktechhydle/mprun_repo> All Rights Reserved.
-
-MPRUN is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-MPRUN is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with MPRUN. If not, see <http://www.gnu.org/licenses/>.
-
-!DO NOT EDIT ANY INFORMATION FOUND IN THIS DOCUMENT!
-
-'''
+copyright_message = open('internal data/_copyright.txt', 'r').read()
