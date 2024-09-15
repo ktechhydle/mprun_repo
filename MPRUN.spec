@@ -14,6 +14,7 @@ a = Analysis(
     ('course elements', 'course elements'),
     ('ui', 'ui'),
     ('IMPORTANT', 'IMPORTANT'),
+    ('version.txt', 'version.txt'),
     ] + pyicloud_metadata,
     hiddenimports=['pyicloud'],
     hookspath=[],
