@@ -17,6 +17,6 @@
         "default_stroke": "red",
         "default_fill": "#00ff00",
         "default_font": "black",
-        "tutorial_watched": false
+        "grid_size": 10
     }
 ]

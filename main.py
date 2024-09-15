@@ -36,25 +36,11 @@ class MPRUN(QMainWindow):
             self.font_color = ItemStack()
             self.font_color.set(data['default_font'])
 
-        # Grid Size and rotating screens
-        self.gsnap_grid_size = 10
-        self.screen_rotate_size = 0
-
         # Undo, redo
         self.undo_stack = QUndoStack()
 
-        # Create GUI
-        self.create_actions_dict()
-        self.create_initial_canvas()
-        self.create_menu()
-        self.init_toolbars()
-        self.create_toolbox()
-        self.create_toolbar1()
-        self.create_toolbar2()
-        self.create_view()
-        self.create_default_objects()
-        self.update()
-
+        # Create UI
+        self.create_ui()
         self.show()
 
     def closeEvent(self, event):
@@ -119,6 +105,7 @@ class MPRUN(QMainWindow):
             _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
             _data['toolbar_hidden'] = self.toolbar.isHidden()
             _data['last_used_tool'] = self.action_group.checkedAction().text()
+            _data['grid_size'] = self.canvas.gridSize
 
         self.write_settings(data)
 
@@ -131,6 +118,18 @@ class MPRUN(QMainWindow):
         super().moveEvent(event)
         print(f'Window Move at {event}')
         self.canvas_view.updateTip()
+
+    def create_ui(self):
+        self.create_actions_dict()
+        self.create_initial_canvas()
+        self.create_menu()
+        self.init_toolbars()
+        self.create_toolbox()
+        self.create_toolbar1()
+        self.create_toolbar2()
+        self.create_view()
+        self.create_default_objects()
+        self.update()
 
     def create_actions_dict(self):
         self.actions = {}
@@ -360,22 +359,22 @@ class MPRUN(QMainWindow):
         clear_selection_action.triggered.connect(self.use_escape)
 
         select_paths_action = QAction('Select Paths', self)
-        select_paths_action.triggered.connect(lambda: self.use_selection_mode('path'))
+        select_paths_action.triggered.connect(lambda: self.canvas.selectItemsInMode('path'))
 
         select_text_action = QAction('Select Text', self)
-        select_text_action.triggered.connect(lambda: self.use_selection_mode('text'))
+        select_text_action.triggered.connect(lambda: self.canvas.selectItemsInMode('text'))
 
         select_leaderline_action = QAction('Select Leader Lines', self)
-        select_leaderline_action.triggered.connect(lambda: self.use_selection_mode('leaderline'))
+        select_leaderline_action.triggered.connect(lambda: self.canvas.selectItemsInMode('leaderline'))
 
         select_pixmaps_action = QAction('Select Pixmaps', self)
-        select_pixmaps_action.triggered.connect(lambda: self.use_selection_mode('pixmap'))
+        select_pixmaps_action.triggered.connect(lambda: self.canvas.selectItemsInMode('pixmap'))
 
         select_svgs_action = QAction('Select SVGs', self)
-        select_svgs_action.triggered.connect(lambda: self.use_selection_mode('svg'))
+        select_svgs_action.triggered.connect(lambda: self.canvas.selectItemsInMode('svg'))
 
         select_canvases_action = QAction('Select Canvases', self)
-        select_canvases_action.triggered.connect(lambda: self.use_selection_mode('canvas'))
+        select_canvases_action.triggered.connect(lambda: self.canvas.selectItemsInMode('canvas'))
 
         # Creat view menu actions
         fullscreen_view_action = QAction('Full Screen', self)
@@ -979,7 +978,7 @@ class MPRUN(QMainWindow):
         raise_layer_action = QAction(QIcon('ui/Tool Icons/raise_layer_icon.png'), '', self)
         raise_layer_action.setToolTip(
             '<b>Raise</b><br>'
-            'Raise the selected items a leyer up.<br>'
+            'Raise the selected items a layer up.<br>'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -988,7 +987,7 @@ class MPRUN(QMainWindow):
         lower_layer_action = QAction(QIcon('ui/Tool Icons/lower_layer_icon.png'), '', self)
         lower_layer_action.setToolTip(
             '<b>Lower</b><br>'
-            'Lower the selected items a leyer down.<br>'
+            'Lower the selected items a layer down.<br>'
             '<hr>'
             '<b>Press F1 for more help.</b><br>'
         )
@@ -1565,7 +1564,7 @@ class MPRUN(QMainWindow):
         self.select_btn.trigger()
 
         for item in self.canvas.items():
-            if item.flags() & QGraphicsItem.ItemIsSelectable:
+            if item.flags() & item.ItemIsSelectable:
                 item.setSelected(True)
 
     def use_escape(self):
@@ -1574,48 +1573,6 @@ class MPRUN(QMainWindow):
         for item in self.canvas.items():
             if isinstance(item, CustomTextItem) and item.hasFocus():
                 item.clearFocus()
-
-    def use_selection_mode(self, mode: str):
-        if mode == 'canvas':
-            self.use_add_canvas()
-
-        else:
-            self.select_btn.trigger()
-
-        self.canvas.clearSelection()
-
-        for item in self.canvas.items():
-            if mode == 'path':
-                if isinstance(item, CustomPathItem):
-                    item.setSelected(True)
-
-            elif mode == 'leaderline':
-                if isinstance(item, LeaderLineItem):
-                    item.setSelected(True)
-
-            elif mode == 'pixmap':
-                if isinstance(item, CustomPixmapItem):
-                    item.setSelected(True)
-
-            elif mode == 'svg':
-                if isinstance(item, CustomSvgItem):
-                    item.setSelected(True)
-
-            elif mode == 'text':
-                if isinstance(item, CustomTextItem):
-                    item.setSelected(True)
-
-            elif mode == 'svg':
-                if isinstance(item, CustomSvgItem):
-                    item.setSelected(True)
-
-            elif mode == 'canvas':
-                if isinstance(item, CanvasItem):
-                    item.setSelected(True)
-
-            elif mode == 'group':
-                if isinstance(item, CustomGraphicsItemGroup):
-                    item.setSelected(True)
 
     def use_pan(self):
         self.pan_btn.setChecked(True)
@@ -1644,6 +1601,132 @@ class MPRUN(QMainWindow):
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
+
+    def use_scale_x(self, value):
+        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
+
+    def use_scale_y(self, value):
+        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
+
+    def use_scale(self, x_value, y_value):
+        try:
+            items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+            if not items:
+                return
+
+            old_transforms = [item.transform() for item in items]
+            new_transforms = []
+
+            for item in items:
+                if isinstance(item, LeaderLineItem):
+                    item.childItems()[0].setSelected(False)
+                    item.updatePathEndPoint()
+
+                elif isinstance(item, CustomTextItem):
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
+
+                # Calculate the center of the bounding box for the selected items
+                bounding_rect = item.boundingRect()
+                center_x = bounding_rect.center().x()
+                center_y = bounding_rect.center().y()
+
+                # Calculate the scaling factor for the group
+                current_width = bounding_rect.width()
+                current_height = bounding_rect.height()
+
+                scale_x = x_value / current_width if current_width != 0 else 1
+                scale_y = y_value / current_height if current_height != 0 else 1
+
+                # Create a transform centered on the bounding box's center
+                transform = QTransform()
+                transform.translate(center_x, center_y)
+                transform.scale(scale_x, scale_y)
+                transform.translate(-center_x, -center_y)
+                new_transforms.append(transform)
+
+            command = TransformCommand(items, old_transforms, new_transforms)
+            self.canvas.addCommand(command)
+
+        except Exception as e:
+            print(f'Error during scaling: {e}')
+
+    def use_scale_tool(self):
+        self.scale_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
+
+        self.use_exit_grid()
+
+    def use_rotate_tool(self):
+        self.rotate_btn.setChecked(True)
+        self.canvas_view.disable_item_flags()
+
+        self.use_exit_grid()
+
+    def use_rotate(self, value):
+        items = self.canvas.selectedItems()
+        if not items:
+            return
+
+        canvas_items = []
+        old_rotations = []
+
+        # Rotate each item around the center
+        for item in items:
+            if not isinstance(item, CanvasItem):
+                if isinstance(item, LeaderLineItem):
+                    item.childItems()[0].setSelected(False)
+                    item.updatePathEndPoint()
+                elif isinstance(item, CustomTextItem):
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
+
+                item.setTransformOriginPoint(item.boundingRect().center())
+                canvas_items.append(item)
+                old_rotations.append(item.rotation())
+
+        if canvas_items:
+            try:
+                command = RotateCommand(self, canvas_items, old_rotations, value)
+                self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f'Exception: {e}')
+
+    def use_rotate_direction(self, dir: str):
+        items = self.canvas.selectedItems()
+        if not items:
+            return
+
+        canvas_items = []
+        old_rotations = []
+        new_rotations = []
+
+        # Determine the rotation direction and angle
+        rotation_change = -90 if dir == 'ccw' else 90
+
+        # Rotate each item around the center
+        for item in items:
+            if not isinstance(item, CanvasItem):
+                if isinstance(item, LeaderLineItem):
+                    item.childItems()[0].setSelected(False)
+                    item.updatePathEndPoint()
+                elif isinstance(item, CustomTextItem):
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
+
+                item.setTransformOriginPoint(item.boundingRect().center())
+                canvas_items.append(item)
+                old_rotations.append(item.rotation())
+                new_rotations.append(item.rotation() + rotation_change)
+
+        if canvas_items:
+            try:
+                command = RotateDirectionCommand(self, canvas_items, old_rotations, new_rotations)
+                self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f'Exception: {e}')
 
     def use_change_view(self):
         value = self.view_zoom_spin.value() / 100
@@ -1810,132 +1893,6 @@ class MPRUN(QMainWindow):
 
         finally:
             self.canvas.blockSignals(False)
-
-    def use_scale_x(self, value):
-        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
-
-    def use_scale_y(self, value):
-        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
-
-    def use_scale(self, x_value, y_value):
-        try:
-            items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-            if not items:
-                return
-
-            old_transforms = [item.transform() for item in items]
-            new_transforms = []
-
-            for item in items:
-                if isinstance(item, LeaderLineItem):
-                    item.childItems()[0].setSelected(False)
-                    item.updatePathEndPoint()
-
-                elif isinstance(item, CustomTextItem):
-                    if isinstance(item.parentItem(), LeaderLineItem):
-                        item.parentItem().updatePathEndPoint()
-
-                # Calculate the center of the bounding box for the selected items
-                bounding_rect = item.boundingRect()
-                center_x = bounding_rect.center().x()
-                center_y = bounding_rect.center().y()
-
-                # Calculate the scaling factor for the group
-                current_width = bounding_rect.width()
-                current_height = bounding_rect.height()
-
-                scale_x = x_value / current_width if current_width != 0 else 1
-                scale_y = y_value / current_height if current_height != 0 else 1
-
-                # Create a transform centered on the bounding box's center
-                transform = QTransform()
-                transform.translate(center_x, center_y)
-                transform.scale(scale_x, scale_y)
-                transform.translate(-center_x, -center_y)
-                new_transforms.append(transform)
-
-            command = TransformCommand(items, old_transforms, new_transforms)
-            self.canvas.addCommand(command)
-
-        except Exception as e:
-            print(f'Error during scaling: {e}')
-
-    def use_scale_tool(self):
-        self.scale_btn.setChecked(True)
-        self.canvas_view.disable_item_flags()
-
-        self.use_exit_grid()
-
-    def use_rotate_tool(self):
-        self.rotate_btn.setChecked(True)
-        self.canvas_view.disable_item_flags()
-
-        self.use_exit_grid()
-
-    def use_rotate(self, value):
-        items = self.canvas.selectedItems()
-        if not items:
-            return
-
-        canvas_items = []
-        old_rotations = []
-
-        # Rotate each item around the center
-        for item in items:
-            if not isinstance(item, CanvasItem):
-                if isinstance(item, LeaderLineItem):
-                    item.childItems()[0].setSelected(False)
-                    item.updatePathEndPoint()
-                elif isinstance(item, CustomTextItem):
-                    if isinstance(item.parentItem(), LeaderLineItem):
-                        item.parentItem().updatePathEndPoint()
-
-                item.setTransformOriginPoint(item.boundingRect().center())
-                canvas_items.append(item)
-                old_rotations.append(item.rotation())
-
-        if canvas_items:
-            try:
-                command = RotateCommand(self, canvas_items, old_rotations, value)
-                self.canvas.addCommand(command)
-            except Exception as e:
-                # Handle the exception (e.g., logging)
-                print(f'Exception: {e}')
-
-    def use_rotate_direction(self, dir: str):
-        items = self.canvas.selectedItems()
-        if not items:
-            return
-
-        canvas_items = []
-        old_rotations = []
-        new_rotations = []
-
-        # Determine the rotation direction and angle
-        rotation_change = -90 if dir == 'ccw' else 90
-
-        # Rotate each item around the center
-        for item in items:
-            if not isinstance(item, CanvasItem):
-                if isinstance(item, LeaderLineItem):
-                    item.childItems()[0].setSelected(False)
-                    item.updatePathEndPoint()
-                elif isinstance(item, CustomTextItem):
-                    if isinstance(item.parentItem(), LeaderLineItem):
-                        item.parentItem().updatePathEndPoint()
-
-                item.setTransformOriginPoint(item.boundingRect().center())
-                canvas_items.append(item)
-                old_rotations.append(item.rotation())
-                new_rotations.append(item.rotation() + rotation_change)
-
-        if canvas_items:
-            try:
-                command = RotateDirectionCommand(self, canvas_items, old_rotations, new_rotations)
-                self.canvas.addCommand(command)
-            except Exception as e:
-                # Handle the exception (e.g., logging)
-                print(f'Exception: {e}')
 
     def use_flip_horizontal(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -2464,6 +2421,7 @@ class MPRUN(QMainWindow):
             self.toolbar.setHidden(user_data['toolbar_hidden'])
             self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
             self.undo_stack.setUndoLimit(user_data['undo_limit'])
+            self.canvas.setGridSize(user_data['grid_size'])
 
             if user_data['geometry'][0] == 'maximized':
                 self.showMaximized()

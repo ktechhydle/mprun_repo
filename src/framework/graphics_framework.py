@@ -614,6 +614,48 @@ class CustomGraphicsScene(QGraphicsScene):
             bounding_rect = bounding_rect.united(item.sceneBoundingRect())
         return bounding_rect
 
+    def selectItemsInMode(self, mode: str):
+        if mode == 'canvas':
+            self.parentWindow.add_canvas_btn.trigger()
+
+        else:
+            self.parentWindow.select_btn.trigger()
+
+        self.clearSelection()
+
+        for item in self.items():
+            if mode == 'path':
+                if isinstance(item, CustomPathItem):
+                    item.setSelected(True)
+
+            elif mode == 'leaderline':
+                if isinstance(item, LeaderLineItem):
+                    item.setSelected(True)
+
+            elif mode == 'pixmap':
+                if isinstance(item, CustomPixmapItem):
+                    item.setSelected(True)
+
+            elif mode == 'svg':
+                if isinstance(item, CustomSvgItem):
+                    item.setSelected(True)
+
+            elif mode == 'text':
+                if isinstance(item, CustomTextItem):
+                    item.setSelected(True)
+
+            elif mode == 'svg':
+                if isinstance(item, CustomSvgItem):
+                    item.setSelected(True)
+
+            elif mode == 'canvas':
+                if isinstance(item, CanvasItem):
+                    item.setSelected(True)
+
+            elif mode == 'group':
+                if isinstance(item, CustomGraphicsItemGroup):
+                    item.setSelected(True)
+
     def setGridEnabled(self, enabled: bool):
         self.gridEnabled = enabled
 
