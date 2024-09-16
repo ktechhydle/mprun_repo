@@ -24,6 +24,7 @@ a = Analysis(
     noconfirm=True,
     optimize=0,
 )
+
 pyz = PYZ(a.pure)
 
 exe = EXE(
@@ -32,7 +33,7 @@ exe = EXE(
     [],
     exclude_binaries=True,
     name='MPRUN',
-    icon='MPRUN_icon.ico',
+    icon='icon.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -44,6 +45,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
 )
+
 coll = COLLECT(
     exe,
     a.binaries,
