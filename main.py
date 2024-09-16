@@ -146,7 +146,7 @@ class MPRUN(QMainWindow):
 
     def create_menu(self):
         # Create menus
-        self.menu_bar = QMenuBar(self)
+        self.menu_bar = CustomMenuBar(self)
         self.setMenuBar(self.menu_bar)
         self.file_menu = self.menu_bar.addMenu('&File')
         self.tool_menu = self.menu_bar.addMenu('&Tools')
@@ -173,7 +173,7 @@ class MPRUN(QMainWindow):
         open_action.setShortcut(QKeySequence('Ctrl+O'))
         open_action.triggered.connect(lambda: self.canvas.manager.load(self))
 
-        self.open_recent_menu = QMenu('Open Recent')
+        self.open_recent_menu = CustomMenu('Open Recent')
 
         open_template_action = QAction('Open Template', self)
         open_template_action.triggered.connect(self.canvas.template_manager.load_template)
@@ -207,11 +207,11 @@ class MPRUN(QMainWindow):
         close_action.triggered.connect(self.close)
 
         # Create tools submenus and actions
-        drawing_menu = self.tool_menu.addMenu('Drawing')
-        path_menu = self.tool_menu.addMenu('Path')
-        characters_menu = self.tool_menu.addMenu('Characters')
-        image_menu = self.tool_menu.addMenu('Image')
-        scene_menu = self.tool_menu.addMenu('Scene')
+        drawing_menu = self.tool_menu.addMenu('Drawing', parent=self)
+        path_menu = self.tool_menu.addMenu('Path', parent=self)
+        characters_menu = self.tool_menu.addMenu('Characters', parent=self)
+        image_menu = self.tool_menu.addMenu('Image', parent=self)
+        scene_menu = self.tool_menu.addMenu('Scene', parent=self)
 
         select_action = QAction('Select', self)
         select_action.setShortcut(QKeySequence(Qt.Key_Space))
@@ -261,7 +261,7 @@ class MPRUN(QMainWindow):
         sculpt_path_action.setShortcut(QKeySequence('S'))
         sculpt_path_action.triggered.connect(self.use_sculpt_path)
 
-        add_shape_menu = QMenu('Add Shape', self)
+        add_shape_menu = drawing_menu.addMenu('Add Shape', parent=self)
         add_shape_rect = QAction('Add Rectangle', self)
         add_shape_rect.triggered.connect(lambda: self.use_insert_shape('rect'))
         add_shape_circle = QAction('Add Circle', self)
@@ -388,7 +388,7 @@ class MPRUN(QMainWindow):
         control_toolbar_view_action.setShortcut(Qt.Key_F12)
         control_toolbar_view_action.triggered.connect(lambda: self.toggle_control_toolbar(control_toolbar_view_action))
 
-        view_options_menu = QMenu('Views', self)
+        view_options_menu = CustomMenu('Views', self)
 
         read_only_view_action = QAction('Read Only', self)
         read_only_view_action.triggered.connect(lambda: self.view_as('read_only'))
@@ -766,7 +766,7 @@ class MPRUN(QMainWindow):
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
 
-        self.drawing_toolbutton = ToolButton()
+        self.drawing_toolbutton = CustomToolButton()
         self.drawing_toolbutton.setDefaultAction(self.path_btn)
         self.drawing_toolbutton.addAction(self.path_btn)
         self.drawing_toolbutton.addAction(self.pen_btn)
@@ -2334,6 +2334,8 @@ class MPRUN(QMainWindow):
             item = CustomPathItem(path)
             item.setPen(self.canvas_view.pen)
             item.setBrush(self.canvas_view.stroke_fill)
+
+        item.setToolTip('Path')
 
         self.canvas.addCommand(AddItemCommand(self.canvas, item))
         self.create_item_attributes(item)

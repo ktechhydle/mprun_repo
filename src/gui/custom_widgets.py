@@ -4,12 +4,14 @@ from src.framework.custom_classes import *
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
+
 class ToolbarHorizontalLayout(QWidget):
     def __init__(self):
         super().__init__()
 
         self.layout = QHBoxLayout()
         self.setLayout(self.layout)
+
 
 class HorizontalSeparator(QFrame):
     def __init__(self, parent=None):
@@ -25,6 +27,7 @@ class HorizontalSeparator(QFrame):
 
     def minimumSizeHint(self):
         return QSize(2, 2)
+
 
 class QColorButton(QPushButton):
     def __init__(self, parent=None):
@@ -61,6 +64,7 @@ class QColorButton(QPushButton):
             painter.drawLine(self.rect().bottomLeft() + QPointF(2, -1), self.rect().topRight() + QPointF(-1, 2))
             painter.end()
 
+
 class CustomLineEdit(QLineEdit):
     focusChanged = pyqtSignal()
 
@@ -71,6 +75,7 @@ class CustomLineEdit(QLineEdit):
         super().focusOutEvent(event)
 
         self.focusChanged.emit()
+
 
 class CustomColorPicker(QColorDialog):
     def __init__(self, parent=None):
@@ -172,6 +177,7 @@ class CustomColorPicker(QColorDialog):
         self.setCurrentColor(QColor(Qt.transparent))
         self.hex_spin.setText('transparent')
 
+
 class ViewWidget(QGraphicsView):
     def __init__(self):
         super().__init__()
@@ -208,20 +214,33 @@ class ViewWidget(QGraphicsView):
 
     def keyPressEvent(self, event):
         pass
-    
-class ToolButton(QToolButton):
+
+
+class CustomToolButton(QToolButton):
     def __init__(self):
         super().__init__()
-
         self.setIconSize(QSize(10, 10))
         self.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
+
+        self.init()
+
+    def init(self):
+        # Create a custom menu
+        self.custom_menu = CustomMenu(self)
+
+        # Set the custom menu as the default menu
+        self.setMenu(self.custom_menu)
+
+    def addAction(self, action):
+        self.custom_menu.addAction(action)
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
 
         if event.button() == Qt.RightButton:
             self.showMenu()
+
 
 class StrokeLabel(QLabel):
     def __init__(self, text, parent):
@@ -238,11 +257,7 @@ class StrokeLabel(QLabel):
         self.join_style_combo = None
         self.join_style_options = None
 
-        self.menu = QMenu(self)
-
-        widget1 = QWidgetAction(parent)
-        widget2 = QWidgetAction(parent)
-        widget3 = QWidgetAction(parent)
+        self.menu = CustomMenu(self)
 
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine,
                                      'Dotted Stroke': Qt.DotLine,
@@ -254,9 +269,12 @@ class StrokeLabel(QLabel):
         for style, value in self.stroke_style_options.items():
             self.stroke_style_combo.addItem(style, value)
 
-        self.stroke_style_combo.setItemData(0, QPixmap('ui/UI Icons/Combobox Images/solid_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(1, QPixmap('ui/UI Icons/Combobox Images/dotted_stroke.png'), Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(2, QPixmap('ui/UI Icons/Combobox Images/dashed_stroke.png'), Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(0, QPixmap('ui/UI Icons/Combobox Images/solid_stroke.png'),
+                                            Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(1, QPixmap('ui/UI Icons/Combobox Images/dotted_stroke.png'),
+                                            Qt.DecorationRole)
+        self.stroke_style_combo.setItemData(2, QPixmap('ui/UI Icons/Combobox Images/dashed_stroke.png'),
+                                            Qt.DecorationRole)
         self.stroke_style_combo.setItemData(3, QPixmap(
             'ui/UI Icons/Combobox Images/dashed_dotted_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setItemData(4, QPixmap(
@@ -285,7 +303,7 @@ class StrokeLabel(QLabel):
             'Bevel Join': Qt.BevelJoin,
             'Round Join': Qt.RoundJoin,
             'Miter Join': Qt.MiterJoin,
-                                   }
+        }
         self.join_style_combo = QComboBox(self)
         self.join_style_combo.setStyleSheet('text-decoration: none;')
         self.join_style_combo.setIconSize(QSize(65, 20))
@@ -296,14 +314,15 @@ class StrokeLabel(QLabel):
         self.join_style_combo.setItemData(1, QIcon('ui/UI Icons/Combobox Images/round_join.png'), Qt.DecorationRole)
         self.join_style_combo.setItemData(2, QIcon('ui/UI Icons/Combobox Images/miter_join.png'), Qt.DecorationRole)
 
-        widget1.setDefaultWidget(self.stroke_style_combo)
-        widget2.setDefaultWidget(self.stroke_pencap_combo)
-        widget3.setDefaultWidget(self.join_style_combo)
+        widget = QWidget()
+        widget.setLayout(QVBoxLayout())
+        widget.layout().addWidget(self.stroke_style_combo)
+        widget.layout().addWidget(self.stroke_pencap_combo)
+        widget.layout().addWidget(self.join_style_combo)
+        action = QWidgetAction(parent)
+        action.setDefaultWidget(widget)
 
-
-        self.menu.addAction(widget1)
-        self.menu.addAction(widget2)
-        self.menu.addAction(widget3)
+        self.menu.addAction(action)
 
         self.stroke_combo = self.stroke_style_combo
         self.stroke_options = self.stroke_style_options
@@ -317,6 +336,7 @@ class StrokeLabel(QLabel):
 
         self.menu.exec_(QPoint(x, y))
 
+
 class QIconWidget(QLabel):
     def __init__(self, text: str, icon_file: str, w: int, h: int, parent=None):
         super().__init__(parent)
@@ -324,6 +344,7 @@ class QIconWidget(QLabel):
         icon = QIcon(icon_file)
         self.setPixmap(icon.pixmap(w, h))
         self.setText(text)
+
 
 class QMoreOrLessLabel(QWidget):
     def __init__(self, parent=None):
@@ -339,6 +360,7 @@ class QMoreOrLessLabel(QWidget):
 
         layout.addWidget(less_label)
         layout.addWidget(more_label)
+
 
 class QLinkLabel(QLabel):
     def __init__(self, text, link: str):
@@ -356,6 +378,7 @@ class QLinkLabel(QLabel):
         super().mousePressEvent(e)
 
         webbrowser.open_new(self.link)
+
 
 class CustomDockWidget(QDockWidget):
     def __init__(self, toolbox, parent=None):
@@ -497,6 +520,7 @@ class CustomDockWidget(QDockWidget):
     def isCollapsed(self):
         return self.is_collapsed
 
+
 class CustomToolbox(QToolBox):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -511,6 +535,7 @@ class CustomToolbox(QToolBox):
     def setWidgetAtIndex(self, index, widget, name):
         self.removeItem(index)
         self.insertItem(index, widget, name)
+
 
 class CustomListWidget(QListWidget):
     def __init__(self, parent=None):
@@ -539,14 +564,52 @@ class CustomListWidget(QListWidget):
             item.setHidden(True)
 
             if text.lower() in item.text().lower():
-               item.setHidden(False)
+                item.setHidden(False)
 
 
+class CustomMenuBar(QMenuBar):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+    def addMenu(self, menu, parent=None):
+        if isinstance(menu, QMenu):
+            super().addMenu(menu)
+
+        elif isinstance(menu, str):
+            m = CustomMenu(menu, parent=None if parent is None else parent)
+            super().addMenu(m)
+            return m
 
 
+class CustomMenu(QMenu):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setMinimumSize(150, 30)
+        self.radius = 10
+        self.setStyleSheet('''
+        QMenu 
+        { 
+            border-radius: 10px; 
+            border: 3px solid #424242;
+        }
+        ''')
 
+    def addMenu(self, menu, parent=None):
+        if isinstance(menu, QMenu):
+            super().addMenu(menu)
 
+        else:
+            m = CustomMenu(menu, parent=None if parent is None else parent)
+            super().addMenu(m)
+            return m
 
-
-
-
+    def resizeEvent(self, event):
+        path = QPainterPath()
+        # the rectangle must be translated and adjusted by 1 pixel in order to
+        # correctly map the rounded shape
+        rect = QRectF(self.rect()).adjusted(.5, .5, -1.5, -1.5)
+        path.addRoundedRect(rect, self.radius, self.radius)
+        # QRegion is bitmap based, so the returned QPolygonF (which uses float
+        # values must be transformed to an integer based QPolygon
+        region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
+        self.setMask(region)
