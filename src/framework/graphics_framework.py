@@ -454,7 +454,7 @@ class CustomGraphicsScene(QGraphicsScene):
     def __init__(self, undoStack):
         super().__init__()
         self.file_name = None
-        self.mpversion = open('version.txt', 'r').read()
+        self.mpversion = open('internal data/_version.txt', 'r').read()
         self.canvas_count = 2
         self.undo_stack = undoStack
         self.copy_stack = []
