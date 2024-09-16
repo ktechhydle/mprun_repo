@@ -8,6 +8,7 @@
         "toolbar_pos": 1,
         "toolbox_pos": 1,
         "toolbox_collapsed": false,
+        "toolbox_index": 0,
         "control_toolbar_hidden": false,
         "toolbar_hidden": false,
         "last_used_tool": "Select Tool (Spacebar)",

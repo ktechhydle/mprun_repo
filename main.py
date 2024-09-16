@@ -106,6 +106,7 @@ class MPRUN(QMainWindow):
             _data['toolbar_hidden'] = self.toolbar.isHidden()
             _data['last_used_tool'] = self.action_group.checkedAction().text()
             _data['grid_size'] = self.canvas.gridSize
+            _data['toolbox_index'] = self.toolbox.currentIndex()
 
         self.write_settings(data)
 
@@ -2422,6 +2423,7 @@ class MPRUN(QMainWindow):
             self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
             self.undo_stack.setUndoLimit(user_data['undo_limit'])
             self.canvas.setGridSize(user_data['grid_size'])
+            self.toolbox.setCurrentIndex(user_data['toolbox_index'])
 
             if user_data['geometry'][0] == 'maximized':
                 self.showMaximized()
