@@ -61,6 +61,9 @@ There's two ways you can develop and work off of MPRUN. You can either:
 `pip install -r requirements.txt`, or you can also just use GitHub's website tools to make changes.
 > 4. Submit a _Pull Request (PR)_ for your edits, and we will potentially merge your code.
 
+After you have chosen one of these methods, make sure to also clone our stylesheet repository in the project directory
+with `git clone https://github.com/ktechhydle/mp_software_stylesheets.git`.
+
 ## Do you have an something to report (bug, issue, or feature request)?
 Report it to the _Issues_ section on this repository by clicking `New`, and follow 
 the instructions.
