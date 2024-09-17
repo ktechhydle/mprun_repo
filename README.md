@@ -40,7 +40,7 @@ _You can find a demo video on <kbd>[MPRUN's website↗️](https://sites.google.
 **And that's it! You can then export your run and send it to your phone or print it out to a piece of paper.**
 
 ## Install
-You may want to check the <kbd>[MPRUN website↗️](https://sites.google.com/view/mprun/home)</kbd>. Prebuilt Windows and MacOS binaries are available through 
+You may want to check the <kbd>[MPRUN website↗️](https://sites.google.com/view/mprun/download)</kbd>. Prebuilt Windows and MacOS binaries are available through 
 the <kbd>[git releases page↗️](https://github.com/ktechhydle/mprun_repo/releases)</kbd> or from the MPRUN downloads page.
 
 ## How can I get involved?
