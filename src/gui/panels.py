@@ -27,7 +27,7 @@ class PropertiesPanel(QWidget):
         appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
 
-        self.rotation_label = QIconWidget('', 'ui/Tool Icons/rotate_icon.png', 20, 20)
+        self.rotation_label = CustomIconWidget('', 'ui/Tool Icons/rotate_icon.png', 20, 20)
         self.rotation_label.setAlignment(Qt.AlignRight)
         self.rotation_label.setStyleSheet('font-size: 10px;')
         self.rotation_label.setContentsMargins(0, 0, 0, 0)
@@ -103,7 +103,7 @@ class PropertiesPanel(QWidget):
 
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
-        self.fill_color_btn = QColorButton(self)
+        self.fill_color_btn = CustomColorDisplayButton(self)
         self.fill_color_btn.setButtonColor(self.parent.fill_color.get())
         self.fill_color_btn.setFixedWidth(28)
         self.fill_color_btn.setFixedHeight(26)
@@ -116,7 +116,7 @@ class PropertiesPanel(QWidget):
         widget5.layout.addWidget(fill_label)
         widget5.layout.setContentsMargins(0, 14, 0, 0)
 
-        self.stroke_color_btn = QColorButton(self)
+        self.stroke_color_btn = CustomColorDisplayButton(self)
         self.stroke_color_btn.setButtonColor(self.parent.outline_color.get())
         self.stroke_color_btn.setFixedWidth(28)
         self.stroke_color_btn.setFixedHeight(26)
@@ -317,7 +317,7 @@ class CharactersPanel(QWidget):
         self.font_letter_spacing_spin.setFixedWidth(105)
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
-        self.font_color_btn = QColorButton(self)
+        self.font_color_btn = CustomColorDisplayButton(self)
         self.font_color_btn.setFixedWidth(90)
         self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.setButtonColor(self.parent.font_color.get())
@@ -340,10 +340,10 @@ class CharactersPanel(QWidget):
         self.underline_btn.clicked.connect(self.parent.update_item_font)
         font_size_and_spacing_hlayout = ToolbarHorizontalLayout()
         font_size_and_spacing_hlayout.layout.addWidget(
-            QIconWidget('', 'ui/UI Icons/Major/font_size_icon.svg', 20, 20))
+            CustomIconWidget('', 'ui/UI Icons/Major/font_size_icon.svg', 20, 20))
         font_size_and_spacing_hlayout.layout.addWidget(self.font_size_spin)
         font_size_and_spacing_hlayout.layout.addWidget(
-            QIconWidget('', 'ui/UI Icons/Major/font_spacing_icon.svg', 20, 20))
+            CustomIconWidget('', 'ui/UI Icons/Major/font_spacing_icon.svg', 20, 20))
         font_size_and_spacing_hlayout.layout.addWidget(self.font_letter_spacing_spin)
         font_size_and_spacing_hlayout.layout.setContentsMargins(0, 0, 0, 0)
         font_style_hlayout = ToolbarHorizontalLayout()
@@ -431,7 +431,7 @@ class ImageTracingPanel(QWidget):
         self.image_trace_layout.addWidget(image_tracehlayout2)
         self.image_trace_layout.addWidget(path_precision_label)
         self.image_trace_layout.addWidget(self.path_precision_spin)
-        self.image_trace_layout.addWidget(QMoreOrLessLabel(self))
+        self.image_trace_layout.addWidget(CustomMoreOrLessLabel(self))
         self.image_trace_layout.addWidget(color_precision_label)
         self.image_trace_layout.addWidget(self.color_precision_spin)
         self.image_trace_layout.addWidget(corner_threshold_label)

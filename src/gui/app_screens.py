@@ -30,7 +30,7 @@ class CanvasItemSelector(QDialog):
 
     def createUI(self):
         # Scene and View
-        self.view = ViewWidget()
+        self.view = CustomViewWidget()
         self.view.setFixedWidth(500)
         self.view.setScene(self.canvas)
         self.view.setDragMode(QGraphicsView.NoDrag)
@@ -164,7 +164,7 @@ class AllCanvasExporter(QDialog):
 
     def createUI(self):
         # Scene and View
-        self.view = ViewWidget()
+        self.view = CustomViewWidget()
         self.view.setFixedWidth(500)
         self.view.setScene(self.canvas)
         self.view.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -549,9 +549,9 @@ You are responsible for publishing your work under a license of your choosing an
         self.license_tab.layout().addStretch()
 
         # Create more info tab
-        credits_label = QLinkLabel('Credits',
+        credits_label = CustomExternalLinkLabel('Credits',
                                    'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
-        contact_label = QLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
+        contact_label = CustomExternalLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
         self.more_info_tab.layout().addWidget(credits_label)
         self.more_info_tab.layout().addWidget(contact_label)
         self.more_info_tab.layout().addStretch()
@@ -594,7 +594,7 @@ If you encounter any issues or have suggestions for improvements, contact us at:
         label.setAlignment(Qt.AlignLeft)
         label.move(20, 190)
 
-        email_label = QLinkLabel('K-TECH Industries', 'mailto:ktechindustries2019@gmail.com')
+        email_label = CustomExternalLinkLabel('K-TECH Industries', 'mailto:ktechindustries2019@gmail.com')
 
         # Add widgets to layout
         layout.addWidget(mprun_img_label)
@@ -661,7 +661,7 @@ class FindActionWin(QWidget):
             if isinstance(widget, QAction):
                 widget.trigger()
 
-            elif isinstance(widget, (QPushButton, QCheckBox, QColorButton)):
+            elif isinstance(widget, (QPushButton, QCheckBox, CustomColorDisplayButton)):
                 if widget.isCheckable():
                     if widget.isChecked():
                         widget.setChecked(False)

@@ -1492,9 +1492,8 @@ class MPRUN(QMainWindow):
         if color_dialog.exec_():
             color = color_dialog.currentColor()
             if color.alpha() != 0:
-                self.properties_tab.stroke_color_btn.setTransparent(False)
-                self.properties_tab.stroke_color_btn.setStyleSheet(
-                    f'background-color: {color.name()};')
+                self.properties_tab.stroke_color_btn.setButtonColor(color.name())
+
             else:
                 self.properties_tab.stroke_color_btn.setTransparent(True)
 
@@ -1509,10 +1508,7 @@ class MPRUN(QMainWindow):
         if color_dialog.exec_():
             color = color_dialog.currentColor()
             if color.alpha() != 0:
-                self.properties_tab.fill_color_btn.setTransparent(False)
-                self.properties_tab.fill_color_btn.setStyleSheet(
-                    f'background-color: {color.name()};')
-                self.properties_tab.fill_color_btn.repaint()
+                self.properties_tab.fill_color_btn.setButtonColor(color.name())
 
             else:
                 self.properties_tab.fill_color_btn.setTransparent(True)
@@ -1528,9 +1524,7 @@ class MPRUN(QMainWindow):
         if color_dialog.exec_():
             color = color_dialog.currentColor()
             if color.alpha() != 0:
-                self.characters_tab.font_color_btn.setTransparent(False)
-                self.characters_tab.font_color_btn.setStyleSheet(
-                    f'background-color: {color.name()};')
+                self.characters_tab.font_color_btn.setButtonColor(color.name())
 
             else:
                 self.characters_tab.font_color_btn.setTransparent(True)

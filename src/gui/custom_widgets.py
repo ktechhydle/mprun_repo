@@ -29,7 +29,7 @@ class HorizontalSeparator(QFrame):
         return QSize(2, 2)
 
 
-class QColorButton(QPushButton):
+class CustomColorDisplayButton(QPushButton):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -47,6 +47,7 @@ class QColorButton(QPushButton):
             return
 
         self.setStyleSheet(f'background: {color};')
+        self.repaint()
 
     def paintEvent(self, event):
         super().paintEvent(event)
@@ -110,7 +111,7 @@ class CustomColorPicker(QColorDialog):
         self.hex_spin = CustomLineEdit()
         self.hex_spin.setText(self.currentColor().name()[1:])
         self.hex_spin.setToolTip('Change the hex value')
-        self.fill_transparent_btn = QColorButton()
+        self.fill_transparent_btn = CustomColorDisplayButton()
         self.fill_transparent_btn.setTransparent(True)
         self.fill_transparent_btn.setFixedWidth(28)
         self.fill_transparent_btn.setToolTip('Fill the current color transparent')
@@ -178,7 +179,7 @@ class CustomColorPicker(QColorDialog):
         self.hex_spin.setText('transparent')
 
 
-class ViewWidget(QGraphicsView):
+class CustomViewWidget(QGraphicsView):
     def __init__(self):
         super().__init__()
 
@@ -337,7 +338,7 @@ class StrokeLabel(QLabel):
         self.menu.exec_(QPoint(x, y))
 
 
-class QIconWidget(QLabel):
+class CustomIconWidget(QLabel):
     def __init__(self, text: str, icon_file: str, w: int, h: int, parent=None):
         super().__init__(parent)
 
@@ -346,7 +347,7 @@ class QIconWidget(QLabel):
         self.setText(text)
 
 
-class QMoreOrLessLabel(QWidget):
+class CustomMoreOrLessLabel(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -362,7 +363,7 @@ class QMoreOrLessLabel(QWidget):
         layout.addWidget(more_label)
 
 
-class QLinkLabel(QLabel):
+class CustomExternalLinkLabel(QLabel):
     def __init__(self, text, link: str):
         super().__init__()
 
