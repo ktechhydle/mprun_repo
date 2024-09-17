@@ -467,6 +467,7 @@ class CustomTextItem(QGraphicsTextItem):
         self.old_text = self.toPlainText()
         self.markdownEnabled = False
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
+        self.installEventFilter(self)
 
         # Create the suggestion popup
         self.suggestion_popup = QListWidget()
@@ -543,6 +544,19 @@ QScrollBar::handle:vertical:hover {
                             '1440',
                             '1620',
                             '1800',
+                            'Mute',
+                            'Stalefish',
+                            'Indy',
+                            'Melon',
+                            'Nose',
+                            'Tail',
+                            'Japan',
+                            'Seatbelt',
+                            'Crail',
+                            'Chicken Salad',
+                            'Roast Beef',
+                            'Method',
+                            'Truck Driver'
                             ]
 
     def mousePressEvent(self, event: QMouseEvent):
@@ -590,31 +604,18 @@ QScrollBar::handle:vertical:hover {
 
         if isinstance(self.parentItem(), LeaderLineItem):
             if event.key() == Qt.Key_Up and self.suggestion_popup.isVisible():
-                self.completeText(self.suggestion_popup.currentItem())
+                # Move down in the suggestion list
+                current_index = self.suggestion_popup.currentRow()
+                next_index = current_index - 1
+                if next_index < self.suggestion_popup.count():
+                    self.suggestion_popup.setCurrentRow(next_index)
+                event.accept()
                 return
 
             if event.key() == Qt.Key_Down and self.suggestion_popup.isVisible():
                 # Move down in the suggestion list
                 current_index = self.suggestion_popup.currentRow()
                 next_index = current_index + 1
-                if next_index < self.suggestion_popup.count():
-                    self.suggestion_popup.setCurrentRow(next_index)
-                event.accept()
-                return
-
-            if event.key() == Qt.Key_Right and self.suggestion_popup.isVisible():
-                # Move down in the suggestion list
-                current_index = self.suggestion_popup.currentRow()
-                next_index = current_index + 1
-                if next_index < self.suggestion_popup.count():
-                    self.suggestion_popup.setCurrentRow(next_index)
-                event.accept()
-                return
-
-            if event.key() == Qt.Key_Left and self.suggestion_popup.isVisible():
-                # Move down in the suggestion list
-                current_index = self.suggestion_popup.currentRow()
-                next_index = current_index - 1
                 if next_index < self.suggestion_popup.count():
                     self.suggestion_popup.setCurrentRow(next_index)
                 event.accept()
@@ -693,6 +694,15 @@ QScrollBar::handle:vertical:hover {
         self.setTextInteractionFlags(Qt.NoTextInteraction)
         self.suggestion_popup.close()
         super().focusOutEvent(event)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Tab:
+                print("Tab key pressed")
+                if self.suggestion_popup.isVisible():
+                    self.completeText(self.suggestion_popup.currentItem())
+                return True
+        return super().eventFilter(obj, event)
 
     def set_locked(self):
         self.locked = True
