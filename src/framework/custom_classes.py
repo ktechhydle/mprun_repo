@@ -592,7 +592,16 @@ QScrollBar::handle:vertical:hover {
                 self.completeText(self.suggestion_popup.currentItem())
                 return
 
-            if event.key() == Qt.Key_Left and self.suggestion_popup.isVisible():
+            if event.key() == Qt.Key_Down and self.suggestion_popup.isVisible():
+                # Move down in the suggestion list
+                current_index = self.suggestion_popup.currentRow()
+                next_index = current_index + 1
+                if next_index < self.suggestion_popup.count():
+                    self.suggestion_popup.setCurrentRow(next_index)
+                event.accept()
+                return
+
+            if event.key() == Qt.Key_Right and self.suggestion_popup.isVisible():
                 # Move down in the suggestion list
                 current_index = self.suggestion_popup.currentRow()
                 next_index = current_index + 1
