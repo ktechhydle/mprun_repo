@@ -468,6 +468,82 @@ class CustomTextItem(QGraphicsTextItem):
         self.markdownEnabled = False
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
 
+        # Create the suggestion popup
+        self.suggestion_popup = QListWidget()
+        self.suggestion_popup.setStyleSheet('''
+QListWidget {
+    background-color: #535353;
+    border: 2px solid #424242;
+    border-radius: 5px;
+    padding: 2px;
+    font-size: 12px;
+}
+
+QListWidget::item {
+    background-color: #3c3c3c;
+    border-radius: 3px;
+    padding: 3px 5px;
+    margin: 1px;
+    color: #dcdcdc;
+}
+
+QListWidget::item:selected {
+    background-color: #0066cc;
+    color: white;
+}
+
+QListWidget::item:hover {
+    background-color: #4a4a4a;
+}
+
+QScrollBar:vertical {
+    border: 1px solid #444;
+    background: #2e2e2e;
+    width: 10px;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical {
+    background: #555;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #666;
+}
+
+        ''')
+        self.suggestion_popup.setFixedWidth(250)
+        self.suggestion_popup.setFixedHeight(100)
+        self.suggestion_popup.setWindowFlags(Qt.Popup)
+
+        self.trick_types = ['Backside',
+                            'Frontside',
+                            'Switch Backside',
+                            'Switch Frontside',
+                            'Boardslide',
+                            'Grind',
+                            'Left',
+                            'Right',
+                            'Switch Right',
+                            'Switch Left',
+                            '180',
+                            '270',
+                            '360',
+                            '450',
+                            '540',
+                            '630',
+                            '720',
+                            '810',
+                            '900',
+                            '990',
+                            '1080',
+                            '1260',
+                            '1440',
+                            '1620',
+                            '1800',
+                            ]
+
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
             self.mouse_offset = event.pos()
@@ -507,16 +583,88 @@ class CustomTextItem(QGraphicsTextItem):
         else:
             super().mouseDoubleClickEvent(event)
 
-    def keyPressEvent(self, event):
-        super().keyPressEvent(event)
-
+    def keyPressEvent(self, event: QKeyEvent):
         if event.key() == Qt.Key_Escape:
             self.clearFocus()
 
         if isinstance(self.parentItem(), LeaderLineItem):
+            if event.key() == Qt.Key_Up and self.suggestion_popup.isVisible():
+                self.completeText(self.suggestion_popup.currentItem())
+                return
+
+            if event.key() == Qt.Key_Left and self.suggestion_popup.isVisible():
+                # Move down in the suggestion list
+                current_index = self.suggestion_popup.currentRow()
+                next_index = current_index + 1
+                if next_index < self.suggestion_popup.count():
+                    self.suggestion_popup.setCurrentRow(next_index)
+                event.accept()
+                return
+
+            if event.key() == Qt.Key_Left and self.suggestion_popup.isVisible():
+                # Move down in the suggestion list
+                current_index = self.suggestion_popup.currentRow()
+                next_index = current_index - 1
+                if next_index < self.suggestion_popup.count():
+                    self.suggestion_popup.setCurrentRow(next_index)
+                event.accept()
+                return
+
+            # Get the current text
+            current_text = self.getCurrentWord()
+
+            # Suggest trick types based on current input
+            self.suggestTrickTypes(current_text)
+            self.setFocus()
+
             self.parentItem().updatePathEndPoint()
 
+        super().keyPressEvent(event)
+
+    def suggestTrickTypes(self, current_word):
+        # Filter the suggestions and exclude the current word
+        suggestions = [trick for trick in self.trick_types
+                       if trick.lower().startswith(current_word.lower()) and trick.lower() != current_word.lower()]
+
+        if suggestions:
+            self.updateSuggestionPopup(suggestions)
+        else:
+            self.suggestion_popup.hide()
+
+    def updateSuggestionPopup(self, suggestions):
+        # Clear the previous suggestions
+        self.suggestion_popup.clear()
+
+        # Add new suggestions
+        for suggestion in suggestions:
+            item = QListWidgetItem(suggestion)
+            self.suggestion_popup.addItem(item)
+
+        # Position the suggestion popup
+        cursor_pos = self.sceneBoundingRect().bottomRight()
+        global_pos = self.scene().views()[0].mapFromScene(cursor_pos.toPoint())
+        self.suggestion_popup.move(int(global_pos.x()), int(100 + global_pos.y()))
+
+        # Show the popup
+        self.suggestion_popup.setCurrentRow(0)
+        self.suggestion_popup.setParent(self.scene().parentWindow)
+        self.suggestion_popup.show()
+
+    def completeText(self, item):
+        if item:
+            cursor = self.textCursor()
+            cursor.select(QTextCursor.WordUnderCursor)
+            cursor.removeSelectedText()
+            cursor.insertText(item.text())
+            self.setTextCursor(cursor)
+            self.moveCursorToEnd()
+            self.suggestion_popup.hide()
+
     def focusOutEvent(self, event):
+        if self.suggestion_popup.isVisible():
+            self.suggestion_popup.close()
+            return
+
         new_text = self.toPlainText()
         if self.old_text != new_text:
             edit_command = EditTextCommand(self, self.old_text, new_text)
@@ -530,6 +678,7 @@ class CustomTextItem(QGraphicsTextItem):
         cursor.clearSelection()
         self.setTextCursor(cursor)
         self.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.suggestion_popup.close()
         super().focusOutEvent(event)
 
     def set_locked(self):
@@ -594,6 +743,16 @@ class CustomTextItem(QGraphicsTextItem):
         cursor.movePosition(QTextCursor.End)
         cursor.select(QTextCursor.SelectionType.Document)
         self.setTextCursor(cursor)
+
+    def moveCursorToEnd(self):
+        cursor = self.textCursor()
+        cursor.setPosition(len(self.toPlainText()))
+        self.setTextCursor(cursor)
+
+    def getCurrentWord(self):
+        cursor = self.textCursor()
+        cursor.select(QTextCursor.WordUnderCursor)
+        return cursor.selectedText()
 
     def set_active(self):
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
