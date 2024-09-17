@@ -470,6 +470,7 @@ class CustomTextItem(QGraphicsTextItem):
 
         # Create the suggestion popup
         self.suggestion_popup = QListWidget()
+        self.suggestion_popup.setToolTip('<i>Press the up-arrow key to accept suggestions</i>')
         self.suggestion_popup.setStyleSheet('''
 QListWidget {
     background-color: #535353;
@@ -668,6 +669,9 @@ QScrollBar::handle:vertical:hover {
             self.setTextCursor(cursor)
             self.moveCursorToEnd()
             self.suggestion_popup.hide()
+
+            if isinstance(self.parentItem(), LeaderLineItem):
+                self.parentItem().updatePathEndPoint()
 
     def focusOutEvent(self, event):
         if self.suggestion_popup.isVisible():
