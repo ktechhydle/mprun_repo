@@ -4,6 +4,9 @@ from src.scripts.imports import *
 from src.framework.undo_commands import *
 
 
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+
 class CustomGraphicsItemGroup(QGraphicsItemGroup):
     def __init__(self):
         super().__init__()
@@ -519,61 +522,11 @@ QScrollBar::handle:vertical:hover {
         self.suggestion_popup.setFixedHeight(100)
         self.suggestion_popup.setWindowFlags(Qt.Popup)
 
-        self.trick_types = ['Backside',
-                            'Frontside',
-                            'Switch Backside',
-                            'Switch Frontside',
-                            'Cab',
-                            'Boardslide',
-                            'Grind',
-                            'Left',
-                            'Right',
-                            'Switch Right',
-                            'Switch Left',
-                            'Alleyoop',
-                            'Backflip',
-                            'Wildcat',
-                            'Frontflip',
-                            'Straight Air',
-                            'Cork',
-                            'Crippler',
-                            'Micheal Chuk',
-                            'Rodeo',
-                            'Sloth Roll',
-                            'Sushi Roll',
-                            'Double',
-                            'Triple',
-                            'Quad',
-                            'Underflip',
-                            '180',
-                            '270',
-                            '360',
-                            '450',
-                            '540',
-                            '630',
-                            '720',
-                            '810',
-                            '900',
-                            '990',
-                            '1080',
-                            '1260',
-                            '1440',
-                            '1620',
-                            '1800',
-                            'Mute',
-                            'Stalefish',
-                            'Indy',
-                            'Melon',
-                            'Nose',
-                            'Tail',
-                            'Japan',
-                            'Seatbelt',
-                            'Crail',
-                            'Chicken Salad',
-                            'Roast Beef',
-                            'Method',
-                            'Truck Driver'
-                            ]
+        self.trick_types = []
+
+        with open('internal data/_tricks.txt', 'r') as f:
+            for line in f.readlines():
+                self.trick_types.append(line.strip())
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
