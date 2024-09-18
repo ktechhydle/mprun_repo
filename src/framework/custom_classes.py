@@ -523,6 +523,7 @@ QScrollBar::handle:vertical:hover {
                             'Frontside',
                             'Switch Backside',
                             'Switch Frontside',
+                            'Cab',
                             'Boardslide',
                             'Grind',
                             'Left',
