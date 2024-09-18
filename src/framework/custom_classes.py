@@ -601,6 +601,13 @@ QScrollBar::handle:vertical:hover {
 
         super().keyPressEvent(event)
 
+    def keyReleaseEvent(self, event):
+        super().keyReleaseEvent(event)
+
+        if isinstance(self.parentItem(), LeaderLineItem):
+            if self.suggestion_popup.isVisible():
+                self.suggestTrickTypes(self.getCurrentWord())
+
     def suggestTrickTypes(self, current_word):
         # Filter the suggestions and exclude the current word
         suggestions = [trick for trick in self.trick_types
