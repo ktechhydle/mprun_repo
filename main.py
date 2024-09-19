@@ -1,17 +1,15 @@
 # This file is the "main" script that can be run to see the full app
 
-import random
-from src.scripts.imports import *
 from mp_software_stylesheets.styles import macCSS, windowsCSS
-from src.scripts.raw_functions import nameismain, ItemStack
-from src.scripts.app_internal import *
-from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin
-from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, \
-    CanvasEditorPanel
-from src.gui.icloud_integrator import iCloudIntegraterWin
-from src.gui.custom_widgets import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.serializer import MPDataRepairer
+from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin
+from src.gui.custom_widgets import *
+from src.gui.icloud_integrator import iCloudIntegraterWin
+from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, \
+    CanvasEditorPanel
+from src.scripts.app_internal import *
+from src.scripts.raw_functions import nameismain, ItemStack
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
