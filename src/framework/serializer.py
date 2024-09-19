@@ -27,12 +27,11 @@ class MPSerializer:
                 else:
                     items_data.append({
                         'type': 'CustomTextItem',
-                        'markdown': True if item.markdownEnabled else False,
-                        'text': item.old_text if item.markdownEnabled else item.toPlainText(),
+                        'text': item.toPlainText(),
                         'font': self.serialize_font(item.font()),
                         'color': self.serialize_color(item.defaultTextColor()),
                         'attr': self.serialize_item_attributes(item),
-                        'locked': True if item.markdownEnabled else False,
+                        'locked': item.locked,
                     })
 
             elif isinstance(item, CustomPathItem):
@@ -382,9 +381,6 @@ class MPDeserializer:
         text_item.locked = data['locked']
 
         self.process_attributes(text_item, data['attr'])
-
-        if data.get('markdown', True):
-            text_item.toMarkdown()
 
         return text_item
 

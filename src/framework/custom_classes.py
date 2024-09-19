@@ -468,7 +468,6 @@ class CustomTextItem(QGraphicsTextItem):
         self.setAcceptHoverEvents(True)
         self.gridEnabled = False
         self.old_text = self.toPlainText()
-        self.markdownEnabled = False
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.installEventFilter(self)
 
@@ -573,7 +572,7 @@ QScrollBar::handle:vertical:hover {
 
         if isinstance(self.parentItem(), LeaderLineItem):
             if event.key() == Qt.Key_Up and self.suggestion_popup.isVisible():
-                # Move down in the suggestion list
+                # Move up in the suggestion list
                 current_index = self.suggestion_popup.currentRow()
                 next_index = current_index - 1
                 if next_index < self.suggestion_popup.count():
@@ -581,7 +580,7 @@ QScrollBar::handle:vertical:hover {
                 event.accept()
                 return
 
-            if event.key() == Qt.Key_Down and self.suggestion_popup.isVisible():
+            elif event.key() == Qt.Key_Down and self.suggestion_popup.isVisible():
                 # Move down in the suggestion list
                 current_index = self.suggestion_popup.currentRow()
                 next_index = current_index + 1
@@ -606,7 +605,8 @@ QScrollBar::handle:vertical:hover {
 
         if isinstance(self.parentItem(), LeaderLineItem):
             if self.suggestion_popup.isVisible():
-                self.suggestTrickTypes(self.getCurrentWord())
+                if event.key() not in (Qt.Key_Down, Qt.Key_Up):
+                    self.suggestTrickTypes(self.getCurrentWord())
 
     def suggestTrickTypes(self, current_word):
         # Filter the suggestions and exclude the current word
@@ -678,9 +678,10 @@ QScrollBar::handle:vertical:hover {
                 if self.suggestion_popup.isVisible():
                     self.completeText(self.suggestion_popup.currentItem())
                 return True
+
         return super().eventFilter(obj, event)
 
-    def set_locked(self):
+    def setLocked(self):
         self.locked = True
 
     def duplicate(self):
@@ -697,15 +698,7 @@ QScrollBar::handle:vertical:hover {
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Text')
-
-        if self.markdownEnabled:
-            item.markdownEnabled = True
-            item.setPlainText(self.old_text)
-            item.old_text = item.toPlainText()
-            item.toMarkdown()
-
-        else:
-            item.setPlainText(self.toPlainText())
+        item.setPlainText(self.toPlainText())
 
         return item
 
@@ -723,19 +716,11 @@ QScrollBar::handle:vertical:hover {
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Text')
-
-        if self.markdownEnabled:
-            item.markdownEnabled = True
-            item.setPlainText(self.old_text)
-            item.old_text = item.toPlainText()
-            item.toMarkdown()
-
-        else:
-            item.setPlainText(self.toPlainText())
+        item.setPlainText(self.toPlainText())
 
         return item
 
-    def select_text_and_set_cursor(self):
+    def selectTextAndSetCursor(self):
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self.setFocus()
         cursor = self.textCursor()
@@ -753,17 +738,10 @@ QScrollBar::handle:vertical:hover {
         cursor.select(QTextCursor.WordUnderCursor)
         return cursor.selectedText()
 
-    def set_active(self):
+    def setEditing(self):
         self.setTextInteractionFlags(Qt.TextEditorInteraction)
         self.setFocus(Qt.MouseFocusReason)
         self.editing = True
-
-    def toMarkdown(self):
-        html_text = markdown.markdown(self.toPlainText())
-
-        self.setHtml(html_text)
-        self.markdownEnabled = True
-        self.set_locked()
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemPositionChange and isinstance(self.parentItem(), LeaderLineItem):

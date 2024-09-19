@@ -192,7 +192,7 @@ class CustomViewWidget(QGraphicsView):
             item.setFlag(QGraphicsItem.ItemIsMovable, False)
 
             if isinstance(item, CustomTextItem):
-                item.set_locked()
+                item.setLocked()
 
         super().mousePressEvent(event)
 

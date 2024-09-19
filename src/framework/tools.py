@@ -242,7 +242,7 @@ class LineAndLabelTool:
             self.pathg_item.setPath(self.leader_line)
             self.canvas.update()
 
-            self.pathg_item.text_element.select_text_and_set_cursor()
+            self.pathg_item.text_element.selectTextAndSetCursor()
 
             if self.leader_line.isEmpty():
                 self.view.scene().removeItem(self.pathg_item)

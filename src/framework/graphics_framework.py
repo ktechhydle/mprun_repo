@@ -333,12 +333,6 @@ y: {int(self.mapToScene(point).y())}''')
                     item = CustomTextItem(f.read())
                     item.setToolTip('Imported Text')
 
-            elif url.toLocalFile().endswith('.md'):
-                with open(url.toLocalFile(), 'r') as f:
-                    item = CustomTextItem(f.read())
-                    item.setToolTip('Imported Text')
-                    item.toMarkdown()
-
             else:
                 pixmap = QPixmap(url.toLocalFile())
                 item = CustomPixmapItem(pixmap)
@@ -391,7 +385,7 @@ y: {int(self.mapToScene(point).y())}''')
             i = self.scene().itemAt(self.mapToScene(event.pos()), self.transform())
 
             if i and isinstance(i, CustomTextItem):
-                i.set_active()
+                i.setEditing()
 
             else:
                 for item in self.canvas.items():
@@ -413,7 +407,7 @@ y: {int(self.mapToScene(point).y())}''')
                     QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
                 self.text.setZValue(0)
                 self.text.setPos(pos)
-                self.text.select_text_and_set_cursor()
+                self.text.selectTextAndSetCursor()
 
     def on_add_canvas_trigger(self):
         if self.add_canvas_btn.isChecked():
@@ -1167,17 +1161,6 @@ class ImportManager:
             elif file_path.endswith(('.txt', '.csv')):
                 with open(file_path, 'r') as f:
                     item = CustomTextItem(f.read())
-
-                    add_command = AddItemCommand(self.canvas, item)
-                    self.canvas.addCommand(add_command)
-
-                    self.create_item_attributes(item)
-
-            elif file_path.endswith('.md'):
-                with open(file_path, 'r') as f:
-                    item = CustomTextItem(f.read())
-                    item.toMarkdown()
-                    item.set_locked()
 
                     add_command = AddItemCommand(self.canvas, item)
                     self.canvas.addCommand(add_command)
