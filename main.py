@@ -1766,59 +1766,79 @@ class MPRUN(QMainWindow):
         self.canvas.addCommand(command)
 
     def use_vectorize(self):
+        # Initialize progress dialog
+        progress_dialog = QProgressDialog("Converting images...", "Cancel", 0, len(self.canvas.selectedItems()), self)
+        progress_dialog.setWindowTitle("Progress")
+        progress_dialog.setWindowModality(Qt.WindowModal)
+        progress_dialog.setFixedWidth(300)
+        progress_dialog.setAutoClose(True)  # Automatically closes after reaching the maximum value
+
+        # Update the progress
+        progress = 0
+        progress_dialog.setValue(progress)
+
+        converted_items = []
+
         for item in self.canvas.selectedItems():
+            # Check if the user pressed cancel
+            if progress_dialog.wasCanceled():
+                break
+
             if isinstance(item, CustomPixmapItem):
                 try:
                     temp_pixmap_path = os.path.abspath('internal data/temp_pixmap.png')
                     item.pixmap().save(temp_pixmap_path)
 
                     # Convert the pixmap to SVG
-                    vtracer.convert_image_to_svg_py(temp_pixmap_path,
-                                                    'internal data/output.svg',
-                                                    colormode=self.image_trace_tab.colormode_combo.itemData(
-                                                        self.image_trace_tab.colormode_combo.currentIndex()),
-                                                    # ["color"] or "binary"
-                                                    hierarchical='cutout',  # ["stacked"] or "cutout"
-                                                    mode=self.image_trace_tab.mode_combo.itemData(
-                                                        self.image_trace_tab.mode_combo.currentIndex()),
-                                                    # ["spline"] "polygon", or "none"
-                                                    filter_speckle=4,  # default: 4
-                                                    color_precision=6,  # default: 6
-                                                    layer_difference=16,  # default: 16
-                                                    corner_threshold=self.image_trace_tab.corner_threshold_spin.value(),
-                                                    # default: 60
-                                                    length_threshold=4.0,  # in [3.5, 10] default: 4.0
-                                                    max_iterations=10,  # default: 10
-                                                    splice_threshold=45,  # default: 45
-                                                    path_precision=3  # default: 8
-                                                    )
-
-                    # Display information
-                    QMessageBox.information(self, 'Convert Finished', 'Vector converted successfully.')
+                    vtracer.convert_image_to_svg_py(
+                        temp_pixmap_path,
+                        'internal data/output.svg',
+                        colormode=self.image_trace_tab.colormode_combo.itemData(
+                            self.image_trace_tab.colormode_combo.currentIndex()),
+                        hierarchical='cutout',
+                        mode=self.image_trace_tab.mode_combo.itemData(
+                            self.image_trace_tab.mode_combo.currentIndex()),
+                        filter_speckle=4,
+                        color_precision=6,
+                        layer_difference=16,
+                        corner_threshold=self.image_trace_tab.corner_threshold_spin.value(),
+                        length_threshold=4.0,
+                        max_iterations=10,
+                        splice_threshold=45,
+                        path_precision=3
+                    )
 
                     # Add the item to the scene
-                    item = CustomSvgItem()
-                    item.store_filename('')
-                    item.setToolTip('Imported SVG')
+                    svg_item = CustomSvgItem()
+                    svg_item.store_filename('')
+                    svg_item.setToolTip('Imported SVG')
+                    svg_item.setPos(item.x() + 10, item.y() + 10)
+                    self.create_item_attributes(svg_item)
+                    converted_items.append(svg_item)
 
                     with open(os.path.abspath('internal data/output.svg'), 'r', encoding='utf-8') as f:
                         data = f.read()
-                        item.loadFromData(data)
+                        svg_item.loadFromData(data)
 
-                    add_command = AddItemCommand(self.canvas, item)
-                    self.canvas.addCommand(add_command)
-                    self.create_item_attributes(item)
-
-                    # Remove the temporary file and SVG file
+                    # Remove the temporary files
                     if os.path.exists(temp_pixmap_path):
                         os.remove(temp_pixmap_path)
                     os.remove(os.path.abspath('internal data/output.svg'))
 
-                except Exception as e:
-                    # Set cursor back
-                    self.setCursor(Qt.ArrowCursor)
+                    # Update progress
+                    progress += 1
+                    progress_dialog.setValue(progress)
 
+                except Exception as e:
                     QMessageBox.critical(self, 'Convert Error', f'Failed to convert bitmap to vector: {e}')
+                    return  # Exit the loop on error
+
+        if not progress_dialog.wasCanceled():
+            if converted_items:
+                add_command = MultiAddItemCommand(self.canvas, converted_items)
+                self.canvas.addCommand(add_command)
+
+            QMessageBox.information(self, 'Convert Finished', 'All vectors converted successfully.')
 
     def use_duplicate(self):
         # Get selected items and create a copy
