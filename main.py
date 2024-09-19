@@ -2458,7 +2458,12 @@ class MPRUN(QMainWindow):
 
             _data['recent_files'] = recent_files  # Update the recent files in the data
 
-            for recent_file in recent_files:
+            max_recent_files = 5
+
+            for d in self.read_settings():
+                max_recent_files = d['recent_file_display_limit']
+
+            for recent_file in recent_files[:max_recent_files]:  # Slice the list
                 action = QAction(os.path.basename(recent_file), self)
                 action.setToolTip(os.path.abspath(recent_file))
                 action_tooltip = action.toolTip()
@@ -2486,8 +2491,12 @@ class MPRUN(QMainWindow):
 
             self.write_recent_file(data)
 
-            # add an action to the recent files menu
-            for recent_file in recent_files:
+            max_recent_files = 5
+
+            for d in self.read_settings():
+                max_recent_files = d['recent_file_display_limit']
+
+            for recent_file in recent_files[:max_recent_files]:
                 if os.path.exists(recent_file):
                     if os.path.abspath(recent_file) not in (action.toolTip() for action in
                                                             self.open_recent_menu.actions()):

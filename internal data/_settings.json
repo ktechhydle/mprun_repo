@@ -18,6 +18,7 @@
         "default_stroke": "red",
         "default_fill": "#00ff00",
         "default_font": "black",
-        "grid_size": 10
+        "grid_size": 10,
+        "recent_file_display_limit": 5
     }
 ]

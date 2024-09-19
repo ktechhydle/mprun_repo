@@ -774,8 +774,26 @@ class SettingsWin(QDialog):
 
             self.general_tab.layout().addWidget(startup_gb)
 
+        def createApplicationGB():
+            application_gb = QGroupBox('Application')
+            application_gb.setLayout(QVBoxLayout())
+
+            recent_file_display_limit_label = QLabel('Maximum Number of Recent Files Shown:')
+            self.recent_file_limit_spin = QSpinBox()
+            self.recent_file_limit_spin.setRange(1, 35)
+            recent_file_hlyaout = ToolbarHorizontalLayout()
+            recent_file_hlyaout.layout.addWidget(recent_file_display_limit_label)
+            recent_file_hlyaout.layout.addWidget(self.recent_file_limit_spin)
+            recent_file_hlyaout.layout.addStretch()
+
+            application_gb.layout().addWidget(recent_file_hlyaout)
+
+            self.general_tab.layout().addWidget(application_gb)
+
+
         createDialogAndGuiGB()
         createOnStartupGB()
+        createApplicationGB()
         self.general_tab.layout().addStretch()
 
     def createPerformanceSettings(self):
@@ -846,6 +864,7 @@ class SettingsWin(QDialog):
             self.undo_limit_spin.setValue(data['undo_limit'])
             self.show_tip_of_day_checkbtn.setChecked(data['show_daily_tips'])
             self.use_gpu_checkbtn.setChecked(data['use_gpu'])
+            self.recent_file_limit_spin.setValue(data['recent_file_display_limit'])
             for k, v in self.colors.items():
                 if v == data['default_stroke']:
                     self.default_stroke_combo.setCurrentText(k)
@@ -864,6 +883,7 @@ class SettingsWin(QDialog):
             data['default_stroke'] = self.default_stroke_combo.itemData(self.default_stroke_combo.currentIndex())
             data['default_fill'] = self.default_fill_combo.itemData(self.default_fill_combo.currentIndex())
             data['default_font'] = self.default_font_combo.itemData(self.default_font_combo.currentIndex())
+            data['recent_file_display_limit'] = self.recent_file_limit_spin.value()
 
         self.p.write_settings(_data)
 
@@ -887,6 +907,7 @@ class SettingsWin(QDialog):
         self.undo_limit_spin.setValue(200)
         self.show_tip_of_day_checkbtn.setChecked(True)
         self.use_gpu_checkbtn.setChecked(True)
+        self.recent_file_limit_spin.setValue(5)
         for k, v in self.colors.items():
             if v == 'red':
                 self.default_stroke_combo.setCurrentText(k)
