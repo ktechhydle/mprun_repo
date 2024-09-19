@@ -947,6 +947,7 @@ class CanvasItem(QGraphicsRectItem):
 
     def setName(self, name):
         self.text.setPlainText(name)
+        self.setToolTip(name)
         self.update()
 
     def name(self):
@@ -1001,8 +1002,7 @@ class CanvasItem(QGraphicsRectItem):
         duplicate = CanvasItem(self.rect(), f'COPY - {self.name()}')
         duplicate.setPos(self.sceneBoundingRect().width() + 100 + self.x(), self.y())
 
-        self.scene().addCommand(AddItemCommand(self.scene(), duplicate))
-        self.scene().parentWindow.use_add_canvas()
+        return duplicate
 
     def copy(self):
         duplicate = CanvasItem(self.rect(), f'COPY - {self.name()}')

@@ -1,5 +1,6 @@
 from src.scripts.imports import *
 
+
 class AddItemCommand(QUndoCommand):
     def __init__(self, scene, item):
         super().__init__()
@@ -11,6 +12,7 @@ class AddItemCommand(QUndoCommand):
 
     def undo(self):
         self.scene.removeItem(self.item)
+
 
 class MultiAddItemCommand(QUndoCommand):
     def __init__(self, scene, items):
@@ -25,6 +27,7 @@ class MultiAddItemCommand(QUndoCommand):
     def undo(self):
         for item in self.items:
             self.scene.removeItem(item)
+
 
 class MultiItemPositionChangeCommand(QUndoCommand):
     def __init__(self, parent, items, old_positions, new_positions):
@@ -44,6 +47,7 @@ class MultiItemPositionChangeCommand(QUndoCommand):
             item.setPos(old_pos)
         self.parent.update_transform_ui()
 
+
 class PositionChangeCommand(QUndoCommand):
     def __init__(self, parent, item, old, new):
         super().__init__()
@@ -59,6 +63,7 @@ class PositionChangeCommand(QUndoCommand):
     def undo(self):
         self.item.setPos(self.old)
         self.parent.update_transform_ui()
+
 
 class AlignMultipleItemsCommand(QUndoCommand):
     def __init__(self, parent, items, old_positions, new_positions):
@@ -92,6 +97,7 @@ class EditTextCommand(QUndoCommand):
     def undo(self):
         self.item.setPlainText(self.old_text)
 
+
 class RemoveItemCommand(QUndoCommand):
     def __init__(self, canvas, items):
         super().__init__()
@@ -105,6 +111,7 @@ class RemoveItemCommand(QUndoCommand):
     def undo(self):
         for item in self.items:
             self.canvas.addItem(item)
+
 
 class SmoothPathCommand(QUndoCommand):
     def __init__(self, scene, items, new_paths, old_paths):
@@ -122,6 +129,7 @@ class SmoothPathCommand(QUndoCommand):
         for item, old_path in zip(self.items, self.old_paths):
             item.setPath(old_path)
 
+
 class ScaleCommand(QUndoCommand):
     def __init__(self, item, old_scale, new_scale):
         super().__init__()
@@ -135,6 +143,7 @@ class ScaleCommand(QUndoCommand):
     def undo(self):
         self.item.setScale(self.old_scale)
 
+
 class MouseRotationCommand(QUndoCommand):
     def __init__(self, item, old, new):
         super().__init__()
@@ -147,6 +156,7 @@ class MouseRotationCommand(QUndoCommand):
 
     def undo(self):
         self.item.setRotation(self.old)
+
 
 class TransformCommand(QUndoCommand):
     def __init__(self, items, old_transforms, new_transforms):
@@ -162,6 +172,7 @@ class TransformCommand(QUndoCommand):
     def undo(self):
         for item, old_transform in zip(self.items, self.old_transforms):
             item.setTransform(old_transform)
+
 
 class RotateCommand(QUndoCommand):
     def __init__(self, parent, items, old_rotations, new_rotation):
@@ -181,6 +192,7 @@ class RotateCommand(QUndoCommand):
             item.setRotation(old_rotation)
         self.parent.update_transform_ui()
 
+
 class RotateDirectionCommand(QUndoCommand):
     def __init__(self, parent, items, old_rotations, new_rotations):
         super().__init__()
@@ -199,6 +211,7 @@ class RotateDirectionCommand(QUndoCommand):
             item.setRotation(old_rotation)
         self.parent.update_transform_ui()
 
+
 class ItemMovedUndoCommand(QUndoCommand):
     def __init__(self, oldPositions, newPositions):
         super().__init__()
@@ -212,6 +225,7 @@ class ItemMovedUndoCommand(QUndoCommand):
     def undo(self):
         for item, pos in self.oldPositions.items():
             item.setPos(pos)
+
 
 class OpacityCommand(QUndoCommand):
     def __init__(self, items, old_opacities, new_opacity):
@@ -228,6 +242,7 @@ class OpacityCommand(QUndoCommand):
         for item, old_opacity in zip(self.items, self.old_opacities):
             item.setOpacity(old_opacity)
 
+
 class HideCommand(QUndoCommand):
     def __init__(self, items, old_visibilities, new_visibility):
         super().__init__()
@@ -242,6 +257,7 @@ class HideCommand(QUndoCommand):
     def undo(self):
         for item, old_visibility in zip(self.items, self.old_visibilities):
             item.setVisible(old_visibility)
+
 
 class CloseSubpathCommand(QUndoCommand):
     def __init__(self, items, scene):
@@ -263,6 +279,7 @@ class CloseSubpathCommand(QUndoCommand):
         for item, old_path in zip(self.items, self.old_paths):
             item.setPath(old_path)
 
+
 class EditPathCommand(QUndoCommand):
     def __init__(self, item, old, new):
         super().__init__()
@@ -275,6 +292,7 @@ class EditPathCommand(QUndoCommand):
 
     def undo(self):
         self.item.setPath(self.oldPath)
+
 
 class FontChangeCommand(QUndoCommand):
     def __init__(self, items, old_fonts, new_font, old_colors, new_color):
@@ -298,6 +316,7 @@ class FontChangeCommand(QUndoCommand):
             item.setDefaultTextColor(old_color)
             item.update()
 
+
 class PenChangeCommand(QUndoCommand):
     def __init__(self, items, old_pens, new_pen):
         super().__init__()
@@ -316,6 +335,7 @@ class PenChangeCommand(QUndoCommand):
             item.setPen(old_pen)
             item.update()
 
+
 class BrushChangeCommand(QUndoCommand):
     def __init__(self, items, old_brushes, new_brush):
         super().__init__()
@@ -333,6 +353,7 @@ class BrushChangeCommand(QUndoCommand):
         for item, old_brush in zip(self.items, self.old_brushes):
             item.setBrush(old_brush)
             item.update()
+
 
 class ResetItemCommand(QUndoCommand):
     def __init__(self, items):
@@ -363,6 +384,7 @@ class ResetItemCommand(QUndoCommand):
             item.setRotation(state['rotation'])
             item.setOpacity(state['opacity'])
 
+
 class CanvasSizeEditCommand(QUndoCommand):
     def __init__(self, items, old_sizes, new_width, new_height):
         super().__init__()
@@ -379,6 +401,7 @@ class CanvasSizeEditCommand(QUndoCommand):
     def undo(self):
         for item, (old_width, old_height) in zip(self.items, self.old_sizes):
             item.setRect(0, 0, old_width, old_height)
+
 
 class CanvasNameEditCommand(QUndoCommand):
     def __init__(self, items, old_names, new_name):
@@ -397,6 +420,24 @@ class CanvasNameEditCommand(QUndoCommand):
         for item, old_name in zip(self.items, self.old_names):
             item.setName(old_name)
             item.setToolTip(old_name)
+
+
+class MultiCanvasNameEditCommand(QUndoCommand):
+    def __init__(self, items: list[QGraphicsItem], old_names: list[str], new_names: list[str]):
+        super().__init__()
+
+        self.items = items
+        self.old_names = old_names
+        self.new_names = new_names
+
+    def redo(self):
+        for item, name in zip(self.items, self.new_names):
+            item.setName(name)
+
+    def undo(self):
+        for item, old_name in zip(self.items, self.old_names):
+            item.setName(old_name)
+
 
 class LayerChangeCommand(QUndoCommand):
     def __init__(self, items, old_z_values, new_z_values):

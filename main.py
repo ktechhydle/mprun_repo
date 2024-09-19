@@ -229,6 +229,10 @@ class MPRUN(QMainWindow):
         arrange_canvases_action.setShortcut(Qt.Key_F3)
         arrange_canvases_action.triggered.connect(self.canvas.arrange)
 
+        rename_canvases_action = QAction('Rename Canvases', self)
+        #rename_canvases_action.setShortcut(Qt.Key_F3)
+        rename_canvases_action.triggered.connect(self.canvas.rename)
+
         path_action = QAction('Path Draw', self)
         path_action.setShortcut(QKeySequence('L'))
         path_action.triggered.connect(self.use_path)
@@ -554,6 +558,7 @@ class MPRUN(QMainWindow):
         scene_menu.addAction(rotate_view_action)
         scene_menu.addAction(zoom_view_action)
         scene_menu.addAction(arrange_canvases_action)
+        scene_menu.addAction(rename_canvases_action)
 
         view_options_menu.addAction(read_only_view_action)
         view_options_menu.addAction(tools_only_view_action)
@@ -1840,32 +1845,6 @@ class MPRUN(QMainWindow):
 
         else:
             del converted_items
-
-    def use_duplicate(self):
-        # Get selected items and create a copy
-        selected_items = self.canvas.selectedItems()
-
-        for item in selected_items:
-            if isinstance(item, CanvasItem):
-                item.duplicate()
-
-            elif isinstance(item, CustomTextItem):
-                item.duplicate()
-
-            elif isinstance(item, CustomPathItem):
-                item.duplicate()
-
-            elif isinstance(item, CustomPixmapItem):
-                item.duplicate()
-
-            elif isinstance(item, CustomSvgItem):
-                item.duplicate()
-
-            elif isinstance(item, CustomGraphicsItemGroup):
-                item.duplicate()
-
-            elif isinstance(item, LeaderLineItem):
-                item.duplicate()
 
     def use_set_item_pos(self):
         self.canvas.blockSignals(True)

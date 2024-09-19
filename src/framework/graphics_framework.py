@@ -7,9 +7,9 @@ from src.framework.tools import *
 from src.scripts.app_internal import *
 from src.scripts.imports import *
 
-
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
+
 
 class CustomViewport(QOpenGLWidget):
     def __init__(self):
@@ -588,7 +588,7 @@ class CustomGraphicsScene(QGraphicsScene):
                 if isinstance(item.parentItem(), LeaderLineItem):
                     item.parentItem().updatePathEndPoint()
 
-    def addCommand(self, command):
+    def addCommand(self, command: QUndoCommand):
         self.undo_stack.push(command)
         self.setHasChanges(True)
         self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
@@ -597,7 +597,7 @@ class CustomGraphicsScene(QGraphicsScene):
             if isinstance(command.item, CanvasItem):
                 self.canvas_count += 1
 
-        print(command)
+        print(f'Command At: {command}')
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()
@@ -688,6 +688,29 @@ class CustomGraphicsScene(QGraphicsScene):
         self.w = ArrangeWin(self, self.parentWindow)
         self.w.show()
 
+    def rename(self):
+        sorted_items = []
+
+        for item in self.items():
+            if isinstance(item, CanvasItem):
+                sorted_items.append(item)
+
+        # Sort by y position first (vertical), then by x position (horizontal)
+        sorted_items.sort(key=lambda item: (item.pos().y(), item.pos().x()))
+
+        new_canvas_names = []
+        old_canvas_names = []
+        count = 1
+
+        if sorted_items:
+            for i in sorted_items:
+                old_canvas_names.append(i.name())
+                new_canvas_names.append(f'Canvas {count}')
+                count += 1
+
+            command = MultiCanvasNameEditCommand(sorted_items, old_canvas_names, new_canvas_names)
+            self.addCommand(command)
+
     def copy(self):
         self.copy_stack.clear()
 
@@ -706,17 +729,22 @@ class CustomGraphicsScene(QGraphicsScene):
         if new_items:
             self.addCommand(MultiAddItemCommand(self, new_items))
 
+            for item in new_items:
+                if isinstance(item, CanvasItem):
+                    self.parentWindow.use_add_canvas()
+
     def duplicate(self):
         new_items = []
 
         for item in self.selectedItems():
             new_items.append(item.duplicate())
 
-            if isinstance(item, CanvasItem):
-                self.parentWindow.use_add_canvas()
-
         if new_items:
             self.addCommand(MultiAddItemCommand(self, new_items))
+
+            for item in new_items:
+                if isinstance(item, CanvasItem):
+                    self.parentWindow.use_add_canvas()
 
     def hasChanges(self):
         return self.modified
