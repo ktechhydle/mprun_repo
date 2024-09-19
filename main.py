@@ -1840,6 +1840,9 @@ class MPRUN(QMainWindow):
 
             QMessageBox.information(self, 'Convert Finished', 'All vectors converted successfully.')
 
+        else:
+            del converted_items
+
     def use_duplicate(self):
         # Get selected items and create a copy
         selected_items = self.canvas.selectedItems()
