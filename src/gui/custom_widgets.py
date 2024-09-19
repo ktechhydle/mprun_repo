@@ -502,7 +502,7 @@ class CustomDockWidget(QDockWidget):
         self.panel_names = unique_items2
         self.indexes = unique_items3
 
-        popup = QMenu(self)
+        popup = CustomMenu(self)
         action = QWidgetAction(popup)
         action.setDefaultWidget(panel)
         popup.addAction(action)

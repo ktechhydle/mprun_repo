@@ -2007,6 +2007,7 @@ class MPRUN(QMainWindow):
     def use_exit_add_canvas(self):
         # Deactivate the add canvas tool
         self.select_btn.trigger()
+        self.toolbox.setCurrentWidget(self.properties_tab)
 
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
