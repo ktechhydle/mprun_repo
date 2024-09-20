@@ -50,10 +50,6 @@ jobs:
         run: |
           codesign --deep --force --sign - MPRUN_1.1+macOS_setup.dmg
 
-      - name: Clear mac quarantine
-        run: |
-          xattr -c MPRUN_1.1+macOS_setup.dmg
-
       - name: Upload DMG as artifact
         uses: actions/upload-artifact@v3
         with:
