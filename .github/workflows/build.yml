@@ -27,7 +27,7 @@ jobs:
 
       - name: Build macOS app for x86_64 using PyInstaller
         run: |
-          arch -x86_64 pyinstaller --distpath dist/x86_64 macos_build.spec
+          arch -x86_64 pyinstaller macos_build.spec
 
       - name: Install create-dmg using Homebrew
         run: |
