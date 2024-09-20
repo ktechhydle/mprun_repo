@@ -21,5 +21,3 @@ from PyQt5.Qt import *
 from scipy.interpolate import splprep, splev
 from scipy.signal import savgol_filter
 from skimage.measure import *
-from shapely.geometry import Polygon
-from shapely.geometry.polygon import orient

@@ -17,7 +17,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['charset_normalizer', 'shapely'],
+    excludes=[],
     noarchive=False,
     noconfirm=True,
     optimize=0,
@@ -38,7 +38,7 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch='universal2',
+    target_arch='arm64',
     codesign_identity=None,
     entitlements_file=None,
 )
