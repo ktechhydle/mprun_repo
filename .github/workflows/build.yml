@@ -49,9 +49,7 @@ jobs:
           mkdir -p dist/MPRUN_universal.app/Contents/MacOS
           lipo -create dist/x86_64/MPRUN.app/Contents/MacOS/<binary_name> \
                       dist/arm64/MPRUN.app/Contents/MacOS/<binary_name> \
-                      -output dist/MPRUN_universal.app/Contents/MacOS/<binary_name>
-          
-          # Copy the rest of the .app structure from one of the builds (e.g., x86_64)
+                      -output dist/MPRUN_universal.app/Contents/MacOS/<binary_name> \
           cp -R dist/x86_64/MPRUN.app/Contents/* dist/MPRUN_universal.app/Contents/
 
       - name: Install create-dmg using Homebrew
