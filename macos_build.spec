@@ -59,5 +59,5 @@ app = BUNDLE(
     coll,
     name='MPRUN.app',
     icon='icon.icns',
-    bundle_identifier='com.kellerhydle.mprun',
+    bundle_identifier=None,
 )
