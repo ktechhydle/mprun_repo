@@ -29,44 +29,20 @@ jobs:
         run: |
           arch -x86_64 pyinstaller --distpath dist/x86_64 macos_build.spec
 
-      - name: Set up Python for arm64
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.x
-
-      - name: Install project requirements for arm64
-        run: |
-          arch -arm64 python -m pip install --upgrade pip
-          arch -arm64 pip install pyinstaller
-          arch -arm64 pip install -r requirements.txt
-
-      - name: Build macOS app for arm64 using PyInstaller
-        run: |
-          arch -arm64 pyinstaller --distpath dist/arm64 macos_build.spec
-
-      - name: Ensure bimaries are built for both architectures
-        run:
-          file dist/x86_64/MPRUN.app/Contents/MacOS/MPRUN
-          file dist/arm64/MPRUN.app/Contents/MacOS/MPRUN
-
-      - name: Merge x86_64 and arm64 using lipo
-        run: |
-          lipo -create dist/x86_64/MPRUN.app/Contents/MacOS/MPRUN dist/arm64/MPRUN.app/Contents/MacOS/MPRUN -output dist/MPRUN.app/Contents/MacOS/MPRUN.exec
-
       - name: Install create-dmg using Homebrew
         run: |
           brew install create-dmg
 
       - name: Codesign the app
         run: |
-          codesign --deep --force --sign - dist/MPRUN_universal.app
+          codesign --deep --force --sign - dist/MPRUN.app
 
       - name: Create DMG
         run: |
           create-dmg --volname "MPRUN Installer" \
           --background "dmg installer background.png" \
-          --window-pos 20 20 --window-size 600 400 --icon-size 128 \
-          --icon "MPRUN_universal.app" 75 176 --hide-extension "MPRUN_universal.app" \
+          --window-pos 20 20 --window-size 500 400 --icon-size 128 \
+          --icon "MPRUN.app" 75 176 --hide-extension "MPRUN.app" \
           --app-drop-link 438 176 "MPRUN_1.1+macOS_setup.dmg" \
           "dist/"
 
