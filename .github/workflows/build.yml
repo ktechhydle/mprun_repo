@@ -3,7 +3,7 @@ name: macOS PyInstaller Build
 on:
   release:
     types:
-      - unpublished
+      - published
 
 jobs:
   build:
