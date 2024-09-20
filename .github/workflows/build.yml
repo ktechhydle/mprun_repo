@@ -44,13 +44,9 @@ jobs:
         run: |
           arch -arm64 pyinstaller --distpath dist/arm64 macos_build.spec
 
-      - name: Merge x86_64 and arm64 binaries using lipo
+      - name: Merge x86_64 and arm64 using lipo
         run: |
-          mkdir -p dist/MPRUN_universal.app/Contents/MacOS
-          lipo -create dist/x86_64/MPRUN.app/Contents/MacOS/MPRUN.app \
-                      dist/arm64/MPRUN.app/Contents/MacOS/MPRUN.app \
-                      -output dist/MPRUN_universal.app/Contents/MacOS/MPRUN_universal.app \
-          cp -R dist/x86_64/MPRUN.app/Contents/* dist/MPRUN_universal.app/Contents/
+          lipo -create dist/x86_64/MPRUN.app/Contents/MacOS/MPRUN dist/arm64/MPRUN.app/Contents/MacOS/MPRUN -output dist/MPRUN.app/Contents/MacOS/MPRUN.exec
 
       - name: Install create-dmg using Homebrew
         run: |
