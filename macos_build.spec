@@ -15,7 +15,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['mypy', 'mypyc'],
     noarchive=False,
     noconfirm=True,
     optimize=0,
@@ -36,7 +36,7 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch='x86_64',
+    target_arch='universal2',
     codesign_identity=None,
     entitlements_file=None,
 )
