@@ -44,6 +44,11 @@ jobs:
         run: |
           arch -arm64 pyinstaller --distpath dist/arm64 macos_build.spec
 
+      - name: Ensure bimaries are built for both architectures
+        run:
+          file dist/x86_64/MPRUN.app/Contents/MacOS/MPRUN
+          file dist/arm64/MPRUN.app/Contents/MacOS/MPRUN
+
       - name: Merge x86_64 and arm64 using lipo
         run: |
           lipo -create dist/x86_64/MPRUN.app/Contents/MacOS/MPRUN dist/arm64/MPRUN.app/Contents/MacOS/MPRUN -output dist/MPRUN.app/Contents/MacOS/MPRUN.exec
