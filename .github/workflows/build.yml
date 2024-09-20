@@ -47,9 +47,9 @@ jobs:
       - name: Merge x86_64 and arm64 binaries using lipo
         run: |
           mkdir -p dist/MPRUN_universal.app/Contents/MacOS
-          lipo -create dist/x86_64/MPRUN.app/Contents/MacOS/<binary_name> \
-                      dist/arm64/MPRUN.app/Contents/MacOS/<binary_name> \
-                      -output dist/MPRUN_universal.app/Contents/MacOS/<binary_name> \
+          lipo -create dist/x86_64/MPRUN.app/Contents/MacOS/MPRUN.app \
+                      dist/arm64/MPRUN.app/Contents/MacOS/MPRUN.app \
+                      -output dist/MPRUN_universal.app/Contents/MacOS/MPRUN_universal.app \
           cp -R dist/x86_64/MPRUN.app/Contents/* dist/MPRUN_universal.app/Contents/
 
       - name: Install create-dmg using Homebrew
