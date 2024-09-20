@@ -60,4 +60,5 @@ app = BUNDLE(
     name='MPRUN.app',
     icon='icon.icns',
     bundle_identifier=None,
+    target_arch='universal2',
 )
