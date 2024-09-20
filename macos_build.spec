@@ -1,5 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
+
 a = Analysis(
     ['main.py'],
     pathex=[],
@@ -15,7 +17,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['mypy', 'mypyc'],
+    excludes=[],
     noarchive=False,
     noconfirm=True,
     optimize=0,
@@ -43,7 +45,7 @@ exe = EXE(
 
 coll = COLLECT(
     exe,
-    a.binaries,
+    [b for b in a.binaries if b[0].endswith('.so') and 'fat' in os.popen(f'file {b[0]}').read()],
     a.datas,
     strip=False,
     upx=True,
