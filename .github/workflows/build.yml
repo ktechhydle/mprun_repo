@@ -42,7 +42,7 @@ jobs:
           create-dmg --volname "MPRUN Installer" \
           --background "dmg installer background.png" \
           --window-pos 20 20 --window-size 580 440 --icon-size 128 \
-          --icon "MPRUN.app" 75 196 --hide-extension "MPRUN.app" \
+          --icon "MPRUN.app" 75 206 --hide-extension "MPRUN.app" \
           --app-drop-link 418 196 "MPRUN_1.1+macOS_setup.dmg" \
           "dist/"
 
