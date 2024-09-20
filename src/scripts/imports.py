@@ -18,6 +18,4 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtSvg import *
 from PyQt5.Qt import *
-from scipy.interpolate import splprep, splev
 from scipy.signal import savgol_filter
-from skimage.measure import *
