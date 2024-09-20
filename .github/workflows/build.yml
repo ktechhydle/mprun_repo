@@ -40,7 +40,7 @@ jobs:
       - name: Create DMG
         run: |
           create-dmg --volname "MPRUN Installer" \
-          --background "dmg installer background@2x.png" \
+          --background "dmg installer background.png" \
           --window-pos 20 20 --window-size 640 480 --icon-size 128 \
           --icon "MPRUN.app" 75 176 --hide-extension "MPRUN.app" \
           --app-drop-link 438 176 "MPRUN_1.1+macOS_setup.dmg" \
