@@ -27,7 +27,6 @@ jobs:
 
       - name: Build macOS app using PyInstaller
         run: |
-          brew install python@3.12 --universal
           pyinstaller macos_build.spec
 
       - name: Install create-dmg using Homebrew
