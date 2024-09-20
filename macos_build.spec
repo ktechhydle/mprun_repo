@@ -1,6 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import copy_metadata
 
-import os
+# Get the metadata for 'pyicloud'
+pyicloud_metadata = copy_metadata('pyicloud')
 
 a = Analysis(
     ['main.py'],
@@ -12,7 +14,7 @@ a = Analysis(
     ('course elements', 'course elements'),
     ('ui', 'ui'),
     ('IMPORTANT', 'IMPORTANT'),
-    ],
+    ] + pyicloud_metadata,
     hiddenimports=['pyicloud'],
     hookspath=[],
     hooksconfig={},
