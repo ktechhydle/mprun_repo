@@ -50,4 +50,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: MPRUN_1.1+macOS_setup.dmg
-          path: dist/MPRUN_1.1+macOS_setup.dmg
+          path: MPRUN_1.1+macOS_setup.dmg
