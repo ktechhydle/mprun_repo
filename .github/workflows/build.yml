@@ -44,10 +44,10 @@ jobs:
           --window-pos 20 20 --window-size 640 480 --icon-size 128 \
           --icon "MPRUN.app" 75 176 --hide-extension "MPRUN.app" \
           --app-drop-link 438 176 "MPRUN_1.1+macOS_setup.dmg" \
-          "dist/"
+          ""
 
       - name: Upload DMG as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: "MPRUN_1.1+macOS_setup.dmg"
-          path: "dist/MPRUN_1.1+macOS_setup.dmg"
+          name: MPRUN_1.1+macOS_setup.dmg
+          path: MPRUN_1.1+macOS_setup.dmg
