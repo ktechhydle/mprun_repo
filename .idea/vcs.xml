@@ -2,6 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/dist/MPRUN/_internal/mp_software_stylesheets" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/mp_software_stylesheets" vcs="Git" />
   </component>
 </project>
