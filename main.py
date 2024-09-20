@@ -3,7 +3,7 @@
 from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.serializer import MPDataRepairer
-from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin
+from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin, ScriptingWin
 from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, \
@@ -465,6 +465,9 @@ class MPRUN(QMainWindow):
         show_tip_of_the_day_action = QAction('Show Tip Of The Day', self)
         show_tip_of_the_day_action.triggered.connect(self.show_tip_of_the_day)
 
+        python_scripting_action = QAction('Python Scripting', self)
+        python_scripting_action.triggered.connect(self.show_scripts)
+
         # Add actions
         self.file_menu.addAction(add_canvas_action)
         self.file_menu.addAction(insert_action)
@@ -538,6 +541,8 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(reload_ui_action)
         self.help_menu.addSeparator()
         self.help_menu.addAction(show_tip_of_the_day_action)
+        self.help_menu.addSeparator()
+        self.help_menu.addAction(python_scripting_action)
 
         # Sub menu actions
         drawing_menu.addAction(path_action)
@@ -2389,6 +2394,10 @@ class MPRUN(QMainWindow):
 
     def show_settings(self):
         self.w = SettingsWin(self)
+        self.w.show()
+
+    def show_scripts(self):
+        self.w = ScriptingWin(self)
         self.w.show()
 
     def read_settings(self):

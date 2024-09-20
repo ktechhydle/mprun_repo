@@ -1,4 +1,5 @@
 import sys
+import re
 
 from src.framework.undo_commands import MultiItemPositionChangeCommand
 from src.gui.custom_widgets import *
@@ -550,7 +551,7 @@ You are responsible for publishing your work under a license of your choosing an
 
         # Create more info tab
         credits_label = CustomExternalLinkLabel('Credits',
-                                   'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
+                                                'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
         contact_label = CustomExternalLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
         self.more_info_tab.layout().addWidget(credits_label)
         self.more_info_tab.layout().addWidget(contact_label)
@@ -700,7 +701,7 @@ class DisclaimerWin(QMessageBox):
 class SettingsWin(QDialog):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setWindowTitle('Settings (Beta)')
+        self.setWindowTitle('Settings')
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(700)
@@ -789,7 +790,6 @@ class SettingsWin(QDialog):
             application_gb.layout().addWidget(recent_file_hlyaout)
 
             self.general_tab.layout().addWidget(application_gb)
-
 
         createDialogAndGuiGB()
         createOnStartupGB()
@@ -915,6 +915,181 @@ class SettingsWin(QDialog):
                 self.default_fill_combo.setCurrentText(k)
             if v == 'black':
                 self.default_font_combo.setCurrentText(k)
+
+
+class ScriptingWin(QDialog):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setWindowTitle('Python Scripting Interface')
+        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.resize(600, 600)
+
+        self.mprun = parent
+        self.setLayout(QVBoxLayout())
+
+        self.createUI()
+
+    def createUI(self):
+        self.open_script_btn = QPushButton('Open Script')
+        self.open_script_btn.clicked.connect(self.openFile)
+        self.open_script_btn.setFixedWidth(200)
+        self.run_btn = QPushButton('Run Script')
+        self.run_btn.setFixedWidth(200)
+        self.run_btn.clicked.connect(self.runScript)
+        script_hlayout = ToolbarHorizontalLayout()
+        script_hlayout.layout.addWidget(self.open_script_btn)
+        script_hlayout.layout.addWidget(self.run_btn)
+
+        self.editor = QPlainTextEdit(self)
+        self.editor.setPlaceholderText('Your script here...')
+        self.editor.setPlainText('''# ---- MPRUN python scripting example ---- #
+        
+class Panel(QWidget):
+    def __init__(self):
+        super().__init__()
+        
+        button = QPushButton('Hello World!')
+        button.clicked.connect(self.display_message)
+        
+        self.setLayout(QVBoxLayout())
+        self.layout().addWidget(button)
+        
+    def display_message(self):
+        QMessageBox.information(self, 'Hello', 'Hello World! This is a test.')
+        
+# Add the panel
+mprun.toolbox.addItem(Panel(), 'Test Panel')
+
+# This will create a new panel in the toolbox called "Test Panel" with a button that says "Hello World"
+
+        ''')
+
+        self.highlighter = PythonHighlighter(self.editor.document())
+
+        self.console = QLabel('Script result will show here')
+
+        self.layout().addWidget(script_hlayout)
+        self.layout().addWidget(self.editor)
+        self.layout().addWidget(self.console)
+
+    def runScript(self):
+        code = self.editor.toPlainText()
+
+        # Create a context that includes 'self' to access app components
+        context = {
+            'mprun': self.mprun,
+        }
+
+        try:
+            exec(code, globals(), context)
+            self.console.setText('Process finished')
+        except Exception as e:
+            self.console.setText(f"Error: {e}")
+
+    def openFile(self):
+        file, _ = QFileDialog.getOpenFileName(self.mprun, 'Open Python File', '', 'Python files (*.py)')
+
+        if file:
+            with open(file, 'r') as f:
+                self.editor.setPlainText(f.read())
+
+
+class PythonHighlighter(QSyntaxHighlighter):
+    def __init__(self, document: QTextDocument):
+        super().__init__(document)
+        # Define styles for different Python elements
+        self.keyword_format = QTextCharFormat()
+        self.keyword_format.setForeground(QColor(204, 120, 50))  # Orange-like for keywords
+        self.keyword_format.setFontWeight(QFont.Bold)
+
+        self.operator_format = QTextCharFormat()
+        self.operator_format.setForeground(QColor(255, 255, 255))  # White for operators
+
+        self.brace_format = QTextCharFormat()
+        self.brace_format.setForeground(QColor(255, 255, 255))  # White for braces
+
+        self.defclass_format = QTextCharFormat()
+        self.defclass_format.setForeground(QColor(255, 198, 109))  # Light orange for def/class
+        self.defclass_format.setFontWeight(QFont.Bold)
+
+        self.string_format = QTextCharFormat()
+        self.string_format.setForeground(QColor(106, 135, 89))  # Green for strings
+
+        self.single_comment_format = QTextCharFormat()
+        self.single_comment_format.setForeground(QColor(128, 128, 128))  # Gray for comments
+        self.single_comment_format.setFontItalic(True)
+
+        self.number_format = QTextCharFormat()
+        self.number_format.setForeground(QColor('#2aacb8'))  # Blue for numbers
+
+        self.builtin_format = QTextCharFormat()
+        self.builtin_format.setForeground(QColor(152, 118, 170))  # Purple for built-in functions
+
+        print()
+
+        # Define the regex patterns for different Python elements
+        self.rules = []
+
+        # Keywords
+        keywords = [
+            'False', 'class', 'finally', 'is', 'return',
+            'None', 'continue', 'for', 'lambda', 'try',
+            'True', 'def', 'from', 'nonlocal', 'while',
+            'and', 'del', 'global', 'not', 'with',
+            'as', 'elif', 'if', 'or', 'yield',
+            'assert', 'else', 'import', 'pass', 'break',
+            'except', 'in', 'raise', 'mprun'
+        ]
+        keyword_patterns = [r'\b{}\b'.format(kw) for kw in keywords]
+        self.rules += [(re.compile(pattern), self.keyword_format) for pattern in keyword_patterns]
+
+        # Operators
+        operators = [
+            r'=', r'==', r'!=', r'<', r'<=', r'>', r'>=',
+            r'\+', r'-', r'\*', r'/', r'//', r'%', r'\*\*',
+            r'\+=', r'-=', r'\*=', r'/=', r'%=', r'\^', r'\|', r'&', r'~', r'>>', r'<<'
+        ]
+        operator_patterns = [re.escape(op) for op in operators]
+        self.rules += [(re.compile(pattern), self.operator_format) for pattern in operator_patterns]
+
+        # Braces
+        braces = [r'\{', r'\}', r'\(', r'\)', r'\[', r'\]']
+        self.rules += [(re.compile(pattern), self.brace_format) for pattern in braces]
+
+        # Numbers
+        self.rules.append((re.compile(r'\b[0-9]+\b'), self.number_format))
+
+        # Strings (both single and double quoted)
+        self.rules.append((re.compile(r'".*?"'), self.string_format))
+        self.rules.append((re.compile(r"'.*?'"), self.string_format))
+
+        # Single-line comments
+        self.rules.append((re.compile(r'#.*'), self.single_comment_format))
+
+        # Function/class definitions
+        self.rules.append((re.compile(r'\bdef\b\s*(\w+)'), self.defclass_format))
+        self.rules.append((re.compile(r'\bclass\b\s*(\w+)'), self.defclass_format))
+
+        # Built-in functions
+        builtins = [
+            'abs', 'divmod', 'input', 'open', 'staticmethod', 'all', 'enumerate', 'int', 'ord', 'str',
+            'any', 'eval', 'isinstance', 'pow', 'sum', 'basestring', 'execfile', 'issubclass', 'print',
+            'super', 'bin', 'file', 'iter', 'property', 'tuple', 'bool', 'filter', 'len', 'range', 'type',
+            'bytearray', 'float', 'list', 'raw_input', 'unichr', 'callable', 'format', 'locals', 'reduce',
+            'unicode', 'chr', 'frozenset', 'long', 'reload', 'vars', 'classmethod', 'getattr', 'map', 'repr',
+            'xrange', 'cmp', 'globals', 'max', 'reversed', 'zip', 'compile', 'hasattr', 'memoryview',
+            'round', '__import__', 'complex', 'hash', 'min', 'set', 'delattr', 'help', 'next', 'setattr',
+            'dict', 'hex', 'object', 'slice', 'dir', 'id', 'oct', 'sorted', 'range', 'toolbox', 'canvas',
+            'canvas_view', 'toolbar', 'item_toolbar', 'actions'
+        ]
+        builtin_patterns = [r'\b{}\b'.format(builtin) for builtin in builtins]
+        self.rules += [(re.compile(pattern), self.builtin_format) for pattern in builtin_patterns]
+
+    def highlightBlock(self, text):
+        for pattern, fmt in self.rules:
+            for match in pattern.finditer(text):
+                start, end = match.span()
+                self.setFormat(start, end - start, fmt)
 
 
 class TipWin(QDialog):
