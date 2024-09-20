@@ -45,7 +45,7 @@ exe = EXE(
 
 coll = COLLECT(
     exe,
-    [b for b in a.binaries if b[0].endswith('.so') and 'fat' in os.popen(f'file {b[0]}').read()],
+    a.binaries,
     a.datas,
     strip=False,
     upx=True,
