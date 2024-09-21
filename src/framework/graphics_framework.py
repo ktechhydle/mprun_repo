@@ -21,25 +21,6 @@ class CustomViewport(QOpenGLWidget):
         self.setFormat(format)
 
 
-class ShaderViewport(QOpenGLWidget):
-    def __init__(self):
-        super().__init__()
-
-        # Query the system's OpenGL context for max samples
-        context = QOpenGLContext.currentContext()
-        max_samples = context.format().samples()
-
-        if not max_samples:
-            max_samples = 16
-
-        format = QSurfaceFormat()
-        format.setRenderableType(QSurfaceFormat.OpenGL)
-        format.setProfile(QSurfaceFormat.CoreProfile)  # Use core profile for modern OpenGL
-        format.setSamples(max_samples)  # Set to the maximum available samples
-        format.setSwapInterval(1)  # Enable V-Sync for smooth rendering
-        self.setFormat(format)
-
-
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, canvas, actions: list):
         super().__init__()
