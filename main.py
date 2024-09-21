@@ -407,38 +407,6 @@ class MPRUN(QMainWindow):
         default_view_action = QAction('Default', self)
         default_view_action.triggered.connect(lambda: self.view_as('normal'))
 
-        zoom_and_rotate_action = QWidgetAction(self.menu_bar)
-
-        self.view_zoom_spin = QSpinBox()
-        self.view_zoom_spin.setToolTip('Zoom view')
-        self.view_zoom_spin.setRange(1, 5000)
-        # self.view_zoom_spin.setFixedWidth(50)
-        self.view_zoom_spin.setSuffix('%')
-        self.view_zoom_spin.setValue(100)
-        self.view_zoom_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.view_zoom_spin.valueChanged.connect(self.use_change_view)
-
-        self.view_rotate_spin = QSpinBox()
-        self.view_rotate_spin.setToolTip('Rotate view')
-        # self.view_rotate_spin.setFixedWidth(50)
-        self.view_rotate_spin.setMinimum(-10000)
-        self.view_rotate_spin.setMaximum(10000)
-        self.view_rotate_spin.setSuffix('°')
-        self.view_rotate_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.view_rotate_spin.valueChanged.connect(self.use_change_view)
-
-        zoom_and_rotate_hlayout1 = ToolbarHorizontalLayout()
-        zoom_and_rotate_hlayout1.layout.addWidget(QLabel('<i>Zoom:</i>'))
-        zoom_and_rotate_hlayout1.layout.addWidget(self.view_zoom_spin)
-        zoom_and_rotate_hlayout2 = ToolbarHorizontalLayout()
-        zoom_and_rotate_hlayout2.layout.addWidget(QLabel('<i>Rotation:</i>'))
-        zoom_and_rotate_hlayout2.layout.addWidget(self.view_rotate_spin)
-        zoom_and_rotate_widget = QWidget()
-        zoom_and_rotate_widget.setLayout(QVBoxLayout())
-        zoom_and_rotate_widget.layout().addWidget(zoom_and_rotate_hlayout1)
-        zoom_and_rotate_widget.layout().addWidget(zoom_and_rotate_hlayout2)
-        zoom_and_rotate_action.setDefaultWidget(zoom_and_rotate_widget)
-
         # Create help menu actions
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
@@ -530,7 +498,6 @@ class MPRUN(QMainWindow):
         self.view_menu.addAction(control_toolbar_view_action)
         self.view_menu.addAction(fullscreen_view_action)
         self.view_menu.addMenu(view_options_menu)
-        self.view_menu.addAction(zoom_and_rotate_action)
 
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
@@ -627,8 +594,6 @@ class MPRUN(QMainWindow):
         self.actions['Save'] = save_action
         self.actions['Save As'] = saveas_action
         self.actions['Open'] = open_action
-        self.actions['Zoom View'] = self.view_zoom_spin
-        self.actions['Rotate View'] = self.view_rotate_spin
 
     def init_toolbars(self):
         # Toolbar
@@ -1057,8 +1022,7 @@ class MPRUN(QMainWindow):
                                                             self.scale_btn,
                                                             self.rotate_btn,
                                                             self.add_canvas_btn,
-                                                            self.quick_actions_tab.gsnap_check_btn],
-                                              self.view_zoom_spin)
+                                                            self.quick_actions_tab.gsnap_check_btn])
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
         self.setCentralWidget(self.canvas_view)

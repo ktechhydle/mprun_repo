@@ -21,8 +21,27 @@ class CustomViewport(QOpenGLWidget):
         self.setFormat(format)
 
 
+class ShaderViewport(QOpenGLWidget):
+    def __init__(self):
+        super().__init__()
+
+        # Query the system's OpenGL context for max samples
+        context = QOpenGLContext.currentContext()
+        max_samples = context.format().samples()
+
+        if not max_samples:
+            max_samples = 16
+
+        format = QSurfaceFormat()
+        format.setRenderableType(QSurfaceFormat.OpenGL)
+        format.setProfile(QSurfaceFormat.CoreProfile)  # Use core profile for modern OpenGL
+        format.setSamples(max_samples)  # Set to the maximum available samples
+        format.setSwapInterval(1)  # Enable V-Sync for smooth rendering
+        self.setFormat(format)
+
+
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, actions: list, zoom_spin):
+    def __init__(self, canvas, actions: list):
         super().__init__()
         self.w = None
 
@@ -75,7 +94,7 @@ class CustomGraphicsView(QGraphicsView):
         self.zoom = 20
         self.zoomStep = 1
         self.zoomRange = [0, 100]
-        self.zoom_spin = zoom_spin
+        self.isPanning = False
 
     def update_pen(self, pen):
         self.pen = pen
@@ -284,7 +303,6 @@ y: {int(self.mapToScene(point).y())}''')
 
     def wheelEvent(self, event):
         try:
-            self.zoom_spin.blockSignals(True)
             self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
             # Calculate zoom Factor
@@ -305,10 +323,6 @@ y: {int(self.mapToScene(point).y())}''')
 
             if not clamped or self.zoomClamp is False:
                 self.scale(zoomFactor, zoomFactor)
-
-            current_zoom_percentage = self.transform().m11() * 100
-            self.zoom_spin.setValue(int(current_zoom_percentage))
-            self.zoom_spin.blockSignals(False)
 
         except Exception:
             pass
@@ -425,6 +439,8 @@ y: {int(self.mapToScene(point).y())}''')
                                    Qt.LeftButton, Qt.NoButton, event.modifiers())
         super().mouseReleaseEvent(releaseEvent)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
+        self.disable_item_flags()
+        self.isPanning = True
         fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
                                 Qt.LeftButton, event.buttons() | Qt.LeftButton, event.modifiers())
         super().mousePressEvent(fakeEvent)
@@ -434,6 +450,7 @@ y: {int(self.mapToScene(point).y())}''')
                                 Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
+        self.isPanning = False
 
 
 class CustomGraphicsScene(QGraphicsScene):

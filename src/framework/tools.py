@@ -274,7 +274,7 @@ class MouseScalingTool:
         p.setY(p.y())
         p.setX(p.x() + 10)
 
-        if self.scaling_item:
+        if self.scaling_item and not self.view.isPanning:
             QToolTip.showText(p, f'scale: {int(self.scaling_item.scale() * 100)}%')
 
         else:
@@ -294,23 +294,24 @@ class MouseScalingTool:
 
     def on_scale(self, event):
         if self.scaling_item and self.start_pos:
-            current_pos = self.view.mapToScene(event.pos())
-            delta = current_pos - self.start_pos
-            scale_factor = 1 + delta.y() / 100.0
+            if not self.view.isPanning:
+                current_pos = self.view.mapToScene(event.pos())
+                delta = current_pos - self.start_pos
+                scale_factor = 1 + delta.y() / 100.0
 
 
-            self.scaling_item.setTransformOriginPoint(self.scaling_item.boundingRect().center())
+                self.scaling_item.setTransformOriginPoint(self.scaling_item.boundingRect().center())
 
-            new_scale = self.scaling_item.scale() * scale_factor
-            self.scaling_item.setScale(new_scale)
+                new_scale = self.scaling_item.scale() * scale_factor
+                self.scaling_item.setScale(new_scale)
 
-            self.scaling_command = ScaleCommand(self.scaling_item, self.scaling_item_initial_scale, new_scale)
+                self.scaling_command = ScaleCommand(self.scaling_item, self.scaling_item_initial_scale, new_scale)
 
-            self.start_pos = current_pos
+                self.start_pos = current_pos
 
-            if (isinstance(self.scaling_item, CustomTextItem) and
-                    isinstance(self.scaling_item.parentItem(), LeaderLineItem)):
-                self.scaling_item.parentItem().updatePathEndPoint()
+                if (isinstance(self.scaling_item, CustomTextItem) and
+                        isinstance(self.scaling_item.parentItem(), LeaderLineItem)):
+                    self.scaling_item.parentItem().updatePathEndPoint()
 
     def on_scale_end(self, event):
         if self.scaling_command:
@@ -350,7 +351,7 @@ class MouseRotatingTool:
         p.setY(p.y())
         p.setX(p.x() + 10)
 
-        if self.rotating_item:
+        if self.rotating_item and not self.view.isPanning:
             QToolTip.showText(p, f'rotation: {int(self.rotating_item.rotation())}°')
 
         else:
@@ -370,29 +371,30 @@ class MouseRotatingTool:
 
     def on_rotate(self, event):
         if self.rotating_item and self.start_pos:
-            current_pos = self.view.mapToScene(event.pos())
-            item_center = self.rotating_item.sceneBoundingRect().center()
+            if not self.view.isPanning:
+                current_pos = self.view.mapToScene(event.pos())
+                item_center = self.rotating_item.sceneBoundingRect().center()
 
-            vector_start = self.start_pos - item_center
-            vector_current = current_pos - item_center
+                vector_start = self.start_pos - item_center
+                vector_current = current_pos - item_center
 
-            angle_start = math.atan2(vector_start.y(), vector_start.x())
-            angle_current = math.atan2(vector_current.y(), vector_current.x())
-            angle_change = math.degrees(angle_current - angle_start)
+                angle_start = math.atan2(vector_start.y(), vector_start.x())
+                angle_current = math.atan2(vector_current.y(), vector_current.x())
+                angle_change = math.degrees(angle_current - angle_start)
 
-            new_angle = self.start_angle + angle_change
+                new_angle = self.start_angle + angle_change
 
-            if event.modifiers() & Qt.ShiftModifier:
-                new_angle = round(new_angle / 45) * 45
+                if event.modifiers() & Qt.ShiftModifier:
+                    new_angle = round(new_angle / 45) * 45
 
-            self.rotating_item.setTransformOriginPoint(self.rotating_item.boundingRect().center())
-            self.rotating_item.setRotation(new_angle)
+                self.rotating_item.setTransformOriginPoint(self.rotating_item.boundingRect().center())
+                self.rotating_item.setRotation(new_angle)
 
-            self.rotation_command = MouseRotationCommand(self.rotating_item, self.start_angle, new_angle)
+                self.rotation_command = MouseRotationCommand(self.rotating_item, self.start_angle, new_angle)
 
-            if (isinstance(self.rotating_item, CustomTextItem) and
-                    isinstance(self.rotating_item.parentItem(), LeaderLineItem)):
-                self.rotating_item.parentItem().updatePathEndPoint()
+                if (isinstance(self.rotating_item, CustomTextItem) and
+                        isinstance(self.rotating_item.parentItem(), LeaderLineItem)):
+                    self.rotating_item.parentItem().updatePathEndPoint()
 
     def on_rotate_end(self, event):
         if self.rotation_command:
