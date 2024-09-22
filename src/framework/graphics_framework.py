@@ -655,10 +655,6 @@ class CustomGraphicsScene(QGraphicsScene):
                 if isinstance(item, CanvasItem):
                     item.setSelected(True)
 
-            elif mode == 'group':
-                if isinstance(item, CustomGraphicsItemGroup):
-                    item.setSelected(True)
-
     def setGridEnabled(self, enabled: bool):
         self.gridEnabled = enabled
 

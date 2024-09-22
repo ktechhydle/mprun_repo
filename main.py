@@ -431,7 +431,8 @@ class MPRUN(QMainWindow):
         browse_tutorials_action = QAction('Browse Tutorials', self)
         browse_tutorials_action.setShortcut(Qt.Key_F1)
         browse_tutorials_action.triggered.connect(
-            lambda: webbrowser.open('https://sites.google.com/view/mprun/learn#h.dhbfsx84043q'))
+            lambda: webbrowser.open('https://sites.google.com/view/mprun-studio/home')
+        )
 
         view_settings_action = QAction('Settings', self)
         view_settings_action.setShortcut(Qt.Key_F2)

@@ -7,67 +7,6 @@ from src.framework.undo_commands import *
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
-class CustomGraphicsItemGroup(QGraphicsItemGroup):
-    def __init__(self):
-        super().__init__()
-        self.mouse_offset = QPoint(0, 0)
-        self.block_size = 10
-
-        self.locked = False
-        self.stored_items = None
-
-        self.gridEnabled = False
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.mouse_offset = event.pos()
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.gridEnabled:
-            # Calculate the position relative to the scene's coordinate system
-            scene_pos = event.scenePos()
-            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
-            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
-
-            # Set the position relative to the scene's coordinate system
-            self.setPos(x, y)
-
-        else:
-            super().mouseMoveEvent(event)
-
-    def store_items(self, items):
-        self.stored_items = items
-
-    def duplicate(self):
-        # Create a new instance of CustomGraphicsItemGroup
-        group = CustomGraphicsItemGroup()
-
-        # Set position, scale, and rotation
-        group.setPos(self.pos() + QPointF(10, 10))
-        group.setScale(self.scale())
-        group.setRotation(self.rotation())
-        group.setZValue(self.zValue())
-        group.setTransform(self.transform())
-        group.setTransformOriginPoint(self.transformOriginPoint())
-
-        # Set flags and tooltip
-        group.setFlag(QGraphicsItem.ItemIsSelectable)
-        group.setFlag(QGraphicsItem.ItemIsMovable)
-        group.setToolTip('Group')
-
-        # Add the new item to the scene
-        add_command = AddItemCommand(self.scene(), group)
-        self.scene().addCommand(add_command)
-
-        for items in self.childItems():
-            copy = items.duplicate()
-
-            # Add items to group
-            group.addToGroup(copy)
-
-        return group
-
 
 class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
