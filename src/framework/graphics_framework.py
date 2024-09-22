@@ -284,6 +284,20 @@ y: {int(self.mapToScene(point).y())}''')
 
     def wheelEvent(self, event):
         try:
+            if self.sculpt_btn.isChecked() and not self.isPanning:
+                if self.sculptingTool.sculpting_item:
+                    if event.angleDelta().y() > 0:
+                        self.scene().parentWindow.use_set_sculpt_radius(self.sculptingTool.sculpt_radius + 5 if self.sculptingTool.sculpt_radius <= 1000 else 1000)
+                    else:
+                        self.scene().parentWindow.use_set_sculpt_radius(self.sculptingTool.sculpt_radius - 5 if self.sculptingTool.sculpt_radius >= 1 else 1)
+
+                    self.scene().parentWindow.sculpt_radius_spin.blockSignals(True)
+                    self.scene().parentWindow.sculpt_radius_spin.setValue(self.sculptingTool.sculpt_radius)
+                    self.scene().parentWindow.sculpt_radius_spin.blockSignals(False)
+
+                    self.sculptingTool.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculptingTool.sculpt_shape.boundingRect().center())
+                    return
+
             self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
             # Calculate zoom Factor

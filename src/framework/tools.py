@@ -2,6 +2,7 @@ from src.scripts.imports import *
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
 
+
 class PathDrawerTool:
     def __init__(self, canvas, view):
         self.canvas = canvas
@@ -85,6 +86,7 @@ class PathDrawerTool:
             self.temp_path_item = None
             self.path = None
             self.last_point = None
+
 
 class PenDrawerTool:
     def __init__(self, canvas, view):
@@ -197,6 +199,7 @@ class PenDrawerTool:
                     self.temp_path_item = None
                     self.last_point = None
 
+
 class LineAndLabelTool:
     def __init__(self, canvas, view):
         self.canvas = canvas
@@ -218,7 +221,8 @@ class LineAndLabelTool:
             self.pathg_item.setPen(self.view.pen)
             self.pathg_item.setBrush(self.view.stroke_fill)
             self.pathg_item.text_element.setFont(self.view.font)
-            self.pathg_item.text_element.setPos(self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
+            self.pathg_item.text_element.setPos(
+                self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
 
             self.canvas.addItem(self.pathg_item)
             self.canvas.update()
@@ -256,6 +260,7 @@ class LineAndLabelTool:
 
             self.pathg_item.setToolTip('Leader Line')
             self.pathg_item.updatePathEndPoint()
+
 
 class MouseScalingTool:
     def __init__(self, canvas: QGraphicsScene, view: QGraphicsView):
@@ -299,7 +304,6 @@ class MouseScalingTool:
                 delta = current_pos - self.start_pos
                 scale_factor = 1 + delta.y() / 100.0
 
-
                 self.scaling_item.setTransformOriginPoint(self.scaling_item.boundingRect().center())
 
                 new_scale = self.scaling_item.scale() * scale_factor
@@ -333,6 +337,7 @@ class MouseScalingTool:
                 pass
             else:
                 self.canvas.addCommand(ScaleCommand(item, item.scale(), 1))
+
 
 class MouseRotatingTool:
     def __init__(self, canvas: QGraphicsScene, view: QGraphicsView):
@@ -416,6 +421,7 @@ class MouseRotatingTool:
                 pass
             else:
                 self.canvas.addCommand(MouseRotationCommand(item, item.rotation(), 0))
+
 
 class PathSculptingTool:
     def __init__(self, canvas, view):
@@ -559,6 +565,7 @@ class PathSculptingTool:
         self.sculpt_radius = value
         self.sculpt_shape.setRect(0, 0, value, value)
 
+
 class AddCanvasTool:
     def __init__(self, canvas, view):
         self.canvas = canvas
@@ -639,6 +646,3 @@ height: {int(self.canvas_item.rect().height())}''')
             self.clicked_canvas_point = None
 
             self.canvas.update()
-
-
-
