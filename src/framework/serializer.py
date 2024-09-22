@@ -527,45 +527,38 @@ class MPDataRepairer:
         if self.filename is not None:
             try:
                 with open(self.filename, 'rb') as f:
-                    items_data = pickle.load(f)
-                    print("Loaded data:", items_data)
+                    data = self.repair_file(pickle.load(f))
 
-                # Handle metadata (ignore this)
-                metadata = items_data.pop(0)
+                with open(self.filename, 'wb') as nf:
+                    pickle.dump(data, nf)
 
-                repaired_data = []
-                for data in items_data:
-                    # Check data integrity here (validate structure, etc.)
-                    if self.is_valid(data):
-                        repaired_data.append(data)
-                    else:
-                        print(f"Data corrupted: {data}. Attempting to repair.")
-                        repaired_data.append(self.repair_data(data))  # Attempt to repair corrupted data
-
-                # Save repaired data back to file
-                self.save_repaired_data(repaired_data, metadata)
-
-            except (pickle.UnpicklingError, EOFError) as e:
+            except Exception as e:
                 print(f"Error loading file: {e}")
 
             QMessageBox.information(self.parent, 'Process Complete', 'File repair completed successfully.')
 
-    def is_valid(self, data):
-        # Placeholder: validate the structure of the data
-        return isinstance(data, dict)  # Example validation (adjust based on your data structure)
+    def repair_file(self, serialized_data):
+        is_valid, message = self.validate_serialized_data(serialized_data)
+        if not is_valid:
+            print(f'File is corrupted: {message}')
+            self.repair_data(serialized_data)  # attempt to repair
+        else:
+            print('File is valid.')
+        return serialized_data
 
     def repair_data(self, data):
-        # Attempt to fix corrupted data (example logic)
-        repaired_data = {}
-        try:
-            # Custom repair logic based on expected structure
-            repaired_data = {key: value if value else "default" for key, value in data.items()}
-        except Exception as e:
-            print(f"Unable to repair: {e}")
-        return repaired_data
+        """If we update file serialization, we will add repair methods here to fix any errors"""
+        pass
 
-    def save_repaired_data(self, repaired_data, metadata):
-        with open(self.filename, 'wb') as f:
-            pickle.dump([metadata] + repaired_data, f)
-        print(f"Repaired data saved to {self.filename}.")
+    def validate_serialized_data(self, data):
+        required_fields = ['mpversion', 'item_count']
+        for field in required_fields:
+            if field not in data:
+                return False, f'Missing field: {field}'
+
+        if data['item_count'] != len(data) - 1:  # account for metadata
+            return False, 'Item count mismatch'
+
+        return True, 'Data is valid'
+
 
