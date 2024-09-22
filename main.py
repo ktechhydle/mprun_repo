@@ -2282,18 +2282,15 @@ class MPRUN(QMainWindow):
         self.canvas.manager.load_from_file(filename, self)
 
     def show_version(self):
-        self.w = VersionWin(self.canvas.mpversion)
+        self.w = VersionWin(self.canvas.mpversion, self)
         self.w.show()
 
     def show_about(self):
-        try:
-            self.w = AboutWin()
-            self.w.show()
-        except Exception as e:
-            print(e)
+        self.w = AboutWin(self)
+        self.w.show()
 
     def show_find_action(self):
-        self.w = FindActionWin(self.actions)
+        self.w = FindActionWin(self.actions, self)
         self.w.show()
 
     def show_disclaimer(self):

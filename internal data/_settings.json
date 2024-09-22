@@ -14,7 +14,7 @@
         "last_used_tool": "Select Tool (Spacebar)",
         "undo_limit": 200,
         "show_daily_tips": true,
-        "use_gpu": true,
+        "use_gpu": false,
         "default_stroke": "red",
         "default_fill": "#00ff00",
         "default_font": "black",

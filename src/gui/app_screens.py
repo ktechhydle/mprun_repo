@@ -13,8 +13,8 @@ if getattr(sys, 'frozen', False):
 class CanvasItemSelector(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Export Canvas")
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle("Export Canvas")
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(750)
         self.setFixedHeight(500)
@@ -146,8 +146,8 @@ class CanvasItemSelector(QDialog):
 class AllCanvasExporter(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Export All")
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle("Export All")
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(750)
         self.setFixedHeight(500)
@@ -336,8 +336,8 @@ class AllCanvasExporter(QDialog):
 class ArrangeWin(QDialog):
     def __init__(self, canvas, parent):
         super().__init__(parent)
-        self.setWindowTitle("Arrange Canvases")
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle("Arrange Canvases")
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(325)
         self.setFixedHeight(250)
@@ -471,13 +471,13 @@ class ArrangeWin(QDialog):
 
 
 class AboutWin(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle('About MPRUN')
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle('About MPRUN')
+        self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(500)
         self.setStyleSheet('border-radius: 5px;')
-        self.setWindowModality(Qt.ApplicationModal)
 
         self.create_ui()
 
@@ -559,13 +559,12 @@ You are responsible for publishing your work under a license of your choosing an
 
 
 class VersionWin(QWidget):
-    def __init__(self, version):
-        super().__init__()
-        self.setWindowTitle('MPRUN Version')
+    def __init__(self, version, parent=None):
+        super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle('MPRUN Version')
+        self.setWindowModality(Qt.ApplicationModal)
         self.setFixedSize(500, 250)
-        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-        self.setWindowFlags(Qt.FramelessWindowHint)
 
         self.version = version
 
@@ -586,7 +585,7 @@ class VersionWin(QWidget):
         text = f'''
 {self.version}
 
-Copyright © K-TECH Industries 2024, All rights reserved.
+Copyright © MP Software 2024-2025, All rights reserved.
 
 If you encounter any issues or have suggestions for improvements, contact us at:
         '''
@@ -605,15 +604,13 @@ If you encounter any issues or have suggestions for improvements, contact us at:
         # Set layout to the main window
         self.setLayout(layout)
 
-    def mousePressEvent(self, e):
-        self.close()
-
 
 class FindActionWin(QWidget):
     def __init__(self, actions, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('Find Action')
+        self.setWindowFlag(Qt.Tool)
         self.setFixedHeight(500)
         self.setFixedWidth(300)
 
@@ -683,8 +680,8 @@ class FindActionWin(QWidget):
 class DisclaimerWin(QMessageBox):
     def __init__(self, data_file, parent=None):
         super().__init__(parent)
-        self.setWindowTitle('DISCLAIMER')
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle('DISCLAIMER')
         self.setIcon(QMessageBox.Warning)
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         self.setDefaultButton(QMessageBox.Yes)
@@ -701,8 +698,8 @@ class DisclaimerWin(QMessageBox):
 class SettingsWin(QDialog):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setWindowTitle('Settings')
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle('Settings')
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedWidth(700)
 
@@ -920,8 +917,9 @@ class SettingsWin(QDialog):
 class ScriptingWin(QDialog):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setWindowTitle('Python Scripting Interface')
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowTitle('Python Scripting Interface')
+        self.setWindowFlag(Qt.Tool)
         self.resize(600, 600)
 
         self.mprun = parent
@@ -1096,7 +1094,7 @@ class TipWin(QDialog):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
         self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.setWindowFlag(Qt.Tool)
         self.setLayout(QHBoxLayout())
 
         img = QLabel('')
