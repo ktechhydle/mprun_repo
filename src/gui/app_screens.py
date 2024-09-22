@@ -470,7 +470,7 @@ class ArrangeWin(QDialog):
         self.spacing_spin.setValue(count * 10 if count < 12 else 50)
 
 
-class AboutWin(QWidget):
+class AboutWin(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
@@ -553,12 +553,14 @@ You are responsible for publishing your work under a license of your choosing an
         credits_label = CustomExternalLinkLabel('Credits',
                                                 'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
         contact_label = CustomExternalLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
+        website_label = CustomExternalLinkLabel('Website', 'https://sites.google.com/view/mprun/home')
         self.more_info_tab.layout().addWidget(credits_label)
         self.more_info_tab.layout().addWidget(contact_label)
+        self.more_info_tab.layout().addWidget(website_label)
         self.more_info_tab.layout().addStretch()
 
 
-class VersionWin(QWidget):
+class VersionWin(QDialog):
     def __init__(self, version, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
