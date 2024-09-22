@@ -1,4 +1,15 @@
-# This file is the "main" script that can be run to see the full app
+"""
+This is MPRUN's main file including attributes such as:
+
+-Widget and UI creation
+-Function declaration
+-Event handling
+-User data handling
+
+If you are using our integrated Python Scripting Interface,
+this file is the one you might want to read over to learn MPRUN's
+internal functions.
+"""
 
 from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
@@ -36,6 +47,9 @@ class MPRUN(QMainWindow):
 
         # Undo, redo
         self.undo_stack = QUndoStack()
+
+        # Actions
+        self.actions = {}
 
         # Create UI
         self.create_ui()
@@ -119,7 +133,6 @@ class MPRUN(QMainWindow):
         self.canvas_view.updateTip()
 
     def create_ui(self):
-        self.create_actions_dict()
         self.create_initial_canvas()
         self.create_menu()
         self.init_toolbars()
@@ -128,10 +141,8 @@ class MPRUN(QMainWindow):
         self.create_toolbar2()
         self.create_view()
         self.create_default_objects()
+        self.create_actions_dict()
         self.update()
-
-    def create_actions_dict(self):
-        self.actions = {}
 
     def create_initial_canvas(self):
         # Canvas, canvas color
@@ -538,63 +549,6 @@ class MPRUN(QMainWindow):
         view_options_menu.addAction(swapped_view_action)
         view_options_menu.addAction(default_view_action)
 
-        # Add to actions dict
-        self.actions['Insert'] = insert_action
-        self.actions['Add Canvas'] = add_canvas_action
-        self.actions['Open Template'] = open_template_action
-        self.actions['Save As Template'] = saveas_template_action
-        self.actions['Save To iCloud'] = save_to_icloud_action
-        self.actions['Repair File'] = repair_file_action
-        self.actions['Close'] = close_action
-        self.actions['Select'] = select_action
-        self.actions['Pan'] = pan_action
-        self.actions['Rotate'] = rotate_view_action
-        self.actions['Zoom'] = zoom_view_action
-        self.actions['Arrange Canvases'] = arrange_canvases_action
-        self.actions['Pen Draw'] = pen_action
-        self.actions['Line and Label'] = linelabel_action
-        self.actions['Text'] = text_action
-        self.actions['Flip Horizontal'] = flip_horizontal_action
-        self.actions['Flip Vertical'] = flip_vertical_action
-        self.actions['Mirror Horizontal'] = mirror_horizontal_action
-        self.actions['Mirror Vertical'] = mirror_vertical_action
-        self.actions['Hide'] = hide_action
-        self.actions['Unhide All'] = unhide_action
-        self.actions['Raise Layer'] = raise_layer_action
-        self.actions['Lower Layer'] = lower_layer_action
-        self.actions['Clear Selection'] = clear_selection_action
-        self.actions['Select Paths'] = select_paths_action
-        self.actions['Select Text'] = select_text_action
-        self.actions['Select Leader Lines'] = select_leaderline_action
-        self.actions['Select Pixmaps'] = select_pixmaps_action
-        self.actions['Select SVGs'] = select_svgs_action
-        self.actions['Select Canvases'] = select_canvases_action
-        self.actions['Full Screen'] = fullscreen_view_action
-        self.actions['Control Toolbar'] = control_toolbar_view_action
-        self.actions['About'] = about_action
-        self.actions['Version'] = show_version_action
-        self.actions['Find Action'] = find_action_action
-        self.actions['Browse Tutorials'] = browse_tutorials_action
-        self.actions['Settings'] = view_settings_action
-        self.actions['Restart User Interface'] = reload_ui_action
-        self.actions['Tip Of The Day'] = show_tip_of_the_day_action
-        self.actions['Trace Image'] = image_trace_action
-        self.actions['Select All'] = select_all_action
-        self.actions['Smooth Path'] = smooth_action
-        self.actions['Close Path'] = close_subpath_action
-        self.actions['Sculpt Path'] = sculpt_path_action
-        self.actions['Duplicate'] = duplicate_action
-        self.actions['Reset Item'] = reset_action
-        self.actions['Bring to Front'] = bring_to_front_action
-        self.actions['Undo'] = undo_action
-        self.actions['Redo'] = redo_action
-        self.actions['Export Canvas'] = export_action
-        self.actions['Export All'] = export_multiple_action
-        self.actions['New'] = new_action
-        self.actions['Save'] = save_action
-        self.actions['Save As'] = saveas_action
-        self.actions['Open'] = open_action
-
     def init_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('Toolset')
@@ -861,20 +815,6 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.unhide_btn)
         self.action_group.addAction(self.add_canvas_btn)
 
-        # Add to actions dict
-        self.actions['Select'] = self.select_btn
-        self.actions['Pan'] = self.pan_btn
-        self.actions['Path Draw'] = self.path_btn
-        self.actions['Pen Draw'] = self.pen_btn
-        self.actions['Line and Label'] = self.label_btn
-        self.actions['Add Text'] = self.add_text_btn
-        self.actions['Scale'] = self.scale_btn
-        self.actions['Rotate'] = self.rotate_btn
-        self.actions['Hide'] = self.hide_btn
-        self.actions['Unhide'] = self.unhide_btn
-        self.actions['Add Canvas'] = self.add_canvas_btn
-        self.actions['Insert Image'] = self.insert_btn
-
     def create_toolbar2(self):
         # ----item toolbar widgets----#
         align_left_btn = QAction(QIcon('ui/Tool Icons/align_left_icon.png'), '', self)
@@ -998,18 +938,6 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addWidget(sculpt_hlayout)
         self.item_toolbar.addWidget(spacer)
 
-        # Add to actions dict
-        self.actions['Align Left'] = align_left_btn
-        self.actions['Align Right'] = align_right_btn
-        self.actions['Align Middle'] = align_middle_btn
-        self.actions['Align Center'] = align_center_btn
-        self.actions['Align Top'] = align_top_btn
-        self.actions['Align Bottom'] = align_bottom_btn
-        self.actions['Rotate Counter Clockwise'] = rotate_ccw_action
-        self.actions['Rotate Clockwise'] = rotate_cw_action
-        self.actions['Raise Layer'] = raise_layer_action
-        self.actions['Lower Layer'] = lower_layer_action
-
     def create_view(self):
         # QGraphicsView Logic
         self.canvas_view = CustomGraphicsView(self.canvas, [self.select_btn,
@@ -1117,6 +1045,36 @@ class MPRUN(QMainWindow):
 
         self.path_btn.trigger()
         self.select_btn.trigger()
+
+    def create_actions_dict(self):
+        for file_action in self.file_menu.actions():
+            if not file_action.text() == 'Open Recent':
+                self.actions[file_action.text()] = file_action
+
+        for tool_action in self.tool_menu.actions():
+            self.actions[tool_action.text()] = tool_action
+
+        for edit_action in self.edit_menu.actions():
+            self.actions[edit_action.text()] = edit_action
+
+        for object_action in self.object_menu.actions():
+            self.actions[object_action.text()] = object_action
+
+        for selection_action in self.selection_menu.actions():
+            self.actions[selection_action.text()] = selection_action
+
+        for view_action in self.view_menu.actions():
+            self.actions[view_action.text()] = view_action
+
+        for help_action in self.help_menu.actions():
+            if not help_action.text() == 'Find Action':
+                self.actions[help_action.text()] = help_action
+
+        for tool in self.toolbar.actions():
+            self.actions[tool.text()] = tool
+
+        for item_tool in self.item_toolbar.actions():
+            self.actions[item_tool.text()] = item_tool
 
     def update(self, *args):
         super().update()
