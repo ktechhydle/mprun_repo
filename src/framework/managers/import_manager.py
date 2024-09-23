@@ -15,7 +15,7 @@ class ImportManager:
         file_path, _ = QFileDialog().getOpenFileName(self.canvas.parentWindow,
                                                      "Insert Element",
                                                      "",
-                                                     'Supported types (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.tiff *.tif *.xbm *.xpm *.svg *.md *.txt)')
+                                                     'Supported types (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.tiff *.tif *.xbm *.xpm *.svg *.txt *.csv)')
 
         if file_path:
             if file_path.endswith('.svg'):
@@ -47,9 +47,6 @@ class ImportManager:
                 image2.setToolTip('Imported Pixmap')
 
                 self.create_item_attributes(image2)
-
-    def importMPBUILDFile(self):
-        pass
 
     def create_item_attributes(self, item):
         item.setFlag(QGraphicsItem.ItemIsMovable)
