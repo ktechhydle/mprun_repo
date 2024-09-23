@@ -173,14 +173,6 @@ class MPRUN(QMainWindow):
         self.help_menu = self.menu_bar.addMenu('&Help')
 
         # Create file actions
-        insert_action = QAction('Insert', self)
-        insert_action.setShortcut(QKeySequence('I'))
-        insert_action.triggered.connect(self.insert_image)
-
-        add_canvas_action = QAction('Add Canvas', self)
-        add_canvas_action.setShortcut(QKeySequence('A'))
-        add_canvas_action.triggered.connect(self.use_add_canvas)
-
         new_action = QAction('New', self)
         new_action.setShortcut(QKeySequence('Ctrl+N'))
         new_action.triggered.connect(self.canvas.manager.restore)
@@ -198,14 +190,17 @@ class MPRUN(QMainWindow):
         save_action.setShortcut(QKeySequence('Ctrl+S'))
         save_action.triggered.connect(self.canvas.manager.save)
 
-        saveas_action = QAction('Save As', self)
+        saveas_action = QAction('Save &As...', self)
         saveas_action.setShortcut(QKeySequence('Ctrl+Shift+S'))
         saveas_action.triggered.connect(self.canvas.manager.saveas)
 
-        saveas_template_action = QAction('Save As Template', self)
+        save_copy_action = QAction('Save &Copy...', self)
+        save_copy_action.triggered.connect(self.canvas.manager.save_copy)
+
+        saveas_template_action = QAction('Save As &Template...', self)
         saveas_template_action.triggered.connect(self.canvas.template_manager.save_template)
 
-        save_to_icloud_action = QAction('Save To iCloud', self)
+        save_to_icloud_action = QAction('Save To &iCloud...', self)
         save_to_icloud_action.triggered.connect(self.send_to_icloud)
 
         export_action = QAction('Export Canvas', self)
@@ -461,9 +456,6 @@ class MPRUN(QMainWindow):
         python_scripting_action.triggered.connect(self.show_scripts)
 
         # Add actions
-        self.file_menu.addAction(add_canvas_action)
-        self.file_menu.addAction(insert_action)
-        self.file_menu.addSeparator()
         self.file_menu.addAction(new_action)
         self.file_menu.addAction(open_action)
         self.file_menu.addMenu(self.open_recent_menu)
@@ -471,6 +463,7 @@ class MPRUN(QMainWindow):
         self.file_menu.addSeparator()
         self.file_menu.addAction(save_action)
         self.file_menu.addAction(saveas_action)
+        self.file_menu.addAction(save_copy_action)
         self.file_menu.addAction(saveas_template_action)
         self.file_menu.addAction(save_to_icloud_action)
         self.file_menu.addSeparator()

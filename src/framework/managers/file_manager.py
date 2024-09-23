@@ -87,6 +87,23 @@ class SceneFileManager:
         else:
             return False
 
+    def save_copy(self):
+        filename, _ = QFileDialog.getSaveFileName(self.scene.parentWindow, 'Save Copy', f'{self.filename}', 'MPRUN files (*.mp)')
+
+        if filename:
+            try:
+                with open(filename, 'wb') as f:
+                    pickle.dump(self.serializer.serialize_items(), f)
+                    self.scene.parentWindow.canvas_view.showMessage('File', f'Copy file {filename} saved successfully.')
+
+                    return True
+
+            except Exception as e:
+                print(e)
+
+        else:
+            return False
+
     def emergency_save(self):
         if self.filename != 'Untitled':
             with open(self.filename, 'wb') as f:
