@@ -51,6 +51,7 @@ class CustomPathItem(QGraphicsPathItem):
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
+        item.setAlreadySmooth(self.alreadySmooth())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -69,6 +70,7 @@ class CustomPathItem(QGraphicsPathItem):
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
+        item.setAlreadySmooth(self.alreadySmooth())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -200,9 +202,15 @@ class CustomPathItem(QGraphicsPathItem):
                 simplified_vertices[i + 2][0], simplified_vertices[i + 2][1]
             )
 
-        self.smooth = True
+        self.setAlreadySmooth(True)
 
         return smooth_path
+
+    def setAlreadySmooth(self, smooth: bool):
+        self.smooth = smooth
+
+    def alreadySmooth(self):
+        return self.smooth
 
 
 class CustomPixmapItem(QGraphicsPixmapItem):

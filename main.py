@@ -1955,7 +1955,8 @@ class MPRUN(QMainWindow):
             self.quick_actions_tab.gsnap_check_btn.click()
 
     def use_smooth_path(self):
-        items = [item for item in self.canvas.selectedItems() if isinstance(item, CustomPathItem) and not item.smooth]
+        items = [item for item in self.canvas.selectedItems() if isinstance(item, CustomPathItem) and
+                 item.alreadySmooth() is not True]
         if not items:
             return
 
