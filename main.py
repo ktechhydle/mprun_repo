@@ -238,12 +238,15 @@ class MPRUN(QMainWindow):
         zoom_view_action = QAction('Zoom', self)
         zoom_view_action.triggered.connect(lambda: self.view_zoom_spin.setFocus())
 
+        add_canvas_action = QAction('Add Canvas', self)
+        add_canvas_action.setShortcut(QKeySequence('A'))
+        add_canvas_action.triggered.connect(self.use_add_canvas)
+
         arrange_canvases_action = QAction('Arrange Canvases', self)
         arrange_canvases_action.setShortcut(Qt.Key_F3)
         arrange_canvases_action.triggered.connect(self.canvas.arrange)
 
         rename_canvases_action = QAction('Rename Canvases', self)
-        #rename_canvases_action.setShortcut(Qt.Key_F3)
         rename_canvases_action.triggered.connect(self.canvas.rename)
 
         path_action = QAction('Path Draw', self)
@@ -265,6 +268,13 @@ class MPRUN(QMainWindow):
         text_action.setShortcut(QKeySequence('Ctrl+T'))
         text_action.triggered.connect(self.use_text)
         text_action.triggered.connect(self.update)
+
+        insert_image_action = QAction('Insert Image', self)
+        insert_image_action.setShortcut(QKeySequence('I'))
+        insert_image_action.triggered.connect(self.insert_image)
+
+        image_trace_action = QAction('Trace Image', self)
+        image_trace_action.triggered.connect(self.use_vectorize)
 
         smooth_action = QAction('Smooth Path', self)
         smooth_action.setShortcut(QKeySequence('Shift+S'))
@@ -340,9 +350,6 @@ class MPRUN(QMainWindow):
 
         mirror_vertical_action = QAction('Mirror Vertical', self)
         mirror_vertical_action.triggered.connect(lambda: self.use_mirror('v'))
-
-        image_trace_action = QAction('Trace Image', self)
-        image_trace_action.triggered.connect(self.use_vectorize)
 
         raise_layer_action = QAction('Raise Layer', self)
         raise_layer_action.setShortcut(QKeySequence('Up'))
@@ -541,12 +548,14 @@ class MPRUN(QMainWindow):
 
         characters_menu.addAction(text_action)
 
+        image_menu.addAction(insert_image_action)
         image_menu.addAction(image_trace_action)
 
         scene_menu.addAction(select_action)
         scene_menu.addAction(pan_action)
         scene_menu.addAction(rotate_view_action)
         scene_menu.addAction(zoom_view_action)
+        scene_menu.addAction(add_canvas_action)
         scene_menu.addAction(arrange_canvases_action)
         scene_menu.addAction(rename_canvases_action)
 
