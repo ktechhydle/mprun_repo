@@ -11,9 +11,10 @@ this file is the one you might want to read over to learn MPRUN's
 internal functions.
 """
 
+import traceback
 from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
-from src.framework.serializer import MPDataRepairer
+from src.framework.data_repairer import FileDataRepairer
 from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin, ScriptingWin
 from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
@@ -24,6 +25,8 @@ from src.scripts.raw_functions import nameismain, ItemStack
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
+
+DEFAULT_PANEL_WIDTH = 300
 
 
 class MPRUN(QMainWindow):
@@ -56,6 +59,9 @@ class MPRUN(QMainWindow):
         self.show()
 
     def closeEvent(self, event):
+        if self.canvas is not None:
+            self.canvas.clearSelection()
+
         if self.canvas.modified:
             # Display a confirmation dialog
             confirmation_dialog = QMessageBox(self)
@@ -573,7 +579,7 @@ class MPRUN(QMainWindow):
 
         # Dock widget
         self.toolbox = CustomToolbox(self)
-        self.toolbox.setFixedWidth(300)
+        self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH)
         self.toolbox.setMinimumHeight(680)
 
         self.tab_view_dock = CustomDockWidget(self.toolbox, self)
@@ -582,32 +588,32 @@ class MPRUN(QMainWindow):
 
         # Properties Tab
         self.properties_tab = PropertiesPanel(self.canvas, self)
-        self.properties_tab.setFixedWidth(300)
+        self.properties_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Characters Tab
         self.characters_tab = CharactersPanel(self.canvas, self)
         self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.characters_tab.setFixedHeight(185)
-        self.characters_tab.setFixedWidth(300)
+        self.characters_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Vectorize Tab
         self.image_trace_tab = ImageTracingPanel(self.canvas, self)
         self.image_trace_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.image_trace_tab.setFixedHeight(375)
-        self.image_trace_tab.setFixedWidth(300)
+        self.image_trace_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Libraries Tab
         self.libraries_tab = LibrariesPanel(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.setFixedWidth(300)
+        self.libraries_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
-        self.canvas_tab.setFixedWidth(300)
+        self.canvas_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Quick Actions Tab
         self.quick_actions_tab = QuickActionsPanel(self.canvas, self)
-        self.quick_actions_tab.setFixedWidth(300)
+        self.quick_actions_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Add tabs
         self.toolbox.addItem(self.properties_tab, 'Properties')
@@ -2263,7 +2269,7 @@ class MPRUN(QMainWindow):
         self.create_item_attributes(item)
 
     def use_repair_file(self):
-        self.w = MPDataRepairer(self)
+        self.w = FileDataRepairer(self)
 
     def insert_image(self):
         self.canvas.importManager.importFile()
@@ -2546,6 +2552,21 @@ def main() -> None:
     if len(sys.argv) > 1:
         file_path = sys.argv[1]
         window.open_recent(file_path)
+
+    # Crash handler
+    def handle_exception(exctype, value, tb):
+        window.canvas.manager.emergency_save()
+        QMessageBox.critical(None, 'Uh Oh', f'''MPRUN encountered an error! If the cause is known or unknown, please report it to our 
+<a href="https://github.com/ktechhydle/mprun_repo/issues">Issue Tracker</a> 
+on GitHub, and we will fix this error as soon as possible.
+
+Debug Info:
+{exctype, value, tb}
+        ''')
+        sys.__excepthook__(exctype, value, tb)
+
+    # Set the global exception hook
+    sys.excepthook = handle_exception
 
     sys.exit(app.exec_())
 

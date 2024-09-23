@@ -2,7 +2,9 @@ import os.path
 from src.gui.app_screens import TipWin, CanvasItemSelector, AllCanvasExporter, ArrangeWin
 from src.framework.undo_commands import *
 from src.framework.custom_classes import *
-from src.framework.serializer import MPSerializer, MPDeserializer, MPDataRepairer
+from src.framework.serializer import SceneSerializer
+from src.framework.deserializer import SceneDeserializer
+from src.framework.data_repairer import FileDataRepairer
 from src.framework.tools import *
 from src.scripts.app_internal import *
 from src.scripts.imports import *
@@ -762,8 +764,8 @@ class SceneManager:
         self.parent = None
         self.repair_needed = False
 
-        self.serializer = MPSerializer(self.scene)
-        self.deserializer = MPDeserializer(self.scene)
+        self.serializer = SceneSerializer(self.scene)
+        self.deserializer = SceneDeserializer(self.scene)
 
     def reset_to_default_scene(self):
         self.scene.clear()
@@ -834,6 +836,11 @@ class SceneManager:
 
         else:
             return False
+
+    def emergency_save(self):
+        if self.filename != 'Untitled':
+            with open(self.filename, 'wb') as f:
+                pickle.dump(self.serializer.serialize_items(), f)
 
     def load(self, parent):
         try:
@@ -1090,7 +1097,7 @@ class SceneManager:
             print(e)
 
     def repair_file(self):
-        self.w = MPDataRepairer(self.scene.parentWindow, filename=self.filename)
+        self.w = FileDataRepairer(self.scene.parentWindow, filename=self.filename)
 
 
 class TemplateManager:
