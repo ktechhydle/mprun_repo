@@ -2557,7 +2557,9 @@ def main() -> None:
     # Crash handler
     def handle_exception(exctype, value, tb):
         window.canvas.manager.emergency_save()
-        QMessageBox.critical(None, 'Uh Oh', f'''MPRUN encountered an error! If the cause is known or unknown, please report it to our 
+        QMessageBox.critical(None, 'Uh Oh', f'''<b>MPRUN encountered an error!</b> 
+        
+If the cause is known or unknown, please report it to our 
 <a href="https://github.com/ktechhydle/mprun_repo/issues">Issue Tracker</a> 
 on GitHub, and we will fix this error as soon as possible.
 
