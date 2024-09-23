@@ -4,7 +4,7 @@ from pathlib import Path
 from src.scripts.imports import *
 from src.gui.custom_widgets import ToolbarHorizontalLayout
 from src.gui.app_screens import AllCanvasExporter
-from src.framework.custom_classes import *
+from src.framework.items import *
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)

@@ -2459,10 +2459,10 @@ class MPRUN(QMainWindow):
 
     def show_tip_of_the_day(self):
         with open('internal data/_tips.txt', 'r') as f:
-            content = f.readlines()
+            content = [line for line in f if not line.startswith('#') and line.strip()]
             line = random.randint(0, len(content) - 1)
 
-            self.canvas_view.showMessage('Tip of the Day', content[line])
+        self.canvas_view.showMessage('Tip of the Day', content[line])
 
     def view_as(self, view: str) -> None:
         if view == 'read_only':

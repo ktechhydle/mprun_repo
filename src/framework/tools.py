@@ -1,6 +1,6 @@
 from src.scripts.imports import *
 from src.framework.undo_commands import *
-from src.framework.custom_classes import *
+from src.framework.items import *
 
 
 class PathDrawerTool:

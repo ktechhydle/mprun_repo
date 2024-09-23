@@ -1,3 +1,5 @@
+# This document supports HTML tags via QLabel's system
+# You can also add notes using a '#'
 Use <b>Ctrl+Z</b> to undo any recent changes and <b>Ctrl+Shift+Z</b> to redo them.
 Use the middle mouse button to pan around the scene quickly.
 Use <b>Raise Layer Tool (Up Arrow)</b> and <b>Lower Layer Tool (Down Arrow)</b> to change items stacking order.

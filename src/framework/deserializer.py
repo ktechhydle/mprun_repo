@@ -1,5 +1,5 @@
 from src.scripts.imports import *
-from src.framework.custom_classes import *
+from src.framework.items import *
 
 
 class SceneDeserializer:

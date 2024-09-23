@@ -1,4 +1,4 @@
-from src.framework.custom_classes import *
+from src.framework.items import *
 from src.scripts.app_internal import copyright_message
 
 
