@@ -1,9 +1,9 @@
 name: macOS PyInstaller Build
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -17,12 +17,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.x
-
-      - name: Get MPRUN version
-        id: get_version
-        run: |
-          VERSION=$(cat "internal data/_version.txt")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Install project requirements for x86_64
         run: |
@@ -43,11 +37,17 @@ jobs:
         run: |
           codesign --deep --force --sign - dist/MPRUN.app
 
+      - name: Get MPRUN version
+        id: get_version
+        run: |
+          VERSION=$(cat "internal data/_version.txt")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Create DMG
         run: |
           create-dmg --volname "MPRUN Installer" \
           --background "dmg installer background.png" \
-          --window-pos 20 20 --window-size 580 450 --icon-size 128 \
+          --window-pos 20 20 --window-size 570 450 --icon-size 128 \
           --icon "MPRUN.app" 70 206 --hide-extension "MPRUN.app" \
           --app-drop-link 418 196 "MPRUN_${{ env.VERSION }}+macOS_setup.dmg" \
           "dist/"
