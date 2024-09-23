@@ -1,9 +1,9 @@
 name: macOS PyInstaller Build
 
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -37,22 +37,27 @@ jobs:
         run: |
           codesign --deep --force --sign - dist/MPRUN.app
 
+      - name: Get MPRUN version
+        id: get_version
+        run: |
+          VERSION=$(cat "internal data/_version.txt")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Create DMG
         run: |
           create-dmg --volname "MPRUN Installer" \
           --background "dmg installer background.png" \
           --window-pos 20 20 --window-size 580 450 --icon-size 128 \
           --icon "MPRUN.app" 70 206 --hide-extension "MPRUN.app" \
-          --app-drop-link 418 196 "MPRUN_1.1+macOS_setup.dmg" \
+          --app-drop-link 418 196 "MPRUN_${{ env.VERSION }}+macOS_setup.dmg" \
           "dist/"
 
       - name: Codesign the dmg
         run: |
-          codesign --deep --force --sign - MPRUN_1.1+macOS_setup.dmg
+          codesign --deep --force --sign - "MPRUN_${{ env.VERSION }}+macOS_setup.dmg"
 
       - name: Upload DMG as artifact
         uses: actions/upload-artifact@v3
         with:
-          name: MPRUN_1.1+macOS_setup.dmg
-          path: MPRUN_1.1+macOS_setup.dmg
-
+          name: MPRUN_${{ env.VERSION }}+macOS_setup.dmg
+          path: "MPRUN_${{ env.VERSION }}+macOS_setup.dmg"
