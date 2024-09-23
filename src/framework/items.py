@@ -56,14 +56,6 @@ class CustomPathItem(QGraphicsPathItem):
         item.setFlag(QGraphicsItem.ItemIsMovable)
         item.setToolTip('Path')
 
-        if self.add_text:
-            item.add_text = True
-            item.setTextAlongPathFromBeginning(self.start_text_from_beginning)
-            item.setTextAlongPath(self.text_along_path)
-            item.setTextAlongPathSpacingFromPath(self.text_along_path_spacing)
-            item.setTextAlongPathFont(self.text_along_path_font)
-            item.setTextAlongPathColor(self.text_along_path_color)
-
         return item
 
     def copy(self):
@@ -211,74 +203,6 @@ class CustomPathItem(QGraphicsPathItem):
         self.smooth = True
 
         return smooth_path
-
-    def setTextAlongPathFromBeginning(self, a0):
-        self.start_text_from_beginning = a0
-
-    def setTextAlongPath(self, text):
-        self.text_along_path = text
-        self.update()
-
-    def setTextAlongPathFont(self, font):
-        self.text_along_path_font = font
-        self.update()
-
-    def setTextAlongPathColor(self, color):
-        self.text_along_path_color = color
-        self.update()
-
-    def setTextAlongPathSpacingFromPath(self, spacing):
-        self.text_along_path_spacing = spacing
-        self.update()
-
-    def paint(self, painter, option, widget=None):
-        super().paint(painter, option, widget)
-
-        if self.add_text:
-            path = self.path()
-            text = self.text_along_path
-            pen = painter.pen()
-            pen.setWidth(self.text_along_path_spacing)
-            pen.setColor(self.text_along_path_color)
-            painter.setPen(pen)
-            font = self.text_along_path_font
-            painter.setFont(font)
-
-            font_metrics = QFontMetricsF(font)
-            total_length = path.length()
-            current_length = 0
-
-            if self.start_text_from_beginning:
-                for char in text:
-                    char_width = font_metrics.width(char)
-                    if current_length + char_width > total_length:
-                        break  # Stop adding more text if the current length exceeds the path length
-
-                    percent = current_length / total_length
-                    point = path.pointAtPercent(percent)
-                    angle = path.angleAtPercent(percent)
-
-                    painter.save()
-                    painter.translate(point)
-                    painter.rotate(-angle)
-                    painter.drawText(QPointF(0, -pen.width()), char)
-                    painter.restore()
-
-                    current_length += char_width
-            else:
-                percent_increase = 1 / (len(text) + 1)
-                percent = 0
-
-                for char in text:
-                    percent += percent_increase
-                    point = path.pointAtPercent(percent)
-                    angle = path.angleAtPercent(percent)
-
-                    painter.save()
-                    painter.translate(point)
-                    painter.rotate(-angle)
-                    painter.drawText(QPointF(0, -pen.width()), char)
-                    painter.restore()
 
 
 class CustomPixmapItem(QGraphicsPixmapItem):
