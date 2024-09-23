@@ -12,6 +12,7 @@ internal functions.
 """
 
 import traceback
+import requests
 from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
@@ -441,6 +442,9 @@ class MPRUN(QMainWindow):
             lambda: webbrowser.open('https://sites.google.com/view/mprun-studio/home')
         )
 
+        check_update_action = QAction('Check for Updates', self)
+        check_update_action.triggered.connect(self.check_for_updates)
+
         view_settings_action = QAction('Settings', self)
         view_settings_action.setShortcut(Qt.Key_F2)
         view_settings_action.triggered.connect(self.show_settings)
@@ -524,6 +528,7 @@ class MPRUN(QMainWindow):
         self.help_menu.addSeparator()
         self.help_menu.addAction(find_action_action)
         self.help_menu.addAction(browse_tutorials_action)
+        self.help_menu.addAction(check_update_action)
         self.help_menu.addAction(view_settings_action)
         self.help_menu.addAction(reload_ui_action)
         self.help_menu.addSeparator()
@@ -2329,6 +2334,13 @@ class MPRUN(QMainWindow):
         self.w = ScriptingWin(self)
         self.w.show()
 
+    def show_tip_of_the_day(self):
+        with open('internal data/_tips.txt', 'r') as f:
+            content = [line for line in f if not line.startswith('#') and line.strip()]
+            line = random.randint(0, len(content) - 1)
+
+        self.canvas_view.showMessage('Tip of the Day', content[line])
+
     def read_settings(self):
         with open('internal data/_settings.json', 'r') as f:
             return json.load(f)
@@ -2381,6 +2393,8 @@ class MPRUN(QMainWindow):
 
             if user_data['show_daily_tips']:
                 self.show_tip_of_the_day()
+
+        self.check_for_updates(show_message=True)
 
     def open_recent_file_data(self):
         data = self.read_recent_files()
@@ -2459,13 +2473,6 @@ class MPRUN(QMainWindow):
         else:
             self.view_menu.actions()[0].setChecked(False)
 
-    def show_tip_of_the_day(self):
-        with open('internal data/_tips.txt', 'r') as f:
-            content = [line for line in f if not line.startswith('#') and line.strip()]
-            line = random.randint(0, len(content) - 1)
-
-        self.canvas_view.showMessage('Tip of the Day', content[line])
-
     def view_as(self, view: str) -> None:
         if view == 'read_only':
             self.unhide()
@@ -2527,6 +2534,35 @@ class MPRUN(QMainWindow):
             self.tab_view_dock.expand()
 
         self.cur_view = ''
+
+    def check_for_updates(self, show_message=False):
+        current_version = self.canvas.mpversion
+        latest_version = self.get_latest_version()
+
+        if latest_version > current_version:
+            download = QMessageBox.information(self, 'Update Available',
+                                               f'New version {latest_version} is available. '
+                                               f'Would you like to download it?',
+                                               QMessageBox.Yes | QMessageBox.Cancel)
+            if download == QMessageBox.Yes:
+                webbrowser.open('https://sites.google.com/view/mprun/download')
+
+        else:
+            if show_message is False:
+                QMessageBox.information(self, 'No Updates', 'You are using the latest version.')
+
+    def get_latest_version(self):
+        url = 'https://raw.githubusercontent.com/ktechhydle/mprun_repo/main/internal data/_version.txt'
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response.text.strip()  # Get the latest version from version.txt
+            else:
+                QMessageBox.warning(self, 'Error', 'Unable to fetch the latest version.')
+        except Exception as e:
+            QMessageBox.warning(self, 'Error', f'Failed to check for updates: {str(e)}')
+
+        return self.canvas.mpversion
 
 
 def main() -> None:
