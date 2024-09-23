@@ -450,6 +450,7 @@ class MPRUN(QMainWindow):
         reload_ui_action.triggered.connect(self.open_settings_data)
 
         show_tip_of_the_day_action = QAction('Show Tip Of The Day', self)
+        show_tip_of_the_day_action.setShortcut(QKeySequence('Shift+T'))
         show_tip_of_the_day_action.triggered.connect(self.show_tip_of_the_day)
 
         python_scripting_action = QAction('Python Scripting', self)
