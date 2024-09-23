@@ -12,7 +12,6 @@ internal functions.
 """
 
 import traceback
-import requests
 from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
@@ -23,6 +22,7 @@ from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, Ima
     CanvasEditorPanel
 from src.scripts.app_internal import *
 from src.scripts.raw_functions import nameismain, ItemStack
+from src.scripts.get_version import get_latest_version
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
@@ -2531,7 +2531,7 @@ class MPRUN(QMainWindow):
 
     def check_for_updates(self, show_message=False):
         current_version = self.canvas.mpversion
-        latest_version = self.get_latest_version()
+        latest_version = get_latest_version(self)
 
         if latest_version > current_version:
             download = QMessageBox.information(self, 'Update Available',
@@ -2544,19 +2544,6 @@ class MPRUN(QMainWindow):
         else:
             if show_message is False:
                 QMessageBox.information(self, 'No Updates', 'You are using the latest version.')
-
-    def get_latest_version(self):
-        url = 'https://raw.githubusercontent.com/ktechhydle/mprun_repo/main/internal data/_version.txt'
-        try:
-            response = requests.get(url)
-            if response.status_code == 200:
-                return response.text.strip()  # Get the latest version from version.txt
-            else:
-                QMessageBox.warning(self, 'Error', 'Unable to fetch the latest version.')
-        except Exception as e:
-            QMessageBox.warning(self, 'Error', f'Failed to check for updates: {str(e)}')
-
-        return self.canvas.mpversion
 
 
 def main() -> None:

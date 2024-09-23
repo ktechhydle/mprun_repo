@@ -1,7 +1,7 @@
 pyicloud~=1.0.0
-setuptools~=69.5.1
 vtracer~=0.6.10
 numpy~=1.26.4
 Markdown~=3.6
 PyQt5~=5.15.10
 scipy~=1.13.0
+requests~=2.31.0
