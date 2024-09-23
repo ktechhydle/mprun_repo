@@ -232,12 +232,6 @@ class MPRUN(QMainWindow):
         pan_action.setShortcut(QKeySequence('P'))
         pan_action.triggered.connect(self.use_pan)
 
-        rotate_view_action = QAction('Rotate', self)
-        rotate_view_action.triggered.connect(lambda: self.view_rotate_spin.setFocus())
-
-        zoom_view_action = QAction('Zoom', self)
-        zoom_view_action.triggered.connect(lambda: self.view_zoom_spin.setFocus())
-
         add_canvas_action = QAction('Add Canvas', self)
         add_canvas_action.setShortcut(QKeySequence('A'))
         add_canvas_action.triggered.connect(self.use_add_canvas)
@@ -553,8 +547,6 @@ class MPRUN(QMainWindow):
 
         scene_menu.addAction(select_action)
         scene_menu.addAction(pan_action)
-        scene_menu.addAction(rotate_view_action)
-        scene_menu.addAction(zoom_view_action)
         scene_menu.addAction(add_canvas_action)
         scene_menu.addAction(arrange_canvases_action)
         scene_menu.addAction(rename_canvases_action)
@@ -2599,9 +2591,9 @@ def main() -> None:
         window.canvas.manager.emergency_save()
         QMessageBox.critical(None, 'Uh Oh', f'''<h4>MPRUN encountered an error!</h4> 
         If the cause is known, please report it to our 
-        <a href="https://github.com/ktechhydle/mprun_repo/issues">Issue Tracker</a> 
+        <b><a href="https://github.com/ktechhydle/mprun_repo/issues">Issue Tracker</a></b> 
         on GitHub, and we will fix this error as soon as possible. You can also
-        <a href="https://github.com/ktechhydle/mprun_repo/discussions/5">contact the developers</a>
+        <b><a href="https://github.com/ktechhydle/mprun_repo/discussions/5">contact the developers</a></b>
         to get troubleshooting guides and quick fixes for your issue.
         
         <h4>Debug Info:</h4>
