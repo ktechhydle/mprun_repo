@@ -99,7 +99,7 @@ class PropertiesPanel(QWidget):
         widget9 = ToolbarHorizontalLayout()
         widget9.layout.addWidget(self.rotation_label)
         widget9.layout.addWidget(self.rotate_item_spin)
-        widget9.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        widget9.layout.addStretch()
 
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
@@ -353,7 +353,7 @@ class CharactersPanel(QWidget):
         font_style_hlayout.layout.setContentsMargins(0, 0, 0, 0)
         font_color_hlayout = ToolbarHorizontalLayout()
         font_color_hlayout.layout.setContentsMargins(0, 0, 0, 0)
-        font_color_hlayout.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        font_color_hlayout.layout.addStretch()
         font_color_hlayout.layout.addWidget(QLabel('Color:'))
         font_color_hlayout.layout.addWidget(self.font_color_btn)
 
@@ -416,12 +416,12 @@ class ImageTracingPanel(QWidget):
         self.path_precision_spin.setToolTip('Change the path precision')
 
         image_tracehlayout1 = ToolbarHorizontalLayout()
-        image_tracehlayout1.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        image_tracehlayout1.layout.addStretch()
         image_tracehlayout1.layout.addWidget(colormode_label)
         image_tracehlayout1.layout.addWidget(self.colormode_combo)
         image_tracehlayout1.layout.setContentsMargins(0, 0, 0, 0)
         image_tracehlayout2 = ToolbarHorizontalLayout()
-        image_tracehlayout2.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        image_tracehlayout2.layout.addStretch()
         image_tracehlayout2.layout.addWidget(mode_label)
         image_tracehlayout2.layout.addWidget(self.mode_combo)
         image_tracehlayout2.layout.setContentsMargins(0, 0, 0, 0)
@@ -579,7 +579,7 @@ class QuickActionsPanel(QWidget):
         gsnap_hlayout = ToolbarHorizontalLayout()
         gsnap_hlayout.layout.addWidget(grid_size_label)
         gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
-        gsnap_hlayout.layout.addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Fixed))
+        gsnap_hlayout.layout.addStretch()
 
         self.layout.addWidget(horizontal_widget)
         self.layout.addWidget(gsnap_hlayout)

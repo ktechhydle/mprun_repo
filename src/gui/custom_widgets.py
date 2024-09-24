@@ -421,7 +421,7 @@ class CustomDockWidget(QDockWidget):
         self.title_bar.setObjectName('dockWidgetTitleBar')
         self.title_bar.setFixedHeight(20)
         self.title_bar.setLayout(QHBoxLayout())
-        self.title_bar.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        self.title_bar.layout().addStretch()
         self.title_bar.layout().addWidget(self.minimize_btn)
         self.title_bar.layout().addWidget(self.close_btn)
         self.title_bar.layout().setContentsMargins(0, 0, 0, 0)
@@ -453,7 +453,7 @@ class CustomDockWidget(QDockWidget):
             icons_layout.addWidget(btn)
             self.icon_buttons.append(btn)
 
-        icons_widget.layout().addItem(QSpacerItem(20, 20, QSizePolicy.Fixed, QSizePolicy.Expanding))
+        icons_widget.layout().addStretch()
 
         self.setWidget(icons_widget)
         self.minimize_btn.setToolTip('Expand to panels')
