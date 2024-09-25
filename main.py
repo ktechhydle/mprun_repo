@@ -20,6 +20,7 @@ from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, \
     CanvasEditorPanel
+from src.gui.three_dimensional_viewer import SceneTo3DView
 from src.scripts.app_internal import *
 from src.scripts.raw_functions import nameismain, ItemStack
 from src.scripts.get_version import get_latest_version
@@ -394,7 +395,7 @@ class MPRUN(QMainWindow):
         select_canvases_action = QAction('Select Canvases', self)
         select_canvases_action.triggered.connect(lambda: self.canvas.selectItemsInMode('canvas'))
 
-        # Creat view menu actions
+        # Create view menu actions
         fullscreen_view_action = QAction('Full Screen', self)
         fullscreen_view_action.setShortcut(Qt.Key_F11)
         fullscreen_view_action.triggered.connect(self.showMaximized)
@@ -404,6 +405,9 @@ class MPRUN(QMainWindow):
         control_toolbar_view_action.setChecked(True)
         control_toolbar_view_action.setShortcut(Qt.Key_F12)
         control_toolbar_view_action.triggered.connect(lambda: self.toggle_control_toolbar(control_toolbar_view_action))
+
+        view_in_3d_action = QAction('View In 3D', self)
+        view_in_3d_action.triggered.connect(self.show_3d_viewer)
 
         view_options_menu = CustomMenu('Views', self)
 
@@ -515,6 +519,7 @@ class MPRUN(QMainWindow):
 
         self.view_menu.addAction(control_toolbar_view_action)
         self.view_menu.addAction(fullscreen_view_action)
+        self.view_menu.addAction(view_in_3d_action)
         self.view_menu.addMenu(view_options_menu)
 
         self.help_menu.addAction(about_action)
@@ -2334,6 +2339,10 @@ class MPRUN(QMainWindow):
             line = random.randint(0, len(content) - 1)
 
         self.canvas_view.showMessage('Tip of the Day', content[line])
+
+    def show_3d_viewer(self):
+        self.w = SceneTo3DView(self.canvas)
+        self.w.show()
 
     def read_settings(self):
         with open('internal data/_settings.json', 'r') as f:
