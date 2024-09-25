@@ -342,6 +342,10 @@ y: {int(self.mapToScene(point).y())}''')
                     item = CustomTextItem(f.read())
                     item.setToolTip('Imported Text')
 
+            elif url.toLocalFile().endswith('.mp'):
+                self.canvas.parentWindow.open_recent(url.toLocalFile())
+                return
+
             else:
                 pixmap = QPixmap(url.toLocalFile())
                 item = CustomPixmapItem(pixmap)
