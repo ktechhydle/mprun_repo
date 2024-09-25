@@ -1,3 +1,5 @@
+import os.path
+
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -7,13 +9,14 @@ from src.framework.items import *
 
 
 class SceneTo3DView(QOpenGLWidget):
-    def __init__(self, scene: QGraphicsScene, parent=None):
-        super().__init__(parent)
+    def __init__(self, scene: QGraphicsScene, parent):
+        super().__init__(None)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('3D Viewer')
         self.setWindowModality(Qt.ApplicationModal)
 
         self.scene = scene
+        self.parent = parent
 
         # Variables for camera control
         self.zoom = -50.0  # Initial zoom distance
@@ -50,86 +53,87 @@ class SceneTo3DView(QOpenGLWidget):
         self.renderScene()
 
     def renderScene(self):
-        if self.scene.selectedItems() and isinstance(self.scene.selectedItems()[0], CanvasItem):
-            item = self.scene.selectedItems()[0]
+        item = self.scene.selectedItems()[0]
 
-            x, y = 0, 0
-            width = item.boundingRect().width()
-            length = item.boundingRect().height()  # Base length
-            height = 20  # Cube's fixed height (lying flat)
+        x, y = 0, 0
+        width = item.boundingRect().width()
+        length = item.boundingRect().height()  # Base length
+        height = 20  # Cube's fixed height (lying flat)
 
-            # Define the 8 vertices of the cube (lying flat)
-            vertices = [
-                (x, y, 0), (x + width, y, 0), (x + width, y, length), (x, y, length),  # Bottom face
-                (x, y + height, 0), (x + width, y + height, 0), (x + width, y + height, length),
-                (x, y + height, length)  # Top face
-            ]
+        # Define the 8 vertices of the cube (lying flat)
+        vertices = [
+            (x, y, 0), (x + width, y, 0), (x + width, y, length), (x, y, length),  # Bottom face
+            (x, y + height, 0), (x + width, y + height, 0), (x + width, y + height, length),
+            (x, y + height, length)  # Top face
+        ]
 
-            # --- Draw the solid cube ---
-            glBegin(GL_QUADS)
-            # Bottom face
-            glVertex3f(*vertices[0])
-            glVertex3f(*vertices[1])
-            glVertex3f(*vertices[2])
-            glVertex3f(*vertices[3])
+        # --- Draw the solid cube ---
+        glBegin(GL_QUADS)
+        # Bottom face
+        glVertex3f(*vertices[0])
+        glVertex3f(*vertices[1])
+        glVertex3f(*vertices[2])
+        glVertex3f(*vertices[3])
 
-            # Top face
-            glVertex3f(*vertices[4])
-            glVertex3f(*vertices[5])
-            glVertex3f(*vertices[6])
-            glVertex3f(*vertices[7])
+        # Top face
+        glVertex3f(*vertices[4])
+        glVertex3f(*vertices[5])
+        glVertex3f(*vertices[6])
+        glVertex3f(*vertices[7])
 
-            # Front face
-            glVertex3f(*vertices[0])
-            glVertex3f(*vertices[1])
-            glVertex3f(*vertices[5])
-            glVertex3f(*vertices[4])
+        # Front face
+        glVertex3f(*vertices[0])
+        glVertex3f(*vertices[1])
+        glVertex3f(*vertices[5])
+        glVertex3f(*vertices[4])
 
-            # Back face
-            glVertex3f(*vertices[2])
-            glVertex3f(*vertices[3])
-            glVertex3f(*vertices[7])
-            glVertex3f(*vertices[6])
+        # Back face
+        glVertex3f(*vertices[2])
+        glVertex3f(*vertices[3])
+        glVertex3f(*vertices[7])
+        glVertex3f(*vertices[6])
 
-            # Left face
-            glVertex3f(*vertices[0])
-            glVertex3f(*vertices[3])
-            glVertex3f(*vertices[7])
-            glVertex3f(*vertices[4])
+        # Left face
+        glVertex3f(*vertices[0])
+        glVertex3f(*vertices[3])
+        glVertex3f(*vertices[7])
+        glVertex3f(*vertices[4])
 
-            # Right face
-            glVertex3f(*vertices[1])
-            glVertex3f(*vertices[2])
-            glVertex3f(*vertices[6])
-            glVertex3f(*vertices[5])
-            glEnd()
+        # Right face
+        glVertex3f(*vertices[1])
+        glVertex3f(*vertices[2])
+        glVertex3f(*vertices[6])
+        glVertex3f(*vertices[5])
+        glEnd()
 
-            # --- Draw the cube outline ---
-            glColor3f(0.0, 0.0, 0.0)  # Set color to black for the outline
-            glLineWidth(2.0)  # Set line width
+        # --- Draw the cube outline ---
+        glColor3f(0.0, 0.0, 0.0)  # Set color to black for the outline
+        glLineWidth(2.0)  # Set line width
 
-            glBegin(GL_LINES)
-            # Bottom edges
-            for start, end in [(0, 1), (1, 2), (2, 3), (3, 0)]:
-                glVertex3f(*vertices[start])
-                glVertex3f(*vertices[end])
+        glBegin(GL_LINES)
+        # Bottom edges
+        for start, end in [(0, 1), (1, 2), (2, 3), (3, 0)]:
+            glVertex3f(*vertices[start])
+            glVertex3f(*vertices[end])
 
-            # Top edges
-            for start, end in [(4, 5), (5, 6), (6, 7), (7, 4)]:
-                glVertex3f(*vertices[start])
-                glVertex3f(*vertices[end])
+        # Top edges
+        for start, end in [(4, 5), (5, 6), (6, 7), (7, 4)]:
+            glVertex3f(*vertices[start])
+            glVertex3f(*vertices[end])
 
-            # Vertical edges (connecting top and bottom faces)
-            for start, end in [(0, 4), (1, 5), (2, 6), (3, 7)]:
-                glVertex3f(*vertices[start])
-                glVertex3f(*vertices[end])
-            glEnd()
+        # Vertical edges (connecting top and bottom faces)
+        for start, end in [(0, 4), (1, 5), (2, 6), (3, 7)]:
+            glVertex3f(*vertices[start])
+            glVertex3f(*vertices[end])
+        glEnd()
 
-            # Reset color to default after outline
-            glColor3f(1.0, 1.0, 1.0)
+        # Reset color to default after outline
+        glColor3f(1.0, 1.0, 1.0)
 
-        else:
-            QMessageBox.warning(self, '3D Viewer', 'Please select a Canvas Item before using this tool.')
+        for colliding_item in item.collidingItems():
+            if isinstance(colliding_item, CustomSvgItem):
+                if os.path.basename(colliding_item.source()) in self.parent.libraries_tab.items():
+                    print(colliding_item.source())
 
     def wheelEvent(self, event):
         # Zoom in or out based on the wheel movement

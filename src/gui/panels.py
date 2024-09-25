@@ -287,6 +287,15 @@ class LibrariesPanel(QWidget):
         except Exception as e:
             print(e)
 
+    def items(self):
+        l = []
+
+        for row in range(self.library_list_widget.count()):
+            item = self.library_list_widget.item(row)
+            l.append(item.text())
+
+        return l if l else ''
+
 
 class CharactersPanel(QWidget):
     def __init__(self, canvas, parent):

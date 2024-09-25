@@ -2341,8 +2341,12 @@ class MPRUN(QMainWindow):
         self.canvas_view.showMessage('Tip of the Day', content[line])
 
     def show_3d_viewer(self):
-        self.w = SceneTo3DView(self.canvas)
-        self.w.show()
+        if self.canvas.selectedItems() and isinstance(self.canvas.selectedItems()[0], CanvasItem):
+            self.w = SceneTo3DView(self.canvas, self)
+            self.w.show()
+            return
+
+        QMessageBox.warning(self, '3D Viewer', 'Please select a Canvas Item before using this tool.')
 
     def read_settings(self):
         with open('internal data/_settings.json', 'r') as f:
