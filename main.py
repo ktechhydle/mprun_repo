@@ -244,6 +244,9 @@ class MPRUN(QMainWindow):
         rename_canvases_action = QAction('Rename Canvases', self)
         rename_canvases_action.triggered.connect(self.canvas.rename)
 
+        view_in_3d_action = QAction('View Canvas In 3D', self)
+        view_in_3d_action.triggered.connect(self.show_3d_viewer)
+
         path_action = QAction('Path Draw', self)
         path_action.setShortcut(QKeySequence('L'))
         path_action.triggered.connect(self.use_path)
@@ -406,9 +409,6 @@ class MPRUN(QMainWindow):
         control_toolbar_view_action.setShortcut(Qt.Key_F12)
         control_toolbar_view_action.triggered.connect(lambda: self.toggle_control_toolbar(control_toolbar_view_action))
 
-        view_in_3d_action = QAction('View In 3D', self)
-        view_in_3d_action.triggered.connect(self.show_3d_viewer)
-
         view_options_menu = CustomMenu('Views', self)
 
         read_only_view_action = QAction('Read Only', self)
@@ -519,7 +519,6 @@ class MPRUN(QMainWindow):
 
         self.view_menu.addAction(control_toolbar_view_action)
         self.view_menu.addAction(fullscreen_view_action)
-        self.view_menu.addAction(view_in_3d_action)
         self.view_menu.addMenu(view_options_menu)
 
         self.help_menu.addAction(about_action)
@@ -555,6 +554,7 @@ class MPRUN(QMainWindow):
         scene_menu.addAction(add_canvas_action)
         scene_menu.addAction(arrange_canvases_action)
         scene_menu.addAction(rename_canvases_action)
+        scene_menu.addAction(view_in_3d_action)
 
         view_options_menu.addAction(read_only_view_action)
         view_options_menu.addAction(tools_only_view_action)
