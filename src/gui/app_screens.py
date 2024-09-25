@@ -1,3 +1,4 @@
+import os.path
 import sys
 import re
 from src.scripts.imports import *
@@ -925,20 +926,27 @@ class ScriptingWin(QDialog):
         self.resize(600, 600)
 
         self.mprun = parent
+        self.filename = ''
         self.setLayout(QVBoxLayout())
 
         self.createUI()
 
     def createUI(self):
         self.open_script_btn = QPushButton('Open Script')
+        self.open_script_btn.setFixedWidth(100)
         self.open_script_btn.clicked.connect(self.openFile)
-        self.open_script_btn.setFixedWidth(200)
+        self.save_script_btn = QPushButton('Save Script')
+        self.save_script_btn.setFixedWidth(100)
+        self.save_script_btn.clicked.connect(self.saveFile)
         self.run_btn = QPushButton('Run Script')
-        self.run_btn.setFixedWidth(200)
+        self.run_btn.setFixedWidth(100)
         self.run_btn.clicked.connect(self.runScript)
         script_hlayout = ToolbarHorizontalLayout()
+        script_hlayout.layout.setContentsMargins(0, 0, 0, 0)
         script_hlayout.layout.addWidget(self.open_script_btn)
+        script_hlayout.layout.addWidget(self.save_script_btn)
         script_hlayout.layout.addWidget(self.run_btn)
+        script_hlayout.layout.addStretch()
 
         self.editor = QPlainTextEdit(self)
         self.editor.setPlaceholderText('Your script here...')
@@ -1002,7 +1010,21 @@ mprun.panel_container.addItem(Panel(), 'Test Panel')
 
         if file:
             with open(file, 'r') as f:
+                self.filename = file
                 self.editor.setPlainText(f.read())
+
+    def saveFile(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, 'w') as f:
+                f.write(self.editor.toPlainText())
+
+            return
+
+        file, _ = QFileDialog.getSaveFileName(self.mprun, 'Open Python File', 'My_Script', 'Python files (*.py)')
+
+        if file:
+            with open(file, 'w') as f:
+                f.write(self.editor.toPlainText())
 
 
 class PythonHighlighter(QSyntaxHighlighter):
