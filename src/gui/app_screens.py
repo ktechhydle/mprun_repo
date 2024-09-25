@@ -1030,7 +1030,7 @@ mprun.panel_container.addItem(Panel(), 'Test Panel')
 
             return
 
-        file, _ = QFileDialog.getSaveFileName(self.mprun, 'Open Python File', 'My_Script', 'Python files (*.py)')
+        file, _ = QFileDialog.getSaveFileName(self.mprun, 'Save Python File', 'My_Script', 'Python files (*.py)')
 
         if file:
             with open(file, 'w') as f:
