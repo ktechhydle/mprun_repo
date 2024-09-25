@@ -825,13 +825,22 @@ class SettingsWin(QDialog):
             try:
                 subprocess.check_output('nvidia-smi')
                 compatible_label.setText('<i>Compatible GPU available.</i>')
-            except Exception:  # this command not being found can raise quite a few different errors depending on the configuration
+            except Exception:
                 compatible_label.setText('<i>No compatible GPU available.</i>')
 
             self.use_gpu_checkbtn = QCheckBox('Use GPU Acceleration')
+            gpu_samples_label = QLabel('GPU Samples (Antialiasing)')
+            self.gpu_samples_spin = QSpinBox()
+            self.gpu_samples_spin.setRange(1, 16)
+            self.gpu_samples_spin.setFixedWidth(100)
+            gpu_hlayout = ToolbarHorizontalLayout()
+            gpu_hlayout.layout.addWidget(gpu_samples_label)
+            gpu_hlayout.layout.addWidget(self.gpu_samples_spin)
+            gpu_hlayout.layout.addStretch()
 
             gpu_gb.layout().addWidget(compatible_label)
             gpu_gb.layout().addWidget(self.use_gpu_checkbtn)
+            gpu_gb.layout().addWidget(gpu_hlayout)
             self.performance_tab.layout().addWidget(gpu_gb)
 
         createMemoryGB()
@@ -858,12 +867,11 @@ class SettingsWin(QDialog):
         self.layout().addWidget(self.button_group)
 
     def setDefaults(self):
-        _data = self.p.read_settings()
-
-        for data in _data:
+        for data in self.p.read_settings():
             self.undo_limit_spin.setValue(data['undo_limit'])
             self.show_tip_of_day_checkbtn.setChecked(data['show_daily_tips'])
             self.use_gpu_checkbtn.setChecked(data['use_gpu'])
+            self.gpu_samples_spin.setValue(data['gpu_samples'])
             self.recent_file_limit_spin.setValue(data['recent_file_display_limit'])
             for k, v in self.colors.items():
                 if v == data['default_stroke']:
@@ -880,6 +888,7 @@ class SettingsWin(QDialog):
             data['undo_limit'] = self.undo_limit_spin.value()
             data['show_daily_tips'] = self.show_tip_of_day_checkbtn.isChecked()
             data['use_gpu'] = self.use_gpu_checkbtn.isChecked()
+            data['gpu_samples'] = self.gpu_samples_spin.value()
             data['default_stroke'] = self.default_stroke_combo.itemData(self.default_stroke_combo.currentIndex())
             data['default_fill'] = self.default_fill_combo.itemData(self.default_fill_combo.currentIndex())
             data['default_font'] = self.default_font_combo.itemData(self.default_font_combo.currentIndex())
@@ -908,6 +917,7 @@ class SettingsWin(QDialog):
         self.show_tip_of_day_checkbtn.setChecked(True)
         self.use_gpu_checkbtn.setChecked(True)
         self.recent_file_limit_spin.setValue(5)
+        self.gpu_samples_spin.setValue(4)
         for k, v in self.colors.items():
             if v == 'red':
                 self.default_stroke_combo.setCurrentText(k)

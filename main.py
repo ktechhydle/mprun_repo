@@ -2383,7 +2383,9 @@ class MPRUN(QMainWindow):
                 self.show_disclaimer()
 
             if user_data['use_gpu']:
-                self.canvas_view.setViewport(CustomViewport())
+                viewport = CustomViewport()
+                viewport.format().setSamples(user_data['gpu_samples'])
+                self.canvas_view.setViewport(viewport)
 
             if user_data['show_daily_tips']:
                 self.show_tip_of_the_day()

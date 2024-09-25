@@ -15,6 +15,7 @@
         "undo_limit": 200,
         "show_daily_tips": true,
         "use_gpu": false,
+        "gpu_samples": 4,
         "default_stroke": "red",
         "default_fill": "#00ff00",
         "default_font": "black",
