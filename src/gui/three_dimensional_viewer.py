@@ -13,7 +13,7 @@ class SceneTo3DView(QOpenGLWidget):
         super().__init__(None)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('3D Viewer')
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.Tool)
 
         self.scene = scene
         self.parent = parent
@@ -55,27 +55,31 @@ class SceneTo3DView(QOpenGLWidget):
     def renderScene(self):
         item = self.scene.selectedItems()[0]
 
-        x, y = 0, 0
         width = item.boundingRect().width()
         length = item.boundingRect().height()  # Base length
-        height = 20  # Cube's fixed height (lying flat)
+        height = 20  # Cube's fixed height (for thickness)
 
-        # Define the 8 vertices of the cube (lying flat)
+        # Calculate the offsets to center the plane
+        x_offset = width / 2
+        z_offset = length / 2
+
+        # Define the 8 vertices of the cube (flat on the x-z plane)
         vertices = [
-            (x, y, 0), (x + width, y, 0), (x + width, y, length), (x, y, length),  # Bottom face
-            (x, y + height, 0), (x + width, y + height, 0), (x + width, y + height, length),
-            (x, y + height, length)  # Top face
+            (-x_offset, 0, -z_offset), (x_offset, 0, -z_offset), (x_offset, 0, z_offset), (-x_offset, 0, z_offset),
+            # Bottom face (lying flat)
+            (-x_offset, height, -z_offset), (x_offset, height, -z_offset), (x_offset, height, z_offset),
+            (-x_offset, height, z_offset)  # Top face
         ]
 
         # --- Draw the solid cube ---
         glBegin(GL_QUADS)
-        # Bottom face
+        # Bottom face (lying flat)
         glVertex3f(*vertices[0])
         glVertex3f(*vertices[1])
         glVertex3f(*vertices[2])
         glVertex3f(*vertices[3])
 
-        # Top face
+        # Top face (lying flat)
         glVertex3f(*vertices[4])
         glVertex3f(*vertices[5])
         glVertex3f(*vertices[6])
@@ -134,6 +138,59 @@ class SceneTo3DView(QOpenGLWidget):
             if isinstance(colliding_item, CustomSvgItem):
                 if os.path.basename(colliding_item.source()) in self.parent.libraries_tab.items():
                     print(colliding_item.source())
+                    self.renderItem(colliding_item)
+
+    def renderItem(self, item: CustomSvgItem):
+        if os.path.basename(item.source()).lower().startswith('jump'):
+            obj_file_path = 'course elements/test.obj'
+            vertices, faces = self.loadOBJFile(obj_file_path)  # Load the OBJ file
+
+            print(item.pos())
+
+            glPushMatrix()  # Save the current matrix state
+            glTranslatef(item.pos().x(), item.pos().y(), 0)  # Translate to the item's position
+
+            # --- Render the OBJ model ---
+            glBegin(GL_TRIANGLES)
+            for face in faces:
+                for vertex in face:
+                    glVertex3f(*vertices[vertex])  # Draw each vertex of the face
+            glEnd()
+
+            # --- Render the outline ---
+            glColor3f(0.0, 0.0, 0.0)  # Set color for the outline (black)
+            glLineWidth(2.0)  # Set line width for outline
+
+            glBegin(GL_LINES)
+            for face in faces:
+                # Draw edges of the face for outline
+                for i in range(len(face)):
+                    v1 = vertices[face[i]]
+                    v2 = vertices[face[(i + 1) % len(face)]]  # Wrap around to first vertex
+                    glVertex3f(*v1)
+                    glVertex3f(*v2)
+            glEnd()
+
+            glPopMatrix()  # Restore the previous matrix state
+
+    def loadOBJFile(self, file_path):
+        vertices = []
+        faces = []
+
+        with open(file_path, 'r') as file:
+            for line in file:
+                if line.startswith('v '):
+                    # Parse vertex
+                    parts = line.split()
+                    vertex = tuple(map(float, parts[1:4]))  # x, y, z
+                    vertices.append(vertex)
+                elif line.startswith('f '):
+                    # Parse face
+                    parts = line.split()
+                    face = [int(p.split('/')[0]) - 1 for p in parts[1:]]  # Get vertex indices
+                    faces.append(face)
+
+        return vertices, faces
 
     def wheelEvent(self, event):
         # Zoom in or out based on the wheel movement
