@@ -78,23 +78,23 @@ class SceneTo3DView(QOpenGLWidget):
         height = 20  # Cube's fixed height
 
         glPushMatrix()
+
+        # Translate the cube to be centered at the origin (0, 0)
         glTranslatef(0, 0, 0)
         glRotatef(90, 1, 0, 0)
 
-        # Calculate the offsets to center the cube
-        x_offset = width / 2
-        y_offset = length / 2
-
-        # Define the 8 vertices of the cube, lying flat on the x-y plane (height along z-axis)
+        # Define the 8 vertices of the cube
         vertices = [
-            (-x_offset, -y_offset, 0), (x_offset, -y_offset, 0), (x_offset, y_offset, 0), (-x_offset, y_offset, 0),
-            # Bottom face
-            (-x_offset, -y_offset, height), (x_offset, -y_offset, height), (x_offset, y_offset, height),
-            (-x_offset, y_offset, height)  # Top face
+            (-width / 2, -length / 2, 0), (width / 2, -length / 2, 0), (width / 2, length / 2, 0),
+            (-width / 2, length / 2, 0),
+            (-width / 2, -length / 2, height), (width / 2, -length / 2, height), (width / 2, length / 2, height),
+            (-width / 2, length / 2, height)
         ]
 
         # --- Draw the solid cube ---
         glBegin(GL_QUADS)
+        # ... (the rest of your drawing code remains unchanged)
+
         # Bottom face (now on x-y plane, height along z)
         glVertex3f(*vertices[0])
         glVertex3f(*vertices[1])
@@ -167,7 +167,8 @@ class SceneTo3DView(QOpenGLWidget):
             vertices, faces = self.loadOBJFile(obj_file_path)  # Load the OBJ file
 
             glPushMatrix()
-            glRotatef(90, 1, 0, 0)
+            glRotatef(270, 1, 0, 0)
+            glTranslatef(item.pos().x() - 90, -item.pos().y() - 90, 0)
             print(item.pos())
 
             r, g, b = hexToRGB("#00ff00")
