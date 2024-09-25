@@ -75,32 +75,33 @@ class SceneTo3DView(QOpenGLWidget):
 
         width = item.boundingRect().width()
         length = item.boundingRect().height()  # Base length
-        height = 20  # Cube's fixed height (for thickness)
+        height = 20  # Cube's fixed height
 
-        # Calculate the offsets to center the plane
+        glPushMatrix()
+        glTranslatef(0, 0, 0)
+        glRotatef(90, 1, 0, 0)
+
+        # Calculate the offsets to center the cube
         x_offset = width / 2
-        z_offset = length / 2
+        y_offset = length / 2
 
-        # Define the 8 vertices of the cube (flat on the x-z plane)
+        # Define the 8 vertices of the cube, lying flat on the x-y plane (height along z-axis)
         vertices = [
-            (-x_offset, 0, -z_offset), (x_offset, 0, -z_offset), (x_offset, 0, z_offset), (-x_offset, 0, z_offset),
-            # Bottom face (lying flat)
-            (-x_offset, height, -z_offset), (x_offset, height, -z_offset), (x_offset, height, z_offset),
-            (-x_offset, height, z_offset)  # Top face
+            (-x_offset, -y_offset, 0), (x_offset, -y_offset, 0), (x_offset, y_offset, 0), (-x_offset, y_offset, 0),
+            # Bottom face
+            (-x_offset, -y_offset, height), (x_offset, -y_offset, height), (x_offset, y_offset, height),
+            (-x_offset, y_offset, height)  # Top face
         ]
-
-        r, g, b = hexToRGB("#ffffff")
-        glColor3f(r, g, b)
 
         # --- Draw the solid cube ---
         glBegin(GL_QUADS)
-        # Bottom face (lying flat)
+        # Bottom face (now on x-y plane, height along z)
         glVertex3f(*vertices[0])
         glVertex3f(*vertices[1])
         glVertex3f(*vertices[2])
         glVertex3f(*vertices[3])
 
-        # Top face (lying flat)
+        # Top face
         glVertex3f(*vertices[4])
         glVertex3f(*vertices[5])
         glVertex3f(*vertices[6])
@@ -152,6 +153,8 @@ class SceneTo3DView(QOpenGLWidget):
             glVertex3f(*vertices[end])
         glEnd()
 
+        glPopMatrix()
+
         for colliding_item in item.collidingItems():
             if isinstance(colliding_item, CustomSvgItem):
                 if os.path.basename(colliding_item.source()) in self.parent.libraries_tab.items():
@@ -163,10 +166,9 @@ class SceneTo3DView(QOpenGLWidget):
             obj_file_path = 'course elements/test.obj'
             vertices, faces = self.loadOBJFile(obj_file_path)  # Load the OBJ file
 
+            glPushMatrix()
+            glRotatef(90, 1, 0, 0)
             print(item.pos())
-
-            glPushMatrix()  # Save the current matrix state
-            glTranslatef(item.pos().x(), item.pos().y(), 0)  # Translate to the item's position
 
             r, g, b = hexToRGB("#00ff00")
             glColor3f(r, g, b)

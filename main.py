@@ -245,6 +245,7 @@ class MPRUN(QMainWindow):
         rename_canvases_action.triggered.connect(self.canvas.rename)
 
         view_in_3d_action = QAction('View Canvas In 3D', self)
+        view_in_3d_action.setShortcut(Qt.Key_F5)
         view_in_3d_action.triggered.connect(self.show_3d_viewer)
 
         path_action = QAction('Path Draw', self)
