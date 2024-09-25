@@ -8,20 +8,37 @@ from PyQt5.QtWidgets import *
 from src.framework.items import *
 
 
+def hexToRGB(hex_code):
+    hex_code = hex_code.lstrip('#')
+    r = int(hex_code[0:2], 16) / 255.0
+    g = int(hex_code[2:4], 16) / 255.0
+    b = int(hex_code[4:6], 16) / 255.0
+    return r, g, b
+
+
+def resetToWhite():
+    glColor3f(1, 1, 1)
+
+
+def resetToBlack():
+    glColor3f(0, 0, 0)
+
+
 class SceneTo3DView(QOpenGLWidget):
+
     def __init__(self, scene: QGraphicsScene, parent):
         super().__init__(None)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('3D Viewer')
-        self.setWindowModality(Qt.Tool)
+        self.setWindowModality(Qt.ApplicationModal)
 
         self.scene = scene
         self.parent = parent
 
         # Variables for camera control
         self.zoom = -50.0  # Initial zoom distance
-        self.yaw = 0.0     # Left/right rotation (horizontal)
-        self.pitch = 0.0   # Up/down rotation (vertical)
+        self.yaw = 0.0  # Left/right rotation (horizontal)
+        self.pitch = 0.0  # Up/down rotation (vertical)
         self.last_mouse_pos = None  # Track mouse position for dragging
 
         # Variables for panning
@@ -31,7 +48,8 @@ class SceneTo3DView(QOpenGLWidget):
 
     def initializeGL(self):
         glEnable(GL_DEPTH_TEST)
-        glClearColor(0.5, 0.5, 0.5, 1.0)
+        r, g, b = hexToRGB("#737373")
+        glClearColor(r, g, b, 1.0)
 
     def resizeGL(self, width, height):
         glViewport(0, 0, width, height)
@@ -70,6 +88,9 @@ class SceneTo3DView(QOpenGLWidget):
             (-x_offset, height, -z_offset), (x_offset, height, -z_offset), (x_offset, height, z_offset),
             (-x_offset, height, z_offset)  # Top face
         ]
+
+        r, g, b = hexToRGB("#ffffff")
+        glColor3f(r, g, b)
 
         # --- Draw the solid cube ---
         glBegin(GL_QUADS)
@@ -131,9 +152,6 @@ class SceneTo3DView(QOpenGLWidget):
             glVertex3f(*vertices[end])
         glEnd()
 
-        # Reset color to default after outline
-        glColor3f(1.0, 1.0, 1.0)
-
         for colliding_item in item.collidingItems():
             if isinstance(colliding_item, CustomSvgItem):
                 if os.path.basename(colliding_item.source()) in self.parent.libraries_tab.items():
@@ -150,28 +168,31 @@ class SceneTo3DView(QOpenGLWidget):
             glPushMatrix()  # Save the current matrix state
             glTranslatef(item.pos().x(), item.pos().y(), 0)  # Translate to the item's position
 
-            # --- Render the OBJ model ---
+            r, g, b = hexToRGB("#00ff00")
+            glColor3f(r, g, b)
+
+            # Render the object as before
             glBegin(GL_TRIANGLES)
             for face in faces:
                 for vertex in face:
-                    glVertex3f(*vertices[vertex])  # Draw each vertex of the face
+                    glVertex3f(*vertices[vertex])
             glEnd()
 
-            # --- Render the outline ---
-            glColor3f(0.0, 0.0, 0.0)  # Set color for the outline (black)
-            glLineWidth(2.0)  # Set line width for outline
-
+            # Render the outline
+            resetToBlack()
+            glLineWidth(2.0)
             glBegin(GL_LINES)
             for face in faces:
-                # Draw edges of the face for outline
                 for i in range(len(face)):
                     v1 = vertices[face[i]]
-                    v2 = vertices[face[(i + 1) % len(face)]]  # Wrap around to first vertex
+                    v2 = vertices[face[(i + 1) % len(face)]]
                     glVertex3f(*v1)
                     glVertex3f(*v2)
             glEnd()
 
-            glPopMatrix()  # Restore the previous matrix state
+            resetToWhite()
+
+            glPopMatrix()
 
     def loadOBJFile(self, file_path):
         vertices = []
@@ -225,5 +246,3 @@ class SceneTo3DView(QOpenGLWidget):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.last_mouse_pos = None
-
-
