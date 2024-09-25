@@ -1,10 +1,10 @@
 import sys
 import re
-
+from src.scripts.imports import *
 from src.framework.undo_commands import MultiItemPositionChangeCommand
 from src.gui.custom_widgets import *
+from src.gui.limited_access import LimitedAccess
 from src.scripts.app_internal import *
-from src.scripts.imports import *
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
@@ -943,6 +943,8 @@ class ScriptingWin(QDialog):
         self.editor = QPlainTextEdit(self)
         self.editor.setPlaceholderText('Your script here...')
         self.editor.setPlainText('''# ---- MPRUN python scripting example ---- #
+
+# If you require help, see https://github.com/ktechhydle/mprun_repo/wiki/Using-the-Python-Scripting-Interface
         
 class Panel(QWidget):
     def __init__(self):
@@ -958,7 +960,7 @@ class Panel(QWidget):
         QMessageBox.information(self, 'Hello', 'Hello World! This is a test.')
         
 # Add the panel
-mprun.toolbox.addItem(Panel(), 'Test Panel')
+mprun.panel_container.addItem(Panel(), 'Test Panel')
 
 # This will create a new panel in the toolbox called "Test Panel" with a button that says "Hello World"
 
@@ -975,9 +977,18 @@ mprun.toolbox.addItem(Panel(), 'Test Panel')
     def runScript(self):
         code = self.editor.toPlainText()
 
-        # Create a context that includes 'self' to access app components
+        # Create a restricted 'mprun' context using LimitedAccess
+        limited_mprun = LimitedAccess(
+            self.mprun.toolbox,
+            self.mprun.item_toolbar,
+            self.mprun.toolbar,
+            self.mprun.menu_bar,
+            self.mprun.canvas,
+            self.mprun.canvas_view
+        )
+
         context = {
-            'mprun': self.mprun,
+            'mprun': limited_mprun,  # Restricted mprun access
         }
 
         try:
