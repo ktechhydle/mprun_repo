@@ -1,5 +1,5 @@
 import os.path
-
+import random
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -26,6 +26,11 @@ def resetToWhite():
 
 def resetToSnowWhite():
     r, g, b = hexToRGB('#ebe4ec')
+    glColor3f(r, g, b)
+
+
+def resetToTestColor():
+    r, g, b = hexToRGB('#00ff00')
     glColor3f(r, g, b)
 
 
@@ -143,22 +148,28 @@ class SceneTo3DView(QOpenGLWidget):
 
         glPopMatrix()
 
-        for colliding_item in self.scene.items():
-            if isinstance(colliding_item, CustomSvgItem):
-                print(colliding_item.source())
-                self.renderItem(colliding_item)
+        for graphics_scene_item in self.scene.items():
+            self.renderItem(graphics_scene_item)
 
-    def renderItem(self, item: CustomSvgItem):
-        if os.path.basename(item.source()).lower().startswith('jump'):
-            obj_file_path = 'course elements/jump.obj'
+    def renderItem(self, item: QGraphicsItem):
+        glPushMatrix()  # Push a new matrix to handle transformations
+
+        if isinstance(item, CustomSvgItem):
+            if os.path.basename(item.source()).lower().startswith('jump'):
+                obj_file_path = 'course elements/jump.obj'
+                resetToTestColor()
+
+            elif os.path.basename(item.source()).lower().startswith('tree'):
+                obj_file_path = 'course elements/tree.obj'
+                resetToSnowWhite()
+
+            else:
+                obj_file_path = 'course elements/tree.obj'
+
             vertices, faces, materials = self.loadOBJFile(obj_file_path)  # Load OBJ with materials
 
-            glPushMatrix()
             glRotatef(270, 1, 0, 0)
-            glTranslatef(item.boundingRect().center().x() - 90, -item.boundingRect().center().y() - 90, 0)
-            print(item.pos())
-
-            resetToSnowWhite()
+            glTranslatef(item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() - 90, 0)
 
             # Render the object with colors
             glBegin(GL_TRIANGLES)
@@ -169,7 +180,40 @@ class SceneTo3DView(QOpenGLWidget):
                 for vertex in face:
                     glVertex3f(*vertices[vertex])
             glEnd()
-            glPopMatrix()
+
+        # Pop matrix to ensure OpenGL transformations are reset
+        glPopMatrix()
+
+        # Continue processing other items if they're not CustomSvgItem
+        if not isinstance(item, CustomSvgItem):
+            self.renderOtherItem(item)
+
+    def renderOtherItem(self, item: QGraphicsItem):
+        glPushMatrix()
+
+        if not isinstance(item, (CanvasItem, CanvasTextItem)):
+            # Check if the item already has a stored obj_file_path
+            if not hasattr(item, 'obj_file_path'):
+                choices = ['course elements/tree.obj', 'course elements/tree_smaller.obj']
+                item.obj_file_path = random.choice(choices)  # Store the choice
+
+            # Use the stored obj_file_path
+            vertices, faces, materials = self.loadOBJFile(item.obj_file_path)  # Load OBJ with materials
+
+            glRotatef(270, 1, 0, 0)
+            glTranslatef(item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() - 90, 0)
+
+            # Render the object with colors
+            glBegin(GL_TRIANGLES)
+            for face, material_name in faces:
+                if material_name and material_name in materials:
+                    color = materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white if no color
+                    glColor3fv(color)
+                for vertex in face:
+                    glVertex3f(*vertices[vertex])
+            glEnd()
+
+        glPopMatrix()
 
     def loadOBJFile(self, file_path):
         vertices = []
@@ -208,7 +252,7 @@ class SceneTo3DView(QOpenGLWidget):
         materials = {}
         current_material = None
 
-        with open(file_path, 'r') as file:
+        with open(f'course elements/{file_path}', 'r') as file:
             for line in file:
                 parts = line.split()
                 if not parts:
