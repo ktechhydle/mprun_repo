@@ -17,7 +17,13 @@ def hexToRGB(hex_code):
 
 
 def resetToWhite():
-    glColor3f(1, 1, 1)
+    r, g, b = hexToRGB('#ffffff')
+    glColor3f(r, g, b)
+
+
+def resetToSnowWhite():
+    r, g, b = hexToRGB('#d4c6d6')
+    glColor3f(r, g, b)
 
 
 def resetToBlack():
@@ -48,7 +54,7 @@ class SceneTo3DView(QOpenGLWidget):
 
     def initializeGL(self):
         glEnable(GL_DEPTH_TEST)
-        r, g, b = hexToRGB("#737373")
+        r, g, b = hexToRGB("#ffffff")
         glClearColor(r, g, b, 1.0)
 
     def resizeGL(self, width, height):
@@ -75,13 +81,15 @@ class SceneTo3DView(QOpenGLWidget):
 
         width = item.boundingRect().width()
         length = item.boundingRect().height()  # Base length
-        height = 20  # Cube's fixed height
+        height = 10  # Cube's fixed height
 
         glPushMatrix()
 
         # Translate the cube to be centered at the origin (0, 0)
         glTranslatef(0, 0, 0)
         glRotatef(90, 1, 0, 0)
+
+        resetToSnowWhite()
 
         # Define the 8 vertices of the cube
         vertices = [
@@ -132,89 +140,88 @@ class SceneTo3DView(QOpenGLWidget):
         glVertex3f(*vertices[5])
         glEnd()
 
-        # --- Draw the cube outline ---
-        glColor3f(0.0, 0.0, 0.0)  # Set color to black for the outline
-        glLineWidth(2.0)  # Set line width
-
-        glBegin(GL_LINES)
-        # Bottom edges
-        for start, end in [(0, 1), (1, 2), (2, 3), (3, 0)]:
-            glVertex3f(*vertices[start])
-            glVertex3f(*vertices[end])
-
-        # Top edges
-        for start, end in [(4, 5), (5, 6), (6, 7), (7, 4)]:
-            glVertex3f(*vertices[start])
-            glVertex3f(*vertices[end])
-
-        # Vertical edges (connecting top and bottom faces)
-        for start, end in [(0, 4), (1, 5), (2, 6), (3, 7)]:
-            glVertex3f(*vertices[start])
-            glVertex3f(*vertices[end])
-        glEnd()
-
         glPopMatrix()
 
         for colliding_item in item.collidingItems():
             if isinstance(colliding_item, CustomSvgItem):
-                if os.path.basename(colliding_item.source()) in self.parent.libraries_tab.items():
-                    print(colliding_item.source())
-                    self.renderItem(colliding_item)
+                print(colliding_item.source())
+                self.renderItem(colliding_item)
 
     def renderItem(self, item: CustomSvgItem):
         if os.path.basename(item.source()).lower().startswith('jump'):
             obj_file_path = 'course elements/test.obj'
-            vertices, faces = self.loadOBJFile(obj_file_path)  # Load the OBJ file
+            vertices, faces, materials = self.loadOBJFile(obj_file_path)  # Load OBJ with materials
 
             glPushMatrix()
             glRotatef(270, 1, 0, 0)
             glTranslatef(item.boundingRect().center().x() - 90, -item.boundingRect().center().y() - 90, 0)
             print(item.pos())
 
-            r, g, b = hexToRGB("#00ff00")
-            glColor3f(r, g, b)
-
-            # Render the object as before
+            # Render the object with colors
             glBegin(GL_TRIANGLES)
-            for face in faces:
+            for face, material_name in faces:
+                if material_name and material_name in materials:
+                    color = materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white if no color
+                    glColor3fv(color)
                 for vertex in face:
                     glVertex3f(*vertices[vertex])
             glEnd()
-
-            # Render the outline
-            resetToBlack()
-            glLineWidth(2.0)
-            glBegin(GL_LINES)
-            for face in faces:
-                for i in range(len(face)):
-                    v1 = vertices[face[i]]
-                    v2 = vertices[face[(i + 1) % len(face)]]
-                    glVertex3f(*v1)
-                    glVertex3f(*v2)
-            glEnd()
-
-            resetToWhite()
-
             glPopMatrix()
 
     def loadOBJFile(self, file_path):
         vertices = []
         faces = []
+        materials = {}
+        current_material = None
 
         with open(file_path, 'r') as file:
             for line in file:
-                if line.startswith('v '):
+                parts = line.split()
+                if not parts:
+                    continue
+
+                if parts[0] == 'v':
                     # Parse vertex
-                    parts = line.split()
                     vertex = tuple(map(float, parts[1:4]))  # x, y, z
                     vertices.append(vertex)
-                elif line.startswith('f '):
-                    # Parse face
-                    parts = line.split()
-                    face = [int(p.split('/')[0]) - 1 for p in parts[1:]]  # Get vertex indices
-                    faces.append(face)
 
-        return vertices, faces
+                elif parts[0] == 'f':
+                    # Parse face
+                    face = [int(p.split('/')[0]) - 1 for p in parts[1:]]  # Get vertex indices
+                    faces.append((face, current_material))
+
+                elif parts[0] == 'mtllib':
+                    # Load material file
+                    material_file = parts[1]
+                    materials = self.loadMTLFile(material_file)
+
+                elif parts[0] == 'usemtl':
+                    # Set current material for upcoming faces
+                    current_material = parts[1]
+
+        return vertices, faces, materials
+
+    def loadMTLFile(self, file_path):
+        materials = {}
+        current_material = None
+
+        with open(file_path, 'r') as file:
+            for line in file:
+                parts = line.split()
+                if not parts:
+                    continue
+
+                if parts[0] == 'newmtl':
+                    # Start a new material
+                    current_material = parts[1]
+                    materials[current_material] = {'Kd': (1.0, 1.0, 1.0)}  # Default to white
+
+                elif parts[0] == 'Kd':
+                    # Diffuse color (R, G, B)
+                    kd = tuple(map(float, parts[1:4]))
+                    materials[current_material]['Kd'] = kd
+
+        return materials
 
     def wheelEvent(self, event):
         # Zoom in or out based on the wheel movement
