@@ -174,10 +174,14 @@ class SceneTo3DView(QOpenGLWidget):
                 obj_file_path = item.obj_file_path
 
             if obj_file_path != '':
-                vertices, faces, materials = self.loadOBJFile(obj_file_path)  # Load OBJ with materials
+                vertices, faces, materials = self.loadOBJFile(obj_file_path)
 
                 glRotatef(270, 1, 0, 0)
                 glTranslatef(item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() - 90, 0)
+
+                # Match according to the item's scale and rotation
+                glScalef(item.scale(), item.scale(), item.scale())
+                glRotatef(item.rotation(), 0, 0, 1)
 
                 # Render the object with colors
                 glBegin(GL_TRIANGLES)
