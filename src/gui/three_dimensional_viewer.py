@@ -1,5 +1,6 @@
 import os.path
 import random
+import time
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
@@ -38,6 +39,11 @@ def resetToBlack():
     glColor3f(0, 0, 0)
 
 
+# Initialize variables
+frame_count = 0
+start_time = time.time()
+
+
 class SceneTo3DView(QOpenGLWidget):
 
     def __init__(self, scene: QGraphicsScene, parent):
@@ -68,8 +74,10 @@ class SceneTo3DView(QOpenGLWidget):
     def createUI(self):
         navigation_label = QLabel('Left Click to Orbit\n'
                                   'Shift + Left Click to Pan')
+        self.fps_label = QLabel('FPS: ')
 
         self.layout().addWidget(navigation_label)
+        self.layout().addWidget(self.fps_label)
         self.layout().addStretch()
 
     def initializeGL(self):
@@ -85,6 +93,17 @@ class SceneTo3DView(QOpenGLWidget):
         glMatrixMode(GL_MODELVIEW)
 
     def paintGL(self):
+        global frame_count, start_time
+        frame_count += 1
+
+        # Calculate FPS every second
+        if time.time() - start_time >= 1.0:
+            fps = frame_count / (time.time() - start_time)
+            self.fps_label.setText(f'FPS: {int(fps)}')
+            # Reset for the next second
+            frame_count = 0
+            start_time = time.time()
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
