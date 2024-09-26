@@ -119,9 +119,8 @@ class SceneTo3DView(QOpenGLWidget):
 
         # --- Draw the solid cube ---
         glBegin(GL_QUADS)
-        # ... (the rest of your drawing code remains unchanged)
 
-        # Bottom face (now on x-y plane, height along z)
+        # Bottom face
         glVertex3f(*vertices[0])
         glVertex3f(*vertices[1])
         glVertex3f(*vertices[2])
