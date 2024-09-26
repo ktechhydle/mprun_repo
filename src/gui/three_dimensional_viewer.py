@@ -7,6 +7,9 @@ from PyQt5.QtOpenGL import *
 from PyQt5.QtWidgets import *
 from src.framework.items import *
 
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+
 
 def hexToRGB(hex_code):
     hex_code = hex_code.lstrip('#')
@@ -147,13 +150,15 @@ class SceneTo3DView(QOpenGLWidget):
 
     def renderItem(self, item: CustomSvgItem):
         if os.path.basename(item.source()).lower().startswith('jump'):
-            obj_file_path = 'course elements/test.obj'
+            obj_file_path = 'course elements/jump.obj'
             vertices, faces, materials = self.loadOBJFile(obj_file_path)  # Load OBJ with materials
 
             glPushMatrix()
             glRotatef(270, 1, 0, 0)
             glTranslatef(item.boundingRect().center().x() - 90, -item.boundingRect().center().y() - 90, 0)
             print(item.pos())
+
+            resetToSnowWhite()
 
             # Render the object with colors
             glBegin(GL_TRIANGLES)
