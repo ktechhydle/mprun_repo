@@ -41,12 +41,13 @@ def resetToBlack():
 class SceneTo3DView(QOpenGLWidget):
 
     def __init__(self, scene: QGraphicsScene, parent):
-        super().__init__(None)
+        super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('3D Viewer')
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowFlag(Qt.Tool)
 
         self.scene = scene
+        self.scene.changed.connect(self.update)
         self.parent = parent
 
         # Variables for camera control
@@ -159,9 +160,12 @@ class SceneTo3DView(QOpenGLWidget):
                 obj_file_path = 'course elements/jump.obj'
                 resetToTestColor()
 
+            elif os.path.basename(item.source()).lower().endswith('halfpipe.svg'):
+                obj_file_path = 'course elements/halfpipe.obj'
+                resetToTestColor()
+
             elif os.path.basename(item.source()).lower().startswith('tree'):
                 obj_file_path = 'course elements/tree.obj'
-                resetToSnowWhite()
 
             else:
                 obj_file_path = 'course elements/tree.obj'
