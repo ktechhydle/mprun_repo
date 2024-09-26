@@ -45,6 +45,7 @@ class SceneTo3DView(QOpenGLWidget):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('3D Viewer')
         self.setWindowFlag(Qt.Tool)
+        self.resize(600, 600)
 
         self.scene = scene
         self.scene.changed.connect(self.update)
@@ -70,7 +71,7 @@ class SceneTo3DView(QOpenGLWidget):
         glViewport(0, 0, width, height)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(120.0, width / height, 0.5, 1000.0)  # Adjusted FOV and near plane
+        gluPerspective(120.0, width / height, 0.5, 10000.0)
         glMatrixMode(GL_MODELVIEW)
 
     def paintGL(self):
@@ -156,6 +157,8 @@ class SceneTo3DView(QOpenGLWidget):
         glPushMatrix()  # Push a new matrix to handle transformations
 
         if isinstance(item, CustomSvgItem):
+            obj_file_path = ''
+
             if os.path.basename(item.source()).lower().startswith('jump'):
                 obj_file_path = 'course elements/jump.obj'
                 resetToTestColor()
@@ -165,25 +168,26 @@ class SceneTo3DView(QOpenGLWidget):
                 resetToTestColor()
 
             elif os.path.basename(item.source()).lower().startswith('tree'):
-                obj_file_path = 'course elements/tree.obj'
+                if not hasattr(item, 'obj_file_path'):
+                    choices = ['course elements/tree.obj', 'course elements/tree_smaller.obj']
+                    item.obj_file_path = random.choice(choices)  # Store the choice
+                obj_file_path = item.obj_file_path
 
-            else:
-                obj_file_path = 'course elements/tree.obj'
+            if obj_file_path != '':
+                vertices, faces, materials = self.loadOBJFile(obj_file_path)  # Load OBJ with materials
 
-            vertices, faces, materials = self.loadOBJFile(obj_file_path)  # Load OBJ with materials
+                glRotatef(270, 1, 0, 0)
+                glTranslatef(item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() - 90, 0)
 
-            glRotatef(270, 1, 0, 0)
-            glTranslatef(item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() - 90, 0)
-
-            # Render the object with colors
-            glBegin(GL_TRIANGLES)
-            for face, material_name in faces:
-                if material_name and material_name in materials:
-                    color = materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white if no color
-                    glColor3fv(color)
-                for vertex in face:
-                    glVertex3f(*vertices[vertex])
-            glEnd()
+                # Render the object with colors
+                glBegin(GL_TRIANGLES)
+                for face, material_name in faces:
+                    if material_name and material_name in materials:
+                        color = materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white if no color
+                        glColor3fv(color)
+                    for vertex in face:
+                        glVertex3f(*vertices[vertex])
+                glEnd()
 
         # Pop matrix to ensure OpenGL transformations are reset
         glPopMatrix()
@@ -193,6 +197,8 @@ class SceneTo3DView(QOpenGLWidget):
             self.renderOtherItem(item)
 
     def renderOtherItem(self, item: QGraphicsItem):
+        # Specific item rendering will go here
+        '''
         glPushMatrix()
 
         if not isinstance(item, (CanvasItem, CanvasTextItem)):
@@ -218,6 +224,8 @@ class SceneTo3DView(QOpenGLWidget):
             glEnd()
 
         glPopMatrix()
+        '''
+        pass
 
     def loadOBJFile(self, file_path):
         vertices = []
