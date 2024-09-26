@@ -168,7 +168,7 @@ class SceneTo3DView(QOpenGLWidget):
 
             glPushMatrix()
             glRotatef(270, 1, 0, 0)
-            glTranslatef(item.pos().x() - 90, -item.pos().y() - 90, 0)
+            glTranslatef(item.boundingRect().center().x() - 90, -item.boundingRect().center().y() - 90, 0)
             print(item.pos())
 
             r, g, b = hexToRGB("#00ff00")
