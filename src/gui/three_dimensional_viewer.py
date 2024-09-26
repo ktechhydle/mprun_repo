@@ -22,7 +22,7 @@ def resetToWhite():
 
 
 def resetToSnowWhite():
-    r, g, b = hexToRGB('#d4c6d6')
+    r, g, b = hexToRGB('#ebe4ec')
     glColor3f(r, g, b)
 
 
@@ -77,10 +77,8 @@ class SceneTo3DView(QOpenGLWidget):
         self.renderScene()
 
     def renderScene(self):
-        item = self.scene.selectedItems()[0]
-
-        width = item.boundingRect().width()
-        length = item.boundingRect().height()  # Base length
+        width = 64000
+        length = 64000
         height = 10  # Cube's fixed height
 
         glPushMatrix()
@@ -142,7 +140,7 @@ class SceneTo3DView(QOpenGLWidget):
 
         glPopMatrix()
 
-        for colliding_item in item.collidingItems():
+        for colliding_item in self.scene.items():
             if isinstance(colliding_item, CustomSvgItem):
                 print(colliding_item.source())
                 self.renderItem(colliding_item)

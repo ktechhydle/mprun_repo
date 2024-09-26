@@ -233,6 +233,10 @@ class MPRUN(QMainWindow):
         pan_action.setShortcut(QKeySequence('P'))
         pan_action.triggered.connect(self.use_pan)
 
+        view_in_3d_action = QAction('View In 3D', self)
+        view_in_3d_action.setShortcut(Qt.Key_F5)
+        view_in_3d_action.triggered.connect(self.show_3d_viewer)
+
         add_canvas_action = QAction('Add Canvas', self)
         add_canvas_action.setShortcut(QKeySequence('A'))
         add_canvas_action.triggered.connect(self.use_add_canvas)
@@ -243,10 +247,6 @@ class MPRUN(QMainWindow):
 
         rename_canvases_action = QAction('Rename Canvases', self)
         rename_canvases_action.triggered.connect(self.canvas.rename)
-
-        view_in_3d_action = QAction('View Canvas In 3D', self)
-        view_in_3d_action.setShortcut(Qt.Key_F5)
-        view_in_3d_action.triggered.connect(self.show_3d_viewer)
 
         path_action = QAction('Path Draw', self)
         path_action.setShortcut(QKeySequence('L'))
@@ -552,10 +552,10 @@ class MPRUN(QMainWindow):
 
         scene_menu.addAction(select_action)
         scene_menu.addAction(pan_action)
+        scene_menu.addAction(view_in_3d_action)
         scene_menu.addAction(add_canvas_action)
         scene_menu.addAction(arrange_canvases_action)
         scene_menu.addAction(rename_canvases_action)
-        scene_menu.addAction(view_in_3d_action)
 
         view_options_menu.addAction(read_only_view_action)
         view_options_menu.addAction(tools_only_view_action)
@@ -2342,12 +2342,8 @@ class MPRUN(QMainWindow):
         self.canvas_view.showMessage('Tip of the Day', content[line])
 
     def show_3d_viewer(self):
-        if self.canvas.selectedItems() and isinstance(self.canvas.selectedItems()[0], CanvasItem):
-            self.w = SceneTo3DView(self.canvas, self)
-            self.w.show()
-            return
-
-        QMessageBox.warning(self, '3D Viewer', 'Please select a Canvas Item before using this tool.')
+        self.w = SceneTo3DView(self.canvas, self)
+        self.w.show()
 
     def read_settings(self):
         with open('internal data/_settings.json', 'r') as f:
