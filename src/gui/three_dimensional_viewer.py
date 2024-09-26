@@ -47,6 +47,9 @@ class SceneTo3DView(QOpenGLWidget):
         self.setWindowFlag(Qt.Tool)
         self.resize(600, 600)
 
+        self.setLayout(QVBoxLayout())
+        self.createUI()
+
         self.scene = scene
         self.scene.changed.connect(self.update)
         self.parent = parent
@@ -58,9 +61,16 @@ class SceneTo3DView(QOpenGLWidget):
         self.last_mouse_pos = None  # Track mouse position for dragging
 
         # Variables for panning
-        self.pan_x = 0.0  # Horizontal pan
-        self.pan_y = 0.0  # Vertical pan
-        self.panning = False  # Panning state
+        self.pan_x = 0.0
+        self.pan_y = 0.0
+        self.panning = False
+
+    def createUI(self):
+        navigation_label = QLabel('Left Click to Orbit\n'
+                                  'Shift + Left Click to Pan')
+
+        self.layout().addWidget(navigation_label)
+        self.layout().addStretch()
 
     def initializeGL(self):
         glEnable(GL_DEPTH_TEST)
@@ -71,17 +81,17 @@ class SceneTo3DView(QOpenGLWidget):
         glViewport(0, 0, width, height)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(120.0, width / height, 0.5, 10000.0)
+        gluPerspective(40.0, width / height, 0.5, 10000.0)
         glMatrixMode(GL_MODELVIEW)
 
     def paintGL(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        # Ensure translations are normalized for camera positioning
-        glTranslatef(0.0, 0.0, self.zoom)
-        glRotatef(self.pitch, 1.0, 0.0, 0.0)  # Rotate pitch (up/down)
-        glRotatef(self.yaw, 0.0, 1.0, 0.0)  # Rotate yaw (left/right)
+        # Apply pan offsets
+        glTranslatef(self.pan_x, -self.pan_y, self.zoom)
+        glRotatef(self.pitch, 1.0, 0.0, 0.0)
+        glRotatef(self.yaw, 0.0, 1.0, 0.0)
 
         # Render the scene
         self.renderScene()
@@ -296,26 +306,39 @@ class SceneTo3DView(QOpenGLWidget):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.last_mouse_pos = event.pos()
+        if event.modifiers() & Qt.ShiftModifier:  # Check if Shift key is pressed
+            self.panning = True  # Start panning
 
     def mouseMoveEvent(self, event):
-        if self.last_mouse_pos is not None:
+        if self.panning and self.last_mouse_pos is not None:
             # Calculate the mouse movement delta
             dx = event.x() - self.last_mouse_pos.x()
             dy = event.y() - self.last_mouse_pos.y()
 
-            # Update yaw and pitch based on mouse movement
-            self.yaw += dx * 0.3  # Adjust rotation speed for yaw
-            self.pitch -= dy * 0.3  # Invert pitch and adjust speed
-
-            # Limit pitch to prevent flipping over
-            self.pitch = max(-89, min(89, self.pitch))  # Adjust pitch limits slightly
+            # Update pan offsets
+            self.pan_x += dx * 2
+            self.pan_y += dy * 2
 
             # Save the new mouse position
             self.last_mouse_pos = event.pos()
 
             # Request a repaint
             self.update()
+        elif self.last_mouse_pos is not None:
+            # Existing code for rotation
+            dx = event.x() - self.last_mouse_pos.x()
+            dy = event.y() - self.last_mouse_pos.y()
+
+            self.yaw += dx * 0.3
+            self.pitch -= dy * 0.3
+
+            self.pitch = max(-89, min(89, self.pitch))
+
+            self.last_mouse_pos = event.pos()
+            self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
+            if self.panning:
+                self.panning = False  # Stop panning
             self.last_mouse_pos = None
