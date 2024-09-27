@@ -186,14 +186,13 @@ class SceneTo3DView(QOpenGLWidget):
 
         if isinstance(item, CustomSvgItem):
             obj_file_path = ''
+            resetToSnowWhite()
 
             if os.path.basename(item.source()).lower().startswith('jump'):
                 obj_file_path = 'course elements/jump.obj'
-                resetToTestColor()
 
             elif os.path.basename(item.source()).lower().endswith('halfpipe.svg'):
                 obj_file_path = 'course elements/halfpipe.obj'
-                resetToTestColor()
 
             elif os.path.basename(item.source()).lower().startswith('tree'):
                 if not hasattr(item, 'obj_file_path'):
@@ -211,7 +210,7 @@ class SceneTo3DView(QOpenGLWidget):
                 glScalef(item.scale(), item.scale(), item.scale())
                 glRotatef(item.rotation(), 0, 0, 1)
 
-                # Render the object with colors
+                # Render the object with colors (solid rendering)
                 glBegin(GL_TRIANGLES)
                 for face, material_name in faces:
                     if material_name and material_name in materials:
@@ -221,8 +220,26 @@ class SceneTo3DView(QOpenGLWidget):
                         glVertex3f(*vertices[vertex])
                 glEnd()
 
-        # Pop matrix to ensure OpenGL transformations are reset
-        glPopMatrix()
+                # Render outline (wireframe rendering)
+                glEnable(GL_POLYGON_OFFSET_FILL)  # Enable polygon offset to avoid Z-fighting
+                glPolygonOffset(-2.0, 5.0)
+
+                glEnable(GL_CULL_FACE)  # Enable backface culling
+                glCullFace(GL_BACK)  # Cull the back face to avoid internal edges
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)  # Switch to wireframe mode
+                glColor3f(0, 0, 0)  # Set outline color to black
+                glLineWidth(4.0)  # Set the width of the outline
+
+                glBegin(GL_TRIANGLES)
+                for face, material_name in faces:
+                    for vertex in face:
+                        glVertex3f(*vertices[vertex])
+                glEnd()
+
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)  # Reset to solid mode
+                glDisable(GL_CULL_FACE)  # Disable backface culling
+
+        glPopMatrix()  # Pop matrix to ensure OpenGL transformations are reset
 
         # Continue processing other items if they're not CustomSvgItem
         if not isinstance(item, CustomSvgItem):
