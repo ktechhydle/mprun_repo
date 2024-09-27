@@ -328,8 +328,8 @@ class SceneTo3DView(QOpenGLWidget):
     def wheelEvent(self, event):
         # Zoom in or out based on the wheel movement
         delta = event.angleDelta().y() / 120  # 120 units per wheel notch
-        self.zoom += delta * 15.0  # Adjust zoom speed by changing multiplier
-        self.zoom = max(self.zoom, -1000.0)  # Limit zoom out to -1000.0
+        self.zoom += delta * 25.0  # Adjust zoom speed by changing multiplier
+        self.zoom = max(self.zoom, -10000.0)  # Limit zoom out to -1000.0
         self.update()  # Request a repaint
 
     def mousePressEvent(self, event):
