@@ -189,14 +189,14 @@ class SceneTo3DView(QOpenGLWidget):
             resetToSnowWhite()
 
             if os.path.basename(item.source()).lower().startswith('jump'):
-                obj_file_path = 'course elements/jump.obj'
+                obj_file_path = 'course elements/3d/jump.obj'
 
             elif os.path.basename(item.source()).lower().endswith('halfpipe.svg'):
-                obj_file_path = 'course elements/halfpipe.obj'
+                obj_file_path = 'course elements/3d/halfpipe.obj'
 
             elif os.path.basename(item.source()).lower().startswith('tree'):
                 if not hasattr(item, 'obj_file_path'):
-                    choices = ['course elements/tree.obj', 'course elements/tree_smaller.obj']
+                    choices = ['course elements/3d/tree.obj', 'course elements/3d/tree_smaller.obj']
                     item.obj_file_path = random.choice(choices)  # Store the choice
                 obj_file_path = item.obj_file_path
 
@@ -307,7 +307,7 @@ class SceneTo3DView(QOpenGLWidget):
         materials = {}
         current_material = None
 
-        with open(f'course elements/{file_path}', 'r') as file:
+        with open(f'course elements/3d/{file_path}', 'r') as file:
             for line in file:
                 parts = line.split()
                 if not parts:
