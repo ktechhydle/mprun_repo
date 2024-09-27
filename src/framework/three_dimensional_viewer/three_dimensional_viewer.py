@@ -139,14 +139,23 @@ class SceneTo3DView(QOpenGLWidget):
                 glPushMatrix()
                 glRotatef(270, 1, 0, 0)
 
-                obj_item = ObjItem(obj_file_path)
-                obj_item.setColor('#ebe4ec')  # snow color
-                obj_item.setPosition(
-                    [item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() - 90, 0])
-                obj_item.setScale([item.scale(), item.scale(), item.scale()])
-                obj_item.setRotation(item.rotation(), [0, 0, 1])
-                obj_item.setOutlineEnabled(True)
-                self.addItem(obj_item)
+                # Cache ObjItem if not already cached
+                if not hasattr(item, 'obj_item'):
+                    item.obj_item = ObjItem(obj_file_path)
+                    item.obj_item.setColor('#ebe4ec')  # snow color
+                    item.obj_item.setOutlineEnabled(True)
+
+                # Always update the ObjItem's transformation based on the current QGraphicsItem state
+                item.obj_item.setPosition([
+                    item.sceneBoundingRect().center().x() - 90,
+                    -item.sceneBoundingRect().center().y() - 90,
+                    0
+                ])
+                item.obj_item.setScale([item.scale(), item.scale(), item.scale()])
+                item.obj_item.setRotation(item.rotation(), [0, 0, 1])
+
+                # Draw the cached ObjItem with updated transformations
+                item.obj_item.draw()
 
                 glPopMatrix()
 

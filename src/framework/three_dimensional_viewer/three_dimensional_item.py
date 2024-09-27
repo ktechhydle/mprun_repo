@@ -143,6 +143,7 @@ class ObjItem(Item):
         super().__init__()
         self.outline = False
         self.file = file
+        self.vertices, self.faces, self.materials = self.loadOBJFile(self.file)  # Load the file only once
 
     def draw(self):
         glPushMatrix()
@@ -151,18 +152,16 @@ class ObjItem(Item):
         glScalef(self.scale[0], self.scale[1], self.scale[2])
         glRotatef(self.rotation[0], self.rotation[1], self.rotation[2], self.rotation[3])
 
-        vertices, faces, materials = self.loadOBJFile(self.file)
-
         glColor3f(self.color[0], self.color[1], self.color[2])
 
         # Render the object with colors (solid rendering)
         glBegin(GL_TRIANGLES)
-        for face, material_name in faces:
-            if material_name and material_name in materials:
-                color = materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white if no color
+        for face, material_name in self.faces:
+            if material_name and material_name in self.materials:
+                color = self.materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white if no color
                 glColor3fv(color)
             for vertex in face:
-                glVertex3f(*vertices[vertex])
+                glVertex3f(*self.vertices[vertex])
         glEnd()
 
         if self.outlineEnabled():
@@ -172,14 +171,15 @@ class ObjItem(Item):
             glLineWidth(1.0)  # Set the width of the outline
 
             glBegin(GL_TRIANGLES)
-            for face, material_name in faces:
+            for face, material_name in self.faces:
                 for vertex in face:
-                    glVertex3f(*vertices[vertex])
+                    glVertex3f(*self.vertices[vertex])
             glEnd()
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)  # Reset to solid mode
 
         glPopMatrix()
+
 
     def setOutlineEnabled(self, enabled: bool):
         self.outline = enabled
