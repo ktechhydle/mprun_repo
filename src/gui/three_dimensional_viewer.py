@@ -221,14 +221,9 @@ class SceneTo3DView(QOpenGLWidget):
                 glEnd()
 
                 # Render outline (wireframe rendering)
-                glEnable(GL_POLYGON_OFFSET_FILL)  # Enable polygon offset to avoid Z-fighting
-                glPolygonOffset(-2.0, 5.0)
-
-                glEnable(GL_CULL_FACE)  # Enable backface culling
-                glCullFace(GL_BACK)  # Cull the back face to avoid internal edges
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)  # Switch to wireframe mode
                 glColor3f(0, 0, 0)  # Set outline color to black
-                glLineWidth(4.0)  # Set the width of the outline
+                glLineWidth(1.0)  # Set the width of the outline
 
                 glBegin(GL_TRIANGLES)
                 for face, material_name in faces:
@@ -237,7 +232,6 @@ class SceneTo3DView(QOpenGLWidget):
                 glEnd()
 
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)  # Reset to solid mode
-                glDisable(GL_CULL_FACE)  # Disable backface culling
 
         glPopMatrix()  # Pop matrix to ensure OpenGL transformations are reset
 
