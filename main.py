@@ -11,7 +11,6 @@ this file is the one you might want to read over to learn MPRUN's
 internal functions.
 """
 
-import traceback
 from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
@@ -20,7 +19,7 @@ from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, \
     CanvasEditorPanel
-from src.gui.three_dimensional_viewer import SceneTo3DView
+from src.framework.three_dimensional_viewer.three_dimensional_viewer import SceneTo3DView
 from src.scripts.app_internal import *
 from src.scripts.raw_functions import nameismain, ItemStack
 from src.scripts.get_version import get_latest_version
