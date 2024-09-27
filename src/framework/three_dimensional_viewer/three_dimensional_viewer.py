@@ -132,6 +132,18 @@ class SceneTo3DView(QOpenGLWidget):
             elif os.path.basename(item.source()).lower().endswith('halfpipe.svg'):
                 obj_file_path = 'course elements/3d/halfpipe.obj'
 
+            elif os.path.basename(item.source()).lower().startswith('short tube'):
+                obj_file_path = 'course elements/3d/short_tube.obj'
+
+            elif os.path.basename(item.source()).lower().startswith('long tube'):
+                obj_file_path = 'course elements/3d/long_tube.obj'
+
+            elif os.path.basename(item.source()).lower().startswith('xl tube'):
+                obj_file_path = 'course elements/3d/xl_tube.obj'
+
+            elif os.path.basename(item.source()).lower().startswith('xxl tube'):
+                obj_file_path = 'course elements/3d/xxl_tube.obj'
+
             elif os.path.basename(item.source()).lower().startswith('tree'):
                 if not hasattr(item, 'obj_file_path'):
                     choices = ['course elements/3d/tree.obj', 'course elements/3d/tree_smaller.obj']
@@ -149,11 +161,7 @@ class SceneTo3DView(QOpenGLWidget):
                     item.obj_item.setOutlineEnabled(True)
 
                 # Always update the ObjItem's transformation based on the current QGraphicsItem state
-                item.obj_item.setPosition([
-                    item.sceneBoundingRect().center().x() - 90,
-                    -item.sceneBoundingRect().center().y() - 90,
-                    0
-                ])
+                item.obj_item.setPosition([item.pos().x(), - item.pos().y(), 0])
                 item.obj_item.setScale([item.scale(), item.scale(), item.scale()])
                 item.obj_item.setRotation(item.rotation(), [0, 0, 1])
 
