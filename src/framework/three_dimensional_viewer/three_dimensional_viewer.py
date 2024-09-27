@@ -45,6 +45,9 @@ class SceneTo3DView(QOpenGLWidget):
         self.panning = False
 
     def createUI(self):
+        """
+        Creates a simple set of QLabels in the top-left corner showing navigation tips
+        """
         navigation_label = QLabel('Left Click to Orbit\n'
                                   'Shift + Left Click to Pan')
         navigation_label.setStyleSheet('color: black')
