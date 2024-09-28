@@ -72,7 +72,11 @@ class SceneTo3DView(QOpenGLWidget):
 
     def paintGL(self):
         """
-        Renders the scene in a loop
+        A constant loop whenever the scene is rendered
+
+        -Applies pan, zoom, orbit functions
+        -Handles FPS counting
+        -Creates the scene
         """
         global frame_count, start_time
         frame_count += 1
@@ -211,9 +215,8 @@ class SceneTo3DView(QOpenGLWidget):
 
             # Save the new mouse position
             self.last_mouse_pos = event.pos()
-
-            # Request a repaint
             self.update()
+
         elif self.last_mouse_pos is not None:
             # Existing code for rotation
             dx = event.x() - self.last_mouse_pos.x()
@@ -222,7 +225,7 @@ class SceneTo3DView(QOpenGLWidget):
             self.yaw += dx * 0.3
             self.pitch -= dy * 0.3
 
-            self.pitch = max(-89, min(89, self.pitch))
+            self.pitch = max(-90, min(90, self.pitch))
 
             self.last_mouse_pos = event.pos()
             self.update()
