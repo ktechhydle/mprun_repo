@@ -71,7 +71,10 @@ class Item(object):
         """
         This method is left for the subclass to define
         """
-        pass
+        glTranslatef(self.pos[0], self.pos[1], self.pos[2])
+        glScalef(self.scale[0], self.scale[1], self.scale[2])
+        glRotatef(self.rotation[0], self.rotation[1], self.rotation[2], self.rotation[3])
+        glColor3f(self.color[0], self.color[1], self.color[2])
 
 
 class CubeItem(Item):
@@ -82,6 +85,9 @@ class CubeItem(Item):
         self.height = cube[2]
 
     def draw(self):
+        glPushMatrix()
+        super().draw()
+
         width = self.width
         length = self.length
         height = self.height
@@ -92,11 +98,6 @@ class CubeItem(Item):
             (-width / 2, -length / 2, height), (width / 2, -length / 2, height), (width / 2, length / 2, height),
             (-width / 2, length / 2, height)
         ]
-
-        glTranslatef(self.pos[0], self.pos[1], self.pos[2])
-        glScalef(self.scale[0], self.scale[1], self.scale[2])
-        glRotatef(self.rotation[0], self.rotation[1], self.rotation[2], self.rotation[3])
-        glColor3f(self.color[0], self.color[1], self.color[2])
 
         glBegin(GL_QUADS)
 
@@ -137,6 +138,8 @@ class CubeItem(Item):
         glVertex3f(*vertices[5])
         glEnd()
 
+        glPopMatrix()
+
 
 class ObjItem(Item):
     def __init__(self, file: str):
@@ -147,12 +150,7 @@ class ObjItem(Item):
 
     def draw(self):
         glPushMatrix()
-
-        glTranslatef(self.pos[0], self.pos[1], self.pos[2])
-        glScalef(self.scale[0], self.scale[1], self.scale[2])
-        glRotatef(self.rotation[0], self.rotation[1], self.rotation[2], self.rotation[3])
-
-        glColor3f(self.color[0], self.color[1], self.color[2])
+        super().draw()
 
         # Render the object with colors (solid rendering)
         glBegin(GL_TRIANGLES)
@@ -179,7 +177,6 @@ class ObjItem(Item):
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)  # Reset to solid mode
 
         glPopMatrix()
-
 
     def setOutlineEnabled(self, enabled: bool):
         self.outline = enabled
@@ -241,3 +238,82 @@ class ObjItem(Item):
                     materials[current_material]['Kd'] = kd
 
         return materials
+
+
+class AxisItem(Item):
+    def __init__(self):
+        super().__init__()
+        self.lineWidth = 2.0
+
+    def setLineWidth(self, width: float):
+        self.lineWidth = width
+
+    def draw(self):
+        glPushMatrix()
+        super().draw()
+        glLineWidth(self.lineWidth)
+
+        glEnable(GL_POLYGON_OFFSET_FILL)
+        glPolygonOffset(2.0, 2.0)
+
+        # X-axis (Red)
+        r, g, b = hexToRGB('#ff0000')  # set red
+        glColor3f(r, g, b)
+        glBegin(GL_LINES)
+        glVertex3f(64000.0, 0.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glEnd()
+
+        # Draw negative X with stipple
+        glEnable(GL_LINE_STIPPLE)
+        glLineStipple(1, 0xAAAA)
+
+        glBegin(GL_LINES)
+        glVertex3f(-64000.0, 0.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glEnd()
+
+        glDisable(GL_LINE_STIPPLE)
+
+        # Y-axis (Green)
+        r, g, b = hexToRGB('#00ff00')  # set green
+        glColor3f(r, g, b)
+        glBegin(GL_LINES)
+        glVertex3f(0.0, 64000.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glEnd()
+
+        # Draw negative Y with stipple
+        glEnable(GL_LINE_STIPPLE)
+        glLineStipple(1, 0xAAAA)
+
+        glBegin(GL_LINES)
+        glVertex3f(0.0, -64000.0, 0.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glEnd()
+
+        glDisable(GL_LINE_STIPPLE)
+
+        # Z-axis (Blue)
+        r, g, b = hexToRGB('#0000ff')  # set blue
+        glColor3f(r, g, b)
+        glBegin(GL_LINES)
+        glVertex3f(0.0, 0.0, -64000.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glEnd()
+
+        # Draw negative Y with stipple
+        glEnable(GL_LINE_STIPPLE)
+        glLineStipple(1, 0xAAAA)
+
+        glBegin(GL_LINES)
+        glVertex3f(0.0, 0.0, 64000.0)
+        glVertex3f(0.0, 0.0, 0.0)
+        glEnd()
+
+        glDisable(GL_LINE_STIPPLE)
+
+        glPopMatrix()
+
+
+

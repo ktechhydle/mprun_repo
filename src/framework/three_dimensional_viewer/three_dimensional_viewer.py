@@ -114,9 +114,14 @@ class SceneTo3DView(QOpenGLWidget):
 
         glRotatef(90, 1, 0, 0)
 
-        item = CubeItem([64000, 64000, 10])
+        # add initial plane
+        item = CubeItem([64000, 64000, 0.01])
         item.setColor('#ebe4ec')
         self.addItem(item)
+
+        # add axis indicator
+        axis_item = AxisItem()
+        self.addItem(axis_item)
 
         glPopMatrix()
 
