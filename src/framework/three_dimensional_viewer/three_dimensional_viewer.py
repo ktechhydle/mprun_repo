@@ -38,6 +38,10 @@ class SceneTo3DView(QOpenGLWidget):
         self.yaw = 0.0  # Left/right rotation (horizontal)
         self.pitch = 0.0  # Up/down rotation (vertical)
         self.last_mouse_pos = None  # Track mouse position for dragging
+        self.target_x = 0.0  # The x coordinate of the orbit center
+        self.target_y = 0.0  # The y coordinate of the orbit center
+        self.target_z = 0.0  # The z coordinate of the orbit center
+        self.camera_distance = 50.0  # Distance from the target
 
         # Variables for panning
         self.pan_x = 0.0
@@ -198,19 +202,19 @@ class SceneTo3DView(QOpenGLWidget):
 
     def mousePressEvent(self, event):
         """
-        Handles initial mouse press event
+        Handles initial mouse press event coordinates
         """
         if event.button() == Qt.LeftButton:
             self.last_mouse_pos = event.pos()
-        if event.modifiers() & Qt.ShiftModifier:  # Check if Shift key is pressed
-            self.panning = True  # Start panning
+            if event.modifiers() & Qt.ShiftModifier:
+                self.panning = True
 
     def mouseMoveEvent(self, event):
         """
         Handles panning and orbiting
         """
-        if self.panning and self.last_mouse_pos is not None:
-            # Calculate the mouse movement delta
+        if self.panning and self.last_mouse_pos is not None and (event.modifiers() & Qt.ShiftModifier):
+            # Calculate the mouse movement delta for panning
             dx = event.x() - self.last_mouse_pos.x()
             dy = event.y() - self.last_mouse_pos.y()
 
@@ -239,7 +243,6 @@ class SceneTo3DView(QOpenGLWidget):
         """
         Handles variable cleanup
         """
-        if event.button() == Qt.LeftButton:
-            if self.panning:
-                self.panning = False  # Stop panning
-            self.last_mouse_pos = None
+        if self.panning:
+            self.panning = False  # Stop panning
+        self.last_mouse_pos = None

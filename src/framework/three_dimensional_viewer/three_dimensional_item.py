@@ -333,6 +333,3 @@ class AxisItem(Item):
         glDisable(GL_LINE_STIPPLE)
 
         glPopMatrix()
-
-
-
