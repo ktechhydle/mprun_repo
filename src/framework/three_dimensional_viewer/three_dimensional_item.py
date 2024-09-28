@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+import numpy as np
 
 
 def hexToRGB(hex_code):
@@ -83,60 +84,48 @@ class CubeItem(Item):
         self.width = cube[0]
         self.length = cube[1]
         self.height = cube[2]
+        self.vbo = None
+        self.setupVertexData()
+
+    def setupVertexData(self):
+        # Define vertices for the cube using NumPy
+        width = self.width
+        length = self.length
+        height = self.height
+
+        vertices = np.array([
+            # Bottom face
+            -width / 2, -length / 2, 0,
+            width / 2, -length / 2, 0,
+            width / 2, length / 2, 0,
+            -width / 2, length / 2, 0,
+
+            # Top face
+            -width / 2, -length / 2, height,
+            width / 2, -length / 2, height,
+            width / 2, length / 2, height,
+            -width / 2, length / 2, height
+        ], dtype=np.float32)
+
+        # Generate and bind the VBO
+        self.vbo = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
 
     def draw(self):
         glPushMatrix()
         super().draw()
 
-        width = self.width
-        length = self.length
-        height = self.height
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
 
-        vertices = [
-            (-width / 2, -length / 2, 0), (width / 2, -length / 2, 0), (width / 2, length / 2, 0),
-            (-width / 2, length / 2, 0),
-            (-width / 2, -length / 2, height), (width / 2, -length / 2, height), (width / 2, length / 2, height),
-            (-width / 2, length / 2, height)
-        ]
+        # Define vertex pointer
+        glVertexPointer(3, GL_FLOAT, 0, None)
 
-        glBegin(GL_QUADS)
+        # Draw using the VBO
+        glDrawArrays(GL_QUADS, 0, 8)
 
-        # Bottom face
-        glVertex3f(*vertices[0])
-        glVertex3f(*vertices[1])
-        glVertex3f(*vertices[2])
-        glVertex3f(*vertices[3])
-
-        # Top face
-        glVertex3f(*vertices[4])
-        glVertex3f(*vertices[5])
-        glVertex3f(*vertices[6])
-        glVertex3f(*vertices[7])
-
-        # Front face
-        glVertex3f(*vertices[0])
-        glVertex3f(*vertices[1])
-        glVertex3f(*vertices[5])
-        glVertex3f(*vertices[4])
-
-        # Back face
-        glVertex3f(*vertices[2])
-        glVertex3f(*vertices[3])
-        glVertex3f(*vertices[7])
-        glVertex3f(*vertices[6])
-
-        # Left face
-        glVertex3f(*vertices[0])
-        glVertex3f(*vertices[3])
-        glVertex3f(*vertices[7])
-        glVertex3f(*vertices[4])
-
-        # Right face
-        glVertex3f(*vertices[1])
-        glVertex3f(*vertices[2])
-        glVertex3f(*vertices[6])
-        glVertex3f(*vertices[5])
-        glEnd()
+        glDisableClientState(GL_VERTEX_ARRAY)
 
         glPopMatrix()
 
@@ -146,35 +135,65 @@ class ObjItem(Item):
         super().__init__()
         self.outline = False
         self.file = file
-        self.vertices, self.faces, self.materials = self.loadOBJFile(self.file)  # Load the file only once
+        self.vertices, self.faces, self.materials = self.loadOBJFile(self.file)
+        self.vertex_vbo = None
+        self.index_vbo = None
+        self.setupVertexData()
+
+    def setupVertexData(self):
+        # Convert vertex list to numpy array
+        vertices_np = np.array(self.vertices, dtype=np.float32)
+
+        # Flatten faces to create index array
+        indices = [vertex for face, _ in self.faces for vertex in face]
+        indices_np = np.array(indices, dtype=np.uint32)
+
+        # Create VBO for vertices
+        self.vertex_vbo = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vertex_vbo)
+        glBufferData(GL_ARRAY_BUFFER, vertices_np.nbytes, vertices_np, GL_STATIC_DRAW)
+
+        # Create VBO for indices
+        self.index_vbo = glGenBuffers(1)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_vbo)
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_np.nbytes, indices_np, GL_STATIC_DRAW)
 
     def draw(self):
         glPushMatrix()
         super().draw()
 
-        # Render the object with colors (solid rendering)
-        glBegin(GL_TRIANGLES)
+        # Enable vertex array
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vertex_vbo)
+        glVertexPointer(3, GL_FLOAT, 0, None)
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_vbo)
+
+        # Set colors from materials and draw the object
         for face, material_name in self.faces:
             if material_name and material_name in self.materials:
-                color = self.materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white if no color
+                color = self.materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white
                 glColor3fv(color)
-            for vertex in face:
-                glVertex3f(*self.vertices[vertex])
-        glEnd()
+
+        glDrawElements(GL_TRIANGLES, len(self.faces) * 3, GL_UNSIGNED_INT, None)
+
+        glDisableClientState(GL_VERTEX_ARRAY)
 
         if self.outlineEnabled():
-            # Render outline (wireframe rendering)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)  # Switch to wireframe mode
-            glColor3f(0, 0, 0)  # Set outline color to black
-            glLineWidth(1.0)  # Set the width of the outline
+            # Render outline (wireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+            glColor3f(0, 0, 0)
+            glLineWidth(1.0)
 
-            glBegin(GL_TRIANGLES)
-            for face, material_name in self.faces:
-                for vertex in face:
-                    glVertex3f(*self.vertices[vertex])
-            glEnd()
+            glEnableClientState(GL_VERTEX_ARRAY)
+            glBindBuffer(GL_ARRAY_BUFFER, self.vertex_vbo)
+            glVertexPointer(3, GL_FLOAT, 0, None)
 
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)  # Reset to solid mode
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_vbo)
+            glDrawElements(GL_TRIANGLES, len(self.faces) * 3, GL_UNSIGNED_INT, None)
+
+            glDisableClientState(GL_VERTEX_ARRAY)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         glPopMatrix()
 
