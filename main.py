@@ -143,7 +143,7 @@ class MPRUN(QMainWindow):
         self.create_initial_canvas()
         self.create_menu()
         self.init_toolbars()
-        self.create_toolbox()
+        self.create_panels()
         self.create_toolbar1()
         self.create_toolbar2()
         self.create_view()
@@ -580,7 +580,7 @@ class MPRUN(QMainWindow):
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
         self.item_toolbar.visibilityChanged.connect(self.control_toolbar_visibility_changed)
 
-    def create_toolbox(self):
+    def create_panels(self):
         # ----action toolbar widgets----#
 
         # Dock widget
@@ -628,12 +628,12 @@ class MPRUN(QMainWindow):
         self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
         self.toolbox.addItem(self.canvas_tab, 'Canvas')
         self.toolbox.addItem(self.scene_tab, 'Scene')
-        self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties panel.svg'))
-        self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries panel.svg'))
-        self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/font_size_icon.svg'))
-        self.toolbox.setItemIcon(3, QIcon('ui/UI Icons/Major/image trace panel.svg'))
-        self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas panel.svg'))
-        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene panel.svg'))
+        self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
+        self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
+        self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
+        self.toolbox.setItemIcon(3, QIcon('ui/UI Icons/Major/image_trace_panel.svg'))
+        self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
+        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))
 
         # Add action toolbar actions
         self.tab_view_dock.setWidget(self.toolbox)
