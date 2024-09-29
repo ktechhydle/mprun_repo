@@ -557,7 +557,7 @@ class CanvasEditorPanel(QWidget):
         self.canvas.addCommand(command)
 
 
-class QuickActionsPanel(QWidget):
+class ScenePanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__(parent)
         self.setFixedHeight(115)

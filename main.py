@@ -17,7 +17,7 @@ from src.framework.data_repairer import FileDataRepairer
 from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin, ScriptingWin
 from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
-from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, QuickActionsPanel, \
+from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, ScenePanel, \
     CanvasEditorPanel
 from src.framework.three_dimensional_viewer.three_dimensional_viewer import SceneTo3DView
 from src.scripts.app_internal import *
@@ -618,8 +618,8 @@ class MPRUN(QMainWindow):
         self.canvas_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Quick Actions Tab
-        self.quick_actions_tab = QuickActionsPanel(self.canvas, self)
-        self.quick_actions_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
+        self.scene_tab = ScenePanel(self.canvas, self)
+        self.scene_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Add tabs
         self.toolbox.addItem(self.properties_tab, 'Properties')
@@ -627,7 +627,13 @@ class MPRUN(QMainWindow):
         self.toolbox.addItem(self.characters_tab, 'Characters')
         self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
         self.toolbox.addItem(self.canvas_tab, 'Canvas')
-        self.toolbox.addItem(self.quick_actions_tab, 'Quick Actions')
+        self.toolbox.addItem(self.scene_tab, 'Scene')
+        self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties panel.svg'))
+        self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries panel.svg'))
+        self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/font_size_icon.svg'))
+        self.toolbox.setItemIcon(3, QIcon('ui/UI Icons/Major/image trace panel.svg'))
+        self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas panel.svg'))
+        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene panel.svg'))
 
         # Add action toolbar actions
         self.tab_view_dock.setWidget(self.toolbox)
@@ -639,7 +645,7 @@ class MPRUN(QMainWindow):
         self.actions['Change Font Color'] = self.characters_tab.font_color_btn
         self.actions['Open Library'] = self.libraries_tab.open_library_button
         self.actions['Reload Library'] = self.libraries_tab.reload_library_button
-        self.actions['Enable Grid'] = self.quick_actions_tab.gsnap_check_btn
+        self.actions['Enable Grid'] = self.scene_tab.gsnap_check_btn
 
         self.set_properties_tab_enabled(False)
 
@@ -963,7 +969,7 @@ class MPRUN(QMainWindow):
                                                             self.scale_btn,
                                                             self.rotate_btn,
                                                             self.add_canvas_btn,
-                                                            self.quick_actions_tab.gsnap_check_btn])
+                                                            self.scene_tab.gsnap_check_btn])
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
         self.setCentralWidget(self.canvas_view)
@@ -1946,12 +1952,12 @@ class MPRUN(QMainWindow):
             if isinstance(item, CanvasItem):
                 item.setCanvasActive(False)
 
-        if self.quick_actions_tab.gsnap_check_btn.isChecked():
-            self.quick_actions_tab.gsnap_check_btn.click()
+        if self.scene_tab.gsnap_check_btn.isChecked():
+            self.scene_tab.gsnap_check_btn.click()
 
     def use_exit_grid(self):
-        if self.quick_actions_tab.gsnap_check_btn.isChecked():
-            self.quick_actions_tab.gsnap_check_btn.click()
+        if self.scene_tab.gsnap_check_btn.isChecked():
+            self.scene_tab.gsnap_check_btn.click()
 
     def use_smooth_path(self):
         items = [item for item in self.canvas.selectedItems() if isinstance(item, CustomPathItem) and
@@ -2211,7 +2217,7 @@ class MPRUN(QMainWindow):
         self.update('item_update')
 
     def use_enable_grid(self):
-        if self.quick_actions_tab.gsnap_check_btn.isChecked():
+        if self.scene_tab.gsnap_check_btn.isChecked():
             self.canvas.setGridEnabled(True)
             self.canvas.update()
 
