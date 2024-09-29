@@ -1200,51 +1200,45 @@ class MPRUN(QMainWindow):
                     print(f'Exception: {e}')
 
     def update_transform_ui(self):
-        self.properties_tab.x_pos_spin.blockSignals(True)
-        self.properties_tab.y_pos_spin.blockSignals(True)
-        self.properties_tab.width_scale_spin.blockSignals(True)
-        self.properties_tab.height_scale_spin.blockSignals(True)
-        self.properties_tab.rotate_item_spin.blockSignals(True)
-        self.properties_tab.opacity_spin.blockSignals(True)
+        # Block signals for all spinboxes at once
+        spinboxes = [self.properties_tab.x_pos_spin, self.properties_tab.y_pos_spin,
+                     self.properties_tab.width_scale_spin, self.properties_tab.height_scale_spin,
+                     self.properties_tab.rotate_item_spin, self.properties_tab.opacity_spin]
+        for spinbox in spinboxes:
+            spinbox.blockSignals(True)
 
-        if len(self.canvas.selectedItems()) > 0:
+        selected_items = self.canvas.selectedItems()
+
+        if selected_items:
             self.set_properties_tab_enabled(False)
+            first_item = selected_items[0]
 
-            for item in self.canvas.selectedItems():
-                self.properties_tab.x_pos_spin.setValue(int(item.sceneBoundingRect().x()))
-                self.properties_tab.y_pos_spin.setValue(int(item.sceneBoundingRect().y()))
-                self.properties_tab.rotate_item_spin.setValue(int(item.rotation()))
-                self.properties_tab.opacity_spin.setValue(int(item.opacity() * 100))
+            # Update based on first item only
+            self.properties_tab.x_pos_spin.setValue(int(first_item.sceneBoundingRect().x()))
+            self.properties_tab.y_pos_spin.setValue(int(first_item.sceneBoundingRect().y()))
+            self.properties_tab.rotate_item_spin.setValue(int(first_item.rotation()))
+            self.properties_tab.opacity_spin.setValue(int(first_item.opacity() * 100))
 
-                if item.transform().m11() < 0:
-                    self.properties_tab.width_scale_spin.setValue(-item.boundingRect().width())
+            width = first_item.boundingRect().width() * (-1 if first_item.transform().m11() < 0 else 1)
+            height = first_item.boundingRect().height() * (-1 if first_item.transform().m22() < 0 else 1)
+            self.properties_tab.width_scale_spin.setValue(width)
+            self.properties_tab.height_scale_spin.setValue(height)
 
-                else:
-                    self.properties_tab.width_scale_spin.setValue(item.boundingRect().width())
-
-                if item.transform().m22() < 0:
-                    self.properties_tab.height_scale_spin.setValue(-item.boundingRect().height())
-
-                else:
-                    self.properties_tab.height_scale_spin.setValue(item.boundingRect().height())
-
-                self.properties_tab.selection_label.setText(item.toolTip())
-
-                if len(self.canvas.selectedItems()) > 1:
-                    self.properties_tab.selection_label.setText(
-                        f'Combined Selection ({len(self.canvas.selectedItems())} Items)')
-                    self.properties_tab.x_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().x()))
-                    self.properties_tab.y_pos_spin.setValue(int(self.canvas.selectedItemsSceneBoundingRect().y()))
+            # Update label based on selection count
+            if len(selected_items) > 1:
+                self.properties_tab.selection_label.setText(f'Combined Selection ({len(selected_items)} Items)')
+                bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
+                self.properties_tab.x_pos_spin.setValue(int(bounding_rect.x()))
+                self.properties_tab.y_pos_spin.setValue(int(bounding_rect.y()))
+            else:
+                self.properties_tab.selection_label.setText(first_item.toolTip())
 
         else:
             self.set_properties_tab_enabled(True)
 
-        self.properties_tab.x_pos_spin.blockSignals(False)
-        self.properties_tab.y_pos_spin.blockSignals(False)
-        self.properties_tab.rotate_item_spin.blockSignals(False)
-        self.properties_tab.opacity_spin.blockSignals(False)
-        self.properties_tab.width_scale_spin.blockSignals(False)
-        self.properties_tab.height_scale_spin.blockSignals(False)
+        # Unblock signals for all spinboxes at once
+        for spinbox in spinboxes:
+            spinbox.blockSignals(False)
 
     def update_appearance_ui(self):
         self.canvas_tab.canvas_x_entry.blockSignals(True)
