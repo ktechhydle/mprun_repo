@@ -438,7 +438,6 @@ class CustomDockWidget(QDockWidget):
     def collapse(self):
         self.setFixedWidth(100)
         self.is_collapsed = True
-        self.toolbox.setHidden(True)
         self.icon_buttons = []
 
         icons_widget = QWidget(self)
@@ -462,15 +461,19 @@ class CustomDockWidget(QDockWidget):
     def expand(self):
         self.setFixedWidth(300)
         self.is_collapsed = False
-        self.setWidget(self.toolbox)
-        self.toolbox.setHidden(False)
         self.minimize_btn.setToolTip('Collapse to buttons')
         self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/minimize.svg'))
 
-        if len(self.panels) > 0:
+        if 0 < len(self.panels) == len(self.indexes):
             for i in range(len(self.indexes)):
+                # DO NOT REMOVE THIS, IT PREVENTS STACK OVERFLOW
+                print(f"Setting widget at index: {self.indexes[i]} with panel: {self.panels[i]}")
                 self.toolbox.setWidgetAtIndex(self.indexes[i], self.panels[i], self.panel_names[i])
 
+        if hasattr(self, 'popup'):
+            self.popup.close()
+
+        self.setWidget(self.toolbox)
         self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
         self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
         self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
@@ -480,50 +483,30 @@ class CustomDockWidget(QDockWidget):
 
     def show_toolbox_panel(self, index):
         panel = self.toolbox.widget(index)
-        self.panels.append(panel)
-        self.panel_names.append(self.toolbox.itemText(index))
-        self.indexes.append(index)
 
-        unique_items1 = []
-        seen1 = set()
-        for item in self.panels:
-            if item not in seen1:
-                unique_items1.append(item)
-                seen1.add(item)
-
-        unique_items2 = []
-        seen2 = set()
-        for item in self.panel_names:
-            if item not in seen2:
-                unique_items2.append(item)
-                seen2.add(item)
-
-        unique_items3 = []
-        seen3 = set()
-        for item in self.indexes:
-            if item not in seen3:
-                unique_items3.append(item)
-                seen3.add(item)
-
-        self.panels = unique_items1
-        self.panel_names = unique_items2
-        self.indexes = unique_items3
-
-        popup = CustomMenu(self)
-        action = QWidgetAction(popup)
-        action.setDefaultWidget(panel)
-        popup.addAction(action)
-
-        button = self.icon_buttons[index]
-        button_pos = button.mapToGlobal(QPoint(0, 0))
-
-        # Adjust the position to show the menu at the top-right corner of the button
-        popup_pos = button_pos + QPoint(button.width(), 0)
-        popup.exec_(QPoint(((popup_pos.x() - panel.width()) - button.width()) - 10, popup_pos.y()))
+        if index not in self.indexes:
+            self.panels.append(panel)
+            self.panel_names.append(self.toolbox.itemText(index))
+            self.indexes.append(index)
 
         print(self.panels)
         print(self.panel_names)
         print(self.indexes)
+
+        if hasattr(self, 'popup'):
+            self.popup.close()
+        self.popup = CustomMenu(self)
+        self.popup.resize(panel.width(), panel.height())
+        self.popup.setWindowFlag(Qt.WindowType.Tool)
+        action = QWidgetAction(self.popup)
+        action.setDefaultWidget(panel)
+        self.popup.addAction(action)
+
+        button = self.icon_buttons[index]
+        button_pos = button.mapToGlobal(QPoint(0, 0))
+
+        popup_pos = button_pos + QPoint(button.width(), 0)
+        self.popup.exec_(QPoint(((popup_pos.x() - panel.width()) - button.width()) - 10, popup_pos.y()))
 
     def isCollapsed(self):
         return self.is_collapsed
