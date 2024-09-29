@@ -471,6 +471,13 @@ class CustomDockWidget(QDockWidget):
             for i in range(len(self.indexes)):
                 self.toolbox.setWidgetAtIndex(self.indexes[i], self.panels[i], self.panel_names[i])
 
+        self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
+        self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
+        self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
+        self.toolbox.setItemIcon(3, QIcon('ui/UI Icons/Major/image_trace_panel.svg'))
+        self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
+        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))
+
     def show_toolbox_panel(self, index):
         panel = self.toolbox.widget(index)
         self.panels.append(panel)
