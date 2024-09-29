@@ -130,6 +130,51 @@ class CubeItem(Item):
         glPopMatrix()
 
 
+class PlaneItem(Item):
+    def __init__(self, rect: list):
+        super().__init__()
+        self.rect = rect
+        self.vbo = None
+        self.setupVertexData()
+
+    def setupVertexData(self):
+        # Define vertices for the plane
+        width = self.rect[0]
+        length = self.rect[1]
+
+        vertices = np.array([
+            [-width / 2, 0, -length / 2],  # Bottom left
+            [width / 2, 0, -length / 2],  # Bottom right
+            [width / 2, 0, length / 2],  # Top right
+            [-width / 2, 0, length / 2]  # Top left
+        ], dtype=np.float32)
+
+        # Generate and bind the VBO
+        self.vbo = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        glBufferData(GL_ARRAY_BUFFER, vertices.nbytes, vertices, GL_STATIC_DRAW)
+
+    def draw(self):
+        glPushMatrix()
+        super().draw()
+
+        glEnableClientState(GL_VERTEX_ARRAY)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+
+        # Define vertex pointer
+        glVertexPointer(3, GL_FLOAT, 0, None)
+
+        # Draw using the VBO
+        glDrawArrays(GL_QUADS, 0, 8)
+
+        glDisableClientState(GL_VERTEX_ARRAY)
+
+        glPopMatrix()
+
+    def setRect(self, rect: list):
+        self.rect = rect
+
+
 class ObjItem(Item):
     def __init__(self, file: str):
         super().__init__()
