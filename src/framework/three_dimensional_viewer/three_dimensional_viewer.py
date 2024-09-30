@@ -158,6 +158,9 @@ class SceneTo3DView(QOpenGLWidget):
             elif os.path.basename(item.source()).lower().startswith('xxl tube'):
                 obj_file_path = 'course elements/3d/xxl_tube.obj'
 
+            elif os.path.basename(item.source()).lower().startswith('short rail'):
+                obj_file_path = 'course elements/3d/short_rail.obj'
+
             elif os.path.basename(item.source()).lower().startswith('tree'):
                 if not hasattr(item, 'obj_file_path'):
                     choices = ['course elements/3d/tree.obj', 'course elements/3d/tree_smaller.obj']

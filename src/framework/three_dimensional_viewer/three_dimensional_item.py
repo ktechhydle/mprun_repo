@@ -214,13 +214,23 @@ class ObjItem(Item):
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_vbo)
 
-        # Set colors from materials and draw the object
+        # We need to keep track of the offset for each face's indices
+        offset = 0
+
+        # Set colors from materials and draw each face
         for face, material_name in self.faces:
             if material_name and material_name in self.materials:
                 color = self.materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white
                 glColor3fv(color)
 
-        glDrawElements(GL_TRIANGLES, len(self.faces) * 3, GL_UNSIGNED_INT, None)
+            # Number of vertices in the current face (assume triangles)
+            face_vertex_count = len(face)
+
+            # Draw the face with the correct offset and vertex count
+            glDrawElements(GL_TRIANGLES, face_vertex_count, GL_UNSIGNED_INT, ctypes.c_void_p(offset * 4))
+
+            # Update the offset for the next face
+            offset += face_vertex_count
 
         glDisableClientState(GL_VERTEX_ARRAY)
 
