@@ -74,7 +74,7 @@ class CustomGraphicsView(QGraphicsView):
         self.zoomClamp = True
         self.zoom = 20
         self.zoomStep = 1
-        self.zoomRange = [0, 100]
+        self.zoomRange = [4, 50]  # furthest you can zoom out, closest you can zoom in
         self.isPanning = False
 
     def update_pen(self, pen):
@@ -283,44 +283,43 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseDoubleClickEvent(event)
 
     def wheelEvent(self, event):
-        try:
-            if self.sculpt_btn.isChecked() and not self.isPanning:
-                if self.sculptingTool.sculpting_item:
-                    if event.angleDelta().y() > 0:
-                        self.scene().parentWindow.use_set_sculpt_radius(self.sculptingTool.sculpt_radius + 5 if self.sculptingTool.sculpt_radius <= 1000 else 1000)
-                    else:
-                        self.scene().parentWindow.use_set_sculpt_radius(self.sculptingTool.sculpt_radius - 5 if self.sculptingTool.sculpt_radius >= 1 else 1)
+        if self.sculpt_btn.isChecked() and not self.isPanning:
+            if self.sculptingTool.sculpting_item:
+                if event.angleDelta().y() > 0:
+                    self.scene().parentWindow.use_set_sculpt_radius(
+                        self.sculptingTool.sculpt_radius + 5 if self.sculptingTool.sculpt_radius <= 1000 else 1000)
+                else:
+                    self.scene().parentWindow.use_set_sculpt_radius(
+                        self.sculptingTool.sculpt_radius - 5 if self.sculptingTool.sculpt_radius >= 1 else 1)
 
-                    self.scene().parentWindow.sculpt_radius_spin.blockSignals(True)
-                    self.scene().parentWindow.sculpt_radius_spin.setValue(self.sculptingTool.sculpt_radius)
-                    self.scene().parentWindow.sculpt_radius_spin.blockSignals(False)
+                self.scene().parentWindow.sculpt_radius_spin.blockSignals(True)
+                self.scene().parentWindow.sculpt_radius_spin.setValue(self.sculptingTool.sculpt_radius)
+                self.scene().parentWindow.sculpt_radius_spin.blockSignals(False)
 
-                    self.sculptingTool.sculpt_shape.setPos(self.mapToScene(event.pos()) - self.sculptingTool.sculpt_shape.boundingRect().center())
-                    return
+                self.sculptingTool.sculpt_shape.setPos(
+                    self.mapToScene(event.pos()) - self.sculptingTool.sculpt_shape.boundingRect().center())
+                return
 
-            self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
-            # Calculate zoom Factor
-            zoomOutFactor = 1 / self.zoomInFactor
+        # Calculate zoom Factor
+        zoomOutFactor = 1 / self.zoomInFactor
 
-            # Calculate zoom
-            if event.angleDelta().y() > 0:
-                zoomFactor = self.zoomInFactor
-                self.zoom += self.zoomStep
-            else:
-                zoomFactor = zoomOutFactor
-                self.zoom -= self.zoomStep
+        # Calculate zoom
+        if event.angleDelta().y() > 0:
+            zoomFactor = self.zoomInFactor
+            self.zoom += self.zoomStep
+        else:
+            zoomFactor = zoomOutFactor
+            self.zoom -= self.zoomStep
 
-            # Deal with clamping!
-            clamped = False
-            if self.zoom < self.zoomRange[0]: self.zoom, clamped = self.zoomRange[0], True
-            if self.zoom > self.zoomRange[1]: self.zoom, clamped = self.zoomRange[1], True
+        # Deal with clamping!
+        clamped = False
+        if self.zoom < self.zoomRange[0]: self.zoom, clamped = self.zoomRange[0], True
+        if self.zoom > self.zoomRange[1]: self.zoom, clamped = self.zoomRange[1], True
 
-            if not clamped or self.zoomClamp is False:
-                self.scale(zoomFactor, zoomFactor)
-
-        except Exception:
-            pass
+        if not clamped or self.zoomClamp is False:
+            self.scale(zoomFactor, zoomFactor)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
