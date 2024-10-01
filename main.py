@@ -115,8 +115,9 @@ class MPRUN(QMainWindow):
         data = self.read_settings()
 
         for _data in data:
-            _data['geometry'] = ['maximized'] if self.isMaximized() else [self.x(), self.y(), self.width(),
-                                                                          self.height()]
+            _data['geometry'] = ['maximized'] if self.isMaximized() or self.isFullScreen() else [self.x(), self.y(),
+                                                                                                 self.width(),
+                                                                                                 self.height()]
             _data['saved_view'] = self.current_view()
             _data['toolbar_pos'] = self.current_toolbar_pos()
             _data['toolbox_pos'] = self.current_toolbox_pos()
@@ -401,7 +402,7 @@ class MPRUN(QMainWindow):
         # Create view menu actions
         fullscreen_view_action = QAction('Full Screen', self)
         fullscreen_view_action.setShortcut(Qt.Key_F11)
-        fullscreen_view_action.triggered.connect(self.showMaximized)
+        fullscreen_view_action.triggered.connect(self.show_fullscreen)
 
         control_toolbar_view_action = QAction('Control Toolbar', self)
         control_toolbar_view_action.setCheckable(True)
@@ -2539,6 +2540,13 @@ class MPRUN(QMainWindow):
             self.tab_view_dock.expand()
 
         self.cur_view = ''
+
+    def show_fullscreen(self):
+        if self.isFullScreen():
+            self.showMaximized()
+            return
+
+        self.showFullScreen()
 
     def check_for_updates(self, show_message=False):
         current_version = self.canvas.mpversion
