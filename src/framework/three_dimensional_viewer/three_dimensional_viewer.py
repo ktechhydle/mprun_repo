@@ -210,8 +210,10 @@ class SceneTo3DView(QOpenGLWidget):
         """
         if event.button() == Qt.LeftButton:
             self.last_mouse_pos = event.pos()
+            self.setCursor(Qt.CursorShape.SizeAllCursor)
             if event.modifiers() & Qt.ShiftModifier:
                 self.panning = True
+                self.setCursor(Qt.CursorShape.ClosedHandCursor)
 
     def mouseMoveEvent(self, event):
         """
@@ -250,3 +252,4 @@ class SceneTo3DView(QOpenGLWidget):
         if self.panning:
             self.panning = False  # Stop panning
         self.last_mouse_pos = None
+        self.unsetCursor()
