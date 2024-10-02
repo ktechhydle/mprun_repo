@@ -612,6 +612,7 @@ class ScenePanel(QWidget):
 
         self.layout.addWidget(horizontal_widget)
         self.layout.addWidget(gsnap_hlayout)
+        self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(self.zoom_widget)
         self.layout.addWidget(self.rotate_widget)
         self.layout.addWidget(self.reset_btn)
