@@ -8,6 +8,7 @@ if getattr(sys, 'frozen', False):
 class PropertiesPanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__()
+        self.setMinimumHeight(400)
         self.properties_tab_layout = QVBoxLayout()
         self.setLayout(self.properties_tab_layout)
 
