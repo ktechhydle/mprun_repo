@@ -1014,7 +1014,7 @@ class MPRUN(QMainWindow):
         select_colliding_action.triggered.connect(self.canvas.selectColliding)
         help_action = QAction('&Help', self)
         help_action.triggered.connect(
-            lambda: webbrowser.open('https://sites.google.com/view/mprun/learn#h.dhbfsx84043q')
+            lambda: webbrowser.open('https://sites.google.com/view/mprun-studio/home')
         )
         sep1 = QAction(self)
         sep1.setSeparator(True)
