@@ -9,6 +9,7 @@ Hold the <b>Shift</b> key down while using the <b>Pen Tool (Ctrl+L)</b> to draw 
 Hold the <b>Shift</b> key down while using the <b>Add Canvas Tool (A)</b> to constrain a canvases size to a square.
 You can use the <b>Sculpt Tool (S)</b> to edit path items easily.
 You probably don't read these dialogs, but these can be useful!!!
+You can easily view another daily tip by pressing <b>Shift+T</b>.
 This app was made with ~12000 lines of code and 45 gallons of coffee.
 While using the <b>Scale Tool (Q)</b> you can double-click an item to reset its scale.
 On an imported pixmap image, navigate to <b>Tools > Image > Image Trace</b> to convert it to an SVG file.
@@ -17,4 +18,6 @@ This dialog can be hidden on startup by navigating to <b>Help > Settings > Gener
 Save your work frequently by pressing <b>Ctrl+S</b> to avoid losing progress.
 Hover over any tool for a brief description of its functionality.
 When the <b>Text Tool (Ctrl+T)</b> is active, click on any text item to edit it.
+While a path item is selected, press <b>Shift+S</b> to smooth it out.
 Double click any text item to edit its contents.
+You can view the scene in 3D by pressing <b>F5</b> or by navigating to <b>Tools > Scene > View In 3D</b>.
