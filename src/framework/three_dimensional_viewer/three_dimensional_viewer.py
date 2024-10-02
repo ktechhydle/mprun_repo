@@ -57,9 +57,16 @@ class SceneTo3DView(QOpenGLWidget):
         navigation_label.setStyleSheet('color: black')
         self.fps_label = QLabel('FPS: ')
         self.fps_label.setStyleSheet('color: black')
+        self.outline_width_slider = QSlider()
+        self.outline_width_slider.setFixedHeight(200)
+        self.outline_width_slider.setOrientation(Qt.Orientation.Vertical)
+        self.outline_width_slider.setRange(1, 10)
+        self.outline_width_slider.setValue(3)
+        self.outline_width_slider.valueChanged.connect(self.update)
 
         self.layout().addWidget(navigation_label)
         self.layout().addWidget(self.fps_label)
+        self.layout().addWidget(self.outline_width_slider)
         self.layout().addStretch()
 
     def initializeGL(self):
@@ -186,9 +193,10 @@ class SceneTo3DView(QOpenGLWidget):
                 item.obj_item.setPosition([item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() + 90, 0])
                 item.obj_item.setScale([item.scale(), item.scale(), item.scale()])
                 item.obj_item.setRotation(item.rotation(), [0, 0, 1])
+                item.obj_item.setOutlineWidth(self.outline_width_slider.value())
 
                 # Draw the cached ObjItem with updated transformations
-                item.obj_item.draw()
+                self.addItem(item.obj_item)
 
                 glPopMatrix()
 

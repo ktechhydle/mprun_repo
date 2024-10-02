@@ -179,6 +179,7 @@ class ObjItem(Item):
     def __init__(self, file: str):
         super().__init__()
         self.outline = False
+        self.outline_width = 3
         self.file = file
         self.vertices, self.faces, self.materials = self.loadOBJFile(self.file)
         self.vertex_vbo = None
@@ -236,7 +237,7 @@ class ObjItem(Item):
             glCullFace(GL_FRONT)  # Cull front faces to render the outline from back faces
 
             # Set outline color and width
-            glLineWidth(3.0)
+            glLineWidth(self.outlineWidth())
             r, g, b = hexToRGB('#aba4ab')
             glColor3f(r, g, b)
 
@@ -245,7 +246,7 @@ class ObjItem(Item):
 
             # Slightly scale the object to create the outline effect
             glPushMatrix()
-            glScalef(1.01, 1.01, 1.01)
+            glScalef(1.001, 1.001, 1.001)
 
             # Render the object again in wireframe mode to create the silhouette
             glEnableClientState(GL_VERTEX_ARRAY)
@@ -267,6 +268,12 @@ class ObjItem(Item):
 
     def outlineEnabled(self):
         return self.outline
+
+    def setOutlineWidth(self, width: float):
+        self.outline_width = width
+
+    def outlineWidth(self):
+        return self.outline_width
 
     def loadOBJFile(self, file_path):
         vertices = []
