@@ -382,7 +382,7 @@ class CustomExternalLinkLabel(QLabel):
 
 
 class CustomDockWidget(QDockWidget):
-    def __init__(self, toolbox, parent=None):
+    def __init__(self, toolbox: QToolBox, parent=None):
         super().__init__(parent)
         self.setLayout(QVBoxLayout())
         self.setFeatures(QDockWidget.AllDockWidgetFeatures)
@@ -410,7 +410,7 @@ class CustomDockWidget(QDockWidget):
         self.minimize_btn.setToolTip('Collapse')
         self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/minimize.svg'))
         self.minimize_btn.setIconSize(QSize(16, 16))
-        self.minimize_btn.clicked.connect(self.toggle_collapse)
+        self.minimize_btn.clicked.connect(self.toggleCollapse)
         self.minimize_btn.setStyleSheet('QPushButton { background: #424242;'
                                         'border: none; }'
                                         'QPushButton:hover {'
@@ -429,7 +429,7 @@ class CustomDockWidget(QDockWidget):
 
         self.setTitleBarWidget(self.title_bar)
 
-    def toggle_collapse(self):
+    def toggleCollapse(self):
         if self.isCollapsed():
             self.expand()
         else:
@@ -448,7 +448,7 @@ class CustomDockWidget(QDockWidget):
         for i in range(self.toolbox.count()):
             btn = QPushButton(self.toolbox.itemText(i), self)
             btn.setIcon(self.toolbox.itemIcon(i))
-            btn.clicked.connect(lambda _, idx=i: self.show_toolbox_panel(idx))
+            btn.clicked.connect(lambda _, idx=i: self.showToolboxPanel(idx))
             icons_layout.addWidget(btn)
             self.icon_buttons.append(btn)
 
@@ -481,7 +481,7 @@ class CustomDockWidget(QDockWidget):
         self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
         self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))
 
-    def show_toolbox_panel(self, index):
+    def showToolboxPanel(self, index):
         panel = self.toolbox.widget(index)
 
         if index not in self.indexes:

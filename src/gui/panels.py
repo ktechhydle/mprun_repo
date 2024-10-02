@@ -193,6 +193,7 @@ class PropertiesPanel(QWidget):
 class LibrariesPanel(QWidget):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
+        self.setMinimumHeight(325)
 
         self.current_folder_path = ""
 
