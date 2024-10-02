@@ -560,8 +560,6 @@ class CanvasEditorPanel(QWidget):
 class ScenePanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__(parent)
-        self.setFixedHeight(115)
-
         self.canvas = canvas
         self.parent = parent
         self.layout = QVBoxLayout()
@@ -590,8 +588,34 @@ class ScenePanel(QWidget):
         gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
         gsnap_hlayout.layout.addStretch()
 
+        self.zoom_widget = CustomSpinBox(self)
+        self.zoom_widget.label().setText('Zoom:     ')
+        self.zoom_widget.spinBox().setRange(1, 80779)
+        self.zoom_widget.spinBox().setSuffix('%')
+        self.zoom_widget.spinBox().setToolTip('Change the zoom level')
+        self.zoom_widget.spinBox().setFixedWidth(80)
+        self.zoom_widget.spinBox().setValue(100)
+        self.rotate_widget = CustomSpinBox(self)
+        self.rotate_widget.label().setText('Rotation:')
+        self.rotate_widget.spinBox().setRange(0, 360)
+        self.rotate_widget.spinBox().setSuffix('°')
+        self.rotate_widget.spinBox().setToolTip('Change the rotation of the scene')
+        self.rotate_widget.spinBox().setFixedWidth(80)
+        self.rotate_widget.spinBox().setValue(0)
+        self.zoom_widget.spinBox().valueChanged.connect(self.zoomAndRotateView)
+        self.rotate_widget.spinBox().valueChanged.connect(self.zoomAndRotateView)
+
+        self.reset_btn = QPushButton('↺ Reset')
+        self.reset_btn.setFixedWidth(150)
+        self.reset_btn.setHidden(True)
+        self.reset_btn.clicked.connect(self.resetView)
+
         self.layout.addWidget(horizontal_widget)
         self.layout.addWidget(gsnap_hlayout)
+        self.layout.addWidget(self.zoom_widget)
+        self.layout.addWidget(self.rotate_widget)
+        self.layout.addWidget(self.reset_btn)
+        self.layout.addStretch()
 
         # Update
         self.gsnap_grid_spin.valueChanged.connect(self.update_grid)
@@ -627,5 +651,23 @@ class ScenePanel(QWidget):
         # Update grid
         self.canvas.setGridSize(self.gsnap_grid_spin.value())
 
-    def update_sculpt_radius(self, value):
-        self.parent.use_set_sculpt_radius(value)
+    def zoomAndRotateView(self):
+        if self.zoom_widget.spinBox().value() != 100:
+            self.reset_btn.setHidden(False)
+
+        elif self.rotate_widget.spinBox().value() != 0:
+            self.reset_btn.setHidden(False)
+
+        else:
+            self.reset_btn.setHidden(True)
+
+        zoom = self.zoom_widget.spinBox().value() / 100
+        rotation = self.rotate_widget.spinBox().value()
+        self.parent.canvas_view.resetTransform()
+        self.parent.canvas_view.scale(zoom, zoom)
+        self.parent.canvas_view.rotate(rotation)
+
+    def resetView(self):
+        self.zoom_widget.spinBox().setValue(100)
+        self.rotate_widget.spinBox().setValue(0)
+        self.reset_btn.setHidden(True)

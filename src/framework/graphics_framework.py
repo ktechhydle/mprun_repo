@@ -321,6 +321,10 @@ y: {int(self.mapToScene(point).y())}''')
         if not clamped or self.zoomClamp is False:
             self.scale(zoomFactor, zoomFactor)
 
+        self.parent().scene_tab.zoom_widget.spinBox().blockSignals(True)
+        self.parent().scene_tab.zoom_widget.spinBox().setValue(int(self.transform().m11() * 100))
+        self.parent().scene_tab.zoom_widget.spinBox().blockSignals(False)
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.acceptProposedAction()

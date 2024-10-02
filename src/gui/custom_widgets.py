@@ -604,3 +604,22 @@ class CustomMenu(QMenu):
         # values must be transformed to an integer based QPolygon
         region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
         self.setMask(region)
+
+
+class CustomSpinBox(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setLayout(QHBoxLayout())
+
+        self.spin = QSpinBox()
+        self.lab = QLabel()
+
+        self.layout().addWidget(self.lab)
+        self.layout().addWidget(self.spin)
+        self.layout().addStretch()
+
+    def spinBox(self):
+        return self.spin
+
+    def label(self):
+        return self.lab
