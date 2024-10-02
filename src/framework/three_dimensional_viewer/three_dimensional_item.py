@@ -214,41 +214,51 @@ class ObjItem(Item):
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_vbo)
 
-        # We need to keep track of the offset for each face's indices
+        # First Pass: Render the object normally
         offset = 0
-
-        # Set colors from materials and draw each face
         for face, material_name in self.faces:
             if material_name and material_name in self.materials:
                 color = self.materials[material_name].get('Kd', (1.0, 1.0, 1.0))  # Default to white
                 glColor3fv(color)
 
-            # Number of vertices in the current face (assume triangles)
             face_vertex_count = len(face)
-
-            # Draw the face with the correct offset and vertex count
             glDrawElements(GL_TRIANGLES, face_vertex_count, GL_UNSIGNED_INT, ctypes.c_void_p(offset * 4))
-
-            # Update the offset for the next face
             offset += face_vertex_count
 
         glDisableClientState(GL_VERTEX_ARRAY)
 
+        # Enabling outline gives a hand drawn like appearance
         if self.outlineEnabled():
-            # Render outline (wireframe)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-            glColor3f(0, 0, 0)
-            glLineWidth(1.0)
+            # Second Pass: Render only the outline
 
+            # Enable back-face culling to render only outer edges
+            glEnable(GL_CULL_FACE)
+            glCullFace(GL_FRONT)  # Cull front faces to render the outline from back faces
+
+            # Set outline color and width
+            glLineWidth(3.0)
+            r, g, b = hexToRGB('#aba4ab')
+            glColor3f(r, g, b)
+
+            # Enable wireframe mode
+            glPolygonMode(GL_BACK, GL_LINE)
+
+            # Slightly scale the object to create the outline effect
+            glPushMatrix()
+            glScalef(1.01, 1.01, 1.01)
+
+            # Render the object again in wireframe mode to create the silhouette
             glEnableClientState(GL_VERTEX_ARRAY)
             glBindBuffer(GL_ARRAY_BUFFER, self.vertex_vbo)
             glVertexPointer(3, GL_FLOAT, 0, None)
-
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_vbo)
             glDrawElements(GL_TRIANGLES, len(self.faces) * 3, GL_UNSIGNED_INT, None)
 
             glDisableClientState(GL_VERTEX_ARRAY)
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+            glPopMatrix()
+
+            # Reset the polygon mode to fill
+            glPolygonMode(GL_BACK, GL_FILL)
+            glDisable(GL_CULL_FACE)  # Disable culling
 
         glPopMatrix()
 

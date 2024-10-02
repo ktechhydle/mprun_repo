@@ -63,6 +63,7 @@ class SceneTo3DView(QOpenGLWidget):
         self.layout().addStretch()
 
     def initializeGL(self):
+        self._items = []
         glEnable(GL_DEPTH_TEST)
         r, g, b = hexToRGB("#ffffff")
         glClearColor(r, g, b, 1.0)
@@ -109,6 +110,10 @@ class SceneTo3DView(QOpenGLWidget):
         Adds the item to the scene
         """
         item.draw()
+        self._items.append(item)
+
+    def items(self):
+        return self._items
 
     def renderScene(self):
         """
