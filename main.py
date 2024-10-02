@@ -115,9 +115,11 @@ class MPRUN(QMainWindow):
         data = self.read_settings()
 
         for _data in data:
-            _data['geometry'] = ['maximized'] if self.isMaximized() or self.isFullScreen() else [self.x(), self.y(),
-                                                                                                 self.width(),
-                                                                                                 self.height()]
+            _data['geometry'] = ['maximized'] if self.isMaximized() or self.isFullScreen() else [self.geometry().x(),
+                                                                                                 self.geometry().y(),
+                                                                                                 self.geometry().width(),
+                                                                                                 self.geometry().height()
+                                                                                                 ]
             _data['saved_view'] = self.current_view()
             _data['toolbar_pos'] = self.current_toolbar_pos()
             _data['toolbox_pos'] = self.current_toolbox_pos()
@@ -552,7 +554,9 @@ class MPRUN(QMainWindow):
 
         scene_menu.addAction(select_action)
         scene_menu.addAction(pan_action)
+        scene_menu.addSeparator()
         scene_menu.addAction(view_in_3d_action)
+        scene_menu.addSeparator()
         scene_menu.addAction(add_canvas_action)
         scene_menu.addAction(arrange_canvases_action)
         scene_menu.addAction(rename_canvases_action)
