@@ -1,3 +1,4 @@
+import time
 from src.scripts.imports import *
 from src.framework.items import *
 
@@ -467,6 +468,7 @@ class CustomDockWidget(QDockWidget):
         if 0 < len(self.panels) == len(self.indexes):
             for i in range(len(self.indexes)):
                 # DO NOT REMOVE THIS, IT PREVENTS STACK OVERFLOW
+                time.sleep(0.01)
                 print(f"Setting widget at index: {self.indexes[i]} with panel: {self.panels[i]}")
                 self.toolbox.setWidgetAtIndex(self.indexes[i], self.panels[i], self.panel_names[i])
 
