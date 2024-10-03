@@ -1071,34 +1071,30 @@ class MPRUN(QMainWindow):
         self.select_btn.trigger()
 
     def create_actions_dict(self):
-        for file_action in self.file_menu.actions():
-            if not file_action.text() == 'Open Recent':
-                self.actions[file_action.text()] = file_action
+        menus_and_toolbars = [
+            (self.file_menu.actions(), 'Open Recent'),
+            (self.tool_menu.actions(), None),
+            (self.edit_menu.actions(), None),
+            (self.object_menu.actions(), None),
+            (self.selection_menu.actions(), None),
+            (self.view_menu.actions(), None),
+            (self.help_menu.actions(), 'Find Action'),
+            (self.toolbar.actions(), None),
+            (self.item_toolbar.actions(), None)
+        ]
 
-        for tool_action in self.tool_menu.actions():
-            self.actions[tool_action.text()] = tool_action
+        # Iterate through the actions of each menu/toolbar
+        for actions, skip_text in menus_and_toolbars:
+            if not isinstance(actions, QMenu):
+                for action in actions:
+                    action_text = action.text().replace('&', '')
 
-        for edit_action in self.edit_menu.actions():
-            self.actions[edit_action.text()] = edit_action
+                    # Skip specific actions if needed
+                    if skip_text and action_text == skip_text:
+                        continue
 
-        for object_action in self.object_menu.actions():
-            self.actions[object_action.text()] = object_action
-
-        for selection_action in self.selection_menu.actions():
-            self.actions[selection_action.text()] = selection_action
-
-        for view_action in self.view_menu.actions():
-            self.actions[view_action.text()] = view_action
-
-        for help_action in self.help_menu.actions():
-            if not help_action.text() == 'Find Action':
-                self.actions[help_action.text()] = help_action
-
-        for tool in self.toolbar.actions():
-            self.actions[tool.text()] = tool
-
-        for item_tool in self.item_toolbar.actions():
-            self.actions[item_tool.text()] = item_tool
+                    # Add the action to self.actions dictionary
+                    self.actions[action_text] = action
 
     def update(self, *args):
         super().update()

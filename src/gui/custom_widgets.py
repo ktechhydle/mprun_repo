@@ -527,6 +527,13 @@ class CustomToolbox(QToolBox):
         self.removeItem(index)
         self.insertItem(index, widget, name)
 
+    def wheelEvent(self, event: QWheelEvent):
+        if event.angleDelta().y() > 0:
+            self.setCurrentIndex(self.currentIndex() - 1)
+
+        else:
+            self.setCurrentIndex(self.currentIndex() + 1)
+
 
 class CustomListWidget(QListWidget):
     def __init__(self, parent=None):
