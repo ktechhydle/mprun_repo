@@ -562,6 +562,8 @@ class CanvasEditorPanel(QWidget):
 class ScenePanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__(parent)
+        self.setMinimumHeight(270)
+
         self.canvas = canvas
         self.parent = parent
         self.layout = QVBoxLayout()
@@ -599,7 +601,7 @@ class ScenePanel(QWidget):
         self.zoom_widget.spinBox().setValue(100)
         self.rotate_widget = CustomSpinBox(self)
         self.rotate_widget.label().setText('Rotation:')
-        self.rotate_widget.spinBox().setRange(0, 360)
+        self.rotate_widget.spinBox().setRange(-360, 360)
         self.rotate_widget.spinBox().setSuffix('°')
         self.rotate_widget.spinBox().setToolTip('Change the rotation of the scene')
         self.rotate_widget.spinBox().setFixedWidth(80)
