@@ -1,0 +1,33 @@
+<h1>Credits</h1>
+
+MPRUN would not be possible without the contributions of:
+
+<h3>Individuals</h3>
+<ul>
+  <li>Keller Hydle</li>
+  <li>Quentin Dingleballs</li>
+  <li>Aimee Wild</li>
+</ul>
+
+<h3>Development Hosts</h3>
+<ul>
+  <li>GitHub</li>
+  <li>PyCharm</li>
+</ul>
+
+<h3>Technological Foundations</h3>
+<ul>
+  <li>Python</li>
+  <li>OpenGL</li>
+  <li>Qt</li>
+  <li>Vtracer</li>
+</ul>
+
+<h3>Energizing Support</h3>
+<ul>
+  <li>Toblerone of Switzerland</li>
+  <li>Haribo of Germany</li>
+</ul>
+
+<h3>Special Thanks</h3>
+Jeremy Hydle: For inspiring the entire idea

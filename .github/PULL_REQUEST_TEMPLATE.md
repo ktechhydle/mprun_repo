@@ -1,8 +1,8 @@
 <!--
   You are awesome!
   Thanks for contributing to our project, any help is greatly supported! 
-  If your PR is merged we will add you to our software credits document (https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing)
-  Of course only if you specify us adding you in the checklist
+  If your PR is merged we will add you to our software credits document (internal data/_credits.txt)
+  This will only happen if you specify us adding you in the checklist below
   Please, DO NOT DELETE ANY TEXT from this template! (unless instructed).
 -->
 ## Breaking change
@@ -34,6 +34,7 @@
 - [ ] Breaking change (fix/feature causing existing functionality to break)
 - [ ] Code quality improvements to existing code or addition of tests
 - [ ] Documentation or code sample
+- [ ] Installer build instructions (.spec files, or GitHub workflows updates)
 
 ## Example of code:
 <!--

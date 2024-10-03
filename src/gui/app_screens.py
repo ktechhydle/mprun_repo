@@ -480,9 +480,9 @@ class AboutWin(QDialog):
         self.setFixedWidth(500)
         self.setStyleSheet('border-radius: 5px;')
 
-        self.create_ui()
+        self.createUI()
 
-    def create_ui(self):
+    def createUI(self):
         # Create main layout
         self.setLayout(QVBoxLayout())
 
@@ -492,10 +492,13 @@ class AboutWin(QDialog):
         self.about_tab.setLayout(QVBoxLayout())
         self.license_tab = QWidget(self)
         self.license_tab.setLayout(QVBoxLayout())
+        self.credits_tab = QWidget(self)
+        self.credits_tab.setLayout(QVBoxLayout())
         self.more_info_tab = QWidget(self)
         self.more_info_tab.setLayout(QVBoxLayout())
         self.tab_view.addTab(self.about_tab, 'About')
         self.tab_view.addTab(self.license_tab, 'License')
+        self.tab_view.addTab(self.credits_tab, 'Credits')
         self.tab_view.addTab(self.more_info_tab, 'More Info')
         self.layout().addWidget(self.tab_view)
 
@@ -550,12 +553,16 @@ You are responsible for publishing your work under a license of your choosing an
         self.license_tab.layout().addWidget(license_label)
         self.license_tab.layout().addStretch()
 
+        # Create credits tab
+        with open('internal data/_credits.txt', 'r') as f:
+            credits = f.read()
+        credits_label = QLabel(credits, self)
+        self.credits_tab.layout().addWidget(credits_label)
+        self.credits_tab.layout().addStretch()
+
         # Create more info tab
-        credits_label = CustomExternalLinkLabel('Credits',
-                                                'https://docs.google.com/document/d/1r-HFww2g-71McWNktCsRq363_n6Pjlog89ZnsTmf3ec/edit?usp=sharing')
         contact_label = CustomExternalLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
         website_label = CustomExternalLinkLabel('Website', 'https://sites.google.com/view/mprun/home')
-        self.more_info_tab.layout().addWidget(credits_label)
         self.more_info_tab.layout().addWidget(contact_label)
         self.more_info_tab.layout().addWidget(website_label)
         self.more_info_tab.layout().addStretch()
