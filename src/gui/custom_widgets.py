@@ -530,11 +530,27 @@ class CustomToolbox(QToolBox):
         self.insertItem(index, widget, name)
 
     def wheelEvent(self, event: QWheelEvent):
-        if event.angleDelta().y() > 0:
-            self.setCurrentIndex(self.currentIndex() - 1)
+        # Get the mouse position relative to the toolbox
+        mouse_pos = event.globalPosition().toPoint() - self.mapToGlobal(QPoint(0, 0))
 
-        else:
-            self.setCurrentIndex(self.currentIndex() + 1)
+        # Get the current index
+        current_index = self.currentIndex()
+        max_index = self.count() - 1  # Get the maximum index
+
+        title_rect = self.calculateTitleRect()
+
+        if title_rect.contains(mouse_pos):
+            if event.angleDelta().y() > 0 and current_index > 0:
+                self.setCurrentIndex(current_index - 1)  # Scroll up
+            elif event.angleDelta().y() < 0 and current_index < max_index:
+                self.setCurrentIndex(current_index + 1)  # Scroll down
+
+    def calculateTitleRect(self):
+        # Calculate the height of each title item based on the index
+        title_height = self.style().pixelMetric(self.style().PM_TitleBarHeight)  # Standard height for title bar
+
+        # Create a rectangle for the title area of the current item
+        return QRect(0, 0, self.width(), title_height)
 
 
 class CustomListWidget(QListWidget):
