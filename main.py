@@ -175,7 +175,15 @@ class MPRUN(QMainWindow):
         self.view_menu = self.menu_bar.addMenu('&View')
         self.help_menu = self.menu_bar.addMenu('&Help')
 
-        # Create file actions
+        self.create_file_menu()
+        self.create_tools_menu()
+        self.create_edit_menu()
+        self.create_object_menu()
+        self.create_selection_menu()
+        self.create_view_menu()
+        self.create_help_menu()
+
+    def create_file_menu(self):
         new_action = QAction('New', self)
         new_action.setShortcut(QKeySequence('Ctrl+N'))
         new_action.triggered.connect(self.canvas.manager.restore)
@@ -220,7 +228,24 @@ class MPRUN(QMainWindow):
         close_action = QAction('Close', self)
         close_action.triggered.connect(self.close)
 
-        # Create tools submenus and actions
+        self.file_menu.addAction(new_action)
+        self.file_menu.addAction(open_action)
+        self.file_menu.addMenu(self.open_recent_menu)
+        self.file_menu.addAction(open_template_action)
+        self.file_menu.addSeparator()
+        self.file_menu.addAction(save_action)
+        self.file_menu.addAction(saveas_action)
+        self.file_menu.addAction(save_copy_action)
+        self.file_menu.addAction(saveas_template_action)
+        self.file_menu.addAction(save_to_icloud_action)
+        self.file_menu.addSeparator()
+        self.file_menu.addAction(export_action)
+        self.file_menu.addAction(export_multiple_action)
+        self.file_menu.addSeparator()
+        self.file_menu.addAction(repair_file_action)
+        self.file_menu.addAction(close_action)
+
+    def create_tools_menu(self):
         drawing_menu = self.tool_menu.addMenu('Drawing', parent=self)
         path_menu = self.tool_menu.addMenu('Path', parent=self)
         characters_menu = self.tool_menu.addMenu('Characters', parent=self)
@@ -300,7 +325,30 @@ class MPRUN(QMainWindow):
         add_shape_menu.addAction(add_shape_circle)
         add_shape_menu.addAction(add_shape_tri)
 
-        # Create edit actions
+        drawing_menu.addAction(path_action)
+        drawing_menu.addAction(pen_action)
+        drawing_menu.addAction(linelabel_action)
+        drawing_menu.addMenu(add_shape_menu)
+
+        path_menu.addAction(smooth_action)
+        path_menu.addAction(close_subpath_action)
+        path_menu.addAction(sculpt_path_action)
+
+        characters_menu.addAction(text_action)
+
+        image_menu.addAction(insert_image_action)
+        image_menu.addAction(image_trace_action)
+
+        scene_menu.addAction(select_action)
+        scene_menu.addAction(pan_action)
+        scene_menu.addSeparator()
+        scene_menu.addAction(view_in_3d_action)
+        scene_menu.addSeparator()
+        scene_menu.addAction(add_canvas_action)
+        scene_menu.addAction(arrange_canvases_action)
+        scene_menu.addAction(rename_canvases_action)
+
+    def create_edit_menu(self):
         undo_action = QAction('Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
         undo_action.triggered.connect(self.canvas.undo)
@@ -325,7 +373,16 @@ class MPRUN(QMainWindow):
         hard_delete_action.setShortcut(QKeySequence('Ctrl+Shift+Backspace'))
         hard_delete_action.triggered.connect(self.use_hard_delete)
 
-        # Create object actions
+        self.edit_menu.addAction(undo_action)
+        self.edit_menu.addAction(redo_action)
+        self.edit_menu.addSeparator()
+        self.edit_menu.addAction(copy_action)
+        self.edit_menu.addAction(paste_action)
+        self.edit_menu.addAction(delete_action)
+        self.edit_menu.addSeparator()
+        self.edit_menu.addAction(hard_delete_action)
+
+    def create_object_menu(self):
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.setShortcut(QKeySequence('D'))
         duplicate_action.triggered.connect(self.canvas.duplicate)
@@ -374,7 +431,25 @@ class MPRUN(QMainWindow):
         reset_action = QAction('Reset Item', self)
         reset_action.triggered.connect(self.use_reset_item)
 
-        # Create selection menu actions
+        self.object_menu.addAction(raise_layer_action)
+        self.object_menu.addAction(lower_layer_action)
+        self.object_menu.addAction(bring_to_front_action)
+        self.object_menu.addSeparator()
+        self.object_menu.addAction(duplicate_action)
+        self.object_menu.addAction(scale_action)
+        self.object_menu.addAction(rotate_action)
+        self.object_menu.addSeparator()
+        self.object_menu.addAction(flip_horizontal_action)
+        self.object_menu.addAction(flip_vertical_action)
+        self.object_menu.addAction(mirror_horizontal_action)
+        self.object_menu.addAction(mirror_vertical_action)
+        self.object_menu.addSeparator()
+        self.object_menu.addAction(hide_action)
+        self.object_menu.addAction(unhide_action)
+        self.object_menu.addAction(reset_action)
+        self.object_menu.addSeparator()
+
+    def create_selection_menu(self):
         select_all_action = QAction('Select All', self)
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
@@ -401,7 +476,19 @@ class MPRUN(QMainWindow):
         select_canvases_action = QAction('Select Canvases', self)
         select_canvases_action.triggered.connect(lambda: self.canvas.selectItemsInMode('canvas'))
 
-        # Create view menu actions
+        self.selection_menu.addAction(select_all_action)
+        self.selection_menu.addAction(clear_selection_action)
+        self.selection_menu.addSeparator()
+        self.selection_menu.addAction(select_paths_action)
+        self.selection_menu.addAction(select_text_action)
+        self.selection_menu.addAction(select_leaderline_action)
+        self.selection_menu.addSeparator()
+        self.selection_menu.addAction(select_pixmaps_action)
+        self.selection_menu.addAction(select_svgs_action)
+        self.selection_menu.addSeparator()
+        self.selection_menu.addAction(select_canvases_action)
+
+    def create_view_menu(self):
         fullscreen_view_action = QAction('Full Screen', self)
         fullscreen_view_action.setShortcut(Qt.Key_F11)
         fullscreen_view_action.triggered.connect(self.show_fullscreen)
@@ -429,7 +516,17 @@ class MPRUN(QMainWindow):
         default_view_action = QAction('Default', self)
         default_view_action.triggered.connect(lambda: self.view_as('normal'))
 
-        # Create help menu actions
+        view_options_menu.addAction(read_only_view_action)
+        view_options_menu.addAction(tools_only_view_action)
+        view_options_menu.addAction(simple_view_action)
+        view_options_menu.addAction(swapped_view_action)
+        view_options_menu.addAction(default_view_action)
+
+        self.view_menu.addAction(control_toolbar_view_action)
+        self.view_menu.addAction(fullscreen_view_action)
+        self.view_menu.addMenu(view_options_menu)
+
+    def create_help_menu(self):
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
 
@@ -463,67 +560,6 @@ class MPRUN(QMainWindow):
         python_scripting_action = QAction('Python Scripting', self)
         python_scripting_action.triggered.connect(self.show_scripts)
 
-        # Add actions
-        self.file_menu.addAction(new_action)
-        self.file_menu.addAction(open_action)
-        self.file_menu.addMenu(self.open_recent_menu)
-        self.file_menu.addAction(open_template_action)
-        self.file_menu.addSeparator()
-        self.file_menu.addAction(save_action)
-        self.file_menu.addAction(saveas_action)
-        self.file_menu.addAction(save_copy_action)
-        self.file_menu.addAction(saveas_template_action)
-        self.file_menu.addAction(save_to_icloud_action)
-        self.file_menu.addSeparator()
-        self.file_menu.addAction(export_action)
-        self.file_menu.addAction(export_multiple_action)
-        self.file_menu.addSeparator()
-        self.file_menu.addAction(repair_file_action)
-        self.file_menu.addAction(close_action)
-
-        self.edit_menu.addAction(undo_action)
-        self.edit_menu.addAction(redo_action)
-        self.edit_menu.addSeparator()
-        self.edit_menu.addAction(copy_action)
-        self.edit_menu.addAction(paste_action)
-        self.edit_menu.addAction(delete_action)
-        self.edit_menu.addSeparator()
-        self.edit_menu.addAction(hard_delete_action)
-
-        self.object_menu.addAction(raise_layer_action)
-        self.object_menu.addAction(lower_layer_action)
-        self.object_menu.addAction(bring_to_front_action)
-        self.object_menu.addSeparator()
-        self.object_menu.addAction(duplicate_action)
-        self.object_menu.addAction(scale_action)
-        self.object_menu.addAction(rotate_action)
-        self.object_menu.addSeparator()
-        self.object_menu.addAction(flip_horizontal_action)
-        self.object_menu.addAction(flip_vertical_action)
-        self.object_menu.addAction(mirror_horizontal_action)
-        self.object_menu.addAction(mirror_vertical_action)
-        self.object_menu.addSeparator()
-        self.object_menu.addAction(hide_action)
-        self.object_menu.addAction(unhide_action)
-        self.object_menu.addAction(reset_action)
-        self.object_menu.addSeparator()
-
-        self.selection_menu.addAction(select_all_action)
-        self.selection_menu.addAction(clear_selection_action)
-        self.selection_menu.addSeparator()
-        self.selection_menu.addAction(select_paths_action)
-        self.selection_menu.addAction(select_text_action)
-        self.selection_menu.addAction(select_leaderline_action)
-        self.selection_menu.addSeparator()
-        self.selection_menu.addAction(select_pixmaps_action)
-        self.selection_menu.addAction(select_svgs_action)
-        self.selection_menu.addSeparator()
-        self.selection_menu.addAction(select_canvases_action)
-
-        self.view_menu.addAction(control_toolbar_view_action)
-        self.view_menu.addAction(fullscreen_view_action)
-        self.view_menu.addMenu(view_options_menu)
-
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
         self.help_menu.addSeparator()
@@ -536,36 +572,6 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(show_tip_of_the_day_action)
         self.help_menu.addSeparator()
         self.help_menu.addAction(python_scripting_action)
-
-        # Sub menu actions
-        drawing_menu.addAction(path_action)
-        drawing_menu.addAction(pen_action)
-        drawing_menu.addAction(linelabel_action)
-        drawing_menu.addMenu(add_shape_menu)
-
-        path_menu.addAction(smooth_action)
-        path_menu.addAction(close_subpath_action)
-        path_menu.addAction(sculpt_path_action)
-
-        characters_menu.addAction(text_action)
-
-        image_menu.addAction(insert_image_action)
-        image_menu.addAction(image_trace_action)
-
-        scene_menu.addAction(select_action)
-        scene_menu.addAction(pan_action)
-        scene_menu.addSeparator()
-        scene_menu.addAction(view_in_3d_action)
-        scene_menu.addSeparator()
-        scene_menu.addAction(add_canvas_action)
-        scene_menu.addAction(arrange_canvases_action)
-        scene_menu.addAction(rename_canvases_action)
-
-        view_options_menu.addAction(read_only_view_action)
-        view_options_menu.addAction(tools_only_view_action)
-        view_options_menu.addAction(simple_view_action)
-        view_options_menu.addAction(swapped_view_action)
-        view_options_menu.addAction(default_view_action)
 
     def init_toolbars(self):
         # Toolbar
