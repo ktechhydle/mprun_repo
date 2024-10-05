@@ -1,6 +1,6 @@
 [
     {
-        "disclaimer_read": true,
+        "disclaimer_read": false,
         "geometry": [
             "maximized"
         ],
