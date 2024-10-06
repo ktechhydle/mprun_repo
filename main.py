@@ -586,7 +586,6 @@ class MPRUN(QMainWindow):
         self.document_toolbar = QToolBar('Document')
         self.document_toolbar.setIconSize(QSize(32, 32))
         self.document_toolbar.setMovable(False)
-        self.document_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.document_toolbar)
         self.addToolBarBreak()
 
@@ -594,7 +593,6 @@ class MPRUN(QMainWindow):
         self.item_toolbar = QToolBar('Control')
         self.item_toolbar.setIconSize(QSize(32, 32))
         self.item_toolbar.setMovable(False)
-        self.item_toolbar.setAllowedAreas(Qt.TopToolBarArea)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
         self.item_toolbar.visibilityChanged.connect(self.control_toolbar_visibility_changed)
 
@@ -2374,17 +2372,20 @@ class MPRUN(QMainWindow):
             self.cur_view = 'read_only'
             self.tab_view_dock.setHidden(True)
             self.item_toolbar.setHidden(True)
+            self.document_toolbar.setHidden(True)
             self.toolbar.setHidden(True)
 
         elif view == 'tools_only':
             self.unhide()
             self.item_toolbar.setHidden(True)
+            self.document_toolbar.setHidden(True)
             self.tab_view_dock.setHidden(True)
 
         elif view == 'simple':
             self.unhide()
             self.cur_view = 'simple'
             self.item_toolbar.setHidden(True)
+            self.document_toolbar.setHidden(True)
             self.toolbar.setIconSize(QSize(48, 48))
             self.toolbar.setFixedWidth(70)
             self.drawing_toolbutton.setIconSize(QSize(48, 48))
@@ -2417,6 +2418,7 @@ class MPRUN(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
         self.item_toolbar.setHidden(False)
         self.item_toolbar.setIconSize(QSize(32, 32))
+        self.document_toolbar.setHidden(False)
         self.toolbar.setHidden(False)
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setFixedWidth(60)
