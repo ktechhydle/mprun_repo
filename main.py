@@ -1500,10 +1500,14 @@ class MPRUN(QMainWindow):
             command = RemoveItemCommand(self.canvas, selected_items)
             self.canvas.addCommand(command)
 
+        self.canvas_view.update()
+
     def use_hard_delete(self):
         for item in self.canvas.selectedItems():
             self.canvas.removeItem(item)
             del item
+
+        self.canvas_view.update()
 
     def use_select(self):
         self.select_btn.setChecked(True)

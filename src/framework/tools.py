@@ -235,8 +235,7 @@ class LineAndLabelTool:
             temp_line.lineTo(current_point)
             self.pathg_item.setPath(temp_line)
             self.pathg_item.updatePathEndPoint()
-            self.pathg_item.update()
-            self.canvas.update()
+            self.view.update()
 
     def on_label_end(self, event):
         if event.button() == Qt.LeftButton and self.label_drawing:
@@ -260,6 +259,7 @@ class LineAndLabelTool:
 
             self.pathg_item.setToolTip('Leader Line')
             self.pathg_item.updatePathEndPoint()
+            self.view.update()
 
 
 class MouseScalingTool:
@@ -299,6 +299,8 @@ class MouseScalingTool:
 
     def on_scale(self, event):
         if self.scaling_item and self.start_pos:
+            self.view.update()
+
             if not self.view.isPanning:
                 current_pos = self.view.mapToScene(event.pos())
                 delta = current_pos - self.start_pos
@@ -375,7 +377,10 @@ class MouseRotatingTool:
             self.start_pos = pos
 
     def on_rotate(self, event):
+
         if self.rotating_item and self.start_pos:
+            self.view.update()
+
             if not self.view.isPanning:
                 current_pos = self.view.mapToScene(event.pos())
                 item_center = self.rotating_item.sceneBoundingRect().center()

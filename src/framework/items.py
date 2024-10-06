@@ -752,12 +752,16 @@ class LeaderLineItem(QGraphicsPathItem):
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
 
+        # Set pen and brush
         painter.setPen(self.pen())
         painter.setBrush(self.brush())
 
-        actual_rect = self.mapRectFromItem(self.text_element, self.text_element.boundingRect())
+        # Get the bottom-left and bottom-right points of the text element's bounding rect
+        bottom_left = self.text_element.mapToParent(self.text_element.boundingRect().bottomLeft())
+        bottom_right = self.text_element.mapToParent(self.text_element.boundingRect().bottomRight())
 
-        painter.drawLine(actual_rect.bottomLeft(), actual_rect.bottomRight())
+        # Draw the line according to the text element's rotated position
+        painter.drawLine(bottom_left, bottom_right)
 
         try:
             painter.setPen(self.pen())
@@ -838,6 +842,7 @@ class LeaderLineItem(QGraphicsPathItem):
 
         item.text_element.setFont(self.text_element.font())
         item.text_element.setDefaultTextColor(self.text_element.defaultTextColor())
+        item.text_element.setTransformOriginPoint(self.text_element.transformOriginPoint())
         item.text_element.setTransform(self.text_element.transform())
         item.text_element.setRotation(self.text_element.rotation())
         item.text_element.setPos(self.text_element.pos())
