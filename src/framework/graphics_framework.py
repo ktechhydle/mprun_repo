@@ -170,6 +170,9 @@ y: {int(self.mapToScene(point).y())}''')
         self.on_add_canvas_trigger()
 
     def mouseMoveEvent(self, event):
+        if self.scene().selectedItems():
+            self.update()
+
         if self.path_btn.isChecked():
             self.pathDrawingTool.show_tooltip(event)
             self.pathDrawingTool.on_path_draw(event)

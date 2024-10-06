@@ -647,6 +647,9 @@ QScrollBar::handle:vertical:hover {
         self.locked = True
 
     def duplicate(self):
+        if isinstance(self.parentItem(), LeaderLineItem):
+            return None
+
         item = CustomTextItem()
         item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
