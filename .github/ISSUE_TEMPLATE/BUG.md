@@ -4,15 +4,19 @@ about: Report an issue
 ---
 <!-- READ THIS FIRST:
   - Make sure you are running the latest version of MPRUN before reporting an issue: https://github.com/ktechhydle/mprun_repo/releases
-  - Provide as many details as possible. Paste logs, configuration samples and/or code into the backticks.
-  DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed without comment.
+  - Provide as many details as possible if you are developing. Paste logs, configuration samples and/or code into the backticks.
+  - If you are user, thanks for using MPRUN. You can still use these instructions, just skip over developer related stuff.
+  
+DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed without comment.
 -->
+
 ## The problem
 <!-- 
-  Describe the issue you are experiencing here to communicate to the maintainers.
+  Describe the issue you are experiencing here to communicate to the developers.
   Tell us what you were trying to do and what happened instead.
 -->
 
+I tried too... It crashed when I...
 
 ## Environment
 <!--
@@ -20,15 +24,12 @@ about: Report an issue
   and find the issue quickly.
 -->
 
-- MPRUN release with the issue: 
-- Python version if applicable (`python -V`): 
-- Last working MPRUN release (if known): 
-- Service causing this issue: 
-- Operating environment (Windows, MacOS, etc.): 
+- MPRUN release with the issue: <YOUR VERSION HERE>
+- Operating environment (Windows or MacOS): <YOUR OPERATING SYSTEM HERE>
 
 ## Traceback/Error logs
 <!--
-  If you come across any trace or error logs, please provide them.
+  If you come across any error dialogs, please provide them.
 -->
 
 ```shell
@@ -36,4 +37,6 @@ about: Report an issue
 ```
 
 ## Additional information
-
+<!--
+  This is optional.
+-->
