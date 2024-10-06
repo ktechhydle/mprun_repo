@@ -1314,7 +1314,7 @@ class MPRUN(QMainWindow):
 
                     for index, (s, v) in enumerate(self.properties_tab.join_style_options.items()):
                         if pen.joinStyle() == v:
-                            self.properties_tab.join_style_combo.setCurrentIndex(i)
+                            self.properties_tab.join_style_combo.setCurrentIndex(index)
 
                     self.canvas_view.update_pen(item.pen())
                     self.canvas_view.update_brush(item.brush())
@@ -1368,7 +1368,7 @@ class MPRUN(QMainWindow):
 
                     for index, (s, v) in enumerate(self.properties_tab.join_style_options.items()):
                         if pen.joinStyle() == v:
-                            self.properties_tab.join_style_combo.setCurrentIndex(i)
+                            self.properties_tab.join_style_combo.setCurrentIndex(index)
 
                     self.canvas_view.update_pen(item.pen())
                     self.canvas_view.update_brush(item.brush())
