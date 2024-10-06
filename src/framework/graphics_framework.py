@@ -372,6 +372,10 @@ y: {int(self.mapToScene(point).y())}''')
         super().fitInView(*args, **kwargs)
         self.applyZoom()
 
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        self.update()
+
     def applyZoom(self):
         # Reset the transformation and apply the stored zoom level
         self.resetTransform()

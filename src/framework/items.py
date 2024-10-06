@@ -668,6 +668,9 @@ QScrollBar::handle:vertical:hover {
         return item
 
     def copy(self):
+        if isinstance(self.parentItem(), LeaderLineItem):
+            return None
+
         item = CustomTextItem()
         item.setFont(self.font())
         item.setDefaultTextColor(self.defaultTextColor())
