@@ -1154,6 +1154,8 @@ class MPRUN(QMainWindow):
                 except Exception as e:
                     print(f'Exception: {e}')
 
+        self.canvas_view.update()
+
     def update_item_fill(self):
         brush = QBrush(QColor(self.fill_color.get()))
 
@@ -1175,6 +1177,8 @@ class MPRUN(QMainWindow):
                 except Exception as e:
                     # Handle the exception (e.g., logging)
                     print(f'Exception: {e}')
+
+        self.canvas_view.update()
 
     def update_item_font(self):
         # Update font
@@ -1211,6 +1215,8 @@ class MPRUN(QMainWindow):
                 except Exception as e:
                     # Handle the exception (e.g., logging)
                     print(f'Exception: {e}')
+
+        self.canvas_view.update()
 
     def update_transform_ui(self):
         # Block signals for all spinboxes at once
