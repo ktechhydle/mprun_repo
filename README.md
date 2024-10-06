@@ -1,7 +1,7 @@
 ![MPRUN_Logo_Github](https://github.com/user-attachments/assets/328e63e0-25d1-4f9a-87b5-5e5fc2c931fd)
 
-# Your own 2D competition run planning software
-**[Website](https://sites.google.com/view/mprun/home) | [Documentation](https://sites.google.com/view/mprun-studio/documentation) | [Wikipedia](www.example.com)**
+# The 2D competition run planning software for athletes
+**[Website](https://sites.google.com/view/mprun/home) | [Documentation](https://sites.google.com/view/mprun-studio/documentation) | [Bug Tracker](https://github.com/ktechhydle/mprun_repo/issues) | [Releases](https://github.com/ktechhydle/mprun_repo/releases) | [Wikipedia](www.example.com)**
 
 MPRUN's intention is to **help athletes create proper mindsets** going into competitions.
 
