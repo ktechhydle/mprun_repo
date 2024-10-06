@@ -82,12 +82,19 @@ class CustomLineEdit(QLineEdit):
 class CustomColorPicker(QColorDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-
         self.setOptions(self.options() | QColorDialog.DontUseNativeDialog)
 
         for children in self.findChildren(QWidget):
             classname = children.metaObject().className()
-            if classname not in ("QColorPicker", "QColorLuminancePicker"):
+
+            # Only hide specific widgets, keeping "OK" and "Cancel" buttons
+            if classname == "QPushButton":
+                button_text = children.text()
+
+                # Check the button text and only show "OK" and "Cancel"
+                if button_text not in ("OK", "Cancel"):
+                    children.hide()
+            elif classname not in ("QColorPicker", "QColorLuminancePicker", "QDialogButtonBox"):
                 children.hide()
 
         self.setOption(QColorDialog.ShowAlphaChannel, True)

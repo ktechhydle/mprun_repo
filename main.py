@@ -987,9 +987,9 @@ class MPRUN(QMainWindow):
 
         # Update default fonts, colors, etc.
         self.update('ui_update')
-        self.update_item_pen()
-        self.update_item_font()
-        self.update_item_fill()
+        self.properties_tab.updateItemPen()
+        self.properties_tab.updateItemFill()
+        self.characters_tab.updateItemFont()
 
         # Context menu for view
         copy_action = QAction('Copy', self)
@@ -1120,103 +1120,6 @@ class MPRUN(QMainWindow):
 
                     if isinstance(item, LeaderLineItem):
                         item.updatePathEndPoint()
-
-    def update_item_pen(self):
-        # Update pen and brush
-        index1 = self.properties_tab.stroke_style_combo.currentIndex()
-        data1 = self.properties_tab.stroke_style_combo.itemData(index1)
-        index2 = self.properties_tab.stroke_pencap_combo.currentIndex()
-        data2 = self.properties_tab.stroke_pencap_combo.itemData(index2)
-
-        pen = QPen()
-        pen.setColor(QColor(self.outline_color.get()))
-        pen.setWidth(self.properties_tab.stroke_size_spin.value())
-        pen.setJoinStyle(
-            self.properties_tab.join_style_combo.itemData(self.properties_tab.join_style_combo.currentIndex()))
-        pen.setStyle(data1)
-        pen.setCapStyle(data2)
-
-        self.canvas_view.update_pen(pen)
-
-        selected_items = self.canvas.selectedItems()
-        if selected_items:
-            items = []
-            old_pens = []
-            for item in selected_items:
-                if isinstance(item, (CustomPathItem, LeaderLineItem)):
-                    items.append(item)
-                    old_pens.append(item.pen())
-
-            if items:
-                try:
-                    command = PenChangeCommand(items, old_pens, pen)
-                    self.canvas.addCommand(command)
-                except Exception as e:
-                    print(f'Exception: {e}')
-
-        self.canvas_view.update()
-
-    def update_item_fill(self):
-        brush = QBrush(QColor(self.fill_color.get()))
-
-        self.canvas_view.update_brush(brush)
-
-        selected_items = self.canvas.selectedItems()
-        if selected_items:
-            items = []
-            old_brushes = []
-            for item in selected_items:
-                if isinstance(item, (CustomPathItem, LeaderLineItem)):
-                    items.append(item)
-                    old_brushes.append(item.brush())
-
-            if items:
-                try:
-                    command = BrushChangeCommand(items, old_brushes, brush)
-                    self.canvas.addCommand(command)
-                except Exception as e:
-                    # Handle the exception (e.g., logging)
-                    print(f'Exception: {e}')
-
-        self.canvas_view.update()
-
-    def update_item_font(self):
-        # Update font
-        font = QFont()
-        font.setFamily(self.characters_tab.font_choice_combo.currentText())
-        font.setPixelSize(self.characters_tab.font_size_spin.value())
-        font.setLetterSpacing(QFont.AbsoluteSpacing, self.characters_tab.font_letter_spacing_spin.value())
-        font.setBold(True if self.characters_tab.bold_btn.isChecked() else False)
-        font.setItalic(True if self.characters_tab.italic_btn.isChecked() else False)
-        font.setUnderline(True if self.characters_tab.underline_btn.isChecked() else False)
-
-        new_color = QColor(self.font_color.get())
-
-        self.canvas_view.update_font(font, new_color)
-
-        selected_items = self.canvas.selectedItems()
-        if selected_items:
-            items = []
-            old_fonts = []
-            old_colors = []
-            for item in selected_items:
-                if isinstance(item, CustomTextItem):
-                    items.append(item)
-                    old_fonts.append(item.font())
-                    old_colors.append(item.defaultTextColor())
-
-            if items:
-                try:
-                    command = FontChangeCommand(items, old_fonts, font, old_colors, new_color)
-                    self.canvas.addCommand(command)
-                    for item in items:
-                        if isinstance(item.parentItem(), LeaderLineItem):
-                            item.parentItem().updatePathEndPoint()
-                except Exception as e:
-                    # Handle the exception (e.g., logging)
-                    print(f'Exception: {e}')
-
-        self.canvas_view.update()
 
     def update_transform_ui(self):
         # Block signals for all spinboxes at once
@@ -1374,54 +1277,6 @@ class MPRUN(QMainWindow):
             self.properties_tab.opacity_spin.setValue(100)
             self.properties_tab.width_scale_spin.setValue(0.0)
             self.properties_tab.height_scale_spin.setValue(0.0)
-
-    def stroke_color_chooser(self):
-        color_dialog = CustomColorPicker(self)
-        color_dialog.setWindowTitle('Stroke Color')
-        color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-        color_dialog.hex_spin.setText(QColor(self.outline_color.get()).name()[1:])
-
-        if color_dialog.exec_():
-            color = color_dialog.currentColor()
-            if color.alpha() != 0:
-                self.properties_tab.stroke_color_btn.setButtonColor(color.name())
-
-            else:
-                self.properties_tab.stroke_color_btn.setTransparent(True)
-
-            self.outline_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
-
-    def fill_color_chooser(self):
-        color_dialog = CustomColorPicker(self)
-        color_dialog.setWindowTitle('Fill Color')
-        color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-        color_dialog.hex_spin.setText(QColor(self.fill_color.get()).name()[1:])
-
-        if color_dialog.exec_():
-            color = color_dialog.currentColor()
-            if color.alpha() != 0:
-                self.properties_tab.fill_color_btn.setButtonColor(color.name())
-
-            else:
-                self.properties_tab.fill_color_btn.setTransparent(True)
-
-            self.fill_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
-
-    def font_color_chooser(self):
-        color_dialog = CustomColorPicker(self)
-        color_dialog.setWindowTitle('Font Color')
-        color_dialog.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-        color_dialog.hex_spin.setText(QColor(self.font_color.get()).name()[1:])
-
-        if color_dialog.exec_():
-            color = color_dialog.currentColor()
-            if color.alpha() != 0:
-                self.characters_tab.font_color_btn.setButtonColor(color.name())
-
-            else:
-                self.characters_tab.font_color_btn.setTransparent(True)
-
-            self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def use_delete(self):
         selected_items = self.canvas.selectedItems()

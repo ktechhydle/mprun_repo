@@ -15,9 +15,9 @@ class PropertiesPanel(QWidget):
         self.canvas = canvas
         self.parent = parent
 
-        self.create_ui()
+        self.createUI()
 
-    def create_ui(self):
+    def createUI(self):
         self.selection_label = QLabel('No Selection')
         self.selection_label.setStyleSheet("QLabel { font-size: 12px; }")
         self.transform_separator = HorizontalSeparator()
@@ -110,8 +110,8 @@ class PropertiesPanel(QWidget):
         self.fill_color_btn.setFixedHeight(26)
         self.fill_color_btn.setToolTip('Change the fill color')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
-        self.fill_color_btn.clicked.connect(self.parent.fill_color_chooser)
-        self.fill_color_btn.clicked.connect(self.parent.update_item_fill)
+        self.fill_color_btn.clicked.connect(self.fillColorChooser)
+        self.fill_color_btn.clicked.connect(self.updateItemFill)
         widget5 = ToolbarHorizontalLayout()
         widget5.layout.addWidget(self.fill_color_btn)
         widget5.layout.addWidget(fill_label)
@@ -123,8 +123,8 @@ class PropertiesPanel(QWidget):
         self.stroke_color_btn.setFixedHeight(26)
         self.stroke_color_btn.setToolTip('Change the stroke color')
         self.stroke_color_btn.setShortcut(QKeySequence('Ctrl+1'))
-        self.stroke_color_btn.clicked.connect(self.parent.stroke_color_chooser)
-        self.stroke_color_btn.clicked.connect(self.parent.update_item_pen)
+        self.stroke_color_btn.clicked.connect(self.strokeColorChooser)
+        self.stroke_color_btn.clicked.connect(self.updateItemPen)
         self.stroke_size_spin = QSpinBox(self)
         self.stroke_size_spin.setValue(3)
         self.stroke_size_spin.setMaximum(1000)
@@ -167,10 +167,10 @@ class PropertiesPanel(QWidget):
         opacity_hlayout.layout.setContentsMargins(0, 14, 0, 0)
 
         # If any changes are made, update them
-        self.stroke_size_spin.valueChanged.connect(self.parent.update_item_pen)
-        self.stroke_style_combo.currentIndexChanged.connect(self.parent.update_item_pen)
-        self.stroke_pencap_combo.currentIndexChanged.connect(self.parent.update_item_pen)
-        self.join_style_combo.currentIndexChanged.connect(self.parent.update_item_pen)
+        self.stroke_size_spin.valueChanged.connect(self.updateItemPen)
+        self.stroke_style_combo.currentIndexChanged.connect(self.updateItemPen)
+        self.stroke_pencap_combo.currentIndexChanged.connect(self.updateItemPen)
+        self.join_style_combo.currentIndexChanged.connect(self.updateItemPen)
         self.x_pos_spin.valueChanged.connect(self.parent.use_set_item_pos)
         self.y_pos_spin.valueChanged.connect(self.parent.use_set_item_pos)
         self.width_scale_spin.valueChanged.connect(self.parent.use_scale_x)
@@ -189,6 +189,97 @@ class PropertiesPanel(QWidget):
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addStretch()
+        
+    def strokeColorChooser(self):
+        color_dialog = CustomColorPicker(self.parent)
+        color_dialog.setWindowTitle('Stroke Color')
+        
+        color_dialog.hex_spin.setText(QColor(self.parent.outline_color.get()).name()[1:])
+
+        if color_dialog.exec_():
+            color = color_dialog.currentColor()
+            if color.alpha() != 0:
+                self.stroke_color_btn.setButtonColor(color.name())
+
+            else:
+                self.stroke_color_btn.setTransparent(True)
+
+            self.parent.outline_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+
+    def fillColorChooser(self):
+        color_dialog = CustomColorPicker(self.parent)
+        color_dialog.setWindowTitle('Fill Color')
+        
+        color_dialog.hex_spin.setText(QColor(self.parent.fill_color.get()).name()[1:])
+
+        if color_dialog.exec_():
+            color = color_dialog.currentColor()
+            if color.alpha() != 0:
+                self.fill_color_btn.setButtonColor(color.name())
+
+            else:
+                self.fill_color_btn.setTransparent(True)
+
+            self.parent.fill_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+            
+    def updateItemPen(self):
+        # Update pen and brush
+        index1 = self.stroke_style_combo.currentIndex()
+        data1 = self.stroke_style_combo.itemData(index1)
+        index2 = self.stroke_pencap_combo.currentIndex()
+        data2 = self.stroke_pencap_combo.itemData(index2)
+
+        pen = QPen()
+        pen.setColor(QColor(self.parent.outline_color.get()))
+        pen.setWidth(self.stroke_size_spin.value())
+        pen.setJoinStyle(
+            self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
+        pen.setStyle(data1)
+        pen.setCapStyle(data2)
+
+        self.parent.canvas_view.update_pen(pen)
+
+        selected_items = self.canvas.selectedItems()
+        if selected_items:
+            items = []
+            old_pens = []
+            for item in selected_items:
+                if isinstance(item, (CustomPathItem, LeaderLineItem)):
+                    items.append(item)
+                    old_pens.append(item.pen())
+
+            if items:
+                try:
+                    command = PenChangeCommand(items, old_pens, pen)
+                    self.canvas.addCommand(command)
+                except Exception as e:
+                    print(f'Exception: {e}')
+
+        self.parent.canvas_view.update()
+
+    def updateItemFill(self):
+        brush = QBrush(QColor(self.parent.fill_color.get()))
+
+        self.parent.canvas_view.update_brush(brush)
+
+        selected_items = self.canvas.selectedItems()
+        if selected_items:
+            items = []
+            old_brushes = []
+            for item in selected_items:
+                if isinstance(item, (CustomPathItem, LeaderLineItem)):
+                    items.append(item)
+                    old_brushes.append(item.brush())
+
+            if items:
+                try:
+                    command = BrushChangeCommand(items, old_brushes, brush)
+                    self.canvas.addCommand(command)
+                except Exception as e:
+                    # Handle the exception (e.g., logging)
+                    print(f'Exception: {e}')
+
+        self.parent.canvas_view.update()
 
 
 class LibrariesPanel(QWidget):
@@ -308,9 +399,9 @@ class CharactersPanel(QWidget):
         self.canvas = canvas
         self.parent = parent
 
-        self.create_ui()
+        self.createUI()
 
-    def create_ui(self):
+    def createUI(self):
         # _____ Characters tab widgets _____
         self.font_choice_combo = QFontComboBox(self)
         self.font_choice_combo.setToolTip('Change the font style')
@@ -332,8 +423,8 @@ class CharactersPanel(QWidget):
         self.font_color_btn.setFixedWidth(90)
         self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.setButtonColor(self.parent.font_color.get())
-        self.font_color_btn.clicked.connect(self.parent.font_color_chooser)
-        self.font_color_btn.clicked.connect(self.parent.update_item_font)
+        self.font_color_btn.clicked.connect(self.fontColorChooser)
+        self.font_color_btn.clicked.connect(self.updateItemFont)
         self.bold_btn = QPushButton('B', self.parent)
         self.bold_btn.setToolTip('Set the font bold')
         self.bold_btn.setStyleSheet('font-weight: bold; font-size: 15px;')
@@ -346,9 +437,9 @@ class CharactersPanel(QWidget):
         self.bold_btn.setCheckable(True)
         self.italic_btn.setCheckable(True)
         self.underline_btn.setCheckable(True)
-        self.bold_btn.clicked.connect(self.parent.update_item_font)
-        self.italic_btn.clicked.connect(self.parent.update_item_font)
-        self.underline_btn.clicked.connect(self.parent.update_item_font)
+        self.bold_btn.clicked.connect(self.updateItemFont)
+        self.italic_btn.clicked.connect(self.updateItemFont)
+        self.underline_btn.clicked.connect(self.updateItemFont)
         font_size_and_spacing_hlayout = ToolbarHorizontalLayout()
         font_size_and_spacing_hlayout.layout.addWidget(
             CustomIconWidget('', 'ui/UI Icons/Major/font_size_icon.svg', 20, 20))
@@ -368,15 +459,69 @@ class CharactersPanel(QWidget):
         font_color_hlayout.layout.addWidget(QLabel('Color:'))
         font_color_hlayout.layout.addWidget(self.font_color_btn)
 
-        self.font_size_spin.valueChanged.connect(self.parent.update_item_font)
-        self.font_letter_spacing_spin.valueChanged.connect(self.parent.update_item_font)
-        self.font_choice_combo.currentFontChanged.connect(self.parent.update_item_font)
-        self.font_choice_combo.currentTextChanged.connect(self.parent.update_item_font)
+        self.font_size_spin.valueChanged.connect(self.updateItemFont)
+        self.font_letter_spacing_spin.valueChanged.connect(self.updateItemFont)
+        self.font_choice_combo.currentFontChanged.connect(self.updateItemFont)
+        self.font_choice_combo.currentTextChanged.connect(self.updateItemFont)
 
         self.characters_tab_layout.addWidget(self.font_choice_combo)
         self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
         self.characters_tab_layout.addWidget(font_style_hlayout)
         self.characters_tab_layout.addWidget(font_color_hlayout)
+        
+    def fontColorChooser(self):
+        color_dialog = CustomColorPicker(self.parent)
+        color_dialog.setWindowTitle('Font Color')
+        
+        color_dialog.hex_spin.setText(QColor(self.parent.font_color.get()).name()[1:])
+
+        if color_dialog.exec_():
+            color = color_dialog.currentColor()
+            if color.alpha() != 0:
+                self.font_color_btn.setButtonColor(color.name())
+
+            else:
+                self.font_color_btn.setTransparent(True)
+
+            self.parent.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+
+    def updateItemFont(self):
+        # Update font
+        font = QFont()
+        font.setFamily(self.font_choice_combo.currentText())
+        font.setPixelSize(self.font_size_spin.value())
+        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
+        font.setBold(True if self.bold_btn.isChecked() else False)
+        font.setItalic(True if self.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.underline_btn.isChecked() else False)
+
+        new_color = QColor(self.parent.font_color.get())
+
+        self.parent.canvas_view.update_font(font, new_color)
+
+        selected_items = self.canvas.selectedItems()
+        if selected_items:
+            items = []
+            old_fonts = []
+            old_colors = []
+            for item in selected_items:
+                if isinstance(item, CustomTextItem):
+                    items.append(item)
+                    old_fonts.append(item.font())
+                    old_colors.append(item.defaultTextColor())
+
+            if items:
+                try:
+                    command = FontChangeCommand(items, old_fonts, font, old_colors, new_color)
+                    self.canvas.addCommand(command)
+                    for item in items:
+                        if isinstance(item.parentItem(), LeaderLineItem):
+                            item.parentItem().updatePathEndPoint()
+                except Exception as e:
+                    # Handle the exception (e.g., logging)
+                    print(f'Exception: {e}')
+
+        self.parent.canvas_view.update()
 
 
 class ImageTracingPanel(QWidget):
