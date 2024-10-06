@@ -2404,6 +2404,8 @@ class MPRUN(QMainWindow):
         else:
             self.unhide()
 
+        self.canvas_view.updateTip()
+
     def current_view(self) -> str:
         return self.cur_view
 
