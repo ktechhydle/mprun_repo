@@ -1260,159 +1260,95 @@ class MPRUN(QMainWindow):
             spinbox.blockSignals(False)
 
     def update_appearance_ui(self):
-        self.canvas_tab.canvas_x_entry.blockSignals(True)
-        self.canvas_tab.canvas_y_entry.blockSignals(True)
-        self.canvas_tab.canvas_name_entry.blockSignals(True)
-        self.canvas_tab.canvas_preset_dropdown.blockSignals(True)
-        self.properties_tab.stroke_size_spin.blockSignals(True)
-        self.properties_tab.stroke_style_combo.blockSignals(True)
-        self.properties_tab.stroke_pencap_combo.blockSignals(True)
-        self.properties_tab.join_style_combo.blockSignals(True)
-        self.properties_tab.fill_color_btn.blockSignals(True)
-        self.properties_tab.stroke_color_btn.blockSignals(True)
-        self.characters_tab.font_choice_combo.blockSignals(True)
-        self.characters_tab.font_color_btn.blockSignals(True)
-        self.characters_tab.font_size_spin.blockSignals(True)
-        self.characters_tab.font_letter_spacing_spin.blockSignals(True)
-        self.characters_tab.bold_btn.blockSignals(True)
-        self.characters_tab.italic_btn.blockSignals(True)
-        self.characters_tab.underline_btn.blockSignals(True)
+        # Widgets to block/unblock signals for canvas and properties
+        signal_block_widgets = [
+            self.canvas_tab.canvas_x_entry, self.canvas_tab.canvas_y_entry,
+            self.canvas_tab.canvas_name_entry, self.canvas_tab.canvas_preset_dropdown,
+            self.properties_tab.stroke_size_spin, self.properties_tab.stroke_style_combo,
+            self.properties_tab.stroke_pencap_combo, self.properties_tab.join_style_combo,
+            self.properties_tab.fill_color_btn, self.properties_tab.stroke_color_btn,
+            self.characters_tab.font_choice_combo, self.characters_tab.font_color_btn,
+            self.characters_tab.font_size_spin, self.characters_tab.font_letter_spacing_spin,
+            self.characters_tab.bold_btn, self.characters_tab.italic_btn,
+            self.characters_tab.underline_btn
+        ]
+
+        # Block signals for all relevant widgets
+        for widget in signal_block_widgets:
+            widget.blockSignals(True)
 
         try:
+            def set_color(btn, color, color_attr):
+                if color.alpha() != 0:
+                    btn.setButtonColor(color.name())
+                    color_attr.set(color.name())
+                else:
+                    btn.setTransparent(True)
+                    color_attr.set(Qt.transparent)
+
             for item in self.canvas.selectedItems():
-                if isinstance(item, CustomPathItem):
-                    pen = item.pen()
-                    brush = item.brush()
+                if isinstance(item, (CustomPathItem, LeaderLineItem)):
+                    pen, brush = item.pen(), item.brush()
 
-                    # Set Colors
-                    if pen.color().alpha() != 0:
-                        self.properties_tab.stroke_color_btn.setButtonColor(pen.color().name())
-                        self.outline_color.set(pen.color().name())
+                    set_color(self.properties_tab.stroke_color_btn, pen.color(), self.outline_color)
+                    set_color(self.properties_tab.fill_color_btn, brush.color(), self.fill_color)
 
-                    else:
-                        self.properties_tab.stroke_color_btn.setTransparent(True)
-                        self.outline_color.set(Qt.transparent)
-
-                    if brush.color().alpha() != 0:
-                        self.properties_tab.fill_color_btn.setButtonColor(brush.color().name())
-                        self.fill_color.set(brush.color().name())
-
-                    else:
-                        self.properties_tab.fill_color_btn.setTransparent(True)
-                        self.fill_color.set(Qt.transparent)
-
-                    # Set Values
+                    # Set Values for pen-related attributes
                     self.properties_tab.stroke_size_spin.setValue(pen.width())
 
-                    for index, (style, value) in enumerate(self.properties_tab.stroke_style_options.items()):
-                        if pen.style() == value:
-                            self.properties_tab.stroke_style_combo.setCurrentIndex(index)
+                    # Common update functions to avoid redundancy
+                    def update_combo(combo, options, target_value):
+                        for idx, (key, value) in enumerate(options.items()):
+                            if target_value == value:
+                                combo.setCurrentIndex(idx)
+                                break
 
-                    for i, (s, v) in enumerate(self.properties_tab.stroke_pencap_options.items()):
-                        if pen.capStyle() == v:
-                            self.properties_tab.stroke_pencap_combo.setCurrentIndex(i)
+                    update_combo(self.properties_tab.stroke_style_combo, self.properties_tab.stroke_style_options,
+                                 pen.style())
+                    update_combo(self.properties_tab.stroke_pencap_combo, self.properties_tab.stroke_pencap_options,
+                                 pen.capStyle())
+                    update_combo(self.properties_tab.join_style_combo, self.properties_tab.join_style_options,
+                                 pen.joinStyle())
 
-                    for index, (s, v) in enumerate(self.properties_tab.join_style_options.items()):
-                        if pen.joinStyle() == v:
-                            self.properties_tab.join_style_combo.setCurrentIndex(index)
-
-                    self.canvas_view.update_pen(item.pen())
-                    self.canvas_view.update_brush(item.brush())
+                    self.canvas_view.update_pen(pen)
+                    self.canvas_view.update_brush(brush)
 
                 elif isinstance(item, CanvasItem):
+                    # Canvas item specific updates
                     self.canvas_tab.canvas_x_entry.setValue(int(item.boundingRect().width()))
                     self.canvas_tab.canvas_y_entry.setValue(int(item.boundingRect().height()))
                     self.canvas_tab.canvas_name_entry.setText(item.name())
 
-                    # Update the canvas preset dropdown
-                    for index, (preset, size) in enumerate(self.canvas_tab.canvas_presets.items()):
+                    # Update canvas preset dropdown
+                    for idx, (preset, size) in enumerate(self.canvas_tab.canvas_presets.items()):
                         if (item.boundingRect().width(), item.boundingRect().height()) == size:
-                            self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(index)
-                            break  # Exit the loop once the matching preset is found
+                            self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(idx)
+                            break
                     else:
-                        # If no matching preset is found, set to 'Custom'
                         custom_index = self.canvas_tab.canvas_preset_dropdown.findText('Custom')
                         self.canvas_tab.canvas_preset_dropdown.setCurrentIndex(custom_index)
 
-                elif isinstance(item, LeaderLineItem):
-                    pen = item.pen()
-                    brush = item.brush()
-
-                    # Set Colors
-                    if pen.color().alpha() != 0:
-                        self.properties_tab.stroke_color_btn.setButtonColor(pen.color().name())
-                        self.outline_color.set(pen.color().name())
-
-                    else:
-                        self.properties_tab.stroke_color_btn.setTransparent(True)
-                        self.outline_color.set(Qt.transparent)
-
-                    if brush.color().alpha() != 0:
-                        self.properties_tab.fill_color_btn.setButtonColor(brush.color().name())
-                        self.fill_color.set(brush.color().name())
-
-                    else:
-                        self.properties_tab.fill_color_btn.setTransparent(True)
-                        self.fill_color.set(Qt.transparent)
-
-                    # Set Values
-                    self.properties_tab.stroke_size_spin.setValue(pen.width())
-
-                    for index, (style, value) in enumerate(self.properties_tab.stroke_style_options.items()):
-                        if pen.style() == value:
-                            self.properties_tab.stroke_style_combo.setCurrentIndex(index)
-
-                    for i, (s, v) in enumerate(self.properties_tab.stroke_pencap_options.items()):
-                        if pen.capStyle() == v:
-                            self.properties_tab.stroke_pencap_combo.setCurrentIndex(i)
-
-                    for index, (s, v) in enumerate(self.properties_tab.join_style_options.items()):
-                        if pen.joinStyle() == v:
-                            self.properties_tab.join_style_combo.setCurrentIndex(index)
-
-                    self.canvas_view.update_pen(item.pen())
-                    self.canvas_view.update_brush(item.brush())
-
                 elif isinstance(item, CustomTextItem):
-                    font = item.font()
-                    color = item.defaultTextColor()
+                    # Text item specific updates
+                    font, color = item.font(), item.defaultTextColor()
 
-                    if color.alpha() != 0:
-                        self.characters_tab.font_color_btn.setButtonColor(color.name())
-                        self.font_color.set(color.name())
-
-                    else:
-                        self.characters_tab.font_color_btn.setTransparent(True)
-                        self.font_color.set(Qt.transparent)
+                    set_color(self.characters_tab.font_color_btn, color, self.font_color)
 
                     self.characters_tab.font_choice_combo.setCurrentText(font.family())
                     self.characters_tab.font_size_spin.setValue(font.pixelSize())
                     self.characters_tab.font_letter_spacing_spin.setValue(int(font.letterSpacing()))
-                    self.characters_tab.bold_btn.setChecked(True if font.bold() else False)
-                    self.characters_tab.italic_btn.setChecked(True if font.italic() else False)
-                    self.characters_tab.underline_btn.setChecked(True if font.underline() else False)
+                    self.characters_tab.bold_btn.setChecked(font.bold())
+                    self.characters_tab.italic_btn.setChecked(font.italic())
+                    self.characters_tab.underline_btn.setChecked(font.underline())
 
-                    self.canvas_view.update_font(item.font(), item.defaultTextColor())
+                    self.canvas_view.update_font(font, color)
+
         except Exception as e:
             print(e)
 
-        self.canvas_tab.canvas_x_entry.blockSignals(False)
-        self.canvas_tab.canvas_y_entry.blockSignals(False)
-        self.canvas_tab.canvas_name_entry.blockSignals(False)
-        self.canvas_tab.canvas_preset_dropdown.blockSignals(False)
-        self.properties_tab.stroke_size_spin.blockSignals(False)
-        self.properties_tab.stroke_style_combo.blockSignals(False)
-        self.properties_tab.stroke_pencap_combo.blockSignals(False)
-        self.properties_tab.join_style_combo.blockSignals(False)
-        self.properties_tab.fill_color_btn.blockSignals(False)
-        self.properties_tab.stroke_color_btn.blockSignals(False)
-        self.characters_tab.font_choice_combo.blockSignals(False)
-        self.characters_tab.font_color_btn.blockSignals(False)
-        self.characters_tab.font_size_spin.blockSignals(False)
-        self.characters_tab.font_letter_spacing_spin.blockSignals(False)
-        self.characters_tab.bold_btn.blockSignals(False)
-        self.characters_tab.italic_btn.blockSignals(False)
-        self.characters_tab.underline_btn.blockSignals(False)
+        # Unblock signals for all relevant widgets
+        for widget in signal_block_widgets:
+            widget.blockSignals(False)
 
     def set_properties_tab_enabled(self, enabled: bool):
         self.properties_tab.transform_separator.setHidden(enabled)
