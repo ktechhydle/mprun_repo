@@ -149,6 +149,7 @@ class MPRUN(QMainWindow):
         self.create_panels()
         self.create_toolbar1()
         self.create_toolbar2()
+        self.create_toolbar3()
         self.create_view()
         self.create_default_objects()
         self.create_actions_dict()
@@ -538,9 +539,7 @@ class MPRUN(QMainWindow):
 
         browse_tutorials_action = QAction('Browse Tutorials', self)
         browse_tutorials_action.setShortcut(Qt.Key_F1)
-        browse_tutorials_action.triggered.connect(
-            lambda: webbrowser.open('https://sites.google.com/view/mprun-studio/home')
-        )
+        browse_tutorials_action.triggered.connect(self.show_help)
 
         check_update_action = QAction('Check for Updates', self)
         check_update_action.triggered.connect(self.check_for_updates)
@@ -582,6 +581,14 @@ class MPRUN(QMainWindow):
         self.toolbar.setFloatable(False)
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
+
+        # Document toolbar
+        self.document_toolbar = QToolBar('Document')
+        self.document_toolbar.setIconSize(QSize(32, 32))
+        self.document_toolbar.setMovable(False)
+        self.document_toolbar.setAllowedAreas(Qt.TopToolBarArea)
+        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.document_toolbar)
+        self.addToolBarBreak()
 
         # Item toolbar
         self.item_toolbar = QToolBar('Control')
@@ -671,7 +678,7 @@ class MPRUN(QMainWindow):
             '<b>Select (Spacebar)</b><br>'
             'Select items on the scene by clicking and dragging a selection rectangle.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
 
         self.select_btn.setCheckable(True)
@@ -684,7 +691,7 @@ class MPRUN(QMainWindow):
             '<b>Pan (P)</b><br>'
             'Pan around the scene by clicking and dragging.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.pan_btn.setCheckable(True)
         self.pan_btn.triggered.connect(self.use_pan)
@@ -696,7 +703,7 @@ class MPRUN(QMainWindow):
             '<b>Path (L)</b><br>'
             'Draw path items on the scene by clicking and drawing.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.path_btn.triggered.connect(self.update)
         self.path_btn.triggered.connect(self.use_path)
@@ -707,7 +714,7 @@ class MPRUN(QMainWindow):
             '<b>Pen (Ctrl+L)</b><br>'
             'Draw smooth path items on the scene by clicking and drawing.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.pen_btn.triggered.connect(self.update)
         self.pen_btn.triggered.connect(self.use_pen_tool)
@@ -718,7 +725,7 @@ class MPRUN(QMainWindow):
             '<b>Sculpt (S)</b><br>'
             'Edit path items by clicking and dragging on them to "sculpt" them.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
@@ -736,7 +743,7 @@ class MPRUN(QMainWindow):
             '<b>Line and Label (T)</b><br>'
             'Draw line and label items by clicking and dragging.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.label_btn.triggered.connect(self.update)
         self.label_btn.triggered.connect(self.use_label)
@@ -747,7 +754,7 @@ class MPRUN(QMainWindow):
             '<b>Text (Ctrl+T)</b><br>'
             'Add text items to the scene by clicking a point.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.add_text_btn.setCheckable(True)
         self.add_text_btn.triggered.connect(self.update)
@@ -759,7 +766,7 @@ class MPRUN(QMainWindow):
             '<b>Scale (Q)</b><br>'
             'Scale items in the scene by clicking and dragging on them.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.scale_btn.setCheckable(True)
         self.scale_btn.triggered.connect(self.use_scale_tool)
@@ -770,7 +777,7 @@ class MPRUN(QMainWindow):
             '<b>Rotate (R)</b><br>'
             'Rotate items in the scene by clicking and dragging on them.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.rotate_btn.setCheckable(True)
         self.rotate_btn.triggered.connect(self.use_rotate_tool)
@@ -781,7 +788,7 @@ class MPRUN(QMainWindow):
             '<b>Hide (H)</b><br>'
             'Hide the selected items in the scene.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.hide_btn.triggered.connect(self.use_hide_item)
 
@@ -791,7 +798,7 @@ class MPRUN(QMainWindow):
             '<b>Unhide All (Ctrl+H)</b><br>'
             'Unhide all hidden items in the scene.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.unhide_btn.triggered.connect(self.use_unhide_all)
 
@@ -801,7 +808,7 @@ class MPRUN(QMainWindow):
             '<b>Add Canvas (A)</b><br>'
             'Add canvas items to the scene by clicking and dragging.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.add_canvas_btn.setCheckable(True)
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
@@ -812,7 +819,7 @@ class MPRUN(QMainWindow):
             '<b>Insert (I)</b><br>'
             'Insert a supported file type on to the scene.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         self.insert_btn.triggered.connect(self.insert_image)
 
@@ -846,13 +853,87 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.add_canvas_btn)
 
     def create_toolbar2(self):
+        new_doc_btn = QAction(self.style().standardIcon(QStyle.SP_FileIcon), '', self)
+        new_doc_btn.setToolTip(
+            '<b>New Document (Ctrl+N)</b><br>'
+            'Create a new document and clear the existing scene.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        new_doc_btn.triggered.connect(self.canvas.manager.restore)
+
+        open_doc_btn = QAction(self.style().standardIcon(QStyle.SP_DialogOpenButton), '', self)
+        open_doc_btn.setToolTip(
+            '<b>Open Document (Ctrl+O)</b><br>'
+            'Open a document via a file dialog.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        open_doc_btn.triggered.connect(lambda: self.canvas.manager.load(self))
+
+        save_doc_btn = QAction(self.style().standardIcon(QStyle.SP_DialogSaveButton), '', self)
+        save_doc_btn.setToolTip(
+            '<b>Save Document (Ctrl+S)</b><br>'
+            'Save the current scene to a ".mp" file.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        save_doc_btn.triggered.connect(self.canvas.manager.save)
+
+        undo_btn = QAction(self.style().standardIcon(QStyle.SP_ArrowBack), '', self)
+        undo_btn.setToolTip(
+            '<b>Undo (Ctrl+Z)</b><br>'
+            'Undo any recent changes on the scene.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        undo_btn.triggered.connect(self.canvas.undo)
+
+        redo_btn = QAction(self.style().standardIcon(QStyle.SP_ArrowForward), '', self)
+        redo_btn.setToolTip(
+            '<b>Redo (Ctrl+Shift+Z)</b><br>'
+            'Redo any recent undone actions on the scene.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        redo_btn.triggered.connect(self.canvas.redo)
+
+        refresh_btn = QAction(self.style().standardIcon(QStyle.SP_BrowserReload), '', self)
+        refresh_btn.setToolTip(
+            '<b>Refresh</b><br>'
+            'Refresh the entire scene.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        refresh_btn.triggered.connect(lambda: self.canvas_view.update())
+
+        help_btn = QAction(self.style().standardIcon(QStyle.SP_MessageBoxQuestion), '', self)
+        help_btn.setToolTip(
+            '<b>Help (F1)</b><br>'
+            'Open the online help in your webbrowser.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        help_btn.triggered.connect(self.show_help)
+
+        self.document_toolbar.addAction(new_doc_btn)
+        self.document_toolbar.addAction(open_doc_btn)
+        self.document_toolbar.addAction(save_doc_btn)
+        self.document_toolbar.addSeparator()
+        self.document_toolbar.addAction(undo_btn)
+        self.document_toolbar.addAction(redo_btn)
+        self.document_toolbar.addSeparator()
+        self.document_toolbar.addAction(refresh_btn)
+        self.document_toolbar.addAction(help_btn)
+
+    def create_toolbar3(self):
         # ----item toolbar widgets----#
         align_left_btn = QAction(QIcon('ui/Tool Icons/align_left_icon.png'), '', self)
         align_left_btn.setToolTip(
             '<b>Align Left</b><br>'
             'Align the selected items to the left.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         align_left_btn.triggered.connect(self.use_align_left)
 
@@ -861,7 +942,7 @@ class MPRUN(QMainWindow):
             '<b>Align Right</b><br>'
             'Align the selected items to the right.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         align_right_btn.triggered.connect(self.use_align_right)
 
@@ -870,7 +951,7 @@ class MPRUN(QMainWindow):
             '<b>Align Center</b><br>'
             'Align the selected items to the center.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         align_center_btn.triggered.connect(self.use_align_center)
 
@@ -879,7 +960,7 @@ class MPRUN(QMainWindow):
             '<b>Align Middle</b><br>'
             'Align the selected items to the middle.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         align_middle_btn.triggered.connect(self.use_align_middle)
 
@@ -888,7 +969,7 @@ class MPRUN(QMainWindow):
             '<b>Align Top</b><br>'
             'Align the selected items to the top.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         align_top_btn.triggered.connect(self.use_align_top)
 
@@ -897,7 +978,7 @@ class MPRUN(QMainWindow):
             '<b>Align Bottom</b><br>'
             'Align the selected items to the bottom.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         align_bottom_btn.triggered.connect(self.use_align_bottom)
 
@@ -906,7 +987,7 @@ class MPRUN(QMainWindow):
             '<b>Rotate Left</b><br>'
             'Rotate the selected items 90° counter-clockwise.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         rotate_ccw_action.triggered.connect(lambda: self.use_rotate_direction('ccw'))
 
@@ -915,7 +996,7 @@ class MPRUN(QMainWindow):
             '<b>Rotate Right</b><br>'
             'Rotate the selected items 90° clockwise.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         rotate_cw_action.triggered.connect(lambda: self.use_rotate_direction('cw'))
 
@@ -924,7 +1005,7 @@ class MPRUN(QMainWindow):
             '<b>Raise</b><br>'
             'Raise the selected items a layer up.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         raise_layer_action.triggered.connect(self.use_raise_layer)
 
@@ -933,7 +1014,7 @@ class MPRUN(QMainWindow):
             '<b>Lower</b><br>'
             'Lower the selected items a layer down.<br>'
             '<hr>'
-            '<b>Press F1 for more help.</b><br>'
+            '<i>Press F1 for more help.</i>'
         )
         lower_layer_action.triggered.connect(self.use_lower_layer)
 
@@ -1019,9 +1100,7 @@ class MPRUN(QMainWindow):
         select_colliding_action = QAction('Select Colliding Items', self)
         select_colliding_action.triggered.connect(self.canvas.selectColliding)
         help_action = QAction('&Help', self)
-        help_action.triggered.connect(
-            lambda: webbrowser.open('https://sites.google.com/view/mprun-studio/home')
-        )
+        help_action.triggered.connect(self.show_help)
         sep1 = QAction(self)
         sep1.setSeparator(True)
         sep2 = QAction(self)
@@ -2151,6 +2230,9 @@ class MPRUN(QMainWindow):
     def show_3d_viewer(self):
         self.w = SceneTo3DView(self.canvas, self)
         self.w.show()
+
+    def show_help(self):
+        webbrowser.open('https://sites.google.com/view/mprun-studio/home')
 
     def read_settings(self):
         with open('internal data/_settings.json', 'r') as f:
