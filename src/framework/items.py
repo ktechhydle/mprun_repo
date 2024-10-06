@@ -566,6 +566,8 @@ QScrollBar::handle:vertical:hover {
         super().keyReleaseEvent(event)
 
         if isinstance(self.parentItem(), LeaderLineItem):
+            self.parentItem().updatePathEndPoint()
+
             if self.suggestion_popup.isVisible():
                 if event.key() not in (Qt.Key_Down, Qt.Key_Up):
                     self.suggestTrickTypes(self.getCurrentWord())
@@ -753,8 +755,9 @@ class LeaderLineItem(QGraphicsPathItem):
         painter.setPen(self.pen())
         painter.setBrush(self.brush())
 
-        mapped_rect = self.mapRectFromItem(self.text_element, self.text_element.boundingRect())
-        painter.drawRect(mapped_rect)
+        actual_rect = self.mapRectFromItem(self.text_element, self.text_element.boundingRect())
+
+        painter.drawLine(actual_rect.bottomLeft(), actual_rect.bottomRight())
 
         try:
             painter.setPen(self.pen())
@@ -802,14 +805,10 @@ class LeaderLineItem(QGraphicsPathItem):
             text_rect = self.text_element.boundingRect()
 
             # Determine the closest corner of the text bounding rect to the end_point
-            top_left = self.mapFromItem(self.text_element, text_rect.topLeft())
-            top_right = self.mapFromItem(self.text_element, text_rect.topRight())
             bottom_left = self.mapFromItem(self.text_element, text_rect.bottomLeft())
             bottom_right = self.mapFromItem(self.text_element, text_rect.bottomRight())
 
             corners = {
-                'top_left': top_left,
-                'top_right': top_right,
                 'bottom_left': bottom_left,
                 'bottom_right': bottom_right
             }
