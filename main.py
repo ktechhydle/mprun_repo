@@ -851,7 +851,7 @@ class MPRUN(QMainWindow):
         self.action_group.addAction(self.add_canvas_btn)
 
     def create_toolbar2(self):
-        new_doc_btn = QAction(self.style().standardIcon(QStyle.SP_FileIcon), '', self)
+        new_doc_btn = QAction(QIcon('ui/Tool Icons/new_file_icon.svg'), '', self)
         new_doc_btn.setToolTip(
             '<b>New Document (Ctrl+N)</b><br>'
             'Create a new document and clear the existing scene.<br>'
@@ -860,7 +860,7 @@ class MPRUN(QMainWindow):
         )
         new_doc_btn.triggered.connect(self.canvas.manager.restore)
 
-        open_doc_btn = QAction(self.style().standardIcon(QStyle.SP_DialogOpenButton), '', self)
+        open_doc_btn = QAction(QIcon('ui/Tool Icons/open_file_icon.svg'), '', self)
         open_doc_btn.setToolTip(
             '<b>Open Document (Ctrl+O)</b><br>'
             'Open a document via a file dialog.<br>'
@@ -869,7 +869,7 @@ class MPRUN(QMainWindow):
         )
         open_doc_btn.triggered.connect(lambda: self.canvas.manager.load(self))
 
-        save_doc_btn = QAction(self.style().standardIcon(QStyle.SP_DialogSaveButton), '', self)
+        save_doc_btn = QAction(QIcon('ui/Tool Icons/save_file_icon.svg'), '', self)
         save_doc_btn.setToolTip(
             '<b>Save Document (Ctrl+S)</b><br>'
             'Save the current scene to a ".mp" file.<br>'
@@ -878,7 +878,7 @@ class MPRUN(QMainWindow):
         )
         save_doc_btn.triggered.connect(self.canvas.manager.save)
 
-        undo_btn = QAction(self.style().standardIcon(QStyle.SP_ArrowBack), '', self)
+        undo_btn = QAction(QIcon('ui/Tool Icons/undo_icon.svg'), '', self)
         undo_btn.setToolTip(
             '<b>Undo (Ctrl+Z)</b><br>'
             'Undo any recent changes on the scene.<br>'
@@ -887,7 +887,7 @@ class MPRUN(QMainWindow):
         )
         undo_btn.triggered.connect(self.canvas.undo)
 
-        redo_btn = QAction(self.style().standardIcon(QStyle.SP_ArrowForward), '', self)
+        redo_btn = QAction(QIcon('ui/Tool Icons/redo_icon.svg'), '', self)
         redo_btn.setToolTip(
             '<b>Redo (Ctrl+Shift+Z)</b><br>'
             'Redo any recent undone actions on the scene.<br>'
@@ -896,7 +896,7 @@ class MPRUN(QMainWindow):
         )
         redo_btn.triggered.connect(self.canvas.redo)
 
-        refresh_btn = QAction(self.style().standardIcon(QStyle.SP_BrowserReload), '', self)
+        refresh_btn = QAction(QIcon('ui/Tool Icons/refresh_icon.svg'), '', self)
         refresh_btn.setToolTip(
             '<b>Refresh</b><br>'
             'Refresh the entire scene.<br>'
@@ -909,8 +909,6 @@ class MPRUN(QMainWindow):
         help_btn.setToolTip(
             '<b>Help (F1)</b><br>'
             'Open the online help in your webbrowser.<br>'
-            '<hr>'
-            '<i>Press F1 for more help.</i>'
         )
         help_btn.triggered.connect(self.show_help)
 

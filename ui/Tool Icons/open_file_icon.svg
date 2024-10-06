@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+
+<svg
+   width="800px"
+   height="800px"
+   viewBox="0 0 24.00 24.00"
+   fill="none"
+   stroke="#c2c2c2"
+   stroke-width="0.9120000000000001"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="open_file_icon.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="0.97"
+     inkscape:cx="399.48454"
+     inkscape:cy="400"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <g
+     id="SVGRepo_bgCarrier"
+     stroke-width="0" />
+  <g
+     id="SVGRepo_tracerCarrier"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <g
+     id="SVGRepo_iconCarrier"
+     style="stroke:#c2c2c2;stroke-width:1.94249;stroke-dasharray:none;stroke-opacity:1"
+     transform="matrix(1.0937726,0,0,1.0937726,-1.1252697,-1.126055)">
+    <path
+       d="m 6,17 2,-5 h 14 l -3,8 a 2,2 0 0 1 -2,1 H 4 A 2,2 0 0 1 2,19 V 5 A 2,2 0 0 1 4,3 h 5 l 2,3 h 7 a 2,2 0 0 1 2,2 v 4"
+       id="path1"
+       style="stroke:#c2c2c2;stroke-width:1.94249;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>
