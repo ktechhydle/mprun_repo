@@ -605,7 +605,7 @@ class MPRUN(QMainWindow):
         self.toolbox.setMinimumHeight(680)
 
         self.tab_view_dock = CustomDockWidget(self.toolbox, self)
-        self.tab_view_dock.setWindowTitle('Actions')
+        self.tab_view_dock.setWindowTitle('Panels')
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
 
         # Properties Tab
