@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+
+<svg
+   width="800px"
+   height="800px"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="#c2c2c2"
+   stroke-width="0.00024000000000000003"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="paste_icon.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="0.97"
+     inkscape:cx="399.48454"
+     inkscape:cy="400"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <g
+     id="SVGRepo_bgCarrier"
+     stroke-width="0" />
+  <g
+     id="SVGRepo_tracerCarrier"
+     stroke-linecap="round"
+     stroke-linejoin="round" />
+  <g
+     id="SVGRepo_iconCarrier"
+     transform="matrix(1.0434674,0,0,1.0434674,-0.52160845,1.2517608e-4)">
+    <path
+       fill-rule="evenodd"
+       clip-rule="evenodd"
+       d="M 12,0 C 11.2347,0 10.6293,0.125708 10.1567,0.359214 9.9845,0.44429 9.82065,0.544674 9.68861,0.62717 L 9.59036,0.688808 C 9.49144,0.751003 9.4082,0.803334 9.32081,0.853848 9.09464,0.984584 9.00895,0.998492 9.00053,0.999859 c -7e-4,1.14e-4 -3.4e-4,0 0,0 C 7.89596,0.999859 7,1.89543 7,3 H 6 C 4.34315,3 3,4.34315 3,6 v 14 c 0,1.6569 1.34315,3 3,3 h 12 c 1.6569,0 3,-1.3431 3,-3 V 6 C 21,4.34315 19.6569,3 18,3 h -1 c 0,-1.10457 -0.8954,-2 -2,-2 3e-4,0 7e-4,1.1e-4 0,0 C 14.9916,0.998633 14.9054,0.984584 14.6792,0.853848 14.5918,0.80333 14.5086,0.751004 14.4096,0.688804 L 14.3114,0.62717 C 14.1793,0.544674 14.0155,0.44429 13.8433,0.359214 13.3707,0.125708 12.7653,0 12,0 Z m 4.7324,5 C 16.3866,5.5978 15.7403,6 15,6 H 9 C 8.25972,6 7.61337,5.5978 7.26756,5 H 6 C 5.44772,5 5,5.44772 5,6 v 14 c 0,0.5523 0.44772,1 1,1 h 12 c 0.5523,0 1,-0.4477 1,-1 V 6 C 19,5.44772 18.5523,5 18,5 Z M 11.0426,2.15229 C 11.1626,2.09301 11.4425,2 12,2 c 0.5575,0 0.8374,0.09301 0.9574,0.15229 0.0754,0.03724 0.1662,0.09105 0.2942,0.17104 l 0.0745,0.04675 C 13.43,2.43542 13.5553,2.51428 13.6783,2.58539 13.9712,2.75469 14.4433,3 15,3 V 4 H 9 V 3 C 9.55666,3 10.0288,2.75469 10.3217,2.58539 10.4447,2.51428 10.57,2.43543 10.6739,2.37008 l 0.0745,-0.04675 c 0.128,-0.07999 0.2188,-0.1338 0.2942,-0.17104 z"
+       fill="#c2c2c2"
+       id="path1" />
+  </g>
+</svg>

@@ -897,7 +897,7 @@ class MPRUN(QMainWindow):
         )
         redo_btn.triggered.connect(self.canvas.redo)
 
-        copy_btn = QAction(QIcon('ui/Tool Icons/undo_icon.svg'), '', self)
+        copy_btn = QAction(QIcon('ui/Tool Icons/copy_icon.svg'), '', self)
         copy_btn.setToolTip(
             '<b>Copy (Ctrl+C)</b><br>'
             'Append the current item to the clipboard.<br>'
@@ -906,7 +906,7 @@ class MPRUN(QMainWindow):
         )
         copy_btn.triggered.connect(self.canvas.copy)
 
-        cut_btn = QAction(QIcon('ui/Tool Icons/undo_icon.svg'), '', self)
+        cut_btn = QAction(QIcon('ui/Tool Icons/cut_icon.svg'), '', self)
         cut_btn.setToolTip(
             '<b>Cut (Ctrl+X)</b><br>'
             'Append the current item to the clipboard and remove it from the scene.<br>'
@@ -915,7 +915,7 @@ class MPRUN(QMainWindow):
         )
         cut_btn.triggered.connect(self.canvas.cut)
 
-        paste_btn = QAction(QIcon('ui/Tool Icons/redo_icon.svg'), '', self)
+        paste_btn = QAction(QIcon('ui/Tool Icons/paste_icon.svg'), '', self)
         paste_btn.setToolTip(
             '<b>Paste (Ctrl+V)</b><br>'
             'Paste an item from the clipboard.<br>'
@@ -949,11 +949,12 @@ class MPRUN(QMainWindow):
         self.document_toolbar.addAction(open_doc_btn)
         self.document_toolbar.addAction(save_doc_btn)
         self.document_toolbar.addSeparator()
-        self.document_toolbar.addAction(undo_btn)
-        self.document_toolbar.addAction(redo_btn)
         self.document_toolbar.addAction(copy_btn)
         self.document_toolbar.addAction(cut_btn)
         self.document_toolbar.addAction(paste_btn)
+        self.document_toolbar.addSeparator()
+        self.document_toolbar.addAction(undo_btn)
+        self.document_toolbar.addAction(redo_btn)
         self.document_toolbar.addWidget(spacer)
         self.document_toolbar.addWidget(find_action_searchbox)
         self.document_toolbar.addAction(refresh_btn)
