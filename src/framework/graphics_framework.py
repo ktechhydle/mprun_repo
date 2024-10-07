@@ -295,9 +295,9 @@ y: {int(self.mapToScene(point).y())}''')
                     self.scene().parentWindow.use_set_sculpt_radius(
                         self.sculptingTool.sculpt_radius - 5 if self.sculptingTool.sculpt_radius >= 1 else 1)
 
-                self.scene().parentWindow.sculpt_radius_spin.blockSignals(True)
-                self.scene().parentWindow.sculpt_radius_spin.setValue(self.sculptingTool.sculpt_radius)
-                self.scene().parentWindow.sculpt_radius_spin.blockSignals(False)
+                self.scene().parentWindow.scene_tab.sculpt_radius_spin.blockSignals(True)
+                self.scene().parentWindow.scene_tab.sculpt_radius_spin.setValue(self.sculptingTool.sculpt_radius)
+                self.scene().parentWindow.scene_tab.sculpt_radius_spin.blockSignals(False)
 
                 self.sculptingTool.sculpt_shape.setPos(
                     self.mapToScene(event.pos()) - self.sculptingTool.sculpt_shape.boundingRect().center())
@@ -734,6 +734,18 @@ class CustomGraphicsScene(QGraphicsScene):
 
         for item in self.selectedItems():
             self.copy_stack.append(item.copy())
+
+    def cut(self):
+        self.copy_stack.clear()
+
+        cut_items = []
+
+        for item in self.selectedItems():
+            self.copy_stack.append(item.copy())
+            cut_items.append(item)
+
+        self.addCommand(RemoveItemCommand(self, cut_items))
+
 
     def paste(self):
         new_items = []

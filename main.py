@@ -362,6 +362,10 @@ class MPRUN(QMainWindow):
         copy_action.setShortcut(QKeySequence('Ctrl+C'))
         copy_action.triggered.connect(self.canvas.copy)
 
+        cut_action = QAction('Cut', self)
+        cut_action.setShortcut(QKeySequence('Ctrl+X'))
+        cut_action.triggered.connect(self.canvas.cut)
+
         paste_action = QAction('Paste', self)
         paste_action.setShortcut(QKeySequence('Ctrl+V'))
         paste_action.triggered.connect(self.canvas.paste)
@@ -378,6 +382,7 @@ class MPRUN(QMainWindow):
         self.edit_menu.addAction(redo_action)
         self.edit_menu.addSeparator()
         self.edit_menu.addAction(copy_action)
+        self.edit_menu.addAction(cut_action)
         self.edit_menu.addAction(paste_action)
         self.edit_menu.addAction(delete_action)
         self.edit_menu.addSeparator()
@@ -892,6 +897,33 @@ class MPRUN(QMainWindow):
         )
         redo_btn.triggered.connect(self.canvas.redo)
 
+        copy_btn = QAction(QIcon('ui/Tool Icons/undo_icon.svg'), '', self)
+        copy_btn.setToolTip(
+            '<b>Copy (Ctrl+C)</b><br>'
+            'Append the current item to the clipboard.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        copy_btn.triggered.connect(self.canvas.copy)
+
+        cut_btn = QAction(QIcon('ui/Tool Icons/undo_icon.svg'), '', self)
+        cut_btn.setToolTip(
+            '<b>Cut (Ctrl+X)</b><br>'
+            'Append the current item to the clipboard and remove it from the scene.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        cut_btn.triggered.connect(self.canvas.cut)
+
+        paste_btn = QAction(QIcon('ui/Tool Icons/redo_icon.svg'), '', self)
+        paste_btn.setToolTip(
+            '<b>Paste (Ctrl+V)</b><br>'
+            'Paste an item from the clipboard.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        paste_btn.triggered.connect(self.canvas.paste)
+
         refresh_btn = QAction(QIcon('ui/Tool Icons/refresh_icon.svg'), '', self)
         refresh_btn.setToolTip(
             '<b>Refresh</b><br>'
@@ -910,17 +942,22 @@ class MPRUN(QMainWindow):
 
         find_action_searchbox = CustomSearchBox(self.actions, self)
 
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
         self.document_toolbar.addAction(new_doc_btn)
         self.document_toolbar.addAction(open_doc_btn)
         self.document_toolbar.addAction(save_doc_btn)
         self.document_toolbar.addSeparator()
         self.document_toolbar.addAction(undo_btn)
         self.document_toolbar.addAction(redo_btn)
-        self.document_toolbar.addSeparator()
+        self.document_toolbar.addAction(copy_btn)
+        self.document_toolbar.addAction(cut_btn)
+        self.document_toolbar.addAction(paste_btn)
+        self.document_toolbar.addWidget(spacer)
+        self.document_toolbar.addWidget(find_action_searchbox)
         self.document_toolbar.addAction(refresh_btn)
         self.document_toolbar.addAction(help_btn)
-        self.document_toolbar.addSeparator()
-        self.document_toolbar.addWidget(find_action_searchbox)
 
     def create_toolbar3(self):
         # ----item toolbar widgets----#
@@ -1014,18 +1051,6 @@ class MPRUN(QMainWindow):
         )
         lower_layer_action.triggered.connect(self.use_lower_layer)
 
-        sculpt_label = QLabel('Sculpt Radius:')
-        self.sculpt_radius_spin = QSpinBox(self)
-        self.sculpt_radius_spin.setSuffix(' pt')
-        self.sculpt_radius_spin.setFixedWidth(75)
-        self.sculpt_radius_spin.setRange(10, 500)
-        self.sculpt_radius_spin.setToolTip('Change the sculpt radius')
-        self.sculpt_radius_spin.setValue(100)
-        self.sculpt_radius_spin.valueChanged.connect(self.use_set_sculpt_radius)
-        sculpt_hlayout = ToolbarHorizontalLayout()
-        sculpt_hlayout.layout.addWidget(sculpt_label)
-        sculpt_hlayout.layout.addWidget(self.sculpt_radius_spin)
-
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
@@ -1041,8 +1066,6 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addAction(rotate_cw_action)
         self.item_toolbar.addAction(raise_layer_action)
         self.item_toolbar.addAction(lower_layer_action)
-        self.item_toolbar.addSeparator()
-        self.item_toolbar.addWidget(sculpt_hlayout)
         self.item_toolbar.addWidget(spacer)
 
     def create_view(self):

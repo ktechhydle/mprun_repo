@@ -707,7 +707,7 @@ class CanvasEditorPanel(QWidget):
 class ScenePanel(QWidget):
     def __init__(self, canvas, parent):
         super().__init__(parent)
-        self.setMinimumHeight(270)
+        self.setMinimumHeight(300)
 
         self.canvas = canvas
         self.parent = parent
@@ -759,12 +759,26 @@ class ScenePanel(QWidget):
         self.reset_btn.setHidden(True)
         self.reset_btn.clicked.connect(self.resetView)
 
+        sculpt_label = QLabel('Sculpt Radius:')
+        self.sculpt_radius_spin = QSpinBox(self)
+        self.sculpt_radius_spin.setSuffix(' pt')
+        self.sculpt_radius_spin.setFixedWidth(75)
+        self.sculpt_radius_spin.setRange(10, 500)
+        self.sculpt_radius_spin.setToolTip('Change the sculpt radius')
+        self.sculpt_radius_spin.setValue(100)
+        self.sculpt_radius_spin.valueChanged.connect(self.parent.use_set_sculpt_radius)
+        sculpt_hlayout = ToolbarHorizontalLayout()
+        sculpt_hlayout.layout.addWidget(sculpt_label)
+        sculpt_hlayout.layout.addWidget(self.sculpt_radius_spin)
+        sculpt_hlayout.layout.addStretch()
+
         self.layout.addWidget(horizontal_widget)
         self.layout.addWidget(gsnap_hlayout)
         self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(self.zoom_widget)
         self.layout.addWidget(self.rotate_widget)
         self.layout.addWidget(self.reset_btn)
+        self.layout.addWidget(sculpt_hlayout)
         self.layout.addStretch()
 
         # Update
