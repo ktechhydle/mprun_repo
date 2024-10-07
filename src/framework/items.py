@@ -594,7 +594,7 @@ QScrollBar::handle:vertical:hover {
         # Position the suggestion popup
         cursor_pos = self.sceneBoundingRect().bottomRight()
         global_pos = self.scene().views()[0].mapFromScene(cursor_pos.toPoint())
-        self.suggestion_popup.move(int(global_pos.x()), int(100 + global_pos.y()))
+        self.suggestion_popup.move(int(global_pos.x() + 20), int(150 + global_pos.y()))
 
         # Show the popup
         self.suggestion_popup.setCurrentRow(0)
