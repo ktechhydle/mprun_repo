@@ -655,3 +655,116 @@ class CustomSpinBox(QWidget):
 
     def label(self):
         return self.lab
+
+
+class CustomSearchBox(QLineEdit):
+    def __init__(self, actions: dict, parent=None):
+        super().__init__(parent)
+        self.setFixedWidth(200)
+        self.setPlaceholderText('Search Actions...')
+
+        self.available_actions = actions
+
+        self.list_widget = QListWidget()
+        self.list_widget.setFixedWidth(250)
+        self.list_widget.setFixedHeight(100)
+        self.list_widget.setStyleSheet('''
+        QListWidget {
+            background-color: #535353;
+            border: 2px solid #424242;
+            border-radius: 5px;
+            padding: 2px;
+            font-size: 12px;
+        }
+
+        QListWidget::item {
+            background-color: #3c3c3c;
+            border-radius: 3px;
+            padding: 3px 5px;
+            margin: 1px;
+            color: #dcdcdc;
+        }
+
+        QListWidget::item:selected {
+            background-color: #0066cc;
+            color: white;
+        }
+
+        QListWidget::item:hover {
+            background-color: #4a4a4a;
+        }
+
+        QScrollBar:vertical {
+            border: 1px solid #444;
+            background: #2e2e2e;
+            width: 10px;
+            border-radius: 5px;
+        }
+
+        QScrollBar::handle:vertical {
+            background: #555;
+            border-radius: 5px;
+        }
+
+        QScrollBar::handle:vertical:hover {
+            background: #666;
+        }
+
+                ''')
+        self.list_widget.setWindowFlag(Qt.ToolTip)
+
+        # Connect the textChanged signal of the search input to the search method
+        self.textEdited.connect(self.searchActions)
+        self.list_widget.itemClicked.connect(self.performAction)
+
+    def searchActions(self):
+        self.list_widget.move(self.mapToGlobal(self.rect().bottomLeft()))
+        self.list_widget.show()
+
+        # Get the search text
+        search_text = self.text().lower()
+
+        # Clear the QListWidget
+        self.list_widget.clear()
+
+        # Filter actions based on search text and add them back to the QListWidget
+        filtered_actions = [action for action in self.available_actions if search_text in action.lower()]
+
+        if filtered_actions:
+            self.list_widget.addItems(filtered_actions)
+
+        else:
+            self.list_widget.hide()
+
+    def performAction(self, item):
+        action_name = item.text()
+        widget = self.available_actions.get(action_name)
+        if widget:
+            # Example action: toggling visibility of the widget
+            if isinstance(widget, QAction):
+                widget.trigger()
+
+            elif isinstance(widget, (QPushButton, QCheckBox, CustomColorDisplayButton)):
+                if widget.isCheckable():
+                    if widget.isChecked():
+                        widget.setChecked(False)
+                        widget.click()
+
+                    else:
+                        widget.click()
+
+                else:
+                    widget.click()
+
+            elif isinstance(widget, (QSpinBox, QDoubleSpinBox, QComboBox)):
+                widget.setFocus(Qt.FocusReason.MouseFocusReason)
+
+            self.list_widget.close()
+            self.clearFocus()
+            self.setText('')
+
+    def focusOutEvent(self, event):
+        self.list_widget.close()
+        self.clearFocus()
+        self.setText('')
+        super().focusOutEvent(event)

@@ -14,7 +14,7 @@ internal functions.
 from mp_software_stylesheets.styles import macCSS, windowsCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
-from src.gui.app_screens import AboutWin, VersionWin, FindActionWin, DisclaimerWin, SettingsWin, ScriptingWin
+from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin, ScriptingWin
 from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, ScenePanel, \
@@ -534,9 +534,6 @@ class MPRUN(QMainWindow):
         show_version_action = QAction('Version', self)
         show_version_action.triggered.connect(self.show_version)
 
-        find_action_action = QAction('Find Action', self)
-        find_action_action.triggered.connect(self.show_find_action)
-
         browse_tutorials_action = QAction('Browse Tutorials', self)
         browse_tutorials_action.setShortcut(Qt.Key_F1)
         browse_tutorials_action.triggered.connect(self.show_help)
@@ -562,7 +559,6 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
         self.help_menu.addSeparator()
-        self.help_menu.addAction(find_action_action)
         self.help_menu.addAction(browse_tutorials_action)
         self.help_menu.addAction(check_update_action)
         self.help_menu.addAction(view_settings_action)
@@ -912,6 +908,8 @@ class MPRUN(QMainWindow):
         )
         help_btn.triggered.connect(self.show_help)
 
+        find_action_searchbox = CustomSearchBox(self.actions, self)
+
         self.document_toolbar.addAction(new_doc_btn)
         self.document_toolbar.addAction(open_doc_btn)
         self.document_toolbar.addAction(save_doc_btn)
@@ -921,6 +919,8 @@ class MPRUN(QMainWindow):
         self.document_toolbar.addSeparator()
         self.document_toolbar.addAction(refresh_btn)
         self.document_toolbar.addAction(help_btn)
+        self.document_toolbar.addSeparator()
+        self.document_toolbar.addWidget(find_action_searchbox)
 
     def create_toolbar3(self):
         # ----item toolbar widgets----#
@@ -2183,10 +2183,6 @@ class MPRUN(QMainWindow):
 
     def show_about(self):
         self.w = AboutWin(self)
-        self.w.show()
-
-    def show_find_action(self):
-        self.w = FindActionWin(self.actions, self)
         self.w.show()
 
     def show_disclaimer(self):
