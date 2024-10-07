@@ -1076,6 +1076,11 @@ class TipWin(QDialog):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowFlag(Qt.Tool)
         self.setLayout(QHBoxLayout())
+        self.setStyleSheet('''
+        QDialog {
+            border: 2px solid #424242;
+        }
+        ''')
 
         img = QLabel('')
         img.setPixmap(QPixmap('ui/UI Icons/Major/info_circle.svg').scaled(35, 35,
