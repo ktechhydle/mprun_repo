@@ -11,7 +11,7 @@ this file is the one you might want to read over to learn MPRUN's
 internal functions.
 """
 
-from mp_software_stylesheets.styles import unifiedCSS
+from mp_software_stylesheets.styles import unifiedCSS, blenderCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin, ScriptingWin
@@ -27,7 +27,7 @@ from src.scripts.get_version import get_latest_version
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
-DEFAULT_PANEL_WIDTH = 300
+DEFAULT_PANEL_WIDTH = 280
 
 
 class MPRUN(QMainWindow):
@@ -621,7 +621,7 @@ class MPRUN(QMainWindow):
 
         # Dock widget
         self.toolbox = CustomToolbox(self)
-        self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH)
+        self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.toolbox.setMinimumHeight(680)
 
         self.tab_view_dock = CustomDockWidget(self.toolbox, self)
@@ -2493,7 +2493,7 @@ def main() -> None:
 
     app.processEvents()
 
-    app.setStyleSheet(unifiedCSS)
+    app.setStyleSheet(blenderCSS)
 
     window = MPRUN()
     splash.finish(window)
