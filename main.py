@@ -183,6 +183,7 @@ class MPRUN(QMainWindow):
         self.create_selection_menu()
         self.create_view_menu()
         self.create_help_menu()
+        self.create_corner_widget()
 
     def create_file_menu(self):
         new_action = QAction('New', self)
@@ -573,6 +574,23 @@ class MPRUN(QMainWindow):
         self.help_menu.addSeparator()
         self.help_menu.addAction(python_scripting_action)
 
+    def create_corner_widget(self):
+        find_action_searchbox = CustomSearchBox(self.actions, self)
+
+        help_btn = QPushButton(self.style().standardIcon(QStyle.SP_MessageBoxQuestion), '', self)
+        help_btn.setToolTip(
+            '<b>Help (F1)</b><br>'
+            'Open the online help in your webbrowser.<br>'
+        )
+        help_btn.clicked.connect(self.show_help)
+
+        widget = QWidget()
+        widget.setLayout(QHBoxLayout())
+        widget.layout().setContentsMargins(0, 0, 0, 0)
+        widget.layout().addWidget(find_action_searchbox)
+        widget.layout().addWidget(help_btn)
+        self.menu_bar.setCornerWidget(widget)
+
     def init_toolbars(self):
         # Toolbar
         self.toolbar = QToolBar('Toolset')
@@ -933,15 +951,6 @@ class MPRUN(QMainWindow):
         )
         refresh_btn.triggered.connect(lambda: self.canvas_view.update())
 
-        help_btn = QAction(self.style().standardIcon(QStyle.SP_MessageBoxQuestion), '', self)
-        help_btn.setToolTip(
-            '<b>Help (F1)</b><br>'
-            'Open the online help in your webbrowser.<br>'
-        )
-        help_btn.triggered.connect(self.show_help)
-
-        find_action_searchbox = CustomSearchBox(self.actions, self)
-
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
@@ -955,10 +964,8 @@ class MPRUN(QMainWindow):
         self.document_toolbar.addSeparator()
         self.document_toolbar.addAction(undo_btn)
         self.document_toolbar.addAction(redo_btn)
-        self.document_toolbar.addWidget(spacer)
-        self.document_toolbar.addWidget(find_action_searchbox)
         self.document_toolbar.addAction(refresh_btn)
-        self.document_toolbar.addAction(help_btn)
+        self.document_toolbar.addWidget(spacer)
 
     def create_toolbar3(self):
         # ----item toolbar widgets----#
@@ -2480,7 +2487,7 @@ def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'])
 
     splash = QSplashScreen(QIcon('ui/Main Logos/mprun_splash.png').pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
     splash.show()
