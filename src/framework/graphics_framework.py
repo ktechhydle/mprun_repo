@@ -328,6 +328,11 @@ y: {int(self.mapToScene(point).y())}''')
         self.parent().scene_tab.zoom_widget.spinBox().setValue(int(self.transform().m11() * 100))
         self.parent().scene_tab.zoom_widget.spinBox().blockSignals(False)
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        print(f'View Resize at {event}')
+        self.updateTip()
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.acceptProposedAction()

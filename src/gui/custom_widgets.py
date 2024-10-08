@@ -359,6 +359,7 @@ class StrokeLabel(QLabel):
         self.join_style_combo.setItemData(2, QIcon('ui/UI Icons/Combobox Images/miter_join.png'), Qt.DecorationRole)
 
         widget = QWidget()
+        widget.setObjectName('containerWidget')
         widget.setLayout(QVBoxLayout())
         widget.layout().addWidget(self.stroke_style_combo)
         widget.layout().addWidget(self.stroke_pencap_combo)
