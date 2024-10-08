@@ -11,7 +11,7 @@ this file is the one you might want to read over to learn MPRUN's
 internal functions.
 """
 
-from mp_software_stylesheets.styles import macCSS, windowsCSS
+from mp_software_stylesheets.styles import unifiedCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin, ScriptingWin
@@ -2487,11 +2487,7 @@ def main() -> None:
 
     app.processEvents()
 
-    if sys.platform == 'darwin':
-        app.setStyleSheet(macCSS)
-
-    else:
-        app.setStyleSheet(windowsCSS)
+    app.setStyleSheet(unifiedCSS)
 
     window = MPRUN()
     splash.finish(window)
