@@ -537,6 +537,13 @@ class CustomToolbox(QToolBox):
         self.insertItem(index, widget, name)
 
     def wheelEvent(self, event: QWheelEvent):
+        if event.modifiers() == Qt.ShiftModifier:
+            if event.angleDelta().y() > 0 and self.currentIndex() > 0:
+                self.setCurrentIndex(self.currentIndex() - 1)  # Scroll up
+            elif event.angleDelta().y() < 0 and self.currentIndex() < self.count() - 1:
+                self.setCurrentIndex(self.currentIndex() + 1)  # Scroll down
+            return
+
         # Get the mouse position relative to the toolbox
         mouse_pos = event.globalPosition().toPoint() - self.mapToGlobal(QPoint(0, 0))
 
