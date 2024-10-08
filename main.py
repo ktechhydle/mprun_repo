@@ -595,12 +595,14 @@ class MPRUN(QMainWindow):
 
     def init_toolbars(self):
         # Toolbar
-        self.toolbar = CustomToolbar('Toolset')
+        self.toolbar = QToolBar('Toolset')
+        self.toolbar.setObjectName('customToolBar')
+        self.toolbar.move(5, 5)
         self.toolbar.setIconSize(QSize(32, 32))
+        self.toolbar.setOrientation(Qt.Orientation.Vertical)
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
-        self.toolbar.setFloatable(False)
+        self.toolbar.setFloatable(True)
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
-        self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Document toolbar
         self.document_toolbar = CustomToolbar('Document')
@@ -1093,6 +1095,7 @@ class MPRUN(QMainWindow):
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
         self.setCentralWidget(self.canvas_view)
+        self.toolbar.setParent(self.canvas_view)
 
         # Update default fonts, colors, etc.
         self.update('ui_update')
@@ -2278,7 +2281,6 @@ class MPRUN(QMainWindow):
         for user_data in self.read_settings():
             self.view_as(user_data['saved_view'])
 
-            self.addToolBar(Qt.LeftToolBarArea if user_data['toolbar_pos'] == 1 else Qt.RightToolBarArea, self.toolbar)
             self.addDockWidget(Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea,
                                self.tab_view_dock)
             self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
@@ -2449,7 +2451,6 @@ class MPRUN(QMainWindow):
         self.document_toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setHidden(False)
         self.toolbar.setIconSize(QSize(32, 32))
-        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
 
         self.menuBar().setStyleSheet('font-size: 16px;')
 
