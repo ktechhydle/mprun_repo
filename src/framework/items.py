@@ -436,49 +436,7 @@ class CustomTextItem(QGraphicsTextItem):
         # Create the suggestion popup
         self.suggestion_popup = QListWidget()
         self.suggestion_popup.setToolTip('<i>Press the up-arrow key to accept suggestions</i>')
-        self.suggestion_popup.setStyleSheet('''
-QListWidget {
-    background-color: #535353;
-    border: 2px solid #424242;
-    border-radius: 5px;
-    padding: 2px;
-    font-size: 12px;
-}
-
-QListWidget::item {
-    background-color: #3c3c3c;
-    border-radius: 3px;
-    padding: 3px 5px;
-    margin: 1px;
-    color: #dcdcdc;
-}
-
-QListWidget::item:selected {
-    background-color: #0066cc;
-    color: white;
-}
-
-QListWidget::item:hover {
-    background-color: #4a4a4a;
-}
-
-QScrollBar:vertical {
-    border: 1px solid #444;
-    background: #2e2e2e;
-    width: 10px;
-    border-radius: 5px;
-}
-
-QScrollBar::handle:vertical {
-    background: #555;
-    border-radius: 5px;
-}
-
-QScrollBar::handle:vertical:hover {
-    background: #666;
-}
-
-        ''')
+        self.suggestion_popup.setObjectName('searchList')
         self.suggestion_popup.setFixedWidth(250)
         self.suggestion_popup.setFixedHeight(100)
         self.suggestion_popup.setWindowFlags(Qt.Popup)

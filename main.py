@@ -583,33 +583,34 @@ class MPRUN(QMainWindow):
             'Open the online help in your webbrowser.<br>'
         )
         help_btn.clicked.connect(self.show_help)
+        help_btn.setObjectName('noneBorderedButton')
 
         widget = QWidget()
+        widget.setObjectName('containerWidget')
         widget.setLayout(QHBoxLayout())
-        widget.layout().setContentsMargins(0, 0, 0, 0)
+        widget.layout().setContentsMargins(0, 2, 0, 0)
         widget.layout().addWidget(find_action_searchbox)
         widget.layout().addWidget(help_btn)
         self.menu_bar.setCornerWidget(widget)
 
     def init_toolbars(self):
         # Toolbar
-        self.toolbar = QToolBar('Toolset')
+        self.toolbar = CustomToolbar('Toolset')
         self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setFixedWidth(60)
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
         self.toolbar.setFloatable(False)
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.addToolBar(Qt.ToolBarArea.LeftToolBarArea, self.toolbar)
 
         # Document toolbar
-        self.document_toolbar = QToolBar('Document')
+        self.document_toolbar = CustomToolbar('Document')
         self.document_toolbar.setIconSize(QSize(32, 32))
         self.document_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.document_toolbar)
         self.addToolBarBreak()
 
         # Item toolbar
-        self.item_toolbar = QToolBar('Control')
+        self.item_toolbar = CustomToolbar('Control')
         self.item_toolbar.setIconSize(QSize(32, 32))
         self.item_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
@@ -2412,7 +2413,6 @@ class MPRUN(QMainWindow):
             self.item_toolbar.setHidden(True)
             self.document_toolbar.setHidden(True)
             self.toolbar.setIconSize(QSize(48, 48))
-            self.toolbar.setFixedWidth(70)
             self.drawing_toolbutton.setIconSize(QSize(48, 48))
             self.tab_view_dock.collapse()
 
@@ -2446,11 +2446,10 @@ class MPRUN(QMainWindow):
         self.item_toolbar.setHidden(False)
         self.item_toolbar.setIconSize(QSize(32, 32))
         self.document_toolbar.setHidden(False)
+        self.document_toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setHidden(False)
         self.toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setFixedWidth(60)
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
-        self.drawing_toolbutton.setIconSize(QSize(10, 10))
 
         self.menuBar().setStyleSheet('font-size: 16px;')
 

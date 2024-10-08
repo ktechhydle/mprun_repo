@@ -14,13 +14,48 @@ class ToolbarHorizontalLayout(QWidget):
         self.setLayout(self.layout)
 
 
+class CustomToolbar(QToolBar):
+    def __init__(self, name: str, parent=None):
+        super().__init__(name, parent)
+
+    def wheelEvent(self, event):
+        # Define the minimum and maximum icon sizes
+        min_size = 16
+        max_size = 128
+
+        # Determine the amount to change the icon size by
+        if event.angleDelta().y() > 0:
+            amount = 2
+        else:
+            amount = -2
+
+        # Calculate the new size
+        new_width = self.iconSize().width() + amount
+        new_height = self.iconSize().height() + amount
+
+        # Ensure the new size is within the defined limits
+        new_width = max(min_size, min(max_size, new_width))
+        new_height = max(min_size, min(max_size, new_height))
+
+        # Set the new icon size with the limited values
+        self.setIconSize(QSize(new_width, new_height))
+
+    def mouseDoubleClickEvent(self, event):
+        self.setIconSize(QSize(32, 32))
+
+    def setIconSize(self, iconSize):
+        super().setIconSize(iconSize)
+
+        if hasattr(self.parent(), 'drawing_toolbutton'):
+            self.parent().drawing_toolbutton.setIconSize(self.iconSize())
+
+
 class HorizontalSeparator(QFrame):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.color = '#4b4b4b'
         self.setFrameShape(QFrame.HLine)
         self.setFrameShadow(QFrame.Plain)
-        self.setStyleSheet(f'background-color: {self.color}; color: {self.color}')
+        self.setObjectName('splitter')
         self.setFixedHeight(2)  # Set the height to 1 pixel
 
     def sizeHint(self):
@@ -228,7 +263,7 @@ class CustomViewWidget(QGraphicsView):
 class CustomToolButton(QToolButton):
     def __init__(self):
         super().__init__()
-        self.setIconSize(QSize(10, 10))
+        self.setIconSize(QSize(32, 32))
         self.setToolButtonStyle(Qt.ToolButtonIconOnly)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.DelayedPopup)
 
@@ -408,10 +443,7 @@ class CustomDockWidget(QDockWidget):
         self.close_btn.setIcon(QIcon('mp_software_stylesheets/assets/cross.svg'))
         self.close_btn.setIconSize(QSize(16, 16))
         self.close_btn.clicked.connect(self.close)
-        self.close_btn.setStyleSheet('QPushButton { background: #424242;'
-                                     'border: none; }'
-                                     'QPushButton:hover {'
-                                     'background: #494949; }')
+        self.close_btn.setObjectName('noneBorderedButton')
         self.close_btn.setFixedSize(QSize(18, 18))
 
         self.minimize_btn = QPushButton('', self)
@@ -419,10 +451,7 @@ class CustomDockWidget(QDockWidget):
         self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/minimize.svg'))
         self.minimize_btn.setIconSize(QSize(16, 16))
         self.minimize_btn.clicked.connect(self.toggleCollapse)
-        self.minimize_btn.setStyleSheet('QPushButton { background: #424242;'
-                                        'border: none; }'
-                                        'QPushButton:hover {'
-                                        'background: #494949; }')
+        self.minimize_btn.setObjectName('noneBorderedButton')
         self.minimize_btn.setFixedSize(QSize(18, 18))
 
         self.title_bar = QWidget(self)
@@ -616,13 +645,7 @@ class CustomMenu(QMenu):
         super().__init__(*args, **kwargs)
         self.setMinimumSize(150, 30)
         self.radius = 10
-        self.setStyleSheet('''
-        QMenu 
-        { 
-            border-radius: 10px; 
-            border: 3px solid #424242;
-        }
-        ''')
+        self.setObjectName('customMenu')
 
     def addMenu(self, menu, parent=None):
         if isinstance(menu, QMenu):
@@ -675,49 +698,7 @@ class CustomSearchBox(QLineEdit):
         self.list_widget = QListWidget()
         self.list_widget.setFixedWidth(250)
         self.list_widget.setFixedHeight(100)
-        self.list_widget.setStyleSheet('''
-        QListWidget {
-            background-color: #535353;
-            border: 2px solid #424242;
-            border-radius: 5px;
-            padding: 2px;
-            font-size: 12px;
-        }
-
-        QListWidget::item {
-            background-color: #3c3c3c;
-            border-radius: 3px;
-            padding: 3px 5px;
-            margin: 1px;
-            color: #dcdcdc;
-        }
-
-        QListWidget::item:selected {
-            background-color: #0066cc;
-            color: white;
-        }
-
-        QListWidget::item:hover {
-            background-color: #4a4a4a;
-        }
-
-        QScrollBar:vertical {
-            border: 1px solid #444;
-            background: #2e2e2e;
-            width: 10px;
-            border-radius: 5px;
-        }
-
-        QScrollBar::handle:vertical {
-            background: #555;
-            border-radius: 5px;
-        }
-
-        QScrollBar::handle:vertical:hover {
-            background: #666;
-        }
-
-                ''')
+        self.list_widget.setObjectName('searchList')
         self.list_widget.setWindowFlag(Qt.ToolTip)
 
         # Connect the textChanged signal of the search input to the search method
