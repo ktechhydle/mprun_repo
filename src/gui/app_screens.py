@@ -1073,8 +1073,8 @@ class PythonHighlighter(QSyntaxHighlighter):
 class TipWin(QDialog):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        self.setWindowFlag(Qt.Tool)
+        self.setObjectName('tipWindow')
+        self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
         self.setLayout(QHBoxLayout())
         self.setStyleSheet('''
         QDialog {

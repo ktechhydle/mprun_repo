@@ -121,7 +121,6 @@ class MPRUN(QMainWindow):
                                                                                                  self.geometry().height()
                                                                                                  ]
             _data['saved_view'] = self.current_view()
-            _data['toolbar_pos'] = self.current_toolbar_pos()
             _data['toolbox_pos'] = self.current_toolbox_pos()
             _data['toolbox_collapsed'] = self.tab_view_dock.isCollapsed()
             _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
@@ -129,6 +128,9 @@ class MPRUN(QMainWindow):
             _data['last_used_tool'] = self.action_group.checkedAction().text()
             _data['grid_size'] = self.canvas.gridSize
             _data['toolbox_index'] = self.toolbox.currentIndex()
+            _data['document_toolbar_size'] = self.document_toolbar.iconSize().width()
+            _data['item_toolbar_size'] = self.item_toolbar.iconSize().width()
+            _data['toolbar_size'] = self.toolbar.iconSize().width()
 
         self.write_settings(data)
 
@@ -500,6 +502,10 @@ class MPRUN(QMainWindow):
         fullscreen_view_action.setShortcut(Qt.Key_F11)
         fullscreen_view_action.triggered.connect(self.show_fullscreen)
 
+        reset_toolbar_sizes_action = QAction('Reset Toolbars', self)
+        reset_toolbar_sizes_action.setShortcut(Qt.Key.Key_F10)
+        reset_toolbar_sizes_action.triggered.connect(self.reset_toolbars)
+
         control_toolbar_view_action = QAction('Control Toolbar', self)
         control_toolbar_view_action.setCheckable(True)
         control_toolbar_view_action.setChecked(True)
@@ -531,6 +537,7 @@ class MPRUN(QMainWindow):
 
         self.view_menu.addAction(control_toolbar_view_action)
         self.view_menu.addAction(fullscreen_view_action)
+        self.view_menu.addAction(reset_toolbar_sizes_action)
         self.view_menu.addMenu(view_options_menu)
 
     def create_help_menu(self):
@@ -595,9 +602,9 @@ class MPRUN(QMainWindow):
 
     def init_toolbars(self):
         # Toolbar
-        self.toolbar = QToolBar('Toolset')
+        self.toolbar = CustomToolbar('Toolset')
         self.toolbar.setObjectName('customToolBar')
-        self.toolbar.move(5, 5)
+        self.toolbar.move(11, 11)
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setOrientation(Qt.Orientation.Vertical)
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
@@ -613,9 +620,11 @@ class MPRUN(QMainWindow):
 
         # Item toolbar
         self.item_toolbar = CustomToolbar('Control')
-        self.item_toolbar.setIconSize(QSize(32, 32))
+        self.item_toolbar.setObjectName('customToolBar')
+        self.item_toolbar.setIconSize(QSize(16, 16))
+        self.item_toolbar.move(70, 7)
+        self.item_toolbar.setOrientation(Qt.Orientation.Horizontal)
         self.item_toolbar.setMovable(False)
-        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.item_toolbar)
         self.item_toolbar.visibilityChanged.connect(self.control_toolbar_visibility_changed)
 
     def create_panels(self):
@@ -1072,12 +1081,10 @@ class MPRUN(QMainWindow):
         self.item_toolbar.addAction(align_middle_btn)
         self.item_toolbar.addAction(align_top_btn)
         self.item_toolbar.addAction(align_bottom_btn)
-        self.item_toolbar.addSeparator()
         self.item_toolbar.addAction(rotate_ccw_action)
         self.item_toolbar.addAction(rotate_cw_action)
         self.item_toolbar.addAction(raise_layer_action)
         self.item_toolbar.addAction(lower_layer_action)
-        self.item_toolbar.addWidget(spacer)
 
     def create_view(self):
         # QGraphicsView Logic
@@ -1094,8 +1101,11 @@ class MPRUN(QMainWindow):
                                                             self.scene_tab.gsnap_check_btn])
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
+
+        # Create floating widgets
         self.setCentralWidget(self.canvas_view)
         self.toolbar.setParent(self.canvas_view)
+        self.item_toolbar.setParent(self.canvas_view)
 
         # Update default fonts, colors, etc.
         self.update('ui_update')
@@ -2315,6 +2325,10 @@ class MPRUN(QMainWindow):
             if user_data['show_daily_tips']:
                 self.show_tip_of_the_day()
 
+            self.document_toolbar.setIconSize(QSize(user_data['document_toolbar_size'], user_data['document_toolbar_size']))
+            self.item_toolbar.setIconSize(QSize(user_data['item_toolbar_size'], user_data['item_toolbar_size']))
+            self.toolbar.setIconSize(QSize(user_data['toolbar_size'], user_data['toolbar_size']))
+
         self.check_for_updates(show_message=True)
 
     def open_recent_file_data(self):
@@ -2414,8 +2428,6 @@ class MPRUN(QMainWindow):
             self.cur_view = 'simple'
             self.item_toolbar.setHidden(True)
             self.document_toolbar.setHidden(True)
-            self.toolbar.setIconSize(QSize(48, 48))
-            self.drawing_toolbutton.setIconSize(QSize(48, 48))
             self.tab_view_dock.collapse()
 
             self.menuBar().setStyleSheet('font-size: 30px;')
@@ -2423,7 +2435,6 @@ class MPRUN(QMainWindow):
         elif view == 'swapped':
             self.unhide()
             self.addDockWidget(Qt.LeftDockWidgetArea, self.tab_view_dock)
-            self.addToolBar(Qt.RightToolBarArea, self.toolbar)
 
         elif view == 'control_bar_hidden':
             self.item_toolbar.setHidden(True)
@@ -2436,9 +2447,6 @@ class MPRUN(QMainWindow):
     def current_view(self) -> str:
         return self.cur_view
 
-    def current_toolbar_pos(self):
-        return 1 if self.toolBarArea(self.toolbar) == Qt.LeftToolBarArea else 2
-
     def current_toolbox_pos(self):
         return 1 if self.dockWidgetArea(self.tab_view_dock) == Qt.RightDockWidgetArea else 2
 
@@ -2446,11 +2454,9 @@ class MPRUN(QMainWindow):
         self.tab_view_dock.setHidden(False)
         self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
         self.item_toolbar.setHidden(False)
-        self.item_toolbar.setIconSize(QSize(32, 32))
         self.document_toolbar.setHidden(False)
         self.document_toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setHidden(False)
-        self.toolbar.setIconSize(QSize(32, 32))
 
         self.menuBar().setStyleSheet('font-size: 16px;')
 
@@ -2458,6 +2464,14 @@ class MPRUN(QMainWindow):
             self.tab_view_dock.expand()
 
         self.cur_view = ''
+
+    def reset_toolbars(self):
+        self.document_toolbar.setIconSize(QSize(32, 32))
+        self.item_toolbar.setIconSize(QSize(16, 16))
+        self.toolbar.setIconSize(QSize(32, 32))
+        self.document_toolbar.adjustSize()
+        self.item_toolbar.adjustSize()
+        self.toolbar.adjustSize()
 
     def show_fullscreen(self):
         if self.isFullScreen():

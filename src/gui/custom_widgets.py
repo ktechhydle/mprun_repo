@@ -25,29 +25,42 @@ class CustomToolbar(QToolBar):
 
         # Determine the amount to change the icon size by
         if event.angleDelta().y() > 0:
-            amount = 2
+            amount = 2  # Scroll up increases size
         else:
-            amount = -2
+            amount = -2  # Scroll down decreases size
 
-        # Calculate the new size
-        new_width = self.iconSize().width() + amount
-        new_height = self.iconSize().height() + amount
+        # Get the current icon size
+        current_size = self.iconSize()
+        new_size = current_size.width() + amount
 
         # Ensure the new size is within the defined limits
-        new_width = max(min_size, min(max_size, new_width))
-        new_height = max(min_size, min(max_size, new_height))
+        new_size = max(min_size, min(max_size, new_size))
 
         # Set the new icon size with the limited values
-        self.setIconSize(QSize(new_width, new_height))
+        new_icon_size = QSize(new_size, new_size)
+        self.setIconSize(new_icon_size)
+
+        # Dynamically adjust toolbar size to prevent unnecessary scrolling
+        self.adjustSize()
 
     def mouseDoubleClickEvent(self, event):
-        self.setIconSize(QSize(32, 32))
+        # Reset to default icon size on double click
+        default_icon_size = QSize(32, 32)
+        self.setIconSize(default_icon_size)
+
+        # Adjust the toolbar size as well
+        self.adjustSize()
 
     def setIconSize(self, iconSize):
         super().setIconSize(iconSize)
 
-        if hasattr(self.parent(), 'drawing_toolbutton'):
-            self.parent().drawing_toolbutton.setIconSize(self.iconSize())
+        # Iterate through all the actions in the toolbar
+        for action in self.actions():
+            # Get the widget corresponding to the action (usually a QToolButton)
+            widget = self.widgetForAction(action)
+
+            if isinstance(widget, QToolButton):
+                widget.setIconSize(iconSize)
 
 
 class HorizontalSeparator(QFrame):

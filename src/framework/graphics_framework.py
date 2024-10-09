@@ -595,6 +595,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
+        self.views()[0].update()
 
         for item in self.items():
             if isinstance(item, CustomTextItem):
@@ -609,6 +610,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
         self.parentWindow.update_transform_ui()
         self.parentWindow.update_appearance_ui()
+        self.views()[0].update()
 
         for item in self.items():
             if isinstance(item, CustomTextItem):
