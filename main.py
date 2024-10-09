@@ -124,6 +124,7 @@ class MPRUN(QMainWindow):
             _data['toolbox_pos'] = self.current_toolbox_pos()
             _data['toolbox_collapsed'] = self.tab_view_dock.isCollapsed()
             _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
+            _data['document_toolbar_hidden'] = self.document_toolbar.isHidden()
             _data['toolbar_hidden'] = self.toolbar.isHidden()
             _data['last_used_tool'] = self.action_group.checkedAction().text()
             _data['grid_size'] = self.canvas.gridSize
@@ -412,12 +413,6 @@ class MPRUN(QMainWindow):
         flip_vertical_action.setShortcut(QKeySequence(''))
         flip_vertical_action.triggered.connect(self.use_flip_vertical)
 
-        mirror_horizontal_action = QAction('Mirror Horizontal', self)
-        mirror_horizontal_action.triggered.connect(lambda: self.use_mirror('h'))
-
-        mirror_vertical_action = QAction('Mirror Vertical', self)
-        mirror_vertical_action.triggered.connect(lambda: self.use_mirror('v'))
-
         raise_layer_action = QAction('Raise Layer', self)
         raise_layer_action.setShortcut(QKeySequence('Up'))
         raise_layer_action.triggered.connect(self.use_raise_layer)
@@ -450,8 +445,6 @@ class MPRUN(QMainWindow):
         self.object_menu.addSeparator()
         self.object_menu.addAction(flip_horizontal_action)
         self.object_menu.addAction(flip_vertical_action)
-        self.object_menu.addAction(mirror_horizontal_action)
-        self.object_menu.addAction(mirror_vertical_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(hide_action)
         self.object_menu.addAction(unhide_action)
@@ -1794,30 +1787,6 @@ class MPRUN(QMainWindow):
             command = TransformCommand(items, old_transforms, new_transforms)
             self.canvas.addCommand(command)
 
-    def use_mirror(self, direction):
-        for item in self.canvas.selectedItems():
-            if not isinstance(item, CanvasItem):
-                self.use_escape()
-                child = item.duplicate()
-                child.setSelected(True)
-                child.setPos(item.pos())
-
-                if direction == 'h':
-                    self.use_flip_horizontal()
-
-                    if self.properties_tab.width_scale_spin.value() < 0:
-                        child.setX(child.pos().x() - child.boundingRect().width())
-                    else:
-                        child.setX(child.pos().x() + child.boundingRect().width())
-
-                elif direction == 'v':
-                    self.use_flip_vertical()
-
-                    if self.properties_tab.height_scale_spin.value() < 0:
-                        child.setY(child.pos().y() - child.boundingRect().height())
-                    else:
-                        child.setY(child.pos().y() + child.boundingRect().height())
-
     def use_change_opacity(self, value):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
         opacity = value / self.properties_tab.opacity_spin.maximum()
@@ -2294,6 +2263,7 @@ class MPRUN(QMainWindow):
 
             self.addDockWidget(Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea,
                                self.tab_view_dock)
+            self.document_toolbar.setHidden(user_data['document_toolbar_hidden'])
             self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
             self.toolbar.setHidden(user_data['toolbar_hidden'])
             self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
