@@ -5,6 +5,7 @@ from src.framework.managers.import_manager import ImportManager
 from src.framework.managers.template_manager import TemplateManager
 from src.gui.app_screens import TipWin, ArrangeWin
 from src.framework.tools import *
+from src.gui.custom_widgets import CustomMenu
 from src.scripts.app_internal import *
 from src.scripts.imports import *
 
@@ -30,8 +31,8 @@ class CustomGraphicsView(QGraphicsView):
         self.setOptimizationFlag(QGraphicsView.DontClipPainter, True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.setContextMenuPolicy(Qt.ActionsContextMenu)
         self.setAttribute(Qt.WA_DeleteOnClose)
+        self.installEventFilter(self)
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
 
@@ -76,6 +77,12 @@ class CustomGraphicsView(QGraphicsView):
         self.zoomStep = 1
         self.zoomRange = [4, 50]  # furthest you can zoom out, closest you can zoom in
         self.isPanning = False
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.ContextMenu:
+            self.contextMenuEvent(event)  # Check if this is triggered instead
+            return True  # This prevents contextMenuEvent from being called
+        return super().eventFilter(obj, event)
 
     def update_pen(self, pen):
         self.pen = pen
@@ -284,6 +291,64 @@ y: {int(self.mapToScene(point).y())}''')
 
         else:
             super().mouseDoubleClickEvent(event)
+
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        # Create a custom context menu
+        menu = CustomMenu(self)
+
+        copy_action = QAction('Copy', self)
+        copy_action.triggered.connect(self.canvas.copy)
+        paste_action = QAction('Paste', self)
+        paste_action.triggered.connect(self.canvas.paste)
+        duplicate_action = QAction('Duplicate', self)
+        duplicate_action.triggered.connect(self.canvas.duplicate)
+        vectorize_action = QAction('Vectorize', self)
+        vectorize_action.triggered.connect(self.canvas.parentWindow.use_vectorize)
+        raise_layer_action = QAction('Raise Layer', self)
+        raise_layer_action.triggered.connect(self.canvas.parentWindow.use_raise_layer)
+        lower_layer_action = QAction('Lower Layer', self)
+        lower_layer_action.triggered.connect(self.canvas.parentWindow.use_lower_layer)
+        bring_to_front_action = QAction('Bring to Front', self)
+        bring_to_front_action.triggered.connect(self.canvas.parentWindow.use_bring_to_front)
+        hide_action = QAction('Hide Selected', self)
+        hide_action.triggered.connect(self.canvas.parentWindow.use_hide_item)
+        unhide_action = QAction('Unhide All', self)
+        unhide_action.triggered.connect(self.canvas.parentWindow.use_unhide_all)
+        select_all_action = QAction('Select All', self)
+        select_all_action.triggered.connect(self.canvas.parentWindow.use_select_all)
+        select_above_action = QAction('Select Items Above', self)
+        select_above_action.triggered.connect(self.canvas.selectAbove)
+        select_below_action = QAction('Select Items Below', self)
+        select_below_action.triggered.connect(self.canvas.selectBelow)
+        select_colliding_action = QAction('Select Colliding Items', self)
+        select_colliding_action.triggered.connect(self.canvas.selectColliding)
+        help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
+        help_action.triggered.connect(self.canvas.parentWindow.show_help)
+
+        menu.addAction(copy_action)
+        menu.addAction(paste_action)
+        menu.addAction(duplicate_action)
+        menu.addSeparator()
+        menu.addAction(raise_layer_action)
+        menu.addAction(lower_layer_action)
+        menu.addSeparator()
+        menu.addAction(hide_action)
+        menu.addAction(unhide_action)
+        menu.addSeparator()
+        menu.addAction(select_all_action)
+        menu.addAction(select_above_action)
+        menu.addAction(select_below_action)
+        menu.addSeparator()
+        menu.addAction(help_action)
+
+        if not self.canvas.selectedItems():
+            for action in menu.actions():
+                if not action.text().startswith((help_action.text(),
+                                                 select_all_action.text(),
+                                                 unhide_action.text())):
+                    action.setDisabled(True)
+
+        menu.exec(event.globalPos())
 
     def wheelEvent(self, event):
         if self.sculpt_btn.isChecked() and not self.isPanning:

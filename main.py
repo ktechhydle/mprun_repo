@@ -597,13 +597,14 @@ class MPRUN(QMainWindow):
         # Toolbar
         self.toolbar = CustomToolbar('Toolset')
         self.toolbar.setObjectName('customToolBar')
-        self.toolbar.move(11, 11)
+        self.toolbar.setWindowFlag(Qt.WindowType.Tool)
         self.toolbar.setIconSize(QSize(32, 32))
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.toolbar.setOrientation(Qt.Orientation.Vertical)
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
         self.toolbar.setFloatable(True)
-        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.toolbar.iconSizeChanged.connect(self.adjust_item_toolbar)
+        self.toolbar.move(11, 11)
 
         # Document toolbar
         self.document_toolbar = CustomToolbar('Document')
@@ -615,11 +616,12 @@ class MPRUN(QMainWindow):
         # Item toolbar
         self.item_toolbar = CustomToolbar('Control')
         self.item_toolbar.setObjectName('customToolBar')
+        self.item_toolbar.setWindowFlag(Qt.WindowType.Tool)
         self.item_toolbar.setIconSize(QSize(16, 16))
-        self.item_toolbar.move(70, 7)
         self.item_toolbar.setOrientation(Qt.Orientation.Horizontal)
         self.item_toolbar.setMovable(False)
         self.item_toolbar.visibilityChanged.connect(self.control_toolbar_visibility_changed)
+        self.item_toolbar.move(70, 7)
 
     def create_panels(self):
         # ----action toolbar widgets----#
@@ -1107,63 +1109,6 @@ class MPRUN(QMainWindow):
         self.properties_tab.updateItemFill()
         self.characters_tab.updateItemFont()
 
-        # Context menu for view
-        copy_action = QAction('Copy', self)
-        copy_action.triggered.connect(self.canvas.copy)
-        paste_action = QAction('Paste', self)
-        paste_action.triggered.connect(self.canvas.paste)
-        duplicate_action = QAction('Duplicate', self)
-        duplicate_action.triggered.connect(self.canvas.duplicate)
-        vectorize_action = QAction('Vectorize', self)
-        vectorize_action.triggered.connect(self.use_vectorize)
-        raise_layer_action = QAction('Raise Layer', self)
-        raise_layer_action.triggered.connect(self.use_raise_layer)
-        lower_layer_action = QAction('Lower Layer', self)
-        lower_layer_action.triggered.connect(self.use_lower_layer)
-        bring_to_front_action = QAction('Bring to Front', self)
-        bring_to_front_action.triggered.connect(self.use_bring_to_front)
-        hide_action = QAction('Hide Selected', self)
-        hide_action.triggered.connect(self.use_hide_item)
-        unhide_action = QAction('Unhide All', self)
-        unhide_action.triggered.connect(self.use_unhide_all)
-        select_all_action = QAction('Select All', self)
-        select_all_action.triggered.connect(self.use_select_all)
-        select_above_action = QAction('Select Items Above', self)
-        select_above_action.triggered.connect(self.canvas.selectAbove)
-        select_below_action = QAction('Select Items Below', self)
-        select_below_action.triggered.connect(self.canvas.selectBelow)
-        select_colliding_action = QAction('Select Colliding Items', self)
-        select_colliding_action.triggered.connect(self.canvas.selectColliding)
-        help_action = QAction('&Help', self)
-        help_action.triggered.connect(self.show_help)
-        sep1 = QAction(self)
-        sep1.setSeparator(True)
-        sep2 = QAction(self)
-        sep2.setSeparator(True)
-        sep3 = QAction(self)
-        sep3.setSeparator(True)
-        sep4 = QAction(self)
-        sep4.setSeparator(True)
-        sep5 = QAction(self)
-        sep5.setSeparator(True)
-
-        self.canvas_view.addAction(copy_action)
-        self.canvas_view.addAction(paste_action)
-        self.canvas_view.addAction(duplicate_action)
-        self.canvas_view.addAction(sep1)
-        self.canvas_view.addAction(raise_layer_action)
-        self.canvas_view.addAction(lower_layer_action)
-        self.canvas_view.addAction(sep2)
-        self.canvas_view.addAction(hide_action)
-        self.canvas_view.addAction(unhide_action)
-        self.canvas_view.addAction(sep3)
-        self.canvas_view.addAction(select_all_action)
-        self.canvas_view.addAction(select_above_action)
-        self.canvas_view.addAction(select_below_action)
-        self.canvas_view.addAction(select_colliding_action)
-        self.canvas_view.addAction(sep4)
-        self.canvas_view.addAction(help_action)
-
     def create_default_objects(self):
         font = QFont()
         font.setFamily(self.characters_tab.font_choice_combo.currentText())
@@ -1588,13 +1533,6 @@ class MPRUN(QMainWindow):
                 # Handle the exception (e.g., logging)
                 print(f'Exception: {e}')
 
-    def use_change_view(self):
-        value = self.view_zoom_spin.value() / 100
-
-        self.canvas_view.resetTransform()
-        self.canvas_view.scale(value, value)
-        self.canvas_view.rotate(self.view_rotate_spin.value())
-
     def use_raise_layer(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
         if not items:
@@ -1609,7 +1547,6 @@ class MPRUN(QMainWindow):
     def use_lower_layer(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem) and item.zValue() > 0]
         if not items:
-            QMessageBox.critical(self, 'Lower Layer', 'You cannot lower this Element any lower.')
             return
 
         old_z_values = [item.zValue() for item in items]
@@ -2438,6 +2375,10 @@ class MPRUN(QMainWindow):
         self.cur_view = ''
 
     def reset_toolbars(self):
+        # Revert parents
+        self.item_toolbar.setParent(self.canvas_view)
+        self.toolbar.setParent(self.canvas_view)
+
         self.document_toolbar.setHidden(False)
         self.item_toolbar.setHidden(False)
         self.toolbar.setHidden(False)
@@ -2448,6 +2389,10 @@ class MPRUN(QMainWindow):
         self.item_toolbar.adjustSize()
         self.toolbar.adjustSize()
         self.adjust_item_toolbar()
+
+        # Default pos
+        self.toolbar.move(11, 11)
+        self.item_toolbar.move(70, 7)
 
     def adjust_item_toolbar(self):
         self.item_toolbar.move(self.toolbar.x() + self.toolbar.width(), self.item_toolbar.y())
