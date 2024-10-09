@@ -109,6 +109,7 @@ class CustomColorDisplayButton(QPushButton):
             painter.setRenderHints(QPainter.HighQualityAntialiasing)
             painter.begin(self)
             painter.setBrush(QBrush(QColor('white')))
+            painter.drawRect(new_rect)
             painter.setPen(QPen(QColor('red'), 3, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
             painter.drawLine(self.rect().bottomLeft() + QPointF(2, -1), self.rect().topRight() + QPointF(-1, 2))
             painter.end()
