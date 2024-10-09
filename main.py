@@ -1110,14 +1110,6 @@ class MPRUN(QMainWindow):
         self.characters_tab.updateItemFont()
 
     def create_default_objects(self):
-        font = QFont()
-        font.setFamily(self.characters_tab.font_choice_combo.currentText())
-        font.setPixelSize(self.characters_tab.font_size_spin.value())
-        font.setLetterSpacing(QFont.AbsoluteSpacing, self.characters_tab.font_letter_spacing_spin.value())
-        font.setBold(True if self.characters_tab.bold_btn.isChecked() else False)
-        font.setItalic(True if self.characters_tab.italic_btn.isChecked() else False)
-        font.setUnderline(True if self.characters_tab.underline_btn.isChecked() else False)
-
         # Drawing paper
         self.paper = CanvasItem(QRectF(0, 0, 1000, 700), 'Canvas 1')
         self.canvas.addItem(self.paper)
@@ -1126,7 +1118,7 @@ class MPRUN(QMainWindow):
         self.paper_text = CustomTextItem(default_text)
         self.paper_text.setPos(2, 2)
         self.paper_text.setDefaultTextColor(QColor('black'))
-        self.paper_text.setFont(font)
+        self.paper_text.setFont(self.characters_tab.getFont())
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(0)

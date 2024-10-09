@@ -404,6 +404,7 @@ class CharactersPanel(QWidget):
     def createUI(self):
         # _____ Characters tab widgets _____
         self.font_choice_combo = QFontComboBox(self)
+        self.font_choice_combo.setCurrentText('Arial')
         self.font_choice_combo.setToolTip('Change the font style')
         self.font_size_spin = QSpinBox(self)
         self.font_size_spin.setValue(20)
@@ -490,13 +491,7 @@ class CharactersPanel(QWidget):
 
     def updateItemFont(self):
         # Update font
-        font = QFont()
-        font.setFamily(self.font_choice_combo.currentText())
-        font.setPixelSize(self.font_size_spin.value())
-        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
-        font.setBold(True if self.bold_btn.isChecked() else False)
-        font.setItalic(True if self.italic_btn.isChecked() else False)
-        font.setUnderline(True if self.underline_btn.isChecked() else False)
+        font = self.getFont()
 
         new_color = QColor(self.parent.font_color.get())
 
@@ -525,6 +520,16 @@ class CharactersPanel(QWidget):
                     print(f'Exception: {e}')
 
         self.parent.canvas_view.update()
+
+    def getFont(self):
+        font = QFont()
+        font.setFamily(self.font_choice_combo.currentText())
+        font.setPixelSize(self.font_size_spin.value())
+        font.setLetterSpacing(QFont.AbsoluteSpacing, self.font_letter_spacing_spin.value())
+        font.setBold(True if self.bold_btn.isChecked() else False)
+        font.setItalic(True if self.italic_btn.isChecked() else False)
+        font.setUnderline(True if self.underline_btn.isChecked() else False)
+        return font
 
 
 class ImageTracingPanel(QWidget):
