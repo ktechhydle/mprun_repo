@@ -21,7 +21,7 @@ class CustomToolbar(QToolBar):
     def wheelEvent(self, event):
         # Define the minimum and maximum icon sizes
         min_size = 16
-        max_size = 128
+        max_size = 60
 
         # Determine the amount to change the icon size by
         if event.angleDelta().y() > 0:

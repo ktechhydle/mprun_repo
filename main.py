@@ -610,6 +610,7 @@ class MPRUN(QMainWindow):
         self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
         self.toolbar.setFloatable(True)
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.toolbar.iconSizeChanged.connect(self.adjust_item_toolbar)
 
         # Document toolbar
         self.document_toolbar = CustomToolbar('Document')
@@ -2328,6 +2329,10 @@ class MPRUN(QMainWindow):
             self.document_toolbar.setIconSize(QSize(user_data['document_toolbar_size'], user_data['document_toolbar_size']))
             self.item_toolbar.setIconSize(QSize(user_data['item_toolbar_size'], user_data['item_toolbar_size']))
             self.toolbar.setIconSize(QSize(user_data['toolbar_size'], user_data['toolbar_size']))
+            self.document_toolbar.adjustSize()
+            self.item_toolbar.adjustSize()
+            self.toolbar.adjustSize()
+            self.adjust_item_toolbar()
 
         self.check_for_updates(show_message=True)
 
@@ -2453,10 +2458,7 @@ class MPRUN(QMainWindow):
     def unhide(self) -> None:
         self.tab_view_dock.setHidden(False)
         self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
-        self.item_toolbar.setHidden(False)
-        self.document_toolbar.setHidden(False)
-        self.document_toolbar.setIconSize(QSize(32, 32))
-        self.toolbar.setHidden(False)
+        self.reset_toolbars()
 
         self.menuBar().setStyleSheet('font-size: 16px;')
 
@@ -2466,12 +2468,19 @@ class MPRUN(QMainWindow):
         self.cur_view = ''
 
     def reset_toolbars(self):
+        self.document_toolbar.setHidden(False)
+        self.item_toolbar.setHidden(False)
+        self.toolbar.setHidden(False)
         self.document_toolbar.setIconSize(QSize(32, 32))
         self.item_toolbar.setIconSize(QSize(16, 16))
         self.toolbar.setIconSize(QSize(32, 32))
         self.document_toolbar.adjustSize()
         self.item_toolbar.adjustSize()
         self.toolbar.adjustSize()
+        self.adjust_item_toolbar()
+
+    def adjust_item_toolbar(self):
+        self.item_toolbar.move(self.toolbar.x() + self.toolbar.width(), self.item_toolbar.y())
 
     def show_fullscreen(self):
         if self.isFullScreen():
