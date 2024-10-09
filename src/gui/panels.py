@@ -420,7 +420,7 @@ class CharactersPanel(QWidget):
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
         self.font_color_btn = CustomColorDisplayButton(self)
-        self.font_color_btn.setFixedWidth(105)
+        self.font_color_btn.setFixedWidth(81)
         self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.setButtonColor(self.parent.font_color.get())
         self.font_color_btn.clicked.connect(self.fontColorChooser)

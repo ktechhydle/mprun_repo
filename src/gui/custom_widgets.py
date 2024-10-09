@@ -131,6 +131,7 @@ class CustomColorPicker(QColorDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setOptions(self.options() | QColorDialog.DontUseNativeDialog)
+        self.setObjectName('tipWindow')
 
         for children in self.findChildren(QWidget):
             classname = children.metaObject().className()
@@ -315,6 +316,7 @@ class StrokeLabel(QLabel):
         self.join_style_options = None
 
         self.menu = CustomMenu(self)
+        self.menu.setObjectName('tipWindow')
 
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine,
                                      'Dotted Stroke': Qt.DotLine,
@@ -372,7 +374,7 @@ class StrokeLabel(QLabel):
         self.join_style_combo.setItemData(2, QIcon('ui/UI Icons/Combobox Images/miter_join.png'), Qt.DecorationRole)
 
         widget = QWidget()
-        widget.setObjectName('containerWidget')
+        widget.setObjectName('tipWindow')
         widget.setLayout(QVBoxLayout())
         widget.layout().addWidget(self.stroke_style_combo)
         widget.layout().addWidget(self.stroke_pencap_combo)
@@ -470,7 +472,7 @@ class CustomDockWidget(QDockWidget):
 
         self.title_bar = QWidget(self)
         self.title_bar.setObjectName('dockWidgetTitleBar')
-        self.title_bar.setFixedHeight(20)
+        self.title_bar.setFixedHeight(25)
         self.title_bar.setLayout(QHBoxLayout())
         self.title_bar.layout().addStretch()
         self.title_bar.layout().addWidget(self.minimize_btn)
