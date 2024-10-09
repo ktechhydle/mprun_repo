@@ -1070,18 +1070,16 @@ class PythonHighlighter(QSyntaxHighlighter):
                 self.setFormat(start, end - start, fmt)
 
 
-class TipWin(QDialog):
+class TipWin(CustomMenu):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
         self.setObjectName('tipWindow')
         self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
-        self.setLayout(QHBoxLayout())
-        self.setStyleSheet('''
-        QDialog {
-            border: 2px solid #424242;
-        }
-        ''')
 
+        self.createUI(label, tip)
+        self.show()
+
+    def createUI(self, label, tip):
         img = QLabel('')
         img.setPixmap(QPixmap('ui/UI Icons/Major/info_circle.svg').scaled(35, 35,
                                                                           Qt.KeepAspectRatio,
@@ -1103,11 +1101,36 @@ class TipWin(QDialog):
         close_btn.setFixedWidth(20)
         close_btn.clicked.connect(self.delete)
 
-        self.layout().addWidget(img)
-        self.layout().addWidget(widget)
-        self.layout().addWidget(close_btn)
+        central_widget = QWidget()
+        central_widget.setLayout(QHBoxLayout())
+        central_widget.layout().addWidget(img)
+        central_widget.layout().addWidget(widget)
+        central_widget.layout().addWidget(close_btn)
 
-        self.show()
+        action = QWidgetAction(self)
+        action.setDefaultWidget(central_widget)
+        self.addAction(action)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.ContextMenu:
+            self.contextMenuEvent(event)  # Check if this is triggered instead
+            return True  # This prevents contextMenuEvent from being called
+        return super().eventFilter(obj, event)
+
+    def contextMenuEvent(self, event):
+        # Create a custom context menu
+        menu = CustomMenu(self)
+
+        close_action = QAction('Close', self)
+        close_action.triggered.connect(self.delete)
+        help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
+        help_action.triggered.connect(self.parent().show_help)
+
+        menu.addAction(close_action)
+        menu.addSeparator()
+        menu.addAction(help_action)
+
+        menu.exec(event.globalPos())
 
     def delete(self):
         self.close()
