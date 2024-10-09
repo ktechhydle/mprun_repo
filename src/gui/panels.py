@@ -409,7 +409,7 @@ class CharactersPanel(QWidget):
         self.font_size_spin.setValue(20)
         self.font_size_spin.setMaximum(1000)
         self.font_size_spin.setMinimum(1)
-        self.font_size_spin.setFixedWidth(105)
+        self.font_size_spin.setFixedWidth(90)
         self.font_size_spin.setSuffix(' pt')
         self.font_size_spin.setToolTip('Change the font size')
         self.font_letter_spacing_spin = QSpinBox(self)
@@ -420,7 +420,7 @@ class CharactersPanel(QWidget):
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
         self.font_color_btn = CustomColorDisplayButton(self)
-        self.font_color_btn.setFixedWidth(90)
+        self.font_color_btn.setFixedWidth(105)
         self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.setButtonColor(self.parent.font_color.get())
         self.font_color_btn.clicked.connect(self.fontColorChooser)
@@ -447,12 +447,15 @@ class CharactersPanel(QWidget):
         font_size_and_spacing_hlayout.layout.addWidget(
             CustomIconWidget('', 'ui/UI Icons/Major/font_spacing_icon.svg', 20, 20))
         font_size_and_spacing_hlayout.layout.addWidget(self.font_letter_spacing_spin)
+        font_size_and_spacing_hlayout.layout.addStretch()
         font_size_and_spacing_hlayout.layout.setContentsMargins(0, 0, 0, 0)
+
         font_style_hlayout = ToolbarHorizontalLayout()
         font_style_hlayout.layout.addWidget(self.bold_btn)
         font_style_hlayout.layout.addWidget(self.italic_btn)
         font_style_hlayout.layout.addWidget(self.underline_btn)
         font_style_hlayout.layout.setContentsMargins(0, 0, 0, 0)
+
         font_color_hlayout = ToolbarHorizontalLayout()
         font_color_hlayout.layout.setContentsMargins(0, 0, 0, 0)
         font_color_hlayout.layout.addStretch()
