@@ -54,9 +54,6 @@ class CustomGraphicsView(QGraphicsView):
         # Items
         self.canvas = canvas
         self.temp_path_item = None
-        self.pen = None
-        self.stroke_fill = None
-        self.font = None
         self.layer_height = None
         self.path = None
         self.last_point = None
@@ -83,16 +80,6 @@ class CustomGraphicsView(QGraphicsView):
             self.contextMenuEvent(event)  # Check if this is triggered instead
             return True  # This prevents contextMenuEvent from being called
         return super().eventFilter(obj, event)
-
-    def update_pen(self, pen):
-        self.pen = pen
-
-    def update_brush(self, brush):
-        self.stroke_fill = brush
-
-    def update_font(self, font, color):
-        self.font = font
-        self.font_color = color
 
     def disable_item_flags(self):
         for item in self.canvas.items():
@@ -479,6 +466,7 @@ y: {int(self.mapToScene(point).y())}''')
 
             if i and isinstance(i, CustomTextItem):
                 i.setEditing()
+                return
 
             else:
                 for item in self.canvas.items():
@@ -490,8 +478,8 @@ y: {int(self.mapToScene(point).y())}''')
                 pos = self.mapToScene(event.pos())
 
                 self.text = CustomTextItem('Lorem Ipsum')
-                self.text.setFont(self.font)
-                self.text.setDefaultTextColor(self.font_color)
+                self.text.setFont(self.parent().characters_tab.getFont())
+                self.text.setDefaultTextColor(self.parent().characters_tab.getFontColor())
 
                 add_command = AddItemCommand(self.canvas, self.text)
                 self.canvas.addCommand(add_command)
