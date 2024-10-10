@@ -793,7 +793,13 @@ class CustomGraphicsScene(QGraphicsScene):
         self.copy_stack.clear()
 
         for item in self.selectedItems():
-            self.copy_stack.append(item.copy())
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                continue
+
+            else:
+                self.copy_stack.append(item.copy())
+
+        self.views()[0].update()
 
     def cut(self):
         self.copy_stack.clear()
@@ -801,11 +807,15 @@ class CustomGraphicsScene(QGraphicsScene):
         cut_items = []
 
         for item in self.selectedItems():
-            self.copy_stack.append(item.copy())
-            cut_items.append(item)
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                continue
+
+            else:
+                self.copy_stack.append(item.copy())
+                cut_items.append(item)
 
         self.addCommand(RemoveItemCommand(self, cut_items))
-
+        self.views()[0].update()
 
     def paste(self):
         new_items = []
@@ -823,6 +833,8 @@ class CustomGraphicsScene(QGraphicsScene):
                 if isinstance(item, CanvasItem):
                     self.parentWindow.use_add_canvas()
 
+        self.views()[0].update()
+
     def duplicate(self):
         new_items = []
 
@@ -835,6 +847,8 @@ class CustomGraphicsScene(QGraphicsScene):
             for item in new_items:
                 if isinstance(item, CanvasItem):
                     self.parentWindow.use_add_canvas()
+
+        self.views()[0].update()
 
     def hasChanges(self):
         return self.modified

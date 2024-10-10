@@ -828,6 +828,7 @@ class LeaderLineItem(QGraphicsPathItem):
 
         item.text_element.setFont(self.text_element.font())
         item.text_element.setDefaultTextColor(self.text_element.defaultTextColor())
+        item.text_element.setTransformOriginPoint(self.text_element.transformOriginPoint())
         item.text_element.setTransform(self.text_element.transform())
         item.text_element.setRotation(self.text_element.rotation())
         item.text_element.setPos(self.text_element.pos())
