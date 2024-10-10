@@ -17,6 +17,7 @@ class CanvasItemSelector(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle("Export Canvas")
         self.setWindowModality(Qt.ApplicationModal)
+        self.setObjectName('tipWindow')
         self.setFixedWidth(750)
         self.setFixedHeight(500)
 
@@ -150,6 +151,7 @@ class AllCanvasExporter(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle("Export All")
         self.setWindowModality(Qt.ApplicationModal)
+        self.setObjectName('tipWindow')
         self.setFixedWidth(750)
         self.setFixedHeight(500)
 
@@ -340,6 +342,7 @@ class ArrangeWin(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle("Arrange Canvases")
         self.setWindowModality(Qt.ApplicationModal)
+        self.setObjectName('tipWindow')
         self.setFixedWidth(325)
         self.setFixedHeight(250)
 
@@ -477,8 +480,8 @@ class AboutWin(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('About MPRUN')
         self.setWindowModality(Qt.ApplicationModal)
+        self.setObjectName('tipWindow')
         self.setFixedWidth(500)
-        self.setStyleSheet('border-radius: 5px;')
 
         self.createUI()
 
@@ -574,13 +577,14 @@ class VersionWin(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('MPRUN Version')
         self.setWindowModality(Qt.ApplicationModal)
+        self.setObjectName('tipWindow')
         self.setFixedSize(500, 250)
 
         self.version = version
 
-        self.create_ui()
+        self.createUI()
 
-    def create_ui(self):
+    def createUI(self):
         # Create main layout
         layout = QVBoxLayout()
 
@@ -620,6 +624,7 @@ class DisclaimerWin(QMessageBox):
         super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('DISCLAIMER')
+        self.setObjectName('tipWindow')
         self.setIcon(QMessageBox.Warning)
         self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         self.setDefaultButton(QMessageBox.Yes)
@@ -639,6 +644,7 @@ class SettingsWin(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('Settings')
         self.setWindowModality(Qt.ApplicationModal)
+        self.setObjectName('tipWindow')
         self.setFixedWidth(700)
 
         self.p = parent
@@ -850,7 +856,7 @@ class SettingsWin(QDialog):
     def restore(self):
         self.undo_limit_spin.setValue(200)
         self.show_tip_of_day_checkbtn.setChecked(True)
-        self.use_gpu_checkbtn.setChecked(True)
+        self.use_gpu_checkbtn.setChecked(False)
         self.recent_file_limit_spin.setValue(5)
         self.gpu_samples_spin.setValue(4)
         for k, v in self.colors.items():
@@ -868,6 +874,7 @@ class ScriptingWin(QDialog):
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('Python Scripting Interface')
         self.setWindowFlag(Qt.Tool)
+        self.setObjectName('tipWindow')
         self.resize(600, 600)
 
         self.mprun = parent
@@ -1073,8 +1080,8 @@ class PythonHighlighter(QSyntaxHighlighter):
 class TipWin(CustomMenu):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
-        self.setObjectName('tipWindow')
         self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
+        self.setObjectName('tipWindow')
 
         self.createUI(label, tip)
         self.show()

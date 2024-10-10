@@ -612,7 +612,7 @@ class MPRUN(QMainWindow):
         self.item_toolbar.setOrientation(Qt.Orientation.Horizontal)
         self.item_toolbar.setMovable(False)
         self.item_toolbar.visibilityChanged.connect(self.control_toolbar_visibility_changed)
-        self.item_toolbar.move(70, 7)
+        self.item_toolbar.move(70, 6)
 
     def create_panels(self):
         # ----action toolbar widgets----#
@@ -2212,6 +2212,8 @@ class MPRUN(QMainWindow):
             self.item_toolbar.adjustSize()
             self.toolbar.adjustSize()
             self.adjust_item_toolbar()
+            self.item_toolbar.raise_()
+            self.toolbar.raise_()
 
             # Colors
             self.properties_tab.pen_color.set(user_data['default_stroke'])
@@ -2374,7 +2376,7 @@ class MPRUN(QMainWindow):
 
         # Default pos
         self.toolbar.move(11, 11)
-        self.item_toolbar.move(70, 7)
+        self.item_toolbar.move(70, 6)
 
     def adjust_item_toolbar(self):
         self.item_toolbar.move(self.toolbar.x() + self.toolbar.width(), self.item_toolbar.y())
