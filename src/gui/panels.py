@@ -531,6 +531,9 @@ class CharactersPanel(QWidget):
         font.setUnderline(True if self.underline_btn.isChecked() else False)
         return font
 
+    def getFontColor(self):
+        return QColor(self.parent.font_color.get())
+
 
 class ImageTracingPanel(QWidget):
     def __init__(self, canvas, parent):
@@ -610,6 +613,7 @@ class CanvasEditorPanel(QWidget):
 
         self.canvas = canvas
         self.layout = QVBoxLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
 
         self.create_ui()
@@ -649,27 +653,28 @@ class CanvasEditorPanel(QWidget):
         for canvas, key in self.canvas_presets.items():
             self.canvas_preset_dropdown.addItem(canvas, key)
         self.canvas_preset_dropdown.setCurrentText('Custom')
-        self.canvas_preset_dropdown.setFixedWidth(205)
         self.canvas_preset_dropdown.currentIndexChanged.connect(self.update_canvas_preset)
 
         self.canvas_name_entry = QLineEdit(self)
-        self.canvas_name_entry.setFixedWidth(205)
+        self.canvas_name_entry.setFixedWidth(200)
         self.canvas_name_entry.setPlaceholderText('Canvas Name')
         self.canvas_name_entry.setToolTip('Change the name of the canvas')
         self.canvas_name_entry.editingFinished.connect(self.update_canvas_name)
 
         widget1 = ToolbarHorizontalLayout()
-        widget1.layout.addSpacing(25)
+        widget1.layout.addStretch()
         widget1.layout.addWidget(canvas_x_size_label)
         widget1.layout.addWidget(self.canvas_x_entry)
         widget1.layout.addWidget(canvas_y_size_label)
         widget1.layout.addWidget(self.canvas_y_entry)
 
         widget2 = ToolbarHorizontalLayout()
+        widget2.layout.addStretch()
         widget2.layout.addWidget(canvas_preset_label)
         widget2.layout.addWidget(self.canvas_preset_dropdown)
 
         widget3 = ToolbarHorizontalLayout()
+        widget3.layout.addStretch()
         widget3.layout.addWidget(canvas_name_label)
         widget3.layout.addWidget(self.canvas_name_entry)
 

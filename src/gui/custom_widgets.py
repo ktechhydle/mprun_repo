@@ -495,7 +495,7 @@ class CustomDockWidget(QDockWidget):
 
         icons_widget = QWidget(self)
         icons_layout = QVBoxLayout()
-        icons_layout.setContentsMargins(0, 0, 0, 0)
+        icons_layout.setContentsMargins(5, 5, 5, 5)
         icons_widget.setLayout(icons_layout)
 
         for i in range(self.toolbox.count()):

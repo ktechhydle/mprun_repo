@@ -220,7 +220,8 @@ class LineAndLabelTool:
             self.pathg_item.setZValue(2)
             self.pathg_item.setPen(self.view.pen)
             self.pathg_item.setBrush(self.view.stroke_fill)
-            self.pathg_item.text_element.setFont(self.view.font)
+            self.pathg_item.text_element.setFont(self.canvas.parentWindow.characters_tab.getFont())
+            self.pathg_item.text_element.setDefaultTextColor(self.canvas.parentWindow.characters_tab.getFontColor())
             self.pathg_item.text_element.setPos(
                 self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
 
