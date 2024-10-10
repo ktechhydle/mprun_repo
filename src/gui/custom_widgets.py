@@ -519,21 +519,16 @@ class CustomDockWidget(QDockWidget):
 
         if 0 < len(self.panels) == len(self.indexes):
             for i in range(len(self.indexes)):
-                # DO NOT REMOVE THIS, IT PREVENTS STACK OVERFLOW
-                time.sleep(0.01)
+                QTimer.singleShot(500 * i,
+                                  lambda idx=i: self.toolbox.setWidgetAtIndex(self.indexes[idx], self.panels[idx],
+                                                                              self.panel_names[idx]))
                 print(f"Setting widget at index: {self.indexes[i]} with panel: {self.panels[i]}")
-                self.toolbox.setWidgetAtIndex(self.indexes[i], self.panels[i], self.panel_names[i])
 
         if hasattr(self, 'popup'):
             self.popup.close()
 
         self.setWidget(self.toolbox)
-        self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
-        self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
-        self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
-        self.toolbox.setItemIcon(3, QIcon('ui/UI Icons/Major/image_trace_panel.svg'))
-        self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
-        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))
+        QTimer.singleShot(len(self.indexes) * 500, lambda: self.toolbox.createIcons())
 
     def showToolboxPanel(self, index):
         panel = self.toolbox.widget(index)
@@ -550,6 +545,7 @@ class CustomDockWidget(QDockWidget):
         if hasattr(self, 'popup'):
             self.popup.close()
         self.popup = CustomMenu(self)
+        self.popup.setObjectName('tipWindow')
         self.popup.resize(panel.width(), panel.height())
         self.popup.setWindowFlag(Qt.WindowType.Tool)
         action = QWidgetAction(self.popup)
@@ -564,6 +560,12 @@ class CustomDockWidget(QDockWidget):
 
     def isCollapsed(self):
         return self.is_collapsed
+
+    def closeEvent(self, event):
+        if hasattr(self, 'popup'):
+            self.popup.close()
+
+        event.accept()
 
 
 class CustomToolbox(QToolBox):
@@ -610,6 +612,14 @@ class CustomToolbox(QToolBox):
 
         # Create a rectangle for the title area of the current item
         return QRect(0, 0, self.width(), title_height)
+
+    def createIcons(self):
+        self.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
+        self.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
+        self.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
+        self.setItemIcon(3, QIcon('ui/UI Icons/Major/image_trace_panel.svg'))
+        self.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
+        self.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))
 
 
 class CustomListWidget(QListWidget):
