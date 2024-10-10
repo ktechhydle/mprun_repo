@@ -40,15 +40,6 @@ class MPRUN(QMainWindow):
         # Settings
         self.cur_view = ''
 
-        # Colors
-        for data in self.read_settings():
-            self.outline_color = ItemStack()
-            self.outline_color.set(data['default_stroke'])
-            self.fill_color = ItemStack()
-            self.fill_color.set(data['default_fill'])
-            self.font_color = ItemStack()
-            self.font_color.set(data['default_font'])
-
         # Undo, redo
         self.undo_stack = QUndoStack()
 
@@ -1103,12 +1094,6 @@ class MPRUN(QMainWindow):
         self.toolbar.setParent(self.canvas_view)
         self.item_toolbar.setParent(self.canvas_view)
 
-        # Update default fonts, colors, etc.
-        self.update('ui_update')
-        self.properties_tab.updateItemPen()
-        self.properties_tab.updateItemFill()
-        self.characters_tab.updateItemFont()
-
     def create_default_objects(self):
         # Drawing paper
         self.paper = CanvasItem(QRectF(0, 0, 1000, 700), 'Canvas 1')
@@ -1117,7 +1102,7 @@ class MPRUN(QMainWindow):
         # Text on paper
         self.paper_text = CustomTextItem(default_text)
         self.paper_text.setPos(2, 2)
-        self.paper_text.setDefaultTextColor(QColor('black'))
+        self.paper_text.setDefaultTextColor(self.characters_tab.getFontColor())
         self.paper_text.setFont(self.characters_tab.getFont())
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
@@ -1244,8 +1229,8 @@ class MPRUN(QMainWindow):
                 if isinstance(item, (CustomPathItem, LeaderLineItem)):
                     pen, brush = item.pen(), item.brush()
 
-                    set_color(self.properties_tab.stroke_color_btn, pen.color(), self.outline_color)
-                    set_color(self.properties_tab.fill_color_btn, brush.color(), self.fill_color)
+                    set_color(self.properties_tab.stroke_color_btn, pen.color(), self.properties_tab.pen_color)
+                    set_color(self.properties_tab.fill_color_btn, brush.color(), self.properties_tab.brush_color)
 
                     # Set Values for pen-related attributes
                     self.properties_tab.stroke_size_spin.setValue(pen.width())
@@ -1263,9 +1248,6 @@ class MPRUN(QMainWindow):
                                  pen.capStyle())
                     update_combo(self.properties_tab.join_style_combo, self.properties_tab.join_style_options,
                                  pen.joinStyle())
-
-                    self.canvas_view.update_pen(pen)
-                    self.canvas_view.update_brush(brush)
 
                 elif isinstance(item, CanvasItem):
                     # Canvas item specific updates
@@ -1286,7 +1268,7 @@ class MPRUN(QMainWindow):
                     # Text item specific updates
                     font, color = item.font(), item.defaultTextColor()
 
-                    set_color(self.characters_tab.font_color_btn, color, self.font_color)
+                    set_color(self.characters_tab.font_color_btn, color, self.characters_tab.font_color)
 
                     self.characters_tab.font_choice_combo.setCurrentText(font.family())
                     self.characters_tab.font_size_spin.setValue(font.pixelSize())
@@ -1294,8 +1276,6 @@ class MPRUN(QMainWindow):
                     self.characters_tab.bold_btn.setChecked(font.bold())
                     self.characters_tab.italic_btn.setChecked(font.italic())
                     self.characters_tab.underline_btn.setChecked(font.underline())
-
-                    self.canvas_view.update_font(font, color)
 
         except Exception as e:
             print(e)
@@ -2233,6 +2213,16 @@ class MPRUN(QMainWindow):
             self.toolbar.adjustSize()
             self.adjust_item_toolbar()
 
+            # Colors
+            self.properties_tab.pen_color.set(user_data['default_stroke'])
+            self.properties_tab.brush_color.set(user_data['default_fill'])
+            self.characters_tab.font_color.set(user_data['default_font'])
+            self.properties_tab.updateItemPen()
+            self.properties_tab.updateItemFill()
+            self.characters_tab.updateItemFont()
+
+        # Final UI update
+        self.update('ui_update')
         self.check_for_updates(show_message=True)
 
     def open_recent_file_data(self):

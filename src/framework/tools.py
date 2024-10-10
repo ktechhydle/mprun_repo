@@ -47,8 +47,8 @@ class PathDrawerTool:
 
             # Load temporary path as QGraphicsItem to view it while drawing
             self.temp_path_item = CustomPathItem(self.path)
-            self.temp_path_item.setPen(self.view.pen)
-            self.temp_path_item.setBrush(self.view.stroke_fill)
+            self.temp_path_item.setPen(self.canvas.parentWindow.properties_tab.getPen())
+            self.temp_path_item.setBrush(self.canvas.parentWindow.properties_tab.getBrush())
             self.temp_path_item.setZValue(1)
             self.canvas.addItem(self.temp_path_item)
 
@@ -68,9 +68,9 @@ class PathDrawerTool:
 
             # Load main path as QGraphicsItem
             path_item = CustomPathItem(self.path)
-            path_item.setPen(self.view.pen)
+            path_item.setPen(self.canvas.parentWindow.properties_tab.getPen())
+            path_item.setBrush(self.canvas.parentWindow.properties_tab.getBrush())
             path_item.setZValue(1)
-            path_item.setBrush(self.view.stroke_fill)
             path_item.setFlag(QGraphicsItem.ItemIsSelectable)
             path_item.setFlag(QGraphicsItem.ItemIsMovable)
             path_item.setToolTip('Path')
@@ -134,8 +134,8 @@ class PenDrawerTool:
                 self.path.setFillRule(Qt.WindingFill)
                 self.temp_path_item = CustomPathItem(self.path)
                 self.temp_path_item.path().setFillRule(Qt.WindingFill)
-                self.temp_path_item.setPen(self.view.pen)
-                self.temp_path_item.setBrush(self.view.stroke_fill)
+                self.temp_path_item.setPen(self.canvas.parentWindow.properties_tab.getPen())
+                self.temp_path_item.setBrush(self.canvas.parentWindow.properties_tab.getBrush())
                 self.temp_path_item.setZValue(1)
                 self.canvas.addItem(self.temp_path_item)
 
@@ -170,9 +170,9 @@ class PenDrawerTool:
                     # Load main path as QGraphicsItem
                     path_item = CustomPathItem(self.path)
                     path_item.path().setFillRule(Qt.WindingFill)
-                    path_item.setPen(self.view.pen)
+                    path_item.setPen(self.canvas.parentWindow.properties_tab.getPen())
+                    path_item.setBrush(self.canvas.parentWindow.properties_tab.getBrush())
                     path_item.setZValue(1)
-                    path_item.setBrush(self.view.stroke_fill)
                     path_item.setFlag(QGraphicsItem.ItemIsSelectable)
                     path_item.setFlag(QGraphicsItem.ItemIsMovable)
                     path_item.setToolTip('Path')
@@ -218,8 +218,8 @@ class LineAndLabelTool:
 
             self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
             self.pathg_item.setZValue(2)
-            self.pathg_item.setPen(self.view.pen)
-            self.pathg_item.setBrush(self.view.stroke_fill)
+            self.pathg_item.setPen(self.canvas.parentWindow.properties_tab.getPen())
+            self.pathg_item.setBrush(self.canvas.parentWindow.properties_tab.getBrush())
             self.pathg_item.text_element.setFont(self.canvas.parentWindow.characters_tab.getFont())
             self.pathg_item.text_element.setDefaultTextColor(self.canvas.parentWindow.characters_tab.getFontColor())
             self.pathg_item.text_element.setPos(

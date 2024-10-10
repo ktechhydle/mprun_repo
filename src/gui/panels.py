@@ -1,5 +1,6 @@
 from src.scripts.imports import *
 from src.gui.custom_widgets import *
+from src.scripts.raw_functions import ItemStack
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
@@ -14,6 +15,8 @@ class PropertiesPanel(QWidget):
 
         self.canvas = canvas
         self.parent = parent
+        self.pen_color = ItemStack()
+        self.brush_color = ItemStack()
 
         self.createUI()
 
@@ -105,7 +108,6 @@ class PropertiesPanel(QWidget):
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
         self.fill_color_btn = CustomColorDisplayButton(self)
-        self.fill_color_btn.setButtonColor(self.parent.fill_color.get())
         self.fill_color_btn.setFixedWidth(28)
         self.fill_color_btn.setFixedHeight(26)
         self.fill_color_btn.setToolTip('Change the fill color')
@@ -118,7 +120,6 @@ class PropertiesPanel(QWidget):
         widget5.layout.setContentsMargins(0, 14, 0, 0)
 
         self.stroke_color_btn = CustomColorDisplayButton(self)
-        self.stroke_color_btn.setButtonColor(self.parent.outline_color.get())
         self.stroke_color_btn.setFixedWidth(28)
         self.stroke_color_btn.setFixedHeight(26)
         self.stroke_color_btn.setToolTip('Change the stroke color')
@@ -194,7 +195,7 @@ class PropertiesPanel(QWidget):
         color_dialog = CustomColorPicker(self.parent)
         color_dialog.setWindowTitle('Stroke Color')
         
-        color_dialog.hex_spin.setText(QColor(self.parent.outline_color.get()).name()[1:])
+        color_dialog.hex_spin.setText(QColor(self.pen_color.get()).name()[1:])
 
         if color_dialog.exec_():
             color = color_dialog.currentColor()
@@ -204,13 +205,13 @@ class PropertiesPanel(QWidget):
             else:
                 self.stroke_color_btn.setTransparent(True)
 
-            self.parent.outline_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+            self.pen_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def fillColorChooser(self):
         color_dialog = CustomColorPicker(self.parent)
         color_dialog.setWindowTitle('Fill Color')
         
-        color_dialog.hex_spin.setText(QColor(self.parent.fill_color.get()).name()[1:])
+        color_dialog.hex_spin.setText(QColor(self.brush_color.get()).name()[1:])
 
         if color_dialog.exec_():
             color = color_dialog.currentColor()
@@ -220,24 +221,11 @@ class PropertiesPanel(QWidget):
             else:
                 self.fill_color_btn.setTransparent(True)
 
-            self.parent.fill_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+            self.brush_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
             
     def updateItemPen(self):
-        # Update pen and brush
-        index1 = self.stroke_style_combo.currentIndex()
-        data1 = self.stroke_style_combo.itemData(index1)
-        index2 = self.stroke_pencap_combo.currentIndex()
-        data2 = self.stroke_pencap_combo.itemData(index2)
-
-        pen = QPen()
-        pen.setColor(QColor(self.parent.outline_color.get()))
-        pen.setWidth(self.stroke_size_spin.value())
-        pen.setJoinStyle(
-            self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
-        pen.setStyle(data1)
-        pen.setCapStyle(data2)
-
-        self.parent.canvas_view.update_pen(pen)
+        pen = self.getPen()
+        self.stroke_color_btn.setButtonColor(self.pen_color.get())
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
@@ -258,9 +246,8 @@ class PropertiesPanel(QWidget):
         self.parent.canvas_view.update()
 
     def updateItemFill(self):
-        brush = QBrush(QColor(self.parent.fill_color.get()))
-
-        self.parent.canvas_view.update_brush(brush)
+        brush = self.getBrush()
+        self.fill_color_btn.setButtonColor(self.brush_color.get())
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
@@ -280,6 +267,25 @@ class PropertiesPanel(QWidget):
                     print(f'Exception: {e}')
 
         self.parent.canvas_view.update()
+
+    def getPen(self) -> QPen:
+        index1 = self.stroke_style_combo.currentIndex()
+        data1 = self.stroke_style_combo.itemData(index1)
+        index2 = self.stroke_pencap_combo.currentIndex()
+        data2 = self.stroke_pencap_combo.itemData(index2)
+
+        pen = QPen()
+        pen.setColor(QColor(self.pen_color.get()))
+        pen.setWidth(self.stroke_size_spin.value())
+        pen.setJoinStyle(
+            self.join_style_combo.itemData(self.join_style_combo.currentIndex()))
+        pen.setStyle(data1)
+        pen.setCapStyle(data2)
+
+        return pen
+
+    def getBrush(self) -> QBrush:
+        return QBrush(QColor(self.brush_color.get()))
 
 
 class LibrariesPanel(QWidget):
@@ -398,6 +404,7 @@ class CharactersPanel(QWidget):
 
         self.canvas = canvas
         self.parent = parent
+        self.font_color = ItemStack()
 
         self.createUI()
 
@@ -423,7 +430,6 @@ class CharactersPanel(QWidget):
         self.font_color_btn = CustomColorDisplayButton(self)
         self.font_color_btn.setFixedWidth(81)
         self.font_color_btn.setToolTip('Change the font color')
-        self.font_color_btn.setButtonColor(self.parent.font_color.get())
         self.font_color_btn.clicked.connect(self.fontColorChooser)
         self.font_color_btn.clicked.connect(self.updateItemFont)
         self.bold_btn = QPushButton('B', self.parent)
@@ -477,7 +483,7 @@ class CharactersPanel(QWidget):
         color_dialog = CustomColorPicker(self.parent)
         color_dialog.setWindowTitle('Font Color')
         
-        color_dialog.hex_spin.setText(QColor(self.parent.font_color.get()).name()[1:])
+        color_dialog.hex_spin.setText(QColor(self.font_color.get()).name()[1:])
 
         if color_dialog.exec_():
             color = color_dialog.currentColor()
@@ -487,15 +493,13 @@ class CharactersPanel(QWidget):
             else:
                 self.font_color_btn.setTransparent(True)
 
-            self.parent.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+            self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
 
     def updateItemFont(self):
         # Update font
         font = self.getFont()
-
-        new_color = QColor(self.parent.font_color.get())
-
-        self.parent.canvas_view.update_font(font, new_color)
+        new_color = QColor(self.font_color.get())
+        self.font_color_btn.setButtonColor(self.font_color.get())
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
@@ -532,7 +536,7 @@ class CharactersPanel(QWidget):
         return font
 
     def getFontColor(self):
-        return QColor(self.parent.font_color.get())
+        return QColor(self.font_color.get())
 
 
 class ImageTracingPanel(QWidget):
