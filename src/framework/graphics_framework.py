@@ -12,6 +12,9 @@ from src.scripts.imports import *
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
+TIP_WINDOW_Y_PADDING = -5
+TIP_WINDOW_X_PADDING = 10
+
 
 class CustomViewport(QOpenGLWidget):
     def __init__(self):
@@ -446,16 +449,16 @@ y: {int(self.mapToScene(point).y())}''')
         self.w = TipWin(label, tip, self.parent())
 
         pos = self.mapToGlobal(self.rect().bottomLeft())
-        posy = (pos.y() - self.w.height()) - 17  # account for scrollbar
+        posy = (pos.y() - self.w.height())
 
-        self.w.move(pos.x() + 4, posy)
+        self.w.move(pos.x() + TIP_WINDOW_X_PADDING, posy + TIP_WINDOW_Y_PADDING)
 
     def updateTip(self):
         try:
             pos = self.mapToGlobal(self.rect().bottomLeft())
-            posy = (pos.y() - self.w.height()) - 17  # account for scrollbar
+            posy = (pos.y() - self.w.height())
 
-            self.w.move(pos.x() + 4, posy)
+            self.w.move(pos.x() + TIP_WINDOW_X_PADDING, posy + TIP_WINDOW_Y_PADDING)
         except:
             pass
 
