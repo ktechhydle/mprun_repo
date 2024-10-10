@@ -519,7 +519,7 @@ class CustomDockWidget(QDockWidget):
 
         if 0 < len(self.panels) == len(self.indexes):
             for i in range(len(self.indexes)):
-                QTimer.singleShot(500 * i,
+                QTimer.singleShot(250 * i,
                                   lambda idx=i: self.toolbox.setWidgetAtIndex(self.indexes[idx], self.panels[idx],
                                                                               self.panel_names[idx]))
                 print(f"Setting widget at index: {self.indexes[i]} with panel: {self.panels[i]}")
