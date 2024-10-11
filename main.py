@@ -2377,6 +2377,8 @@ class MPRUN(QMainWindow):
         # Default pos
         self.toolbar.move(11, 11)
         self.item_toolbar.move(70, 6)
+        self.toolbar.raise_()
+        self.item_toolbar.raise_()
 
     def adjust_item_toolbar(self):
         self.item_toolbar.move(self.toolbar.x() + self.toolbar.width(), self.item_toolbar.y())
