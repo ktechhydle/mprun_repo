@@ -2398,7 +2398,7 @@ class MPRUN(QMainWindow):
                                                f'Would you like to download it?',
                                                QMessageBox.Yes | QMessageBox.Cancel)
             if download == QMessageBox.Yes:
-                webbrowser.open('https://sites.google.com/view/mprun/download')
+                webbrowser.open('https://github.com/ktechhydle/mprun_repo/releases')
 
         else:
             if show_message is False:

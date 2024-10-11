@@ -153,7 +153,6 @@ class PropertiesPanel(QWidget):
         self.opacity_btn.setFixedHeight(26)
         self.opacity_btn.setIcon(QIcon('ui/UI Icons/Major/opacity_icon.png'))
         self.opacity_btn.setIconSize(QSize(24, 24))
-        self.opacity_btn.setStyleSheet('QPushButton:hover { background: none }')
         self.opacity_spin = QSpinBox()
         self.opacity_spin.setRange(0, 100)
         self.opacity_spin.setValue(100)
