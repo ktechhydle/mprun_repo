@@ -2168,62 +2168,77 @@ class MPRUN(QMainWindow):
 
     def open_settings_data(self):
         for user_data in self.read_settings():
-            self.view_as(user_data['saved_view'])
+            self.apply_view_settings(user_data)
+            self.apply_toolbar_settings(user_data)
+            self.apply_geometry_settings(user_data)
+            self.apply_undo_and_canvas_settings(user_data)
+            self.apply_action_group_settings(user_data)
+            self.apply_icon_size_settings(user_data)
+            self.apply_color_settings(user_data)
+            self.finalize_ui_updates()
+            self.apply_disclaimer_and_tips(user_data)
 
-            self.addDockWidget(Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea,
-                               self.tab_view_dock)
-            self.document_toolbar.setHidden(user_data['document_toolbar_hidden'])
-            self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
-            self.toolbar.setHidden(user_data['toolbar_hidden'])
-            self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
-            self.undo_stack.setUndoLimit(user_data['undo_limit'])
-            self.canvas.setGridSize(user_data['grid_size'])
-            self.toolbox.setCurrentIndex(user_data['toolbox_index'])
+    def apply_view_settings(self, user_data):
+        self.view_as(user_data['saved_view'])
+        dock_position = Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea
+        self.addDockWidget(dock_position, self.tab_view_dock)
+        self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
 
-            if user_data['geometry'][0] == 'maximized':
-                self.showMaximized()
+    def apply_toolbar_settings(self, user_data):
+        self.document_toolbar.setHidden(user_data['document_toolbar_hidden'])
+        self.item_toolbar.setHidden(user_data['control_toolbar_hidden'])
+        self.toolbar.setHidden(user_data['toolbar_hidden'])
 
-            else:
-                self.setGeometry(user_data['geometry'][0],
-                                 user_data['geometry'][1],
-                                 user_data['geometry'][2],
-                                 user_data['geometry'][3]
-                                 )
+    def apply_geometry_settings(self, user_data):
+        if user_data['geometry'][0] == 'maximized':
+            self.showMaximized()
+        else:
+            self.setGeometry(*user_data['geometry'])
 
-            for action in self.action_group.actions():
-                if action.text() == user_data['last_used_tool']:
-                    action.trigger()
+    def apply_undo_and_canvas_settings(self, user_data):
+        self.undo_stack.setUndoLimit(user_data['undo_limit'])
+        self.canvas.setGridSize(user_data['grid_size'])
+        self.toolbox.setCurrentIndex(user_data['toolbox_index'])
 
-            if not user_data['disclaimer_read']:
-                self.show_disclaimer()
+        if user_data.get('use_gpu'):
+            viewport = CustomViewport()
+            viewport.format().setSamples(user_data['gpu_samples'])
+            self.canvas_view.setViewport(viewport)
 
-            if user_data['use_gpu']:
-                viewport = CustomViewport()
-                viewport.format().setSamples(user_data['gpu_samples'])
-                self.canvas_view.setViewport(viewport)
+    def apply_action_group_settings(self, user_data):
+        for action in self.action_group.actions():
+            if action.text() == user_data['last_used_tool']:
+                action.trigger()
 
-            if user_data['show_daily_tips']:
-                self.show_tip_of_the_day()
+    def apply_disclaimer_and_tips(self, user_data):
+        if not user_data['disclaimer_read']:
+            self.show_disclaimer()
+        if user_data['show_daily_tips']:
+            self.show_tip_of_the_day()
 
-            self.document_toolbar.setIconSize(QSize(user_data['document_toolbar_size'], user_data['document_toolbar_size']))
-            self.item_toolbar.setIconSize(QSize(user_data['item_toolbar_size'], user_data['item_toolbar_size']))
-            self.toolbar.setIconSize(QSize(user_data['toolbar_size'], user_data['toolbar_size']))
-            self.document_toolbar.adjustSize()
-            self.item_toolbar.adjustSize()
-            self.toolbar.adjustSize()
-            self.adjust_item_toolbar()
-            self.item_toolbar.raise_()
-            self.toolbar.raise_()
+    def apply_icon_size_settings(self, user_data):
+        def set_toolbar_icon_size(toolbar, size):
+            toolbar.setIconSize(QSize(size, size))
+            toolbar.adjustSize()
 
-            # Colors
-            self.properties_tab.pen_color.set(user_data['default_stroke'])
-            self.properties_tab.brush_color.set(user_data['default_fill'])
-            self.characters_tab.font_color.set(user_data['default_font'])
-            self.properties_tab.updateItemPen()
-            self.properties_tab.updateItemFill()
-            self.characters_tab.updateItemFont()
+        set_toolbar_icon_size(self.document_toolbar, user_data['document_toolbar_size'])
+        set_toolbar_icon_size(self.item_toolbar, user_data['item_toolbar_size'])
+        set_toolbar_icon_size(self.toolbar, user_data['toolbar_size'])
 
-        # Final UI update
+        self.adjust_item_toolbar()
+        self.item_toolbar.raise_()
+        self.toolbar.raise_()
+
+    def apply_color_settings(self, user_data):
+        self.properties_tab.pen_color.set(user_data['default_stroke'])
+        self.properties_tab.brush_color.set(user_data['default_fill'])
+        self.characters_tab.font_color.set(user_data['default_font'])
+
+        self.properties_tab.updateItemPen()
+        self.properties_tab.updateItemFill()
+        self.characters_tab.updateItemFont()
+
+    def finalize_ui_updates(self):
         self.update('ui_update')
         self.check_for_updates(show_message=True)
 
