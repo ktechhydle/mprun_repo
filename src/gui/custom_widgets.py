@@ -17,6 +17,13 @@ class ToolbarHorizontalLayout(QWidget):
 class CustomToolbar(QToolBar):
     def __init__(self, name: str, parent=None):
         super().__init__(name, parent)
+        self.installEventFilter(self)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.ContextMenu:
+            self.contextMenuEvent(event)  # Check if this is triggered instead
+            return True  # This prevents contextMenuEvent from being called
+        return super().eventFilter(obj, event)
 
     def wheelEvent(self, event):
         # Define the minimum and maximum icon sizes
@@ -61,6 +68,19 @@ class CustomToolbar(QToolBar):
 
             if isinstance(widget, QToolButton):
                 widget.setIconSize(iconSize)
+
+    def contextMenuEvent(self, event):
+        # Create a custom context menu
+        menu = CustomMenu(self)
+
+        help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
+
+        if isinstance(self.parent(), QMainWindow):
+            help_action.triggered.connect(self.parent().show_help)
+
+        menu.addAction(help_action)
+
+        menu.exec(event.globalPos())
 
 
 class HorizontalSeparator(QFrame):
