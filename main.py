@@ -136,6 +136,19 @@ class MPRUN(QMainWindow):
         print(f'Window Move at {event}')
         self.canvas_view.updateTip()
 
+    def update(self, *args):
+        super().update()
+
+        for mode in args:
+            if mode == 'ui_update':
+                self.update_transform_ui()
+                self.update_appearance_ui()
+                self.repaint()
+
+            elif mode == 'item_update':
+                self.canvas.update()
+                self.canvas_view.update()
+
     def create_ui(self):
         self.create_initial_canvas()
         self.create_menu()
@@ -1138,19 +1151,6 @@ class MPRUN(QMainWindow):
                     # Add the action to self.actions dictionary
                     self.actions[action_text] = action
 
-    def update(self, *args):
-        super().update()
-
-        for mode in args:
-            if mode == 'ui_update':
-                self.update_transform_ui()
-                self.update_appearance_ui()
-                self.repaint()
-
-            elif mode == 'item_update':
-                self.canvas.update()
-                self.canvas_view.update()
-
     def update_transform_ui(self):
         # Block signals for all spinboxes at once
         spinboxes = [self.properties_tab.x_pos_spin, self.properties_tab.y_pos_spin,
@@ -1807,178 +1807,133 @@ class MPRUN(QMainWindow):
                 # Handle the exception (e.g., logging)
                 print(f'Exception: {e}')
 
-    def use_align_left(self):
-        selected_items = self.canvas.selectedItems()
+    def align_items(self, selected_items, alignment_func, single_item_func):
         if len(selected_items) > 1:
-            first_sel_item = selected_items[0]
             old_positions = [item.pos() for item in selected_items]
             new_positions = [
-                QPointF(
-                    (first_sel_item.mapToScene(first_sel_item.boundingRect().topLeft()).x()) -
-                    (item.mapToScene(item.boundingRect().topLeft()).x()),
-                    0
-                )
-                for item in selected_items
+                alignment_func(item) for item in selected_items
             ]
             command = AlignMultipleItemsCommand(self, selected_items, old_positions, new_positions)
             self.canvas.addCommand(command)
-
         elif len(selected_items) == 1:
             item = selected_items[0]
-            if not isinstance(item, CanvasItem):
-                for i in self.canvas.items():
-                    if isinstance(i, CanvasItem):
-                        for colision in i.collidingItems():
-                            if colision == item:
-                                new = QPointF(i.sceneBoundingRect().x(), item.y())
-                                command = PositionChangeCommand(self, item, item.pos(), new)
-                                self.canvas.addCommand(command)
+            single_item_func(item)
 
         self.update_transform_ui()
-        self.update('item_update')
+
+    def align_single_item(self, item, pos_func):
+        if not isinstance(item, CanvasItem):
+            for i in self.canvas.items():
+                if isinstance(i, CanvasItem):
+                    for colision in i.collidingItems():
+                        if colision == item:
+                            new_pos = pos_func(i, item)
+                            command = PositionChangeCommand(self, item, item.pos(), new_pos)
+                            self.canvas.addCommand(command)
+
+    def use_align_left(self):
+        selected_items = self.canvas.selectedItems()
+
+        def alignment_func(item):
+            first_sel_item = selected_items[0]
+            return QPointF(
+                (first_sel_item.mapToScene(first_sel_item.boundingRect().topLeft()).x()) -
+                (item.mapToScene(item.boundingRect().topLeft()).x()),
+                0
+            )
+
+        def single_item_func(item):
+            self.align_single_item(item, lambda i, item: QPointF(i.sceneBoundingRect().x(), item.y()))
+
+        self.align_items(selected_items, alignment_func, single_item_func)
 
     def use_align_right(self):
         selected_items = self.canvas.selectedItems()
-        if len(selected_items) > 1:
+
+        def alignment_func(item):
             last_sel_item = selected_items[0]
-            old_positions = [item.pos() for item in selected_items]
-            new_positions = [
-                QPointF(
-                    (last_sel_item.mapToScene(last_sel_item.boundingRect().topRight()).x()) -
-                    (item.mapToScene(item.boundingRect().topRight()).x()),
-                    0
+            return QPointF(
+                (last_sel_item.mapToScene(last_sel_item.boundingRect().topRight()).x()) -
+                (item.mapToScene(item.boundingRect().topRight()).x()),
+                0
+            )
+
+        def single_item_func(item):
+            self.align_single_item(
+                item,
+                lambda i, item: QPointF(
+                    i.sceneBoundingRect().x() + i.sceneBoundingRect().width() - item.sceneBoundingRect().width(),
+                    item.y()
                 )
-                for item in selected_items
-            ]
-            command = AlignMultipleItemsCommand(self, selected_items, old_positions, new_positions)
-            self.canvas.addCommand(command)
+            )
 
-        elif len(selected_items) == 1:
-            item = selected_items[0]
-            if not isinstance(item, CanvasItem):
-                for i in self.canvas.items():
-                    if isinstance(i, CanvasItem):
-                        for colision in i.collidingItems():
-                            if colision == item:
-                                new = QPointF(
-                                    (
-                                            i.sceneBoundingRect().x() + i.sceneBoundingRect().width()) - item.sceneBoundingRect().width(),
-                                    item.y()
-                                )
-                                command = PositionChangeCommand(self, item, item.pos(), new)
-                                self.canvas.addCommand(command)
-
-        self.update_transform_ui()
-        self.update('item_update')
+        self.align_items(selected_items, alignment_func, single_item_func)
 
     def use_align_center(self):
         selected_items = self.canvas.selectedItems()
-        if len(selected_items) > 1:
+
+        def alignment_func(item):
             center_x = sum(item.sceneBoundingRect().center().x() for item in selected_items) / len(selected_items)
-            old_positions = [item.pos() for item in selected_items]
-            new_positions = [
-                QPointF(center_x - item.sceneBoundingRect().center().x(), 0)
-                for item in selected_items
-            ]
-            command = AlignMultipleItemsCommand(self, selected_items, old_positions, new_positions)
-            self.canvas.addCommand(command)
+            return QPointF(center_x - item.sceneBoundingRect().center().x(), 0)
 
-        elif len(selected_items) == 1:
-            item = selected_items[0]
-            if not isinstance(item, CanvasItem):
-                for i in self.canvas.items():
-                    if isinstance(i, CanvasItem):
-                        for colision in i.collidingItems():
-                            if colision == item:
-                                new = QPointF(i.sceneBoundingRect().center().x() - item.boundingRect().center().x(),
-                                              item.y())
-                                command = PositionChangeCommand(self, item, item.pos(), new)
-                                self.canvas.addCommand(command)
+        def single_item_func(item):
+            self.align_single_item(
+                item,
+                lambda i, item: QPointF(
+                    i.sceneBoundingRect().center().x() - item.boundingRect().center().x(),
+                    item.y()
+                )
+            )
 
-        self.update_transform_ui()
-        self.update('item_update')
+        self.align_items(selected_items, alignment_func, single_item_func)
 
     def use_align_top(self):
         selected_items = self.canvas.selectedItems()
-        if len(selected_items) > 1:
+
+        def alignment_func(item):
             top_y = min(item.sceneBoundingRect().top() for item in selected_items)
-            old_positions = [item.pos() for item in selected_items]
-            new_positions = [
-                QPointF(0, top_y - item.sceneBoundingRect().top())
-                for item in selected_items
-            ]
-            command = AlignMultipleItemsCommand(self, selected_items, old_positions, new_positions)
-            self.canvas.addCommand(command)
+            return QPointF(0, top_y - item.sceneBoundingRect().top())
 
-        elif len(selected_items) == 1:
-            item = selected_items[0]
-            if not isinstance(item, CanvasItem):
-                for i in self.canvas.items():
-                    if isinstance(i, CanvasItem):
-                        for colision in i.collidingItems():
-                            if colision == item:
-                                new = QPointF(item.x(), i.y())
-                                command = PositionChangeCommand(self, item, item.pos(), new)
-                                self.canvas.addCommand(command)
+        def single_item_func(item):
+            self.align_single_item(item, lambda i, item: QPointF(item.x(), i.y()))
 
-        self.update_transform_ui()
-        self.update('item_update')
+        self.align_items(selected_items, alignment_func, single_item_func)
 
     def use_align_bottom(self):
         selected_items = self.canvas.selectedItems()
-        if len(selected_items) > 1:
+
+        def alignment_func(item):
             bottom_y = max(item.sceneBoundingRect().bottom() for item in selected_items)
-            old_positions = [item.pos() for item in selected_items]
-            new_positions = [
-                QPointF(0, bottom_y - item.sceneBoundingRect().bottom())
-                for item in selected_items
-            ]
-            command = AlignMultipleItemsCommand(self, selected_items, old_positions, new_positions)
-            self.canvas.addCommand(command)
+            return QPointF(0, bottom_y - item.sceneBoundingRect().bottom())
 
-        elif len(selected_items) == 1:
-            item = selected_items[0]
-            if not isinstance(item, CanvasItem):
-                for i in self.canvas.items():
-                    if isinstance(i, CanvasItem):
-                        for colision in i.collidingItems():
-                            if colision == item:
-                                new = QPointF(
-                                    item.x(),
-                                    (i.y() + i.boundingRect().height()) - item.boundingRect().height()
-                                )
-                                command = PositionChangeCommand(self, item, item.pos(), new)
-                                self.canvas.addCommand(command)
+        def single_item_func(item):
+            self.align_single_item(
+                item,
+                lambda i, item: QPointF(
+                    item.x(),
+                    i.y() + i.boundingRect().height() - item.boundingRect().height()
+                )
+            )
 
-        self.update_transform_ui()
-        self.update('item_update')
+        self.align_items(selected_items, alignment_func, single_item_func)
 
     def use_align_middle(self):
         selected_items = self.canvas.selectedItems()
-        if len(selected_items) > 1:
+
+        def alignment_func(item):
             middle_y = sum(item.sceneBoundingRect().center().y() for item in selected_items) / len(selected_items)
-            old_positions = [item.pos() for item in selected_items]
-            new_positions = [
-                QPointF(0, middle_y - item.sceneBoundingRect().center().y())
-                for item in selected_items
-            ]
-            command = AlignMultipleItemsCommand(self, selected_items, old_positions, new_positions)
-            self.canvas.addCommand(command)
+            return QPointF(0, middle_y - item.sceneBoundingRect().center().y())
 
-        elif len(selected_items) == 1:
-            item = selected_items[0]
-            if not isinstance(item, CanvasItem):
-                for i in self.canvas.items():
-                    if isinstance(i, CanvasItem):
-                        for colision in i.collidingItems():
-                            if colision == item:
-                                new = QPointF(item.x(),
-                                              i.sceneBoundingRect().center().y() - item.boundingRect().center().y())
-                                command = PositionChangeCommand(self, item, item.pos(), new)
-                                self.canvas.addCommand(command)
+        def single_item_func(item):
+            self.align_single_item(
+                item,
+                lambda i, item: QPointF(
+                    item.x(),
+                    i.sceneBoundingRect().center().y() - item.boundingRect().center().y()
+                )
+            )
 
-        self.update_transform_ui()
-        self.update('item_update')
+        self.align_items(selected_items, alignment_func, single_item_func)
 
     def use_enable_grid(self):
         if self.scene_tab.gsnap_check_btn.isChecked():
