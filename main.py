@@ -1151,12 +1151,6 @@ class MPRUN(QMainWindow):
                 self.canvas.update()
                 self.canvas_view.update()
 
-                for item in self.canvas.items():
-                    item.update()
-
-                    if isinstance(item, LeaderLineItem):
-                        item.updatePathEndPoint()
-
     def update_transform_ui(self):
         # Block signals for all spinboxes at once
         spinboxes = [self.properties_tab.x_pos_spin, self.properties_tab.y_pos_spin,
@@ -1388,20 +1382,13 @@ class MPRUN(QMainWindow):
     def use_scale(self, x_value, y_value):
         try:
             items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-            if not items:
-                return
-
-            old_transforms = [item.transform() for item in items]
+            old_transforms = []
             new_transforms = []
 
             for item in items:
-                if isinstance(item, LeaderLineItem):
-                    item.childItems()[0].setSelected(False)
-                    item.updatePathEndPoint()
-
-                elif isinstance(item, CustomTextItem):
-                    if isinstance(item.parentItem(), LeaderLineItem):
-                        item.parentItem().updatePathEndPoint()
+                if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                    if item.parentItem().isSelected():
+                        items.remove(item)
 
                 # Calculate the center of the bounding box for the selected items
                 bounding_rect = item.boundingRect()
@@ -1416,6 +1403,7 @@ class MPRUN(QMainWindow):
                 scale_y = y_value / current_height if current_height != 0 else 1
 
                 # Create a transform centered on the bounding box's center
+                old_transforms.append(item.transform())
                 transform = QTransform()
                 transform.translate(center_x, center_y)
                 transform.scale(scale_x, scale_y)
@@ -1441,41 +1429,24 @@ class MPRUN(QMainWindow):
         self.use_exit_grid()
 
     def use_rotate(self, value):
-        items = self.canvas.selectedItems()
-        if not items:
-            return
-
-        canvas_items = []
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
         old_rotations = []
 
         # Rotate each item around the center
         for item in items:
-            if not isinstance(item, CanvasItem):
-                if isinstance(item, LeaderLineItem):
-                    item.childItems()[0].setSelected(False)
-                    item.updatePathEndPoint()
-                elif isinstance(item, CustomTextItem):
-                    if isinstance(item.parentItem(), LeaderLineItem):
-                        item.parentItem().updatePathEndPoint()
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                if item.parentItem().isSelected():
+                    items.remove(item)
 
-                item.setTransformOriginPoint(item.boundingRect().center())
-                canvas_items.append(item)
-                old_rotations.append(item.rotation())
+            old_rotations.append(item.rotation())
+            item.setTransformOriginPoint(item.boundingRect().center())
 
-        if canvas_items:
-            try:
-                command = RotateCommand(self, canvas_items, old_rotations, value)
-                self.canvas.addCommand(command)
-            except Exception as e:
-                # Handle the exception (e.g., logging)
-                print(f'Exception: {e}')
+        if items:
+            command = RotateCommand(self, items, old_rotations, value)
+            self.canvas.addCommand(command)
 
     def use_rotate_direction(self, dir: str):
-        items = self.canvas.selectedItems()
-        if not items:
-            return
-
-        canvas_items = []
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
         old_rotations = []
         new_rotations = []
 
@@ -1484,26 +1455,17 @@ class MPRUN(QMainWindow):
 
         # Rotate each item around the center
         for item in items:
-            if not isinstance(item, CanvasItem):
-                if isinstance(item, LeaderLineItem):
-                    item.childItems()[0].setSelected(False)
-                    item.updatePathEndPoint()
-                elif isinstance(item, CustomTextItem):
-                    if isinstance(item.parentItem(), LeaderLineItem):
-                        item.parentItem().updatePathEndPoint()
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                if item.parentItem().isSelected():
+                    items.remove(item)
 
-                item.setTransformOriginPoint(item.boundingRect().center())
-                canvas_items.append(item)
-                old_rotations.append(item.rotation())
-                new_rotations.append(item.rotation() + rotation_change)
+            old_rotations.append(item.rotation())
+            new_rotations.append(item.rotation() + rotation_change)
+            item.setTransformOriginPoint(item.boundingRect().center())
 
-        if canvas_items:
-            try:
-                command = RotateDirectionCommand(self, canvas_items, old_rotations, new_rotations)
-                self.canvas.addCommand(command)
-            except Exception as e:
-                # Handle the exception (e.g., logging)
-                print(f'Exception: {e}')
+        if items:
+            command = RotateDirectionCommand(self, items, old_rotations, new_rotations)
+            self.canvas.addCommand(command)
 
     def use_raise_layer(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1625,9 +1587,9 @@ class MPRUN(QMainWindow):
             target_y = self.properties_tab.y_pos_spin.value()
 
             # Get the bounding rect of selected items
-            selected_items = self.canvas.selectedItems()
-            if not selected_items:
-                return
+            items = [item for item in self.canvas.selectedItems()]
+            old_positions = []
+            new_positions = []
 
             bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
 
@@ -1635,21 +1597,14 @@ class MPRUN(QMainWindow):
             offset_x = target_x - bounding_rect.x()
             offset_y = target_y - bounding_rect.y()
 
-            # Prepare lists for items, old positions, and new positions
-            items = []
-            old_positions = []
-            new_positions = []
-
             # Move each selected item by the offset and collect positions
-            for item in selected_items:
-                if isinstance(item, LeaderLineItem):
-                    item.childItems()[0].setSelected(False)
-                    item.updatePathEndPoint()
+            for item in items:
+                if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                    if item.parentItem().isSelected():
+                        items.remove(item)
 
                 old_pos = item.pos()
                 new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
-
-                items.append(item)
                 old_positions.append(old_pos)
                 new_positions.append(new_pos)
 
@@ -1662,15 +1617,16 @@ class MPRUN(QMainWindow):
 
     def use_flip_horizontal(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-        old_transforms = [item.transform() for item in items]
+        old_transforms = []
         new_transforms = []
 
         for item in items:
-            if isinstance(item, LeaderLineItem):
-                item.childItems()[0].setSelected(False)
-                item.updatePathEndPoint()
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                if item.parentItem().isSelected():
+                    items.remove(item)
 
             transform = item.transform()
+            old_transforms.append(transform)
             transform.scale(-1, 1)  # Flip horizontally
             new_transforms.append(transform)
 
@@ -1680,15 +1636,16 @@ class MPRUN(QMainWindow):
 
     def use_flip_vertical(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-        old_transforms = [item.transform() for item in items]
+        old_transforms = []
         new_transforms = []
 
         for item in items:
-            if isinstance(item, LeaderLineItem):
-                item.childItems()[0].setSelected(False)
-                item.updatePathEndPoint()
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                if item.parentItem().isSelected():
+                    items.remove(item)
 
             transform = item.transform()
+            old_transforms.append(item.transform())
             transform.scale(1, -1)  # Flip vertically
             new_transforms.append(transform)
 

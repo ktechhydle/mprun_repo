@@ -3,7 +3,6 @@ import os.path
 from src.scripts.imports import *
 from src.framework.undo_commands import *
 
-
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
@@ -780,6 +779,10 @@ class LeaderLineItem(QGraphicsPathItem):
 
             path.setElementPositionAt(0, new_start_point.x(), new_start_point.y())
             self.setPath(path)
+
+    def update(self, rect=QRectF()):
+        super().update(rect)
+        self.updatePathEndPoint()
 
     def duplicate(self):
         path = self.path()

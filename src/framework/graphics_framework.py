@@ -435,6 +435,12 @@ y: {int(self.mapToScene(point).y())}''')
         super().fitInView(*args, **kwargs)
         self.applyZoom()
 
+    def update(self):
+        super().update()
+
+        for item in self.scene().items():
+            item.update()
+
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
         self.update()
@@ -678,6 +684,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def addCommand(self, command: QUndoCommand):
         self.undo_stack.push(command)
+        self.primaryView().update()
         self.setHasChanges(True)
         self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
@@ -861,3 +868,6 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def setHasChanges(self, has: bool):
         self.modified = has
+
+    def primaryView(self) -> CustomGraphicsView:
+        return self.views()[0]
