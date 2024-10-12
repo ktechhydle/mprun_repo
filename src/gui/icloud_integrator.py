@@ -18,6 +18,7 @@ class iCloudIntegraterWin(QDialog):
         self.setWindowTitle('Share To iCloud')
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowModality(Qt.ApplicationModal)
+        self.setObjectName('tipWindow')
         self.setFixedWidth(300)
         self.setLayout(QVBoxLayout())
         self.canvas = canvas
@@ -70,7 +71,9 @@ class iCloudIntegraterWin(QDialog):
                     if api.validate_2fa_code(str(code)):
                         for photo in self.export():
                             with open(photo, 'rb') as f:
-                                api.drive['Downloads'].upload(f, filename=os.path.basename(photo))
+                                api.drive.params["clientId"] = api.client_id
+                                api.drive['Downloads'].mkdir('MPRUN')
+                                api.drive['Downloads']['MPRUN'].upload(f)
                     else:
                         QMessageBox.warning(self.parent, 'Incorrect Code', 'Failed to verify security code.')
                         return
@@ -78,11 +81,13 @@ class iCloudIntegraterWin(QDialog):
             else:
                 for photo in self.export():
                     with open(photo, 'rb') as f:
-                        api.drive['Downloads'].upload(f)
+                        api.drive.params["clientId"] = api.client_id
+                        api.drive['Downloads'].mkdir('MPRUN')
+                        api.drive['Downloads']['MPRUN'].upload(f)
 
             QMessageBox.information(self.parent, 'File Shared', 'The file has successfully been '
                                                                 'transferred to iCloud. It has been saved '
-                                                                'to your "Downloads" folder.')
+                                                                'to the "Downloads" folder.')
 
             self.close()
 
