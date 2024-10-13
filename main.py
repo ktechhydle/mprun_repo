@@ -2080,15 +2080,16 @@ class MPRUN(QMainWindow):
 
     def open_settings_data(self):
         for user_data in self.read_settings():
-            self.apply_view_settings(user_data)
-            self.apply_toolbar_settings(user_data)
-            self.apply_geometry_settings(user_data)
-            self.apply_undo_and_canvas_settings(user_data)
-            self.apply_action_group_settings(user_data)
-            self.apply_icon_size_settings(user_data)
-            self.apply_color_settings(user_data)
-            self.finalize_ui_updates()
-            self.apply_disclaimer_and_tips(user_data)
+            if not user_data['developer_mode']:
+                self.apply_view_settings(user_data)
+                self.apply_toolbar_settings(user_data)
+                self.apply_geometry_settings(user_data)
+                self.apply_undo_and_canvas_settings(user_data)
+                self.apply_action_group_settings(user_data)
+                self.apply_icon_size_settings(user_data)
+                self.apply_color_settings(user_data)
+                self.finalize_ui_updates()
+                self.apply_disclaimer_and_tips(user_data)
 
     def apply_view_settings(self, user_data):
         self.view_as(user_data['saved_view'])
