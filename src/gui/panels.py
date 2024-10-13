@@ -113,7 +113,6 @@ class PropertiesPanel(QWidget):
         self.fill_color_btn.setToolTip('Change the fill color')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
         self.fill_color_btn.clicked.connect(self.fillColorChooser)
-        self.fill_color_btn.clicked.connect(self.updateItemFill)
         widget5 = ToolbarHorizontalLayout()
         widget5.layout.addWidget(self.fill_color_btn)
         widget5.layout.addWidget(fill_label)
@@ -125,7 +124,6 @@ class PropertiesPanel(QWidget):
         self.stroke_color_btn.setToolTip('Change the stroke color')
         self.stroke_color_btn.setShortcut(QKeySequence('Ctrl+1'))
         self.stroke_color_btn.clicked.connect(self.strokeColorChooser)
-        self.stroke_color_btn.clicked.connect(self.updateItemPen)
         self.stroke_size_spin = QSpinBox(self)
         self.stroke_size_spin.setValue(3)
         self.stroke_size_spin.setMaximum(1000)
@@ -205,6 +203,7 @@ class PropertiesPanel(QWidget):
                 self.stroke_color_btn.setTransparent(True)
 
             self.pen_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+            self.updateItemPen()
 
     def fillColorChooser(self):
         color_dialog = CustomColorPicker(self.parent)
@@ -221,10 +220,10 @@ class PropertiesPanel(QWidget):
                 self.fill_color_btn.setTransparent(True)
 
             self.brush_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+            self.updateItemFill()
             
     def updateItemPen(self):
         pen = self.getPen()
-        self.stroke_color_btn.setButtonColor(self.pen_color.get())
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
@@ -246,7 +245,6 @@ class PropertiesPanel(QWidget):
 
     def updateItemFill(self):
         brush = self.getBrush()
-        self.fill_color_btn.setButtonColor(self.brush_color.get())
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
@@ -285,6 +283,10 @@ class PropertiesPanel(QWidget):
 
     def getBrush(self) -> QBrush:
         return QBrush(QColor(self.brush_color.get()))
+
+    def default(self):
+        self.stroke_color_btn.setButtonColor(self.pen_color.get())
+        self.fill_color_btn.setButtonColor(self.brush_color.get())
 
 
 class LibrariesPanel(QWidget):
@@ -430,7 +432,6 @@ class CharactersPanel(QWidget):
         self.font_color_btn.setFixedWidth(81)
         self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.clicked.connect(self.fontColorChooser)
-        self.font_color_btn.clicked.connect(self.updateItemFont)
         self.bold_btn = QPushButton('B', self.parent)
         self.bold_btn.setToolTip('Set the font bold')
         self.bold_btn.setStyleSheet('font-weight: bold; font-size: 15px;')
@@ -493,12 +494,12 @@ class CharactersPanel(QWidget):
                 self.font_color_btn.setTransparent(True)
 
             self.font_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
+            self.updateItemFont()
 
     def updateItemFont(self):
         # Update font
         font = self.getFont()
         new_color = QColor(self.font_color.get())
-        self.font_color_btn.setButtonColor(self.font_color.get())
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
@@ -536,6 +537,9 @@ class CharactersPanel(QWidget):
 
     def getFontColor(self):
         return QColor(self.font_color.get())
+
+    def default(self):
+        self.font_color_btn.setButtonColor(self.font_color.get())
 
 
 class ImageTracingPanel(QWidget):

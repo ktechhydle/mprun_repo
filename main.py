@@ -28,6 +28,8 @@ if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
 DEFAULT_PANEL_WIDTH = 280
+SPLASH_CHOICES = ['ui/Main Logos/mprun_splash.png',
+                  'ui/splash/halfpipe_splash.png']
 
 
 class MPRUN(QMainWindow):
@@ -2153,6 +2155,8 @@ class MPRUN(QMainWindow):
 
     def finalize_ui_updates(self):
         self.update('ui_update')
+        self.properties_tab.default()
+        self.characters_tab.default()
         self.check_for_updates(show_message=True)
 
     def open_recent_file_data(self):
@@ -2341,7 +2345,7 @@ def main() -> None:
 
     app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'])
 
-    splash = QSplashScreen(QIcon('ui/Main Logos/mprun_splash.png').pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
+    splash = QSplashScreen(QIcon(random.choice(SPLASH_CHOICES)).pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
     splash.show()
 
     app.processEvents()
