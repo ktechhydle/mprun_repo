@@ -79,7 +79,7 @@ class SceneTo3DView(QOpenGLWidget):
         glViewport(0, 0, width, height)
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        gluPerspective(40.0, width / height, 0.5, 10000.0)
+        gluPerspective(40.0, width / height, 0.5, 64000.0)
         glMatrixMode(GL_MODELVIEW)
 
     def paintGL(self):
@@ -97,11 +97,17 @@ class SceneTo3DView(QOpenGLWidget):
         if time.time() - start_time >= 1.0:
             fps = frame_count / (time.time() - start_time)
             self.fps_label.setText(f'FPS: {int(fps)}')
-            # Reset for the next second
             frame_count = 0
             start_time = time.time()
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        # Clear the depth buffer and apply a gradient background
+        glClear(GL_DEPTH_BUFFER_BIT)
+
+        # Draw gradient background
+        self.drawGradientBackground()
+
+        # Reset for 3D rendering
+        glClear(GL_DEPTH_BUFFER_BIT)  # Clear the depth buffer to ensure 3D scene renders correctly
         glLoadIdentity()
 
         # Apply pan offsets
@@ -112,6 +118,55 @@ class SceneTo3DView(QOpenGLWidget):
         # Render the scene
         self.renderScene()
 
+    def drawGradientBackground(self):
+        """
+        Draws a full-screen quad with a gradient background.
+        """
+        glDisable(GL_DEPTH_TEST)  # Disable depth testing so the background isn't affected by 3D objects
+
+        # Set up 2D orthographic projection to draw the background
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        glOrtho(0, self.width(), 0, self.height(), -1, 1)
+
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+
+        # Start drawing the quad
+        glBegin(GL_QUADS)
+
+        # Set gradient colors (define color for each vertex)
+        r, g, b = hexToRGB('#12a1dc')
+
+        # Top-left
+        glColor3f(r, g, b)
+        glVertex2f(0, self.height())
+
+        # Top-right
+        glColor3f(r, g, b)
+        glVertex2f(self.width(), self.height())
+
+        r, g, b = hexToRGB('#ffffff')
+
+        # Bottom-right
+        glColor3f(r, g, b)
+        glVertex2f(self.width(), 0)
+
+        # Bottom-left
+        glColor3f(r, g, b)
+        glVertex2f(0, 0)
+
+        glEnd()
+
+        # Restore projection matrix and enable depth test again
+        glPopMatrix()
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        glEnable(GL_DEPTH_TEST)
+
     def addItem(self, item: Item):
         """
         Adds the item to the scene
@@ -119,7 +174,7 @@ class SceneTo3DView(QOpenGLWidget):
         item.draw()
         self._items.append(item)
 
-    def items(self):
+    def items(self) -> list[Item]:
         return self._items
 
     def renderScene(self):
@@ -130,15 +185,18 @@ class SceneTo3DView(QOpenGLWidget):
 
         glRotatef(90, 1, 0, 0)
 
-        # add initial plane
-        item = PlaneItem([64000, 64000])
-        item.setRotation(90, [1, 0, 0])
-        item.setColor('#ebe4ec')
-        self.addItem(item)
-
         # add axis indicator
         axis_item = AxisItem()
         self.addItem(axis_item)
+
+        if not hasattr(self, 'terrain_item'):
+            self.terrain_item = ObjItem('course elements/3d/terrain.obj')
+            self.terrain_item.setColor('#ebe4ec')
+            self.terrain_item.setRotation(-90, [1, 0, 0])
+            self.terrain_item.setScale([200, 200, 200])
+            self.terrain_item.setOutlineEnabled(True)
+
+        self.addItem(self.terrain_item)
 
         glPopMatrix()
 
@@ -150,34 +208,39 @@ class SceneTo3DView(QOpenGLWidget):
         Renders a specific item based on the type of QGraphicsItem
         """
         if isinstance(item, CustomSvgItem):
+            basename = os.path.basename(item.source()).lower()
+
+            # File path mappings for various item types
+            path_map = {
+                'jump': 'course elements/3d/jump.obj',
+                'short tube': 'course elements/3d/short_tube.obj',
+                'long tube': 'course elements/3d/long_tube.obj',
+                'xl tube': 'course elements/3d/xl_tube.obj',
+                'xxl tube': 'course elements/3d/xxl_tube.obj',
+                'short rail': 'course elements/3d/short_rail.obj',
+                'tree': ['course elements/3d/tree.obj', 'course elements/3d/tree_smaller.obj']
+            }
+
+            # Determine obj file path based on basename
             obj_file_path = ''
-
-            if os.path.basename(item.source()).lower().startswith('jump'):
-                obj_file_path = 'course elements/3d/jump.obj'
-
-            elif os.path.basename(item.source()).lower().endswith('halfpipe.svg'):
-                obj_file_path = 'course elements/3d/halfpipe.obj'
-
-            elif os.path.basename(item.source()).lower().startswith('short tube'):
-                obj_file_path = 'course elements/3d/short_tube.obj'
-
-            elif os.path.basename(item.source()).lower().startswith('long tube'):
-                obj_file_path = 'course elements/3d/long_tube.obj'
-
-            elif os.path.basename(item.source()).lower().startswith('xl tube'):
-                obj_file_path = 'course elements/3d/xl_tube.obj'
-
-            elif os.path.basename(item.source()).lower().startswith('xxl tube'):
-                obj_file_path = 'course elements/3d/xxl_tube.obj'
-
-            elif os.path.basename(item.source()).lower().startswith('short rail'):
-                obj_file_path = 'course elements/3d/short_rail.obj'
-
-            elif os.path.basename(item.source()).lower().startswith('tree'):
+            if basename.startswith('jump'):
+                obj_file_path = path_map['jump']
+            elif basename.startswith('short tube'):
+                obj_file_path = path_map['short tube']
+            elif basename.startswith('long tube'):
+                obj_file_path = path_map['long tube']
+            elif basename.startswith('xl tube'):
+                obj_file_path = path_map['xl tube']
+            elif basename.startswith('xxl tube'):
+                obj_file_path = path_map['xxl tube']
+            elif basename.startswith('short rail'):
+                obj_file_path = path_map['short rail']
+            elif basename.startswith('tree'):
                 if not hasattr(item, 'obj_file_path'):
-                    choices = ['course elements/3d/tree.obj', 'course elements/3d/tree_smaller.obj']
-                    item.obj_file_path = random.choice(choices)  # Store the choice
+                    item.obj_file_path = random.choice(path_map['tree'])
                 obj_file_path = item.obj_file_path
+            elif basename.endswith('halfpipe.svg'):
+                obj_file_path = 'course elements/3d/halfpipe.obj'
 
             if obj_file_path != '':
                 glPushMatrix()
@@ -199,14 +262,6 @@ class SceneTo3DView(QOpenGLWidget):
                 self.addItem(item.obj_item)
 
                 glPopMatrix()
-
-        # Continue processing other items if they're not CustomSvgItem
-        if not isinstance(item, CustomSvgItem):
-            self.renderOtherItem(item)
-
-    def renderOtherItem(self, item: QGraphicsItem):
-        # Specific item rendering will go here
-        pass
 
     def wheelEvent(self, event):
         """

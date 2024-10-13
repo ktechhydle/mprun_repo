@@ -393,7 +393,7 @@ class AxisItem(Item):
         glVertex3f(0.0, 0.0, 0.0)
         glEnd()
 
-        # Draw negative Y with stipple
+        # Draw negative Z with stipple
         glEnable(GL_LINE_STIPPLE)
         glLineStipple(1, 0xAAAA)
 
