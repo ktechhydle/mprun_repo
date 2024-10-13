@@ -302,7 +302,7 @@ class LibrariesPanel(QWidget):
         self.canvas = canvas
 
         # List widget for the library
-        self.library_list_widget = CustomListWidget()
+        self.library_list_widget = CustomListWidget(self.canvas)
         self.library_list_widget.setStyleSheet('border: none')
         self.library_list_widget.setIconSize(QSize(80, 80))
 
@@ -320,7 +320,7 @@ class LibrariesPanel(QWidget):
         self.search_bar.setToolTip('Search for files in the current library')
         self.search_bar.setPlaceholderText("Search...")
         self.search_bar.setObjectName('modernLineEdit')
-        self.search_bar.textChanged.connect(self.filter_library)
+        self.search_bar.textChanged.connect(self.filterLibrary)
 
         library_btn_hlayout = QHBoxLayout()
         library_btn_hlayout.addWidget(self.open_library_button)
@@ -335,24 +335,24 @@ class LibrariesPanel(QWidget):
         self.layout.addWidget(self.library_list_widget)
 
         # Connect button to the method
-        self.open_library_button.clicked.connect(self.open_library)
-        self.reload_library_button.clicked.connect(self.reload_library)
+        self.open_library_button.clicked.connect(self.openLibrary)
+        self.reload_library_button.clicked.connect(self.reloadLibrary)
 
-        self.load_library(os.path.abspath('course elements'))
+        self.loadLibrary(os.path.abspath('course elements'))
 
-    def open_library(self):
+    def openLibrary(self):
         # Open file dialog to select a folder
         folder_path = QFileDialog.getExistingDirectory(self, "Select Library Folder")
 
         if folder_path:
             self.current_folder_path = folder_path
-            self.load_library(folder_path)
+            self.loadLibrary(folder_path)
 
-    def reload_library(self):
+    def reloadLibrary(self):
         if self.current_folder_path:
-            self.load_library(self.current_folder_path)
+            self.loadLibrary(self.current_folder_path)
 
-    def load_library(self, folder_path):
+    def loadLibrary(self, folder_path):
         # Clear existing items in the list widget
         self.library_list_widget.clear()
         self.library_list_widget.all_items = []
@@ -382,7 +382,7 @@ class LibrariesPanel(QWidget):
                 self.library_list_widget.addItem(list_item)
                 self.library_list_widget.all_items.append(list_item)
 
-    def filter_library(self, text):
+    def filterLibrary(self, text):
         try:
             self.library_list_widget.filterItems(text)
 

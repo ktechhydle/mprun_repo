@@ -429,7 +429,6 @@ y: {int(self.mapToScene(point).y())}''')
             # Add item to scene
             add_command = AddItemCommand(self.canvas, item)
             self.canvas.addCommand(add_command)
-            self.canvas.update()
 
     def fitInView(self, *args, **kwargs):
         super().fitInView(*args, **kwargs)

@@ -1,3 +1,4 @@
+import os.path
 import time
 from src.scripts.imports import *
 from src.framework.items import *
@@ -643,10 +644,13 @@ class CustomToolbox(QToolBox):
 
 
 class CustomListWidget(QListWidget):
-    def __init__(self, parent=None):
+    def __init__(self, scene: QGraphicsScene, parent=None):
         super().__init__(parent)
         self.setDragEnabled(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.itemDoubleClicked.connect(self.addItemToScene)
+
+        self.scene = scene
         self.all_items = []
 
     def startDrag(self, supportedActions):
@@ -682,6 +686,31 @@ class CustomListWidget(QListWidget):
 
             if text.lower() in item.text().lower():
                 item.setHidden(False)
+
+    def addItemToScene(self, item: QListWidgetItem):
+        file = item.data(Qt.ItemDataRole.UserRole)
+
+        if os.path.exists(file):
+            if file.endswith('.svg'):
+                item = CustomSvgItem(file)
+                item.store_filename(file)
+                item.store_filename(os.path.abspath(file))
+                item.setToolTip('Imported SVG')
+
+            else:
+                pixmap = QPixmap(file)
+                item = CustomPixmapItem(pixmap)
+                item.store_filename(os.path.abspath(file))
+                item.setToolTip('Imported Bitmap')
+
+            # Set default attributes
+            item.setPos(0, 0)
+            item.setZValue(0)
+            item.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+
+            # Add item to scene
+            add_command = AddItemCommand(self.scene, item)
+            self.scene.addCommand(add_command)
 
 
 class CustomMenuBar(QMenuBar):
