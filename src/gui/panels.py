@@ -376,6 +376,8 @@ class LibrariesPanel(QWidget):
                 list_item = QListWidgetItem(svg_file)
                 list_item.setData(Qt.UserRole, os.path.join(folder_path, svg_file))
                 list_item.setIcon(QIcon(os.path.join(folder_path, svg_file)))
+                list_item.setToolTip(f'<h2>{svg_file.split('.')[0]}</h2>'
+                                     f'<i>Simply drag and drop this item to add it to the scene.</i>')
                 self.library_list_widget.setIconSize(QSize(80, 80))
                 self.library_list_widget.addItem(list_item)
                 self.library_list_widget.all_items.append(list_item)
