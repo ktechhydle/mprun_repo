@@ -57,6 +57,9 @@ class SceneTo3DView(QOpenGLWidget):
         navigation_label.setStyleSheet('color: black')
         self.fps_label = QLabel('FPS: ')
         self.fps_label.setStyleSheet('color: black')
+        isometric_view_btn = QPushButton('Isometric View')
+        isometric_view_btn.setFixedWidth(150)
+        isometric_view_btn.clicked.connect(self.isometricView)
         self.outline_width_slider = QSlider()
         self.outline_width_slider.setFixedHeight(200)
         self.outline_width_slider.setOrientation(Qt.Orientation.Vertical)
@@ -66,6 +69,7 @@ class SceneTo3DView(QOpenGLWidget):
 
         self.layout().addWidget(navigation_label)
         self.layout().addWidget(self.fps_label)
+        self.layout().addWidget(isometric_view_btn)
         self.layout().addWidget(self.outline_width_slider)
         self.layout().addStretch()
 
@@ -74,6 +78,16 @@ class SceneTo3DView(QOpenGLWidget):
         glEnable(GL_DEPTH_TEST)
         r, g, b = hexToRGB("#ffffff")
         glClearColor(r, g, b, 1.0)
+
+        # Set up the initial camera position for isometric view
+        self.isometricView()
+
+    def isometricView(self):
+        # Set camera distance and angles for isometric view
+        self.yaw = 45.0  # Yaw angle for isometric view
+        self.pitch = 45.0  # Pitch angle for isometric view
+
+        self.update()
 
     def resizeGL(self, width, height):
         glViewport(0, 0, width, height)
