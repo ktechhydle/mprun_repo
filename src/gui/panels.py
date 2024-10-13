@@ -382,7 +382,7 @@ class LibrariesPanel(QWidget):
 
     def filter_library(self, text):
         try:
-            self.library_list_widget.filter_items(text)
+            self.library_list_widget.filterItems(text)
 
         except Exception as e:
             print(e)

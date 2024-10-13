@@ -10,8 +10,8 @@ If you are using our integrated Python Scripting Interface,
 this file is the one you might want to read over to learn MPRUN's
 internal functions.
 """
-
-from mp_software_stylesheets.styles import unifiedCSS, blenderCSS
+import os
+from mp_software_stylesheets.styles import blenderCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin, ScriptingWin
@@ -21,15 +21,14 @@ from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, Ima
     CanvasEditorPanel
 from src.framework.three_dimensional_viewer.three_dimensional_viewer import SceneTo3DView
 from src.scripts.app_internal import *
-from src.scripts.raw_functions import nameismain, ItemStack
+from src.scripts.raw_functions import nameismain
 from src.scripts.get_version import get_latest_version
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
 DEFAULT_PANEL_WIDTH = 280
-SPLASH_CHOICES = ['ui/Main Logos/mprun_splash.png',
-                  'ui/splash/halfpipe_splash.png']
+SPLASH_CHOICES = [os.path.join('ui/splash', f) for f in os.listdir('ui/splash')]
 
 
 class MPRUN(QMainWindow):
