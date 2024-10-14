@@ -1102,10 +1102,9 @@ class TipWin(CustomMenu):
         widget = QWidget()
         widget.setLayout(layout1)
 
-        close_btn = QPushButton('X')
+        close_btn = QPushButton('✕')
         close_btn.setToolTip('Close')
-        close_btn.setStyleSheet('font-family: Source Code Pro')
-        close_btn.setFixedWidth(20)
+        close_btn.setFixedSize(20, 20)
         close_btn.clicked.connect(self.delete)
 
         central_widget = QWidget()

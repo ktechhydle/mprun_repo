@@ -474,6 +474,21 @@ class CustomDockWidget(QDockWidget):
         self.is_collapsed = False
         self.paint()
 
+    def moveEvent(self, event):
+        super().moveEvent(event)
+
+        # If the popup exists and is visible, update its position
+        if hasattr(self, 'popup') and self.popup.isVisible():
+            # Get the position of the icon button corresponding to the open panel
+            button = self.icon_buttons[self.currentPopupIndex()]
+            button_pos = button.mapToGlobal(QPoint(0, 0))
+
+            # Update the popup position relative to the new button position
+            popup_pos = button_pos + QPoint(button.width(), -38)
+            new_popup_pos = QPoint(((popup_pos.x() - self.popup.actions()[0].defaultWidget().width()) - button.width()) - 10, popup_pos.y())
+
+            self.popup.move(new_popup_pos)
+
     def paint(self):
         self.close_btn = QPushButton('', self)
         self.close_btn.setToolTip('Close')
@@ -566,6 +581,7 @@ class CustomDockWidget(QDockWidget):
         if hasattr(self, 'popup'):
             self.popup.close()
         self.popup = CustomMenu(self)
+        self.popup.index = index
         self.popup.setObjectName('tipWindow')
         self.popup.resize(panel.width(), panel.height())
         self.popup.setWindowFlag(Qt.WindowType.Tool)
@@ -581,6 +597,9 @@ class CustomDockWidget(QDockWidget):
 
     def isCollapsed(self):
         return self.is_collapsed
+
+    def currentPopupIndex(self):
+        return self.popup.index
 
     def closeEvent(self, event):
         if hasattr(self, 'popup'):
