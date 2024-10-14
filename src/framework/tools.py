@@ -24,14 +24,39 @@ class Tool(object):
         pass
 
 
-class PathDrawerTool(Tool):
+class DrawingTool(Tool):
+    """Base class to handle common functionality for drawing tools."""
+
     def __init__(self, scene, view):
         super().__init__(scene, view)
-        self.temp_path_item = None
         self.path = None
+        self.temp_path_item = None
         self.last_point = None
 
-    def specialToolTip(self, event):
+    def createNewPath(self, event):
+        """Initializes a new path at the event position."""
+        self.path = QPainterPath()
+        self.path.setFillRule(Qt.WindingFill)
+        self.path.moveTo(self.view.mapToScene(event.pos()))
+        self.last_point = self.view.mapToScene(event.pos())
+
+    def addPathToScene(self, path_item):
+        """Adds the given path item to the scene and sets necessary properties."""
+        path_item.setPen(self.scene.parentWindow.properties_tab.getPen())
+        path_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
+        path_item.setZValue(1)
+        path_item.setFlag(QGraphicsItem.ItemIsSelectable)
+        path_item.setFlag(QGraphicsItem.ItemIsMovable)
+        self.scene.addItem(path_item)
+
+    def removeTemporaryPath(self):
+        """Removes the temporary path item from the scene, if it exists."""
+        if self.temp_path_item:
+            self.scene.removeItem(self.temp_path_item)
+        self.temp_path_item = None
+
+    def showPathLengthToolTip(self, event):
+        """Displays the length of the current path in a tooltip."""
         point = event.pos()
         p = self.view.mapToGlobal(point)
         p.setY(p.y())
@@ -39,184 +64,94 @@ class PathDrawerTool(Tool):
 
         if self.path:
             QToolTip.showText(p, f'path length: {int(self.path.length())} pt')
-
         else:
             self.view.show_tooltip(event)
 
-    def mousePress(self, event):
-        # Check the button being pressed
-        if event.button() == Qt.LeftButton:
-            # Create a new path
-            self.path = QPainterPath()
-            self.path.setFillRule(Qt.WindingFill)
-            self.path.moveTo(self.view.mapToScene(event.pos()))
-            self.last_point = self.view.mapToScene(event.pos())
 
-            # Set drag mode
+class PathDrawerTool(DrawingTool):
+    def __init__(self, scene, view):
+        super().__init__(scene, view)
+
+    def specialToolTip(self, event):
+        self.showPathLengthToolTip(event)
+
+    def mousePress(self, event):
+        if event.button() == Qt.LeftButton:
+            self.createNewPath(event)
             self.view.setDragMode(QGraphicsView.NoDrag)
 
     def mouseMove(self, event):
-        # Check the buttons
-        if event.buttons() == Qt.LeftButton:
+        if event.buttons() == Qt.LeftButton and self.path:
             self.path.lineTo(self.view.mapToScene(event.pos()))
-            self.last_point = self.view.mapToScene(event.pos())
+            self.removeTemporaryPath()
 
-            # Remove temporary path if it exists
-            if self.temp_path_item:
-                self.scene.removeItem(self.temp_path_item)
-
-            # Load temporary path as QGraphicsItem to view it while drawing
             self.temp_path_item = CustomPathItem(self.path)
-            self.temp_path_item.setPen(self.scene.parentWindow.properties_tab.getPen())
-            self.temp_path_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
-            self.temp_path_item.setZValue(1)
-            self.scene.addItem(self.temp_path_item)
-
+            self.addPathToScene(self.temp_path_item)
             self.scene.update()
 
     def mouseRelease(self, event):
-        # Check the buttons
-        if event.button() == Qt.LeftButton:
+        if event.button() == Qt.LeftButton and self.path:
             self.path.lineTo(self.view.mapToScene(event.pos()))
-            self.last_point = self.view.mapToScene(event.pos())
-
-            # Check if there is a temporary path (if so, remove it now)
-            if self.temp_path_item:
-                self.scene.removeItem(self.temp_path_item)
-
-            self.scene.update()
-
-            # Load main path as QGraphicsItem
+            self.removeTemporaryPath()
             path_item = CustomPathItem(self.path)
-            path_item.setPen(self.scene.parentWindow.properties_tab.getPen())
-            path_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
-            path_item.setZValue(1)
-            path_item.setFlag(QGraphicsItem.ItemIsSelectable)
-            path_item.setFlag(QGraphicsItem.ItemIsMovable)
-            path_item.setToolTip('Path')
 
-            # Add item
-            if path_item.path().isEmpty():
-                self.scene.removeItem(path_item)
-
-            else:
+            self.addPathToScene(path_item)
+            if not path_item.path().isEmpty():
                 add_command = AddItemCommand(self.scene, path_item)
                 self.scene.addCommand(add_command)
 
-            self.temp_path_item = None
             self.path = None
-            self.last_point = None
 
 
-class PenDrawerTool(Tool):
+class PenDrawerTool(DrawingTool):
     def __init__(self, scene, view):
         super().__init__(scene, view)
-        self.path = None
-        self.temp_path_item = None
-        self.last_point = None
 
     def specialToolTip(self, event):
-        point = event.pos()
-        p = self.view.mapToGlobal(point)
-        p.setY(p.y())
-        p.setX(p.x() + 10)
-
-        if self.path:
-            QToolTip.showText(p, f'path length: {int(self.path.length())} pt')
-
-        else:
-            self.view.show_tooltip(event)
+        self.showPathLengthToolTip(event)
 
     def mousePress(self, event):
-        # Check the button being pressed
         if event.button() == Qt.LeftButton:
-            # Create a new path
-            self.path = QPainterPath()
-            self.path.setFillRule(Qt.WindingFill)
-            self.path.moveTo(self.view.mapToScene(event.pos()))
-            self.last_point = self.view.mapToScene(event.pos())
-
-            # Set drag mode
+            self.createNewPath(event)
             self.view.setDragMode(QGraphicsView.NoDrag)
 
     def mouseMove(self, event):
-        if self.path is not None:
-            # Check the buttons
-            if event.buttons() == Qt.LeftButton:
-                self.path.lineTo(self.view.mapToScene(event.pos()))
+        if event.buttons() == Qt.LeftButton and self.path:
+            self.path.lineTo(self.view.mapToScene(event.pos()))
+            self.removeTemporaryPath()
 
-                # Remove temporary path if it exists
-                if self.temp_path_item is not None:
-                    self.scene.removeItem(self.temp_path_item)
+            self.temp_path_item = CustomPathItem(self.path)
+            self.addPathToScene(self.temp_path_item)
+            try:
+                if event.modifiers() & Qt.ShiftModifier:
+                    self.temp_path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
+                    self.path = self.temp_path_item.path()
+                else:
+                    self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
+            except Exception:
+                pass
 
-                # Load temporary path as QGraphicsItem to view it while drawing
-                self.path.setFillRule(Qt.WindingFill)
-                self.temp_path_item = CustomPathItem(self.path)
-                self.temp_path_item.path().setFillRule(Qt.WindingFill)
-                self.temp_path_item.setPen(self.scene.parentWindow.properties_tab.getPen())
-                self.temp_path_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
-                self.temp_path_item.setZValue(1)
-                self.scene.addItem(self.temp_path_item)
-
-                try:
-                    if event.modifiers() & Qt.ShiftModifier:
-                        self.temp_path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
-                        self.path = self.temp_path_item.path()
-                    else:
-                        self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
-
-                except Exception:
-                    pass
-
-                self.scene.update()
+            self.scene.update()
 
     def mouseRelease(self, event):
-        if self.path is not None:
-            if self.path.isEmpty():
-                return
+        if event.button() == Qt.LeftButton and self.path:
+            self.path.lineTo(self.view.mapToScene(event.pos()))
+            self.removeTemporaryPath()
+            path_item = CustomPathItem(self.path)
+            try:
+                if event.modifiers() & Qt.ShiftModifier:
+                    path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
+                else:
+                    path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
+            except Exception:
+                pass
 
-            else:
-                # Check the buttons
-                if event.button() == Qt.LeftButton:
-                    self.path.lineTo(self.view.mapToScene(event.pos()))
+            self.addPathToScene(path_item)
+            if not path_item.path().isEmpty():
+                add_command = AddItemCommand(self.scene, path_item)
+                self.scene.addCommand(add_command)
 
-                    # Check if there is a temporary path (if so, remove it now)
-                    if self.temp_path_item is not None:
-                        self.scene.removeItem(self.temp_path_item)
-
-                    self.scene.update()
-
-                    # Load main path as QGraphicsItem
-                    path_item = CustomPathItem(self.path)
-                    path_item.path().setFillRule(Qt.WindingFill)
-                    path_item.setPen(self.scene.parentWindow.properties_tab.getPen())
-                    path_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
-                    path_item.setZValue(1)
-                    path_item.setFlag(QGraphicsItem.ItemIsSelectable)
-                    path_item.setFlag(QGraphicsItem.ItemIsMovable)
-                    path_item.setToolTip('Path')
-
-                    try:
-                        if event.modifiers() & Qt.ShiftModifier:
-                            path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
-                            self.path = self.temp_path_item.path()
-                        else:
-                            path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
-
-                    except Exception:
-                        pass
-
-                    # Add item
-                    if path_item.path().isEmpty():
-                        self.scene.removeItem(path_item)
-
-                    else:
-                        add_command = AddItemCommand(self.scene, path_item)
-                        self.scene.addCommand(add_command)
-
-                    self.path = None
-                    self.temp_path_item = None
-                    self.last_point = None
+            self.path = None
 
 
 class LineAndLabelTool(Tool):
@@ -231,20 +166,10 @@ class LineAndLabelTool(Tool):
             self.start_point = self.view.mapToScene(event.pos())
             self.leader_line = QPainterPath()
             self.leader_line.moveTo(self.start_point)
+
             self.view.setDragMode(QGraphicsView.NoDrag)
-            self.clicked_label_point = self.start_point
-
             self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
-            self.pathg_item.setZValue(2)
-            self.pathg_item.setPen(self.scene.parentWindow.properties_tab.getPen())
-            self.pathg_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
-            self.pathg_item.text_element.setFont(self.scene.parentWindow.characters_tab.getFont())
-            self.pathg_item.text_element.setDefaultTextColor(self.scene.parentWindow.characters_tab.getFontColor())
-            self.pathg_item.text_element.setPos(
-                self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
-
-            self.scene.addItem(self.pathg_item)
-            self.scene.update()
+            self.addLabelToScene()
 
     def mouseMove(self, event):
         if self.label_drawing:
@@ -253,7 +178,6 @@ class LineAndLabelTool(Tool):
             temp_line.moveTo(self.start_point)
             temp_line.lineTo(current_point)
             self.pathg_item.setPath(temp_line)
-            self.pathg_item.updatePathEndPoint()
             self.view.update()
 
     def mouseRelease(self, event):
@@ -263,22 +187,28 @@ class LineAndLabelTool(Tool):
             self.leader_line.lineTo(end_point)
             self.pathg_item.setPath(self.leader_line)
             self.scene.update()
+            self.finalizeLabel()
 
-            self.pathg_item.text_element.selectTextAndSetCursor()
+    def addLabelToScene(self):
+        self.pathg_item.setZValue(2)
+        self.pathg_item.setPen(self.scene.parentWindow.properties_tab.getPen())
+        self.pathg_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
+        self.pathg_item.text_element.setFont(self.scene.parentWindow.characters_tab.getFont())
+        self.pathg_item.text_element.setDefaultTextColor(self.scene.parentWindow.characters_tab.getFontColor())
+        self.pathg_item.text_element.setPos(
+            self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
+        self.scene.addItem(self.pathg_item)
 
-            if self.leader_line.isEmpty():
-                self.view.scene().removeItem(self.pathg_item)
-
-            else:
-                command = AddItemCommand(self.scene, self.pathg_item)
-                self.scene.addCommand(command)
-
-            self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-            self.pathg_item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
-
+    def finalizeLabel(self):
+        self.pathg_item.text_element.selectTextAndSetCursor()
+        if not self.leader_line.isEmpty():
+            command = AddItemCommand(self.scene, self.pathg_item)
+            self.scene.addCommand(command)
+            self.pathg_item.setFlag(QGraphicsItem.ItemIsSelectable)
+            self.pathg_item.setFlag(QGraphicsItem.ItemIsMovable)
             self.pathg_item.setToolTip('Leader Line')
-            self.pathg_item.updatePathEndPoint()
-            self.view.update()
+        else:
+            self.scene.removeItem(self.pathg_item)
 
 
 class MouseScalingTool(Tool):
