@@ -940,6 +940,7 @@ mprun.panel_container.addItem(Panel(), 'Test Panel')
         # Create a restricted 'mprun' context using LimitedAccess
         limited_mprun = LimitedAccess(
             self.mprun.toolbox,
+            self.mprun.document_toolbar,
             self.mprun.item_toolbar,
             self.mprun.toolbar,
             self.mprun.menu_bar,
@@ -1064,8 +1065,8 @@ class PythonHighlighter(QSyntaxHighlighter):
             'unicode', 'chr', 'frozenset', 'long', 'reload', 'vars', 'classmethod', 'getattr', 'map', 'repr',
             'xrange', 'cmp', 'globals', 'max', 'reversed', 'zip', 'compile', 'hasattr', 'memoryview',
             'round', '__import__', 'complex', 'hash', 'min', 'set', 'delattr', 'help', 'next', 'setattr',
-            'dict', 'hex', 'object', 'slice', 'dir', 'id', 'oct', 'sorted', 'range', 'toolbox', 'canvas',
-            'canvas_view', 'toolbar', 'item_toolbar', 'actions'
+            'dict', 'hex', 'object', 'slice', 'dir', 'id', 'oct', 'sorted', 'range', 'panel_container',
+            'document_toolbar', 'item_toolbar', 'left_toolbar', 'menubar', 'scene', 'view'
         ]
         builtin_patterns = [r'\b{}\b'.format(builtin) for builtin in builtins]
         self.rules += [(re.compile(pattern), self.builtin_format) for pattern in builtin_patterns]
