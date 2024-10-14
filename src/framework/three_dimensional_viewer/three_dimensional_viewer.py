@@ -335,3 +335,13 @@ class SceneTo3DView(QOpenGLWidget):
             self.panning = False  # Stop panning
         self.last_mouse_pos = None
         self.unsetCursor()
+
+    def closeEvent(self, event):
+        for item in self.scene.items():
+            if isinstance(item, CustomSvgItem):
+
+                # Clear any cached data
+                if hasattr(item, 'obj_item'):
+                    del item.obj_item
+
+        event.accept()
