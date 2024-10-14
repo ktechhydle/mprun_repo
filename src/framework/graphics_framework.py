@@ -119,14 +119,14 @@ y: {int(self.mapToScene(point).y())}''')
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
         if self.path_btn.isChecked():
-            self.pathDrawingTool.on_path_draw_start(event)
+            self.pathDrawingTool.mousePress(event)
 
         elif self.pen_btn.isChecked():
-            self.penDrawingTool.on_draw_start(event)
+            self.penDrawingTool.mousePress(event)
             self.disable_item_flags()
 
         elif self.line_and_label_btn.isChecked():
-            self.labelingTool.on_label_start(event)
+            self.labelingTool.mousePress(event)
             self.disable_item_flags()
 
         elif self.text_btn.isChecked():
@@ -135,17 +135,17 @@ y: {int(self.mapToScene(point).y())}''')
             super().mousePressEvent(event)
 
         elif self.scale_btn.isChecked():
-            self.scalingTool.on_scale_start(event)
+            self.scalingTool.mousePress(event)
             self.disable_item_flags()
             super().mousePressEvent(event)
 
         elif self.rotate_btn.isChecked():
-            self.rotatingTool.on_rotate_start(event)
+            self.rotatingTool.mousePress(event)
             self.disable_item_flags()
             super().mousePressEvent(event)
 
         elif self.add_canvas_btn.isChecked():
-            self.canvasTool.on_add_canvas_start(event)
+            self.canvasTool.mousePress(event)
             self.disable_item_flags()
             super().mousePressEvent(event)
 
@@ -155,7 +155,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mousePressEvent(event)
 
         elif self.sculpt_btn.isChecked():
-            self.sculptingTool.on_sculpt_start(event)
+            self.sculptingTool.mousePress(event)
             self.disable_item_flags()
 
         else:
@@ -171,14 +171,14 @@ y: {int(self.mapToScene(point).y())}''')
             self.update()
 
         if self.path_btn.isChecked():
-            self.pathDrawingTool.show_tooltip(event)
-            self.pathDrawingTool.on_path_draw(event)
+            self.pathDrawingTool.specialToolTip(event)
+            self.pathDrawingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.pen_btn.isChecked():
-            self.penDrawingTool.show_tooltip(event)
-            self.penDrawingTool.on_draw(event)
+            self.penDrawingTool.specialToolTip(event)
+            self.penDrawingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
@@ -188,25 +188,25 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.line_and_label_btn.isChecked():
             self.show_tooltip(event)
-            self.labelingTool.on_label(event)
+            self.labelingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.scale_btn.isChecked():
-            self.scalingTool.show_tooltip(event)
-            self.scalingTool.on_scale(event)
+            self.scalingTool.specialToolTip(event)
+            self.scalingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.rotate_btn.isChecked():
-            self.rotatingTool.on_rotate(event)
-            self.rotatingTool.show_tooltip(event)
+            self.rotatingTool.specialToolTip(event)
+            self.rotatingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
         elif self.add_canvas_btn.isChecked():
-            self.canvasTool.show_tooltip(event)
-            self.canvasTool.on_add_canvas_drag(event)
+            self.canvasTool.specialToolTip(event)
+            self.canvasTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
@@ -217,7 +217,7 @@ y: {int(self.mapToScene(point).y())}''')
 
         elif self.sculpt_btn.isChecked():
             self.show_tooltip(event)
-            self.sculptingTool.on_sculpt(event)
+            self.sculptingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
@@ -227,28 +227,28 @@ y: {int(self.mapToScene(point).y())}''')
 
     def mouseReleaseEvent(self, event):
         if self.path_btn.isChecked():
-            self.pathDrawingTool.on_path_draw_end(event)
+            self.pathDrawingTool.mouseRelease(event)
 
         elif self.pen_btn.isChecked():
-            self.penDrawingTool.on_draw_end(event)
+            self.penDrawingTool.mouseRelease(event)
 
         elif self.text_btn.isChecked():
             super().mouseReleaseEvent(event)
 
         elif self.line_and_label_btn.isChecked():
-            self.labelingTool.on_label_end(event)
+            self.labelingTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
         elif self.scale_btn.isChecked():
-            self.scalingTool.on_scale_end(event)
+            self.scalingTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
         elif self.rotate_btn.isChecked():
-            self.rotatingTool.on_rotate_end(event)
+            self.rotatingTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
         elif self.add_canvas_btn.isChecked():
-            self.canvasTool.on_add_canvas_end(event)
+            self.canvasTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
         elif self.pan_btn.isChecked():
@@ -256,7 +256,7 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseReleaseEvent(event)
 
         elif self.sculpt_btn.isChecked():
-            self.sculptingTool.on_sculpt_end(event)
+            self.sculptingTool.mouseRelease(event)
             self.disable_item_flags()
 
         else:
@@ -271,13 +271,13 @@ y: {int(self.mapToScene(point).y())}''')
 
     def mouseDoubleClickEvent(self, event):
         if self.sculpt_btn.isChecked():
-            self.sculptingTool.on_sculpt_double_click(event)
+            self.sculptingTool.mouseDoublePress(event)
 
         if self.scale_btn.isChecked():
-            self.scalingTool.on_scale_double_click(event)
+            self.scalingTool.mouseDoublePress(event)
 
         elif self.rotate_btn.isChecked():
-            self.rotatingTool.on_rotate_double_click(event)
+            self.rotatingTool.mouseDoublePress(event)
 
         else:
             super().mouseDoubleClickEvent(event)
@@ -347,10 +347,10 @@ y: {int(self.mapToScene(point).y())}''')
         if self.sculpt_btn.isChecked() and not self.isPanning:
             if self.sculptingTool.sculpting_item:
                 if event.angleDelta().y() > 0:
-                    self.scene().parentWindow.use_set_sculpt_radius(
+                    self.sculptingTool.setSculptRadius(
                         self.sculptingTool.sculpt_radius + 5 if self.sculptingTool.sculpt_radius <= 1000 else 1000)
                 else:
-                    self.scene().parentWindow.use_set_sculpt_radius(
+                    self.sculptingTool.setSculptRadius(
                         self.sculptingTool.sculpt_radius - 5 if self.sculptingTool.sculpt_radius >= 1 else 1)
 
                 self.scene().parentWindow.scene_tab.sculpt_radius_spin.blockSignals(True)
