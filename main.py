@@ -11,6 +11,8 @@ this file is the one you might want to read over to learn MPRUN's
 internal functions.
 """
 import os
+import webbrowser
+
 from mp_software_stylesheets.styles import blenderCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
@@ -549,6 +551,16 @@ class MPRUN(QMainWindow):
         browse_tutorials_action.setShortcut(Qt.Key_F1)
         browse_tutorials_action.triggered.connect(self.show_help)
 
+        contact_developers_action = QAction('Contact Developers', self)
+        contact_developers_action.setIcon(QIcon('ui/Main Logos/github_icon.png'))
+        contact_developers_action.triggered.connect(lambda:
+                                                    webbrowser.open('https://github.com/ktechhydle/mprun_repo/discussions/5'))
+
+        ask_a_question_action = QAction('Ask A Question', self)
+        ask_a_question_action.setIcon(QIcon('ui/Main Logos/reddit_icon.png'))
+        ask_a_question_action.triggered.connect(lambda:
+                                                webbrowser.open('https://www.reddit.com/r/mp_software/'))
+
         check_update_action = QAction('Check for Updates', self)
         check_update_action.triggered.connect(self.check_for_updates)
 
@@ -565,12 +577,16 @@ class MPRUN(QMainWindow):
         show_tip_of_the_day_action.triggered.connect(self.show_tip_of_the_day)
 
         python_scripting_action = QAction('Python Scripting', self)
+        python_scripting_action.setIcon(QIcon('ui/Main Logos/python_icon.png'))
         python_scripting_action.triggered.connect(self.show_scripts)
 
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
         self.help_menu.addSeparator()
         self.help_menu.addAction(browse_tutorials_action)
+        self.help_menu.addAction(contact_developers_action)
+        self.help_menu.addAction(ask_a_question_action)
+        self.help_menu.addSeparator()
         self.help_menu.addAction(check_update_action)
         self.help_menu.addAction(view_settings_action)
         self.help_menu.addAction(reload_ui_action)
