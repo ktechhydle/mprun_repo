@@ -201,6 +201,7 @@ class SceneTo3DView(QOpenGLWidget):
 
         # add axis indicator
         axis_item = AxisItem()
+        axis_item.setLineWidth(1.5)
         self.addItem(axis_item)
 
         if not hasattr(self, 'terrain_item'):
@@ -281,10 +282,10 @@ class SceneTo3DView(QOpenGLWidget):
         """
         Controls zooming in and out
         """
-        delta = event.angleDelta().y() / 120  # 120 units per wheel notch
-        self.zoom += delta * 25.0  # Adjust zoom speed by changing multiplier
-        self.zoom = max(self.zoom, -10000.0)  # Limit zoom out to -1000.0
-        self.update()  # Request a repaint
+        delta = event.angleDelta().y() / 120
+        self.zoom += delta * 25.0
+        self.zoom = max(self.zoom, -64000.0)
+        self.update()
 
     def mousePressEvent(self, event):
         """
