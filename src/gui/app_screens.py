@@ -1140,5 +1140,22 @@ class TipWin(CustomMenu):
         menu.exec(event.globalPos())
 
     def delete(self):
-        self.close()
-        del self  # clear from memory
+        self.setMinimumWidth(25)
+
+        # Get the current window geometry (position and size)
+        start_geometry = self.geometry()
+
+        # Define the final geometry (where it shrinks to)
+        end_geometry = QRect(self.x(), self.y(), 25, self.height())
+
+        # Create the QPropertyAnimation object
+        self.animation = QPropertyAnimation(self, b'geometry')
+        self.animation.setDuration(200)
+        self.animation.setStartValue(start_geometry)
+        self.animation.setEndValue(end_geometry)
+
+        # When the animation finishes, close the window
+        self.animation.finished.connect(self.close)
+
+        # Start the animation
+        self.animation.start()
