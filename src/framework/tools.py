@@ -191,6 +191,7 @@ class LineAndLabelTool(Tool):
 
     def addLabelToScene(self):
         self.pathg_item.setZValue(2)
+        self.pathg_item.setPos(self.pathg_item.pos().x() - self.pathg_item.boundingRect().width(), self.pathg_item.pos().y())
         self.pathg_item.setPen(self.scene.parentWindow.properties_tab.getPen())
         self.pathg_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
         self.pathg_item.text_element.setFont(self.scene.parentWindow.characters_tab.getFont())
