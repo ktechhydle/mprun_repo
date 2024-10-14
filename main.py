@@ -1171,11 +1171,8 @@ class MPRUN(QMainWindow):
             self.properties_tab.y_pos_spin.setValue(int(first_item.sceneBoundingRect().y()))
             self.properties_tab.rotate_item_spin.setValue(int(first_item.rotation()))
             self.properties_tab.opacity_spin.setValue(int(first_item.opacity() * 100))
-
-            width = first_item.boundingRect().width() * (-1 if first_item.transform().m11() < 0 else 1)
-            height = first_item.boundingRect().height() * (-1 if first_item.transform().m22() < 0 else 1)
-            self.properties_tab.width_scale_spin.setValue(width)
-            self.properties_tab.height_scale_spin.setValue(height)
+            self.properties_tab.width_scale_spin.setValue(first_item.transform().m11() * 100)
+            self.properties_tab.height_scale_spin.setValue(first_item.transform().m22() * 100)
 
             # Update label based on selection count
             if len(selected_items) > 1:
@@ -1396,12 +1393,8 @@ class MPRUN(QMainWindow):
                 center_x = bounding_rect.center().x()
                 center_y = bounding_rect.center().y()
 
-                # Calculate the scaling factor for the group
-                current_width = bounding_rect.width()
-                current_height = bounding_rect.height()
-
-                scale_x = x_value / current_width if current_width != 0 else 1
-                scale_y = y_value / current_height if current_height != 0 else 1
+                scale_x = x_value / 100
+                scale_y = y_value / 100
 
                 # Create a transform centered on the bounding box's center
                 old_transforms.append(item.transform())
