@@ -656,8 +656,10 @@ class MPRUN(QMainWindow):
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.libraries_tab.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
+        self.libraries_tab.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
 
-        self.libraries_dock = CustomDockWidget(self)
+        self.libraries_dock = QDockWidget(self)
+        self.libraries_dock.setTitleBarWidget(QWidget())
         self.libraries_dock.setContentsMargins(0, 3, 0, 3)
         self.libraries_dock.setWindowTitle('Libraries')
         self.libraries_dock.setMaximumHeight(375)
