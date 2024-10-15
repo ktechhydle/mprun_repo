@@ -667,8 +667,10 @@ class MPRUN(QMainWindow):
         self.toolbox = CustomToolbox(self)
         self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.toolbox.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
+        self.toolbox.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
 
-        self.tab_view_dock = CustomDockWidget(self)
+        self.tab_view_dock = QDockWidget(self)
+        self.tab_view_dock.setTitleBarWidget(QWidget())
         self.tab_view_dock.setWindowTitle('Panels')
         self.tab_view_dock.setContentsMargins(0, 3, 0, 0)
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
