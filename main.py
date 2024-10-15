@@ -116,13 +116,11 @@ class MPRUN(QMainWindow):
                                                                                                  ]
             _data['saved_view'] = self.current_view()
             _data['toolbox_pos'] = self.current_toolbox_pos()
-            _data['toolbox_collapsed'] = self.tab_view_dock.isCollapsed()
             _data['control_toolbar_hidden'] = self.item_toolbar.isHidden()
             _data['document_toolbar_hidden'] = self.document_toolbar.isHidden()
             _data['toolbar_hidden'] = self.toolbar.isHidden()
             _data['last_used_tool'] = self.action_group.checkedAction().text()
             _data['grid_size'] = self.canvas.gridSize
-            _data['toolbox_index'] = self.toolbox.currentIndex()
             _data['document_toolbar_size'] = self.document_toolbar.iconSize().width()
             _data['item_toolbar_size'] = self.item_toolbar.iconSize().width()
             _data['toolbar_size'] = self.toolbar.iconSize().width()
@@ -152,6 +150,13 @@ class MPRUN(QMainWindow):
                 self.canvas.update()
                 self.canvas_view.update()
 
+    def disableDefaultScrolling(self):
+        opts = Qt.FindChildOption.FindChildrenRecursively
+        widgets = self.findChildren((QAbstractSpinBox, QComboBox, QSlider), options=opts)
+        for box in widgets:
+            box.wheelEvent = lambda *event: None
+            box.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+
     def create_ui(self):
         self.create_initial_canvas()
         self.create_menu()
@@ -163,6 +168,7 @@ class MPRUN(QMainWindow):
         self.create_view()
         self.create_default_objects()
         self.create_actions_dict()
+        self.disableDefaultScrolling()
         self.update()
 
     def create_initial_canvas(self):
@@ -645,16 +651,30 @@ class MPRUN(QMainWindow):
         self.item_toolbar.move(70, 6)
 
     def create_panels(self):
-        # ----action toolbar widgets----#
+        # Upper dock widget
+        self.libraries_tab = LibrariesPanel(self.canvas)
+        self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.libraries_tab.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
+        self.libraries_tab.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
 
-        # Dock widget
+        self.libraries_dock = CustomDockWidget(self)
+        self.libraries_dock.setContentsMargins(0, 3, 0, 3)
+        self.libraries_dock.setWindowTitle('Libraries')
+        self.libraries_dock.setMaximumHeight(375)
+        self.libraries_dock.setWidget(self.libraries_tab.scroll_area)
+        self.libraries_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.libraries_dock)
+
+        # Lower dock widget
         self.toolbox = CustomToolbox(self)
         self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
-        self.toolbox.setMinimumHeight(680)
+        self.toolbox.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
 
-        self.tab_view_dock = CustomDockWidget(self.toolbox, self)
+        self.tab_view_dock = CustomDockWidget(self)
         self.tab_view_dock.setWindowTitle('Panels')
+        self.tab_view_dock.setContentsMargins(0, 3, 0, 0)
         self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
+        self.tab_view_dock.setWidget(self.toolbox.scroll_area)
 
         # Properties Tab
         self.properties_tab = PropertiesPanel(self.canvas, self)
@@ -672,11 +692,6 @@ class MPRUN(QMainWindow):
         self.image_trace_tab.setFixedHeight(375)
         self.image_trace_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
-        # Libraries Tab
-        self.libraries_tab = LibrariesPanel(self.canvas)
-        self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
-
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
         self.canvas_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
@@ -686,22 +701,17 @@ class MPRUN(QMainWindow):
         self.scene_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Add tabs
-        self.toolbox.addItem(self.properties_tab, 'Properties')
-        self.toolbox.addItem(self.libraries_tab, 'Libraries')
-        self.toolbox.addItem(self.characters_tab, 'Characters')
-        self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
-        self.toolbox.addItem(self.canvas_tab, 'Canvas')
         self.toolbox.addItem(self.scene_tab, 'Scene')
-        self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
+        self.toolbox.addItem(self.canvas_tab, 'Canvas')
+        self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
+        self.toolbox.addItem(self.characters_tab, 'Characters')
+        self.toolbox.addItem(self.properties_tab, 'Properties')
+        '''self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
         self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
         self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
         self.toolbox.setItemIcon(3, QIcon('ui/UI Icons/Major/image_trace_panel.svg'))
         self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
-        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))
-
-        # Add action toolbar actions
-        self.tab_view_dock.setWidget(self.toolbox)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
+        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))'''
 
         # Add to actions dict
         self.actions['Change Stroke Color'] = self.properties_tab.stroke_color_btn
@@ -2105,7 +2115,6 @@ class MPRUN(QMainWindow):
         self.view_as(user_data['saved_view'])
         dock_position = Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea
         self.addDockWidget(dock_position, self.tab_view_dock)
-        self.tab_view_dock.collapse() if user_data['toolbox_collapsed'] else self.tab_view_dock.expand()
 
     def apply_toolbar_settings(self, user_data):
         self.document_toolbar.setHidden(user_data['document_toolbar_hidden'])
@@ -2121,7 +2130,6 @@ class MPRUN(QMainWindow):
     def apply_undo_and_canvas_settings(self, user_data):
         self.undo_stack.setUndoLimit(user_data['undo_limit'])
         self.canvas.setGridSize(user_data['grid_size'])
-        self.toolbox.setCurrentIndex(user_data['toolbox_index'])
 
         if user_data.get('use_gpu'):
             viewport = CustomViewport()
@@ -2292,9 +2300,6 @@ class MPRUN(QMainWindow):
         self.reset_toolbars()
 
         self.menuBar().setStyleSheet('font-size: 16px;')
-
-        if self.tab_view_dock.isCollapsed():
-            self.tab_view_dock.expand()
 
         self.cur_view = ''
 

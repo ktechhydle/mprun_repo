@@ -462,32 +462,10 @@ class CustomExternalLinkLabel(QLabel):
 
 
 class CustomDockWidget(QDockWidget):
-    def __init__(self, toolbox: QToolBox, parent=None):
+    def __init__(self, parent=None):
         super().__init__(parent)
-        self.setLayout(QVBoxLayout())
         self.setFeatures(QDockWidget.AllDockWidgetFeatures)
-        self.toolbox = toolbox
-        self.icon_buttons = []
-        self.panels = []
-        self.panel_names = []
-        self.indexes = []
-        self.is_collapsed = False
         self.paint()
-
-    def moveEvent(self, event):
-        super().moveEvent(event)
-
-        # If the popup exists and is visible, update its position
-        if hasattr(self, 'popup') and self.popup.isVisible():
-            # Get the position of the icon button corresponding to the open panel
-            button = self.icon_buttons[self.currentPopupIndex()]
-            button_pos = button.mapToGlobal(QPoint(0, 0))
-
-            # Update the popup position relative to the new button position
-            popup_pos = button_pos + QPoint(button.width(), -38)
-            new_popup_pos = QPoint(((popup_pos.x() - self.popup.actions()[0].defaultWidget().width()) - button.width()) - 10, popup_pos.y())
-
-            self.popup.move(new_popup_pos)
 
     def paint(self):
         self.close_btn = QPushButton('', self)
@@ -498,168 +476,104 @@ class CustomDockWidget(QDockWidget):
         self.close_btn.setObjectName('noneBorderedButton')
         self.close_btn.setFixedSize(QSize(18, 18))
 
-        self.minimize_btn = QPushButton('', self)
-        self.minimize_btn.setToolTip('Collapse')
-        self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/minimize.svg'))
-        self.minimize_btn.setIconSize(QSize(16, 16))
-        self.minimize_btn.clicked.connect(self.toggleCollapse)
-        self.minimize_btn.setObjectName('noneBorderedButton')
-        self.minimize_btn.setFixedSize(QSize(18, 18))
-
         self.title_bar = QWidget(self)
         self.title_bar.setObjectName('dockWidgetTitleBar')
         self.title_bar.setFixedHeight(25)
         self.title_bar.setLayout(QHBoxLayout())
         self.title_bar.layout().addStretch()
-        self.title_bar.layout().addWidget(self.minimize_btn)
         self.title_bar.layout().addWidget(self.close_btn)
         self.title_bar.layout().setContentsMargins(0, 0, 0, 0)
         self.title_bar.layout().setSpacing(0)
 
         self.setTitleBarWidget(self.title_bar)
 
-    def toggleCollapse(self):
-        if self.isCollapsed():
-            self.expand()
-        else:
-            self.collapse()
 
-    def collapse(self):
-        self.setFixedWidth(125)
-        self.is_collapsed = True
-        self.icon_buttons = []
-
-        icons_widget = QWidget(self)
-        icons_layout = QVBoxLayout()
-        icons_layout.setContentsMargins(5, 5, 5, 5)
-        icons_widget.setLayout(icons_layout)
-
-        for i in range(self.toolbox.count()):
-            btn = QPushButton(self.toolbox.itemText(i), self)
-            btn.setIcon(self.toolbox.itemIcon(i))
-            btn.clicked.connect(lambda _, idx=i: self.showToolboxPanel(idx))
-            icons_layout.addWidget(btn)
-            self.icon_buttons.append(btn)
-
-        icons_widget.layout().addStretch()
-
-        self.setWidget(icons_widget)
-        self.minimize_btn.setToolTip('Expand to panels')
-        self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/maximize.svg'))
-
-    def expand(self):
-        self.setFixedWidth(300)
-        self.is_collapsed = False
-        self.minimize_btn.setToolTip('Collapse to buttons')
-        self.minimize_btn.setIcon(QIcon('mp_software_stylesheets/assets/minimize.svg'))
-
-        if 0 < len(self.panels) == len(self.indexes):
-            for i in range(len(self.indexes)):
-                QTimer.singleShot(250 * i,
-                                  lambda idx=i: self.toolbox.setWidgetAtIndex(self.indexes[idx], self.panels[idx],
-                                                                              self.panel_names[idx]))
-                print(f"Setting widget at index: {self.indexes[i]} with panel: {self.panels[i]}")
-
-        if hasattr(self, 'popup'):
-            self.popup.close()
-
-        self.setWidget(self.toolbox)
-        QTimer.singleShot(len(self.indexes) * 500, lambda: self.toolbox.createIcons())
-
-    def showToolboxPanel(self, index):
-        panel = self.toolbox.widget(index)
-
-        if index not in self.indexes:
-            self.panels.append(panel)
-            self.panel_names.append(self.toolbox.itemText(index))
-            self.indexes.append(index)
-
-        print(self.panels)
-        print(self.panel_names)
-        print(self.indexes)
-
-        if hasattr(self, 'popup'):
-            self.popup.close()
-        self.popup = CustomMenu(self)
-        self.popup.index = index
-        self.popup.setObjectName('tipWindow')
-        self.popup.resize(panel.width(), panel.height())
-        self.popup.setWindowFlag(Qt.WindowType.Tool)
-        action = QWidgetAction(self.popup)
-        action.setDefaultWidget(panel)
-        self.popup.addAction(action)
-
-        button = self.icon_buttons[index]
-        button_pos = button.mapToGlobal(QPoint(0, 0))
-
-        popup_pos = button_pos + QPoint(button.width(), 0)
-        self.popup.exec_(QPoint(((popup_pos.x() - panel.width()) - button.width()) - 10, popup_pos.y()))
-
-    def isCollapsed(self):
-        return self.is_collapsed
-
-    def currentPopupIndex(self):
-        return self.popup.index
-
-    def closeEvent(self, event):
-        if hasattr(self, 'popup'):
-            self.popup.close()
-
-        event.accept()
-
-
-class CustomToolbox(QToolBox):
+class CustomToolbox(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+        self.setLayout(QVBoxLayout())
+        self.layout().setContentsMargins(10, 10, 10, 10)
+        self.layout().addStretch()
 
-        for i in range(self.count()):
-            page = self.widget(i)
-            scroll_area = page.findChild(QScrollArea)
-            if scroll_area:
-                scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-                scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll_area.setObjectName('customScrollArea')
+        self.scroll_area.setFixedWidth(self.width() + 20)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self)
 
-    def setWidgetAtIndex(self, index, widget, name):
-        self.removeItem(index)
-        self.insertItem(index, widget, name)
+        self._control_parent = parent
+        self._buttons = []
 
-    def wheelEvent(self, event: QWheelEvent):
-        if event.modifiers() == Qt.ShiftModifier:
-            if event.angleDelta().y() > 0 and self.currentIndex() > 0:
-                self.setCurrentIndex(self.currentIndex() - 1)  # Scroll up
-            elif event.angleDelta().y() < 0 and self.currentIndex() < self.count() - 1:
-                self.setCurrentIndex(self.currentIndex() + 1)  # Scroll down
-            return
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        # Create a custom context menu
+        menu = CustomMenu(self)
 
-        # Get the mouse position relative to the toolbox
-        mouse_pos = event.globalPosition().toPoint() - self.mapToGlobal(QPoint(0, 0))
+        collapse_all_action = QAction('&Collapse All', self)
+        collapse_all_action.triggered.connect(self.collapseAll)
+        expand_all_action = QAction('&Expand All', self)
+        expand_all_action.triggered.connect(self.expandAll)
+        help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
+        help_action.triggered.connect(self.controlParent().show_help)
 
-        # Get the current index
-        current_index = self.currentIndex()
-        max_index = self.count() - 1  # Get the maximum index
+        menu.addAction(collapse_all_action)
+        menu.addAction(expand_all_action)
+        menu.addSeparator()
+        menu.addAction(help_action)
 
-        title_rect = self.calculateTitleRect()
+        menu.exec(event.globalPos())
 
-        if title_rect.contains(mouse_pos):
-            if event.angleDelta().y() > 0 and current_index > 0:
-                self.setCurrentIndex(current_index - 1)  # Scroll up
-            elif event.angleDelta().y() < 0 and current_index < max_index:
-                self.setCurrentIndex(current_index + 1)  # Scroll down
+    def addItem(self, widget: QWidget, text: str, icon: QIcon = None):
+        button = QPushButton(text)
+        button.setObjectName('panelTitle')
+        button.setCheckable(True)
+        button.widget = widget
+        button.widget.setVisible(False)
+        button.clicked.connect(lambda: self.toggleWidget(button))
 
-    def calculateTitleRect(self):
-        # Calculate the height of each title item based on the index
-        title_height = self.style().pixelMetric(self.style().PM_TitleBarHeight)  # Standard height for title bar
+        if icon:
+            button.setIcon(icon)
 
-        # Create a rectangle for the title area of the current item
-        return QRect(0, 0, self.width(), title_height)
+        self._buttons.append(button)
+        self.layout().insertWidget(0, button.widget)
+        self.layout().insertWidget(0, button)
 
-    def createIcons(self):
-        self.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
-        self.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
-        self.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
-        self.setItemIcon(3, QIcon('ui/UI Icons/Major/image_trace_panel.svg'))
-        self.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
-        self.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))
+    def collapseAll(self):
+        for button in self.buttons():
+            button.setChecked(False)
+            self.toggleWidget(button)
+
+    def expandAll(self):
+        for button in self.buttons():
+            button.setChecked(True)
+            self.toggleWidget(button)
+
+    def toggleWidget(self, button: QPushButton):
+        if button.isChecked():
+            button.widget.setVisible(True)
+            self.scroll_area.ensureWidgetVisible(button.widget)
+
+        else:
+            button.widget.setVisible(False)
+
+    def buttons(self) -> list[QPushButton]:
+        return self._buttons
+
+    def setCurrentWidget(self, widget: QWidget):
+        self.collapseAll()
+
+        for button in self.buttons():
+            if button.widget == widget:
+                button.setChecked(True)
+                self.toggleWidget(button)
+
+    def setCurrentIndex(self, index: int):
+        self.buttons()[index].setChecked(True)
+        self.toggleWidget(self.buttons()[index])
+
+    def controlParent(self) -> QWidget:
+        return self._control_parent
 
 
 class CustomListWidget(QListWidget):

@@ -292,13 +292,15 @@ class PropertiesPanel(QWidget):
 class LibrariesPanel(QWidget):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
-        self.setMinimumHeight(325)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll_area.setObjectName('customScrollArea')
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setWidget(self)
 
         self.current_folder_path = ""
-
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
-
         self.canvas = canvas
 
         # List widget for the library
