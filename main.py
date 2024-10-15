@@ -529,16 +529,12 @@ class MPRUN(QMainWindow):
         simple_view_action = QAction('Dyslexia Friendly', self)
         simple_view_action.triggered.connect(lambda: self.view_as('simple'))
 
-        swapped_view_action = QAction('Swapped', self)
-        swapped_view_action.triggered.connect(lambda: self.view_as('swapped'))
-
         default_view_action = QAction('Default', self)
         default_view_action.triggered.connect(lambda: self.view_as('normal'))
 
         view_options_menu.addAction(read_only_view_action)
         view_options_menu.addAction(tools_only_view_action)
         view_options_menu.addAction(simple_view_action)
-        view_options_menu.addAction(swapped_view_action)
         view_options_menu.addAction(default_view_action)
 
         self.view_menu.addAction(control_toolbar_view_action)
@@ -2259,6 +2255,7 @@ class MPRUN(QMainWindow):
             self.unhide()
             self.cur_view = 'read_only'
             self.tab_view_dock.setHidden(True)
+            self.libraries_dock.setHidden(True)
             self.item_toolbar.setHidden(True)
             self.document_toolbar.setHidden(True)
             self.toolbar.setHidden(True)
@@ -2268,19 +2265,18 @@ class MPRUN(QMainWindow):
             self.item_toolbar.setHidden(True)
             self.document_toolbar.setHidden(True)
             self.tab_view_dock.setHidden(True)
+            self.libraries_dock.setHidden(True)
 
         elif view == 'simple':
             self.unhide()
             self.cur_view = 'simple'
+            self.toolbar.setIconSize(QSize(60, 60))
+            self.toolbar.adjustSize()
             self.item_toolbar.setHidden(True)
             self.document_toolbar.setHidden(True)
-            self.tab_view_dock.collapse()
+            self.toolbox.collapseAll()
 
-            self.menuBar().setStyleSheet('font-size: 30px;')
-
-        elif view == 'swapped':
-            self.unhide()
-            self.addDockWidget(Qt.LeftDockWidgetArea, self.tab_view_dock)
+            self.menuBar().setStyleSheet('QMenuBar { font-size: 30px; }')
 
         elif view == 'control_bar_hidden':
             self.item_toolbar.setHidden(True)
@@ -2298,6 +2294,7 @@ class MPRUN(QMainWindow):
 
     def unhide(self) -> None:
         self.tab_view_dock.setHidden(False)
+        self.libraries_dock.setHidden(False)
         self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
         self.reset_toolbars()
 
