@@ -497,9 +497,9 @@ class CustomToolbox(QWidget):
         self.layout().addStretch()
 
         self.scroll_area = QScrollArea()
+        self.scroll_area.horizontalScrollBar().setEnabled(False)
         self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.scroll_area.setObjectName('customScrollArea')
-        self.scroll_area.setFixedWidth(self.width() + 20)
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self)
 
