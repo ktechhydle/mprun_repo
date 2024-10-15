@@ -64,7 +64,7 @@ class SceneTo3DView(QOpenGLWidget):
         self.outline_width_slider.setFixedHeight(200)
         self.outline_width_slider.setOrientation(Qt.Orientation.Vertical)
         self.outline_width_slider.setRange(1, 10)
-        self.outline_width_slider.setValue(3)
+        self.outline_width_slider.setValue(1)
         self.outline_width_slider.valueChanged.connect(self.update)
 
         self.layout().addWidget(navigation_label)
@@ -207,6 +207,7 @@ class SceneTo3DView(QOpenGLWidget):
         if not hasattr(self, 'terrain_item'):
             self.terrain_item = ObjItem('course elements/3d/terrain.obj')
             self.terrain_item.setColor('#ebe4ec')
+            self.terrain_item.setOutlineColor('#000000')
             self.terrain_item.setRotation(-90, [1, 0, 0])
             self.terrain_item.setScale([200, 200, 200])
             self.terrain_item.setOutlineEnabled(True)

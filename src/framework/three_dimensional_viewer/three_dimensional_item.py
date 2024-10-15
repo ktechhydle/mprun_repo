@@ -180,6 +180,7 @@ class ObjItem(Item):
         super().__init__()
         self.outline = False
         self.outline_width = 3
+        self.outline_color = [0, 0, 0]
         self.file = file
         self.vertices, self.faces, self.materials = self.loadOBJFile(self.file)
         self.vertex_vbo = None
@@ -238,8 +239,7 @@ class ObjItem(Item):
 
             # Set outline color and width
             glLineWidth(self.outlineWidth())
-            r, g, b = hexToRGB('#aba4ab')
-            glColor3f(r, g, b)
+            glColor3f(self.outline_color[0], self.outline_color[1], self.outline_color[2])
 
             # Enable wireframe mode
             glPolygonMode(GL_BACK, GL_LINE)
@@ -274,6 +274,13 @@ class ObjItem(Item):
 
     def outlineWidth(self):
         return self.outline_width
+
+    def setOutlineColor(self, hex_code: str):
+        r, g, b = hexToRGB(hex_code)
+        self.outline_color = [r, g, b]
+
+    def outlineColor(self):
+        return self.outline_color
 
     def loadOBJFile(self, file_path):
         vertices = []
