@@ -201,7 +201,7 @@ class SceneTo3DView(QOpenGLWidget):
 
         # add axis indicator
         axis_item = AxisItem()
-        axis_item.setLineWidth(1.5)
+        axis_item.setLineWidth(1)
         self.addItem(axis_item)
 
         if not hasattr(self, 'terrain_item'):
