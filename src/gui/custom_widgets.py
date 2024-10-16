@@ -1,4 +1,5 @@
 import os.path
+import sys
 import time
 from src.scripts.imports import *
 from src.framework.items import *
@@ -701,7 +702,10 @@ class CustomMenu(QMenu):
         super().__init__(*args, **kwargs)
         self.setMinimumSize(150, 30)
         self.radius = 10
-        self.setObjectName('customMenu')
+
+        if not sys.platform == 'darwin':
+            self.setObjectName('customMenu')
+
 
     def addMenu(self, menu, parent=None):
         if isinstance(menu, QMenu):
@@ -713,16 +717,17 @@ class CustomMenu(QMenu):
             return m
 
     def resizeEvent(self, event):
-        path = QPainterPath()
-        rect = QRectF(self.rect()).adjusted(.5, .5, -1.5, -1.5)
-        path.addRoundedRect(rect, self.radius, self.radius)
+        if not sys.platform == 'darwin':
+            path = QPainterPath()
+            rect = QRectF(self.rect()).adjusted(.5, .5, -1.5, -1.5)
+            path.addRoundedRect(rect, self.radius, self.radius)
 
-        palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(0, 0, 0, 200))  # Set the color
-        self.setPalette(palette)
+            palette = self.palette()
+            palette.setColor(QPalette.Window, QColor(0, 0, 0, 200))  # Set the color
+            self.setPalette(palette)
 
-        region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
-        self.setMask(region)
+            region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
+            self.setMask(region)
 
 
 class CustomSpinBox(QWidget):
