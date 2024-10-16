@@ -587,7 +587,8 @@ class CustomToolbox(QWidget):
     def toggleWidget(self, button: CustomButton):
         if button.isChecked():
             button.widget.setVisible(True)
-            button.setFixedHeight(button.widget.height() + button.height())
+            button.setFixedHeight(button.widget.height() + button.height() + (button.height()
+                                                                              if sys.platform == 'darwin' else 0))
             self.scroll_area.ensureWidgetVisible(button.widget)
 
         else:
