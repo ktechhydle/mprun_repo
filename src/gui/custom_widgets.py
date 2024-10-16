@@ -488,6 +488,37 @@ class CustomDockWidget(QDockWidget):
         self.setTitleBarWidget(self.title_bar)
 
 
+class CustomButton(QPushButton):
+    def __init__(self, text):
+        super().__init__()
+        self.setFixedHeight(27)
+
+        self._text = text
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+
+        pixmap = QPixmap('mp_software_stylesheets/assets/triangle-right.svg' if not self.isChecked() else
+                         'mp_software_stylesheets/assets/triangle-down.svg')
+        padding_x = 30
+        padding_y = 18
+        new_pos = QPoint(padding_x, padding_y)
+
+        painter = QPainter(self)
+        painter.begin(self)
+        painter.drawPixmap(QRect(0, -2, 30, 30), pixmap, pixmap.rect())
+        painter.drawText(new_pos, self._text)
+        painter.end()
+
+    def mousePressEvent(self, event):
+        # Check if the mouse is within the top 30 pixels of the button
+        if event.y() < 30:  # Check if the mouse is in the top 30 pixels
+            super().mousePressEvent(event)  # Call the base class implementation
+
+    def restoreSize(self):
+        self.setFixedHeight(27)
+
+
 class CustomToolbox(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -525,18 +556,21 @@ class CustomToolbox(QWidget):
         menu.exec(event.globalPos())
 
     def addItem(self, widget: QWidget, text: str, icon: QIcon = None):
-        button = QPushButton(text)
+        button = CustomButton(text)
         button.setObjectName('panelTitle')
         button.setCheckable(True)
         button.widget = widget
         button.widget.setVisible(False)
         button.clicked.connect(lambda: self.toggleWidget(button))
 
+        button.setLayout(QVBoxLayout())
+        button.layout().setContentsMargins(0, 30, 0, 0)
+        button.layout().addWidget(button.widget)
+
         if icon:
             button.setIcon(icon)
 
         self._buttons.append(button)
-        self.layout().insertWidget(0, button.widget)
         self.layout().insertWidget(0, button)
 
     def collapseAll(self):
@@ -549,13 +583,15 @@ class CustomToolbox(QWidget):
             button.setChecked(True)
             self.toggleWidget(button)
 
-    def toggleWidget(self, button: QPushButton):
+    def toggleWidget(self, button: CustomButton):
         if button.isChecked():
             button.widget.setVisible(True)
+            button.setFixedHeight(button.widget.height() + button.height())
             self.scroll_area.ensureWidgetVisible(button.widget)
 
         else:
             button.widget.setVisible(False)
+            button.restoreSize()
 
     def buttons(self) -> list[QPushButton]:
         return self._buttons
