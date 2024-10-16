@@ -714,12 +714,13 @@ class CustomMenu(QMenu):
 
     def resizeEvent(self, event):
         path = QPainterPath()
-        # the rectangle must be translated and adjusted by 1 pixel in order to
-        # correctly map the rounded shape
         rect = QRectF(self.rect()).adjusted(.5, .5, -1.5, -1.5)
         path.addRoundedRect(rect, self.radius, self.radius)
-        # QRegion is bitmap based, so the returned QPolygonF (which uses float
-        # values must be transformed to an integer based QPolygon
+
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor(0, 0, 0, 200))  # Set the color
+        self.setPalette(palette)
+
         region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
         self.setMask(region)
 

@@ -11,6 +11,8 @@ this file is the one you might want to read over to learn MPRUN's
 internal functions.
 """
 import os
+import sys
+import time
 import webbrowser
 
 from mp_software_stylesheets.styles import blenderCSS
@@ -269,6 +271,7 @@ class MPRUN(QMainWindow):
         characters_menu = self.tool_menu.addMenu('Characters', parent=self)
         image_menu = self.tool_menu.addMenu('Image', parent=self)
         scene_menu = self.tool_menu.addMenu('Scene', parent=self)
+        training_menu = self.tool_menu.addMenu('Training', parent=self)
 
         select_action = QAction('Select', self)
         select_action.setShortcut(QKeySequence(Qt.Key_Space))
@@ -339,6 +342,9 @@ class MPRUN(QMainWindow):
         add_shape_tri = QAction('Add Triangle', self)
         add_shape_tri.triggered.connect(lambda: self.use_insert_shape('triangle'))
 
+        trick_detection_action = QAction('Trick Detection', self)
+        trick_detection_action.triggered.connect(self.use_trick_detection)
+
         add_shape_menu.addAction(add_shape_rect)
         add_shape_menu.addAction(add_shape_circle)
         add_shape_menu.addAction(add_shape_tri)
@@ -365,6 +371,8 @@ class MPRUN(QMainWindow):
         scene_menu.addAction(add_canvas_action)
         scene_menu.addAction(arrange_canvases_action)
         scene_menu.addAction(rename_canvases_action)
+
+        training_menu.addAction(trick_detection_action)
 
     def create_edit_menu(self):
         undo_action = QAction('Undo', self)
@@ -2017,6 +2025,9 @@ class MPRUN(QMainWindow):
     def use_repair_file(self):
         self.w = FileDataRepairer(self)
 
+    def use_trick_detection(self):
+        pass
+
     def insert_image(self):
         self.canvas.importManager.importFile()
 
@@ -2357,13 +2368,12 @@ def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
-    app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'])
+    app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'] if sys.platform != 'darwin' else [])
 
     splash = QSplashScreen(QIcon(random.choice(SPLASH_CHOICES)).pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
     splash.show()
 
     app.processEvents()
-
     app.setStyleSheet(blenderCSS)
 
     window = MPRUN()
