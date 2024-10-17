@@ -18,6 +18,7 @@ import webbrowser
 from mp_software_stylesheets.styles import blenderCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
+from src.framework.trick_detector.trick_detector import PoseDetector
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin, ScriptingWin
 from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
@@ -2026,7 +2027,8 @@ class MPRUN(QMainWindow):
         self.w = FileDataRepairer(self)
 
     def use_trick_detection(self):
-        pass
+        self.w = PoseDetector()
+        self.w.show()
 
     def insert_image(self):
         self.canvas.importManager.importFile()
