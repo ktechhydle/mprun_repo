@@ -14,7 +14,8 @@ class PoseDetector(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
-        self.setWindowTitle('Trick Trainer')
+        self.setWindowTitle('Trick Analyzer')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setFixedSize(800, 600)
         self.setLayout(QVBoxLayout())
 

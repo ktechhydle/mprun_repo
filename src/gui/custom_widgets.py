@@ -74,6 +74,7 @@ class CustomToolbar(QToolBar):
     def contextMenuEvent(self, event):
         # Create a custom context menu
         menu = CustomMenu(self)
+        menu.setAnimationEnabled(True)
 
         help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
 
@@ -339,6 +340,7 @@ class StrokeLabel(QLabel):
 
         self.menu = CustomMenu(self)
         self.menu.setObjectName('tipWindow')
+        self.menu.setAnimationEnabled(True)
 
         self.stroke_style_options = {'Solid Stroke': Qt.SolidLine,
                                      'Dotted Stroke': Qt.DotLine,
@@ -416,7 +418,7 @@ class StrokeLabel(QLabel):
         y = btn_pos.y() + 25
         x = btn_pos.x() - self.width()
 
-        self.menu.exec_(QPoint(x, y))
+        self.menu.exec(QPoint(x, y))
 
 
 class CustomIconWidget(QLabel):
@@ -541,6 +543,7 @@ class CustomToolbox(QWidget):
     def contextMenuEvent(self, event: QContextMenuEvent):
         # Create a custom context menu
         menu = CustomMenu(self)
+        menu.setAnimationEnabled(True)
 
         collapse_all_action = QAction('&Collapse All', self)
         collapse_all_action.triggered.connect(self.collapseAll)
@@ -677,7 +680,8 @@ class CustomListWidget(QListWidget):
             # Set default attributes
             item.setPos(0, 0)
             item.setZValue(0)
-            item.setFlags(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+            item.setFlags(
+                QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
 
             # Add item to scene
             add_command = AddItemCommand(self.scene, item)
@@ -703,10 +707,10 @@ class CustomMenu(QMenu):
         super().__init__(*args, **kwargs)
         self.setMinimumSize(150, 30)
         self.radius = 10
+        self._animation_enabled = False
 
         if not sys.platform == 'darwin':
             self.setObjectName('customMenu')
-
 
     def addMenu(self, menu, parent=None):
         if isinstance(menu, QMenu):
@@ -729,6 +733,35 @@ class CustomMenu(QMenu):
 
             region = QRegion(path.toFillPolygon(QTransform()).toPolygon())
             self.setMask(region)
+
+    def exec(self, pos=None):
+        if pos and self.animationEnabled():
+            screen_rect = QApplication.primaryScreen().availableGeometry()
+
+            # Get the menu's size (this is available after it's created)
+            menu_size = self.sizeHint()
+
+            # Check if the menu would go off the right or bottom of the screen
+            if pos.x() + menu_size.width() > screen_rect.right():
+                pos.setX(screen_rect.right() - menu_size.width())
+            if pos.y() + menu_size.height() > screen_rect.bottom():
+                pos.setY(screen_rect.bottom() - menu_size.height())
+
+            # If animation is enabled
+            self.animation = QPropertyAnimation(self, b'pos')
+            self.animation.setDuration(100)
+            self.animation.setStartValue(QPoint(pos.x(), pos.y() + 10))
+            self.animation.setEndValue(pos)
+
+            self.animation.start()
+
+        super().exec(pos)
+
+    def setAnimationEnabled(self, enabled: bool):
+        self._animation_enabled = enabled
+
+    def animationEnabled(self):
+        return self._animation_enabled
 
 
 class CustomSpinBox(QWidget):

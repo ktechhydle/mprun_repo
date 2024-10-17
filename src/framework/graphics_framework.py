@@ -285,6 +285,7 @@ y: {int(self.mapToScene(point).y())}''')
     def contextMenuEvent(self, event: QContextMenuEvent):
         # Create a custom context menu
         menu = CustomMenu(self)
+        menu.setAnimationEnabled(True)
 
         copy_action = QAction('&Copy', self)
         copy_action.triggered.connect(self.canvas.copy)
