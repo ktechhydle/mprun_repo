@@ -1166,7 +1166,7 @@ class TipWin(CustomMenu):
         self.animation = QPropertyAnimation(self, b'pos')
         self.animation.setDuration(100)
         self.animation.setStartValue(self.pos())
-        self.animation.setEndValue(QPoint(self.pos().x() - self.width(), self.pos().y()))
+        self.animation.setEndValue(QPoint(self.pos().x(), self.pos().y() + self.height()))
 
         # When the animation finishes, close the window
         self.animation.finished.connect(self.close)
