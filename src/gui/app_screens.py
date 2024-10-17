@@ -945,7 +945,30 @@ mprun.panel_container.addItem(Panel(), 'Test Panel')
             self.mprun.toolbar,
             self.mprun.menu_bar,
             self.mprun.canvas,
-            self.mprun.canvas_view
+            self.mprun.canvas_view,
+            [self.mprun.findChildren,
+             self.mprun.findChild,
+             self.mprun.isVisible,
+             self.mprun.isHidden,
+             self.mprun.isMaximized,
+             self.mprun.isModal,
+             self.mprun.isFullScreen,
+             self.mprun.isAncestorOf,
+             self.mprun.width,
+             self.mprun.height,
+             self.mprun.x,
+             self.mprun.y,
+             self.mprun.pos,
+             self.mprun.geometry,
+             self.mprun.rect,
+             self.mprun.children,
+             self.mprun.find,
+             self.mprun.update,
+             self.mprun.isEnabled,
+             self.mprun.isLeftToRight,
+             self.mprun.isMinimized,
+             self.mprun.isRightToLeft,
+             self.mprun.isSignalConnected]
         )
 
         context = {
