@@ -153,11 +153,12 @@ class MPRUN(QMainWindow):
                 self.canvas.update()
                 self.canvas_view.update()
 
-    def disableDefaultScrolling(self):
+    def disableDefaultWidgetEvents(self):
         opts = Qt.FindChildOption.FindChildrenRecursively
-        widgets = self.findChildren((QAbstractSpinBox, QComboBox, QSlider), options=opts)
+        widgets = self.findChildren((QAbstractSpinBox, QComboBox, QSlider, QLineEdit), options=opts)
         for box in widgets:
             box.wheelEvent = lambda *event: None
+            box.contextMenuEvent = lambda *event: None
             box.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
     def create_ui(self):
@@ -171,7 +172,7 @@ class MPRUN(QMainWindow):
         self.create_view()
         self.create_default_objects()
         self.create_actions_dict()
-        self.disableDefaultScrolling()
+        self.disableDefaultWidgetEvents()
         self.update()
 
     def create_initial_canvas(self):

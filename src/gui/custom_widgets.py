@@ -701,6 +701,35 @@ class CustomMenuBar(QMenuBar):
             super().addMenu(m)
             return m
 
+    def contextMenuEvent(self, event):
+        menu = CustomMenu(self)
+        menu.setAnimationEnabled(True)
+
+        for dock in self.parent().findChildren(QDockWidget, options=Qt.FindChildOption.FindChildrenRecursively):
+            action = QAction(dock.windowTitle(), self)
+            action.dock = dock
+            action.setCheckable(True)
+            action.setChecked(dock.isVisible())
+
+            # Bind the current value of dock using a default argument
+            action.triggered.connect(lambda checked, d=dock: self.toggleDock(d))
+            menu.addAction(action)
+
+        help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
+        help_action.triggered.connect(self.parent().show_help)
+
+        menu.addSeparator()
+        menu.addAction(help_action)
+
+        menu.exec(event.globalPos())
+
+    def toggleDock(self, dock: QDockWidget):
+        if dock.isVisible():
+            dock.setHidden(True)
+            return
+
+        dock.setHidden(False)
+
 
 class CustomMenu(QMenu):
     def __init__(self, *args, **kwargs):
