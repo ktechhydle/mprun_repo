@@ -1,5 +1,5 @@
-import os.path
-
+import os
+from scipy.signal import savgol_filter
 from src.scripts.imports import *
 from src.framework.undo_commands import *
 

@@ -20,4 +20,3 @@ from PyQt5.QtSvg import *
 from PyQt5.Qt import *
 from PyQt5.QtMultimedia import *
 from PyQt5.QtMultimediaWidgets import *
-from scipy.signal import savgol_filter

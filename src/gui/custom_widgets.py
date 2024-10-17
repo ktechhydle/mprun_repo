@@ -515,8 +515,24 @@ class CustomButton(QPushButton):
 
     def mousePressEvent(self, event):
         # Check if the mouse is within the top 30 pixels of the button
-        if event.y() < 30:  # Check if the mouse is in the top 30 pixels
-            super().mousePressEvent(event)  # Call the base class implementation
+        if event.y() < 30:
+            super().mousePressEvent(event)
+
+    def setFixedHeight(self, h):
+        self.animation = QPropertyAnimation(self, b"geometry")
+        self.animation.setDuration(100)
+
+        start_geometry = self.geometry()
+        end_geometry = self.geometry()
+        end_geometry.setHeight(h)
+
+        self.animation.setStartValue(start_geometry)
+        self.animation.setEndValue(end_geometry)
+
+        self.animation.valueChanged.connect(lambda: super(CustomButton, self).setFixedHeight(
+            self.animation.currentValue().height()))
+
+        self.animation.start()
 
     def restoreSize(self):
         self.setFixedHeight(27)
