@@ -501,8 +501,13 @@ class CustomButton(QPushButton):
     def paintEvent(self, event):
         super().paintEvent(event)
 
-        pixmap = QPixmap('mp_software_stylesheets/assets/triangle-right.svg' if not self.isChecked() else
-                         'mp_software_stylesheets/assets/triangle-down.svg')
+        pixmap = QPixmap('mp_software_stylesheets/assets/triangle-right.svg')
+
+        if self.isChecked():
+            transform = QTransform()
+            transform.rotate(90)
+            pixmap = pixmap.transformed(transform, Qt.TransformationMode.SmoothTransformation)
+
         padding_x = 30
         padding_y = 18
         new_pos = QPoint(padding_x, padding_y)
