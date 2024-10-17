@@ -6,3 +6,5 @@ PyQt5~=5.15.10
 scipy~=1.13.0
 requests~=2.31.0
 pyopengl~=3.1.7
+opencv-python~=4.10.0.84
+mediapipe~=0.10.14
