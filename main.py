@@ -1646,42 +1646,10 @@ class MPRUN(QMainWindow):
             self.canvas.blockSignals(False)
 
     def use_flip_horizontal(self):
-        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-        old_transforms = []
-        new_transforms = []
-
-        for item in items:
-            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
-                if item.parentItem().isSelected():
-                    items.remove(item)
-
-            transform = item.transform()
-            old_transforms.append(transform)
-            transform.scale(-1, 1)  # Flip horizontally
-            new_transforms.append(transform)
-
-        if items:
-            command = TransformCommand(items, old_transforms, new_transforms)
-            self.canvas.addCommand(command)
+        self.properties_tab.width_scale_spin.setValue(-self.properties_tab.width_scale_spin.value())
 
     def use_flip_vertical(self):
-        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-        old_transforms = []
-        new_transforms = []
-
-        for item in items:
-            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
-                if item.parentItem().isSelected():
-                    items.remove(item)
-
-            transform = item.transform()
-            old_transforms.append(item.transform())
-            transform.scale(1, -1)  # Flip vertically
-            new_transforms.append(transform)
-
-        if items:
-            command = TransformCommand(items, old_transforms, new_transforms)
-            self.canvas.addCommand(command)
+        self.properties_tab.height_scale_spin.setValue(-self.properties_tab.height_scale_spin.value())
 
     def use_change_opacity(self, value):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
