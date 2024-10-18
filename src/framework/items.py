@@ -51,6 +51,7 @@ class CustomPathItem(QGraphicsPathItem):
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
         item.setAlreadySmooth(self.alreadySmooth())
+        item.setOpacity(self.opacity())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -70,6 +71,7 @@ class CustomPathItem(QGraphicsPathItem):
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
         item.setAlreadySmooth(self.alreadySmooth())
+        item.setOpacity(self.opacity())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -257,6 +259,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
+        item.setOpacity(self.opacity())
 
         if os.path.exists(self.return_filename()):
             item.store_filename(self.return_filename())
@@ -285,7 +288,7 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setToolTip('Imported Pixmap')
+        item.setOpacity(self.opacity())
 
         return item
 
@@ -357,6 +360,7 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setZValue(self.zValue())
             item.setTransform(self.transform())
             item.store_filename(svg)
+            item.setOpacity(self.opacity())
 
             item.setFlag(QGraphicsItem.ItemIsSelectable)
             item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -371,6 +375,7 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setRotation(self.rotation())
             item.setZValue(self.zValue())
             item.setTransform(self.transform())
+            item.setOpacity(self.opacity())
 
             item.setFlag(QGraphicsItem.ItemIsSelectable)
             item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -389,6 +394,7 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setRotation(self.rotation())
             item.setZValue(self.zValue())
             item.setTransform(self.transform())
+            item.setOpacity(self.opacity())
             item.store_filename(svg)
 
             item.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -404,6 +410,7 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setRotation(self.rotation())
             item.setZValue(self.zValue())
             item.setTransform(self.transform())
+            item.setOpacity(self.opacity())
 
             item.setFlag(QGraphicsItem.ItemIsSelectable)
             item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -618,6 +625,7 @@ class CustomTextItem(QGraphicsTextItem):
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
+        item.setOpacity(self.opacity())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -639,6 +647,7 @@ class CustomTextItem(QGraphicsTextItem):
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
+        item.setOpacity(self.opacity())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -796,6 +805,7 @@ class LeaderLineItem(QGraphicsPathItem):
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
+        item.setOpacity(self.opacity())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -824,6 +834,7 @@ class LeaderLineItem(QGraphicsPathItem):
         item.setRotation(self.rotation())
         item.setZValue(self.zValue())
         item.setTransform(self.transform())
+        item.setOpacity(self.opacity())
 
         item.setFlag(QGraphicsItem.ItemIsSelectable)
         item.setFlag(QGraphicsItem.ItemIsMovable)
@@ -835,6 +846,7 @@ class LeaderLineItem(QGraphicsPathItem):
         item.text_element.setTransform(self.text_element.transform())
         item.text_element.setRotation(self.text_element.rotation())
         item.text_element.setPos(self.text_element.pos())
+        item.text_element.setOpacity(self.opacity())
 
         item.updatePathEndPoint()
 

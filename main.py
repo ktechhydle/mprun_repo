@@ -1963,14 +1963,10 @@ class MPRUN(QMainWindow):
         if shape == 'rect':
             path.addRect(QRectF(0, 0, 100, 100))
             item = CustomPathItem(path)
-            item.setPen(self.canvas_view.pen)
-            item.setBrush(self.canvas_view.stroke_fill)
 
         elif shape == 'circle':
             path.addEllipse(QRectF(0, 0, 100, 100))
             item = CustomPathItem(path)
-            item.setPen(self.canvas_view.pen)
-            item.setBrush(self.canvas_view.stroke_fill)
 
         elif shape == 'triangle':
             poly = QPolygonF()
@@ -1985,10 +1981,10 @@ class MPRUN(QMainWindow):
 
             path.addPolygon(poly)
             item = CustomPathItem(path)
-            item.setPen(self.canvas_view.pen)
-            item.setBrush(self.canvas_view.stroke_fill)
 
         item.setToolTip('Path')
+        item.setPen(self.properties_tab.getPen())
+        item.setBrush(self.properties_tab.getBrush())
 
         self.canvas.addCommand(AddItemCommand(self.canvas, item))
         self.create_item_attributes(item)
