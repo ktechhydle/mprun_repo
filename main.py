@@ -2122,6 +2122,7 @@ class MPRUN(QMainWindow):
                 self.apply_action_group_settings(user_data)
                 self.apply_icon_size_settings(user_data)
                 self.apply_color_settings(user_data)
+                self.apply_startup_script(user_data)
                 self.finalize_ui_updates()
                 self.apply_disclaimer_and_tips(user_data)
 
@@ -2182,6 +2183,9 @@ class MPRUN(QMainWindow):
         self.properties_tab.updateItemPen()
         self.properties_tab.updateItemFill()
         self.characters_tab.updateItemFont()
+
+    def apply_startup_script(self, user_data):
+        ScriptingWin.runCustomScript(ScriptingWin(self), user_data['script_ran_on_startup'])
 
     def finalize_ui_updates(self):
         self.update('ui_update')

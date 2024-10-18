@@ -893,12 +893,14 @@ class ScriptingWin(QDialog):
         self.run_btn = QPushButton('Run Script')
         self.run_btn.setFixedWidth(100)
         self.run_btn.clicked.connect(self.runScript)
+        self.run_on_startup_btn = QCheckBox('Run this script on startup')
         script_hlayout = ToolbarHorizontalLayout()
         script_hlayout.layout.setContentsMargins(0, 0, 0, 0)
         script_hlayout.layout.addWidget(self.open_script_btn)
         script_hlayout.layout.addWidget(self.save_script_btn)
         script_hlayout.layout.addWidget(self.run_btn)
         script_hlayout.layout.addStretch()
+        script_hlayout.layout.addWidget(self.run_on_startup_btn)
 
         self.editor = QPlainTextEdit(self)
         self.editor.setPlaceholderText('Your script here...')
@@ -981,6 +983,53 @@ mprun.panel_container.addItem(Panel(), 'Test Panel')
         except Exception as e:
             self.console.setText(f"Error: {e}")
 
+    def runCustomScript(self, script: str):
+        code = script
+
+        # Create a restricted 'mprun' context using LimitedAccess
+        limited_mprun = LimitedAccess(
+            self.mprun.toolbox,
+            self.mprun.document_toolbar,
+            self.mprun.item_toolbar,
+            self.mprun.toolbar,
+            self.mprun.menu_bar,
+            self.mprun.canvas,
+            self.mprun.canvas_view,
+            [self.mprun.findChildren,
+             self.mprun.findChild,
+             self.mprun.isVisible,
+             self.mprun.isHidden,
+             self.mprun.isMaximized,
+             self.mprun.isModal,
+             self.mprun.isFullScreen,
+             self.mprun.isAncestorOf,
+             self.mprun.width,
+             self.mprun.height,
+             self.mprun.x,
+             self.mprun.y,
+             self.mprun.pos,
+             self.mprun.geometry,
+             self.mprun.rect,
+             self.mprun.children,
+             self.mprun.find,
+             self.mprun.update,
+             self.mprun.isEnabled,
+             self.mprun.isLeftToRight,
+             self.mprun.isMinimized,
+             self.mprun.isRightToLeft,
+             self.mprun.isSignalConnected]
+        )
+
+        context = {
+            'mprun': limited_mprun,  # Restricted mprun access
+        }
+
+        try:
+            exec(code, globals(), context)
+            self.console.setText('Process finished')
+        except Exception as e:
+            self.console.setText(f"Error: {e}")
+
     def openFile(self):
         file, _ = QFileDialog.getOpenFileName(self.mprun, 'Open Python File', '', 'Python files (*.py)')
 
@@ -1001,6 +1050,16 @@ mprun.panel_container.addItem(Panel(), 'Test Panel')
         if file:
             with open(file, 'w') as f:
                 f.write(self.editor.toPlainText())
+
+    def closeEvent(self, event):
+        data = self.parent().read_settings()
+
+        for _data in data:
+            _data['script_ran_on_startup'] = self.editor.toPlainText()
+
+        self.parent().write_settings(data)
+
+        event.accept()
 
 
 class PythonHighlighter(QSyntaxHighlighter):

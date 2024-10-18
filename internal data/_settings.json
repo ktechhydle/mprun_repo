@@ -6,10 +6,7 @@
             "maximized"
         ],
         "saved_view": "",
-        "toolbar_pos": 1,
         "toolbox_pos": 1,
-        "toolbox_collapsed": false,
-        "toolbox_index": 0,
         "document_toolbar_size": 32,
         "item_toolbar_size": 16,
         "toolbar_size": 32,
@@ -25,6 +22,7 @@
         "default_font": "black",
         "grid_size": 10,
         "recent_file_display_limit": 5,
-        "document_toolbar_hidden": false
+        "document_toolbar_hidden": false,
+        "script_ran_on_startup": ""
     }
 ]
