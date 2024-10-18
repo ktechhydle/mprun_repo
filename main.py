@@ -566,7 +566,8 @@ class MPRUN(QMainWindow):
         contact_developers_action = QAction('Contact Developers', self)
         contact_developers_action.setIcon(QIcon('ui/Main Logos/github_icon.png'))
         contact_developers_action.triggered.connect(lambda:
-                                                    webbrowser.open('https://github.com/ktechhydle/mprun_repo/discussions/5'))
+                                                    webbrowser.open(
+                                                        'https://github.com/ktechhydle/mprun_repo/discussions/5'))
 
         ask_a_question_action = QAction('Ask A Question', self)
         ask_a_question_action.setIcon(QIcon('ui/Main Logos/reddit_icon.png'))
@@ -1338,19 +1339,16 @@ class MPRUN(QMainWindow):
             self.properties_tab.height_scale_spin.setValue(0.0)
 
     def use_delete(self):
-        selected_items = self.canvas.selectedItems()
-        if selected_items:
-            for item in selected_items:
-                if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
-                    item.setSelected(False)
-                    item.parentItem().setSelected(True)
+        items = [item for item in self.canvas.selectedItems()]
 
-            selected_items = self.canvas.selectedItems()
+        items = [item for item in items
+                 if not (isinstance(item, CustomTextItem) and isinstance(item.parentItem(),
+                                                                         LeaderLineItem) and
+                         item.parentItem().isSelected())]
 
-            command = RemoveItemCommand(self.canvas, selected_items)
+        if items:
+            command = RemoveItemCommand(self.canvas, items)
             self.canvas.addCommand(command)
-
-        self.canvas_view.update()
 
     def use_hard_delete(self):
         for item in self.canvas.selectedItems():
