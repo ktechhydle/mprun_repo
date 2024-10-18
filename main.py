@@ -1416,30 +1416,33 @@ class MPRUN(QMainWindow):
     def use_scale(self, x_value, y_value):
         try:
             items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+
+            # Remove items where parent is LeaderLineItem and selected
+            items = [item for item in items
+                     if not (isinstance(item, CustomTextItem) and isinstance(item.parentItem(),
+                                                                             LeaderLineItem) and item.parentItem().isSelected())]
+
             old_transforms = []
             new_transforms = []
 
-            for item in items:
-                if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
-                    if item.parentItem().isSelected():
-                        items.remove(item)
-
-                # Calculate the center of the bounding box for the selected items
-                bounding_rect = item.boundingRect()
+            for correct_item in items:
+                # Get the center of the bounding box
+                bounding_rect = correct_item.boundingRect()
                 center_x = bounding_rect.center().x()
                 center_y = bounding_rect.center().y()
 
                 scale_x = x_value / 100
                 scale_y = y_value / 100
 
-                # Create a transform centered on the bounding box's center
-                old_transforms.append(item.transform())
+                # Record the old transform and calculate the new one
+                old_transforms.append(correct_item.transform())
                 transform = QTransform()
                 transform.translate(center_x, center_y)
                 transform.scale(scale_x, scale_y)
                 transform.translate(-center_x, -center_y)
                 new_transforms.append(transform)
 
+            # Create and add the command
             command = TransformCommand(items, old_transforms, new_transforms)
             self.canvas.addCommand(command)
 
