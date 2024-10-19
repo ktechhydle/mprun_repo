@@ -17,15 +17,75 @@ frame_count = 0
 start_time = time.time()
 
 
-class SceneTo3DView(QOpenGLWidget):
-
-    def __init__(self, scene: QGraphicsScene, parent):
+class SceneTo3DUserInterface(QWidget):
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
         self.setWindowTitle('3D Viewer')
-        self.setWindowFlag(Qt.Tool)
-        self.resize(600, 600)
+        self.setWindowFlag(Qt.WindowType.Tool)
+        self.resize(1000, 700)
 
+        self.setLayout(QHBoxLayout())
+
+        self.createUI()
+
+    def createUI(self):
+        self.viewport = SceneTo3DView(self.parent().canvas, self)
+
+        right_panel = QWidget()
+        right_panel.setFixedWidth(300)
+        right_panel.setLayout(QVBoxLayout())
+
+        isometric_view_btn = QPushButton(QIcon('ui/UI Icons/Minor/isometric_icon.svg'), '')
+        isometric_view_btn.setToolTip('View the scene isometrically')
+        isometric_view_btn.clicked.connect(self.viewport.isometricView)
+        top_view_btn = QPushButton(QIcon('ui/UI Icons/Minor/top_icon.svg'), '')
+        top_view_btn.setToolTip('View the scene top-down')
+        top_view_btn.clicked.connect(self.viewport.topView)
+        bottom_view_btn = QPushButton(QIcon('ui/UI Icons/Minor/bottom_icon.svg'), '')
+        bottom_view_btn.setToolTip('View the scene bottom-up')
+        bottom_view_btn.clicked.connect(self.viewport.bottomView)
+        left_view_btn = QPushButton(QIcon('ui/UI Icons/Minor/left_icon.svg'), '')
+        left_view_btn.setToolTip('View the scene from the left')
+        left_view_btn.clicked.connect(self.viewport.leftView)
+        right_view_btn = QPushButton(QIcon('ui/UI Icons/Minor/right_icon.svg'), '')
+        right_view_btn.setToolTip('View the scene from the right')
+        right_view_btn.clicked.connect(self.viewport.rightView)
+        front_view_btn = QPushButton(QIcon('ui/UI Icons/Minor/front_icon.svg'), '')
+        front_view_btn.setToolTip('View the scene from the front')
+        front_view_btn.clicked.connect(self.viewport.frontView)
+        back_view_btn = QPushButton(QIcon('ui/UI Icons/Minor/back_icon.svg'), '')
+        back_view_btn.setToolTip('View the scene from the back')
+        back_view_btn.clicked.connect(self.viewport.backView)
+        view_layout = QHBoxLayout()
+        view_layout.addWidget(isometric_view_btn)
+        view_layout.addWidget(top_view_btn)
+        view_layout.addWidget(bottom_view_btn)
+        view_layout.addWidget(front_view_btn)
+        view_layout.addWidget(left_view_btn)
+        view_layout.addWidget(back_view_btn)
+        view_layout.addWidget(right_view_btn)
+
+        outline_label = QLabel('Outline Width:')
+        self.outline_width_slider = QSlider()
+        self.outline_width_slider.setOrientation(Qt.Orientation.Horizontal)
+        self.outline_width_slider.setRange(1, 10)
+        self.outline_width_slider.setValue(1)
+        self.outline_width_slider.valueChanged.connect(self.viewport.update)
+
+        self.layout().addWidget(self.viewport)
+        self.layout().addWidget(right_panel)
+        right_panel.layout().addWidget(outline_label)
+        right_panel.layout().addWidget(self.outline_width_slider)
+        right_panel.layout().addSpacing(10)
+        right_panel.layout().addLayout(view_layout)
+        right_panel.layout().addStretch()
+
+
+class SceneTo3DView(QOpenGLWidget):
+
+    def __init__(self, scene: QGraphicsScene, parent):
+        super().__init__()
         self.setLayout(QVBoxLayout())
         self.createUI()
 
@@ -57,20 +117,9 @@ class SceneTo3DView(QOpenGLWidget):
         navigation_label.setStyleSheet('color: black')
         self.fps_label = QLabel('FPS: ')
         self.fps_label.setStyleSheet('color: black')
-        isometric_view_btn = QPushButton('Isometric View')
-        isometric_view_btn.setFixedWidth(150)
-        isometric_view_btn.clicked.connect(self.isometricView)
-        self.outline_width_slider = QSlider()
-        self.outline_width_slider.setFixedHeight(200)
-        self.outline_width_slider.setOrientation(Qt.Orientation.Vertical)
-        self.outline_width_slider.setRange(1, 10)
-        self.outline_width_slider.setValue(1)
-        self.outline_width_slider.valueChanged.connect(self.update)
 
         self.layout().addWidget(navigation_label)
         self.layout().addWidget(self.fps_label)
-        self.layout().addWidget(isometric_view_btn)
-        self.layout().addWidget(self.outline_width_slider)
         self.layout().addStretch()
 
     def initializeGL(self):
@@ -81,13 +130,6 @@ class SceneTo3DView(QOpenGLWidget):
 
         # Set up the initial camera position for isometric view
         self.isometricView()
-
-    def isometricView(self):
-        # Set camera distance and angles for isometric view
-        self.yaw = 45.0  # Yaw angle for isometric view
-        self.pitch = 45.0  # Pitch angle for isometric view
-
-        self.update()
 
     def resizeGL(self, width, height):
         glViewport(0, 0, width, height)
@@ -269,15 +311,51 @@ class SceneTo3DView(QOpenGLWidget):
                     item.obj_item.setOutlineEnabled(True)
 
                 # Always update the ObjItem's transformation based on the current QGraphicsItem state
-                item.obj_item.setPosition([item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() + 90, 0])
+                item.obj_item.setPosition(
+                    [item.sceneBoundingRect().center().x() - 90, -item.sceneBoundingRect().center().y() + 90, 0])
                 item.obj_item.setScale([item.scale(), item.scale(), item.scale()])
                 item.obj_item.setRotation(item.rotation(), [0, 0, 1])
-                item.obj_item.setOutlineWidth(self.outline_width_slider.value())
+                item.obj_item.setOutlineWidth(self.parent.outline_width_slider.value())
 
                 # Draw the cached ObjItem with updated transformations
                 self.addItem(item.obj_item)
 
                 glPopMatrix()
+
+    def isometricView(self):
+        self.yaw = 45.0
+        self.pitch = 45.0
+        self.update()
+
+    def topView(self):
+        self.yaw = 90
+        self.pitch = 90
+        self.update()
+
+    def bottomView(self):
+        self.yaw = -90
+        self.pitch = -90
+        self.update()
+
+    def leftView(self):
+        self.yaw = -90
+        self.pitch = 0
+        self.update()
+
+    def rightView(self):
+        self.yaw = 90
+        self.pitch = 0
+        self.update()
+
+    def frontView(self):
+        self.yaw = 0
+        self.pitch = 0
+        self.update()
+
+    def backView(self):
+        self.yaw = -180
+        self.pitch = 0
+        self.update()
 
     def wheelEvent(self, event):
         """
