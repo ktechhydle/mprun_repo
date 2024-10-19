@@ -659,6 +659,7 @@ class SettingsWin(QDialog):
 
         self.createGeneralSettings()
         self.createPerformanceSettings()
+        self.createToolSettings()
         self.createUI()
         self.setDefaults()
 
@@ -789,12 +790,33 @@ class SettingsWin(QDialog):
 
         self.performance_tab.layout().addStretch()
 
+    def createToolSettings(self):
+        self.tools_tab = QWidget(self)
+        self.tools_tab.setLayout(QVBoxLayout())
+
+        def createSuggestionsBoxGB():
+            suggestions_box_gb = QGroupBox('Suggestions Box')
+            suggestions_box_gb.setLayout(QVBoxLayout())
+
+            suggestions_label = QLabel('Suggestions Box Trick List:')
+            self.suggestions_box_edit = QPlainTextEdit()
+            self.suggestions_box_edit.setPlaceholderText('Trick list here...')
+            suggestions_box_gb.layout().addWidget(suggestions_label)
+            suggestions_box_gb.layout().addWidget(self.suggestions_box_edit)
+
+            self.tools_tab.layout().addWidget(suggestions_box_gb)
+
+        createSuggestionsBoxGB()
+
+        self.tools_tab.layout().addStretch()
+
     def createUI(self):
         self.tab_view = QTabWidget(self)
         self.tab_view.setDocumentMode(True)
         self.tab_view.setUsesScrollButtons(False)
         self.tab_view.addTab(self.general_tab, 'General')
         self.tab_view.addTab(self.performance_tab, 'Performance')
+        self.tab_view.addTab(self.tools_tab, 'Tools')
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Apply', QDialogButtonBox.AcceptRole)
@@ -822,6 +844,9 @@ class SettingsWin(QDialog):
                 if v == data['default_font']:
                     self.default_font_combo.setCurrentText(k)
 
+        with open('internal data/_tricks.txt', 'r') as f:
+            self.suggestions_box_edit.setPlainText(f.read())
+
     def accept(self):
         _data = self.p.read_settings()
 
@@ -836,6 +861,9 @@ class SettingsWin(QDialog):
             data['recent_file_display_limit'] = self.recent_file_limit_spin.value()
 
         self.p.write_settings(_data)
+
+        with open('internal data/_tricks.txt', 'w') as f:
+            f.write(self.suggestions_box_edit.toPlainText())
 
         self.close()
 
