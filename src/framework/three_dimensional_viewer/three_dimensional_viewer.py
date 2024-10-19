@@ -108,6 +108,18 @@ class SceneTo3DView(QOpenGLWidget):
         self.pan_y = 0.0
         self.panning = False
 
+        # Timer for animation
+        self.animation_timer = QTimer(self)
+        self.animation_timer.timeout.connect(self.animateView)
+        self.animation_duration = 500
+        self.animation_progress = 0.0
+
+        # Target values for animation
+        self.start_yaw = self.yaw
+        self.start_pitch = self.pitch
+        self.end_yaw = self.yaw
+        self.end_pitch = self.pitch
+
     def createUI(self):
         """
         Creates a simple set of QLabels in the top-left corner showing navigation tips
@@ -322,40 +334,49 @@ class SceneTo3DView(QOpenGLWidget):
 
                 glPopMatrix()
 
-    def isometricView(self):
-        self.yaw = 45.0
-        self.pitch = 45.0
+    def animateView(self):
+        """Animate the transition between views."""
+        t = min(1.0, self.animation_progress / self.animation_duration)
+
+        # Interpolate yaw and pitch using linear interpolation
+        self.yaw = (1 - t) * self.start_yaw + t * self.end_yaw
+        self.pitch = (1 - t) * self.start_pitch + t * self.end_pitch
         self.update()
+
+        self.animation_progress += 16  # Roughly ~60fps
+        if t >= 1.0:
+            self.animation_timer.stop()
+
+    def startViewAnimation(self, target_yaw, target_pitch):
+        """Start animating the view to the target yaw and pitch."""
+        self.start_yaw = self.yaw
+        self.start_pitch = self.pitch
+        self.end_yaw = target_yaw
+        self.end_pitch = target_pitch
+
+        self.animation_progress = 0.0
+        self.animation_timer.start(16)  # Start the timer for smooth ~60fps animation
+
+    def isometricView(self):
+        self.startViewAnimation(45, 45)
 
     def topView(self):
-        self.yaw = 90
-        self.pitch = 90
-        self.update()
+        self.startViewAnimation(90, 90)
 
     def bottomView(self):
-        self.yaw = -90
-        self.pitch = -90
-        self.update()
+        self.startViewAnimation(-90, -90)
 
     def leftView(self):
-        self.yaw = -90
-        self.pitch = 0
-        self.update()
+        self.startViewAnimation(-90, 0)
 
     def rightView(self):
-        self.yaw = 90
-        self.pitch = 0
-        self.update()
+        self.startViewAnimation(90, 0)
 
     def frontView(self):
-        self.yaw = 0
-        self.pitch = 0
-        self.update()
+        self.startViewAnimation(0, 0)
 
     def backView(self):
-        self.yaw = -180
-        self.pitch = 0
-        self.update()
+        self.startViewAnimation(-180, 0)
 
     def wheelEvent(self, event):
         """
