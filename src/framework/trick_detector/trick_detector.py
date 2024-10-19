@@ -22,6 +22,9 @@ class PoseDetector(QWidget):
         self.is_recording = False
         self.recorded_frames = []  # List to store recorded pose landmarks
 
+        # Variable to store playback speed
+        self.playback_speed = 1.0
+
         self.createUI()
 
     def createUI(self):
@@ -43,6 +46,19 @@ class PoseDetector(QWidget):
 
         self.layout().addLayout(btn_layout)
 
+        # Add a slider for playback speed control
+        speed_label = QLabel('Playback Speed:')
+        self.speed_slider = QSlider(Qt.Horizontal, self)
+        self.speed_slider.setFixedWidth(200)
+        self.speed_slider.setRange(1, 100)
+        self.speed_slider.setValue(50)
+        self.speed_slider.valueChanged.connect(self.changePlaybackSpeed)
+        speed_hlayout = QHBoxLayout()
+        speed_hlayout.addWidget(speed_label)
+        speed_hlayout.addWidget(self.speed_slider)
+        speed_hlayout.addStretch()
+        self.layout().addLayout(speed_hlayout)
+
         # Initialize webcam capture
         self.cap = cv2.VideoCapture(0)
 
@@ -50,6 +66,11 @@ class PoseDetector(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateFrame)
         self.timer.start(20)  # Update every 20 ms
+
+    # Update the playback speed when the slider is changed
+    def changePlaybackSpeed(self, value):
+        self.playback_speed = value / 50.0  # Map the slider value (1-100) to speed (0.02x - 2x)
+        print(f"Playback speed set to {self.playback_speed:.2f}x")
 
     def updateFrame(self):
         success, frame = self.cap.read()
@@ -111,7 +132,7 @@ class PoseDetector(QWidget):
 
         self.playback_timer = QTimer(self)
         self.playback_timer.timeout.connect(self.displayNextFrame)
-        self.playback_timer.start(20)
+        self.playback_timer.start(int(20 / self.playback_speed))
 
     def displayNextFrame(self):
         if self.current_frame >= len(self.recorded_frames):
@@ -129,6 +150,9 @@ class PoseDetector(QWidget):
 
         # Move to the next frame
         self.current_frame += 1
+
+        # Adjust the timer for the next frame based on the playback speed
+        self.playback_timer.setInterval(int(20 / self.playback_speed))
 
     @staticmethod
     def renderPoseFromLandmarks(landmarks):
