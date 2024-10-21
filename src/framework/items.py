@@ -815,8 +815,11 @@ class LeaderLineItem(QGraphicsPathItem):
         item.text_element.setDefaultTextColor(self.text_element.defaultTextColor())
         item.text_element.setTransformOriginPoint(self.text_element.transformOriginPoint())
         item.text_element.setTransform(self.text_element.transform())
+        item.text_element.setScale(self.text_element.scale())
         item.text_element.setRotation(self.text_element.rotation())
         item.text_element.setPos(self.text_element.pos())
+        item.text_element.setZValue(self.text_element.zValue())
+        item.text_element.setOpacity(self.text_element.opacity())
 
         item.updatePathEndPoint()
 
@@ -844,9 +847,11 @@ class LeaderLineItem(QGraphicsPathItem):
         item.text_element.setDefaultTextColor(self.text_element.defaultTextColor())
         item.text_element.setTransformOriginPoint(self.text_element.transformOriginPoint())
         item.text_element.setTransform(self.text_element.transform())
+        item.text_element.setScale(self.text_element.scale())
         item.text_element.setRotation(self.text_element.rotation())
         item.text_element.setPos(self.text_element.pos())
-        item.text_element.setOpacity(self.opacity())
+        item.text_element.setZValue(self.text_element.zValue())
+        item.text_element.setOpacity(self.text_element.opacity())
 
         item.updatePathEndPoint()
 
