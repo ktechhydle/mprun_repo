@@ -1081,12 +1081,13 @@ mprun.panel_container.addItem(Panel(), 'Test Panel')
                 f.write(self.editor.toPlainText())
 
     def closeEvent(self, event):
-        data = self.parent().read_settings()
+        if self.run_on_startup_btn.isChecked():
+            data = self.parent().read_settings()
 
-        for _data in data:
-            _data['script_ran_on_startup'] = self.editor.toPlainText()
+            for _data in data:
+                _data['script_ran_on_startup'] = self.editor.toPlainText()
 
-        self.parent().write_settings(data)
+            self.parent().write_settings(data)
 
         event.accept()
 
