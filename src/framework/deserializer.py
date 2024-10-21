@@ -149,6 +149,7 @@ class SceneDeserializer:
         path_item.text_element.setScale(data['textscale'])
         path_item.text_element.setPos(data['textposx'], data['textposy'])
         path_item.text_element.setRotation(data['textrotation'])
+        path_item.text_element.setOpacity(data['textopacity'])
         path_item.text_element.setVisible(data['textvisible'])
 
         self.process_attributes(path_item, data['attr'])
@@ -196,4 +197,5 @@ class SceneDeserializer:
             item.setPos(_data['x'], _data['y'])
             item.setToolTip(_data['name'])
             item.setZValue(_data['zval'])
+            item.setOpacity(_data['opacity'])
             item.setVisible(_data['visible'])

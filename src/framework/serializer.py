@@ -68,8 +68,9 @@ class SceneSerializer:
                         'textzval': item.text_element.zValue(),
                         'texttransform': self.serialize_transform(item.text_element.transform()),
                         'textscale': item.text_element.scale(),
-                        'texttransformorigin': self.serialize_point(item.transformOriginPoint()),
+                        'texttransformorigin': self.serialize_point(item.text_element.transformOriginPoint()),
                         'textrotation': item.text_element.rotation(),
+                        'textopacity': item.text_element.opacity(),
                         'textvisible': item.text_element.isVisible(),
                     }
 
@@ -124,6 +125,7 @@ class SceneSerializer:
             'y': item.pos().y(),
             'name': item.toolTip(),
             'zval': item.zValue(),
+            'opacity': item.opacity(),
             'visible': item.isVisible(),
         }]
 
