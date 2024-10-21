@@ -13,7 +13,7 @@ mp_drawing = mp.solutions.drawing_utils
 class PoseDetector(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('Trick Analyzer')
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setFixedSize(800, 600)

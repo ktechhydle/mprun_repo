@@ -14,7 +14,7 @@ if getattr(sys, 'frozen', False):
 class CanvasItemSelector(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle("Export Canvas")
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
@@ -91,7 +91,7 @@ class CanvasItemSelector(QDialog):
                 if self.watermark_item is not None:
                     self.canvas.removeItem(self.watermark_item)
 
-                self.watermark_item = WaterMarkItem(QPixmap('ui/Main Logos/MPRUN_icon.png'))
+                self.watermark_item = WaterMarkItem(QPixmap('mprun_assets/assets/logos/mprun_icon.png'))
                 self.canvas.addItem(self.watermark_item)
 
                 selected_item = self.canvas_chooser_combo.itemData(self.canvas_chooser_combo.currentIndex())
@@ -148,7 +148,7 @@ class CanvasItemSelector(QDialog):
 class AllCanvasExporter(QDialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle("Export All")
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
@@ -219,7 +219,7 @@ class AllCanvasExporter(QDialog):
             if self.watermark_check_btn.isChecked():
                 for item in self.canvas.items():
                     if isinstance(item, CanvasItem):
-                        self.watermark_item = WaterMarkItem(QPixmap('ui/Main Logos/MPRUN_icon.png'))
+                        self.watermark_item = WaterMarkItem(QPixmap('mprun_assets/assets/logos/mprun_icon.png'))
                         self.canvas.addItem(self.watermark_item)
 
                         self.watermark_item.setScale(0.1)
@@ -339,7 +339,7 @@ class AllCanvasExporter(QDialog):
 class ArrangeWin(QDialog):
     def __init__(self, canvas, parent):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle("Arrange Canvases")
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
@@ -477,7 +477,7 @@ class ArrangeWin(QDialog):
 class AboutWin(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('About MPRUN')
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
@@ -525,11 +525,12 @@ MPRUN allows users to visualize comp runs on computer and paper, quickly and eas
         mp_software_logo = QLabel('', self)
         mp_software_logo.setAlignment(Qt.AlignCenter)
         mp_software_logo.setPixmap(
-            QPixmap('ui/Main Logos/MP_Software_Logo.png').scaled(QSize(200, 200), Qt.KeepAspectRatio))
+            QPixmap('mprun_assets/assets/logos/mp_software_icon.png').scaled(QSize(200, 200), Qt.KeepAspectRatio))
         fsf_logo = QLabel('', self)
         fsf_logo.setAlignment(Qt.AlignCenter)
         fsf_logo.setPixmap(
-            QPixmap('ui/Main Logos/free_software_foundation_logo.svg').scaled(QSize(400, 400), Qt.KeepAspectRatio))
+            QPixmap('mprun_assets/assets/logos/free_software_foundation_icon.svg').scaled(QSize(400, 400),
+                                                                                          Qt.KeepAspectRatio))
         self.about_tab.layout().addWidget(about_label)
         self.about_tab.layout().addStretch()
         self.about_tab.layout().addWidget(mp_software_logo)
@@ -574,7 +575,7 @@ You are responsible for publishing your work under a license of your choosing an
 class VersionWin(QDialog):
     def __init__(self, version, parent=None):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('MPRUN Version')
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
@@ -590,8 +591,8 @@ class VersionWin(QDialog):
 
         # App image and label
         mprun_img_label = QLabel(self)
-        pixmap = QPixmap("ui/Main Logos/MPRUN_icon.png").scaled(80, 80,
-                                                                Qt.KeepAspectRatio)
+        pixmap = QPixmap('mprun_assets/assets/logos/mprun_icon.png').scaled(80, 80,
+                                                                            Qt.KeepAspectRatio)
         mprun_img_label.setPixmap(pixmap)
         mprun_img_label.move(20, 20)
 
@@ -622,7 +623,7 @@ If you encounter any issues or have suggestions for improvements, contact us at:
 class DisclaimerWin(QMessageBox):
     def __init__(self, data_file, parent=None):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('DISCLAIMER')
         self.setObjectName('tipWindow')
         self.setIcon(QMessageBox.Warning)
@@ -641,7 +642,7 @@ class DisclaimerWin(QMessageBox):
 class SettingsWin(QDialog):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('Settings')
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
@@ -899,7 +900,7 @@ class SettingsWin(QDialog):
 class ScriptingWin(QDialog):
     def __init__(self, parent):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('Python Scripting Interface')
         self.setWindowFlag(Qt.Tool)
         self.setObjectName('tipWindow')
@@ -1199,9 +1200,9 @@ class TipWin(CustomMenu):
 
     def createUI(self, label, tip):
         img = QLabel('')
-        img.setPixmap(QPixmap('ui/UI Icons/Major/info_circle.svg').scaled(35, 35,
-                                                                          Qt.KeepAspectRatio,
-                                                                          Qt.SmoothTransformation))
+        img.setPixmap(QPixmap('mprun_assets/assets/ui/panels/info_circle.svg').scaled(35, 35,
+                                                                                       Qt.KeepAspectRatio,
+                                                                                       Qt.SmoothTransformation))
         main_label = QLabel(f'<b>{label}</b>')
         text = QLabel(tip)
         text.setWordWrap(True)

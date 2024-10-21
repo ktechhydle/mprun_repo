@@ -16,7 +16,7 @@ class iCloudIntegraterWin(QDialog):
     def __init__(self, canvas, parent):
         super().__init__()
         self.setWindowTitle('Share To iCloud')
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
         self.setFixedWidth(300)

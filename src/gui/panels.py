@@ -149,7 +149,7 @@ class PropertiesPanel(QWidget):
         self.opacity_btn = QPushButton('')
         self.opacity_btn.setFixedWidth(28)
         self.opacity_btn.setFixedHeight(26)
-        self.opacity_btn.setIcon(QIcon('ui/UI Icons/Major/opacity_icon.png'))
+        self.opacity_btn.setIcon(QIcon('mprun_assets/assets/ui/panels/opacity_icon.png'))
         self.opacity_btn.setIconSize(QSize(24, 24))
         self.opacity_spin = QSpinBox()
         self.opacity_spin.setRange(0, 100)
@@ -314,7 +314,7 @@ class LibrariesPanel(QWidget):
         self.reload_library_button = QPushButton("")
         self.reload_library_button.setFixedWidth(28)
         self.reload_library_button.setStyleSheet('border: none')
-        self.reload_library_button.setIcon(QIcon('ui/UI Icons/Minor/refresh_icon.svg'))
+        self.reload_library_button.setIcon(QIcon('mprun_assets/assets/ui/panels/refresh_icon.svg'))
         self.reload_library_button.setToolTip('Reload the current library')
 
         # Search bar
@@ -367,7 +367,6 @@ class LibrariesPanel(QWidget):
         if not svg_files:
             self.library_list_widget.setDragEnabled(False)
             list_item = QListWidgetItem('No files found')
-            list_item.setIcon(QIcon('ui/UI Icons/folder_failed_icon.svg'))
             self.library_list_widget.setIconSize(QSize(40, 40))
             self.library_list_widget.addItem(list_item)
 
@@ -453,10 +452,10 @@ class CharactersPanel(QWidget):
         self.underline_btn.clicked.connect(self.updateItemFont)
         font_size_and_spacing_hlayout = ToolbarHorizontalLayout()
         font_size_and_spacing_hlayout.layout.addWidget(
-            CustomIconWidget('', 'ui/UI Icons/Major/font_size_icon.svg', 20, 20))
+            CustomIconWidget('', 'mprun_assets/assets/ui/panels/font_size_icon.svg', 20, 20))
         font_size_and_spacing_hlayout.layout.addWidget(self.font_size_spin)
         font_size_and_spacing_hlayout.layout.addWidget(
-            CustomIconWidget('', 'ui/UI Icons/Major/font_spacing_icon.svg', 20, 20))
+            CustomIconWidget('', 'mprun_assets/assets/ui/panels/font_spacing_icon.svg', 20, 20))
         font_size_and_spacing_hlayout.layout.addWidget(self.font_letter_spacing_spin)
         font_size_and_spacing_hlayout.layout.addStretch()
         font_size_and_spacing_hlayout.layout.setContentsMargins(0, 0, 0, 0)

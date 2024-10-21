@@ -20,7 +20,7 @@ start_time = time.time()
 class SceneTo3DUserInterface(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowIcon(QIcon('ui/Main Logos/MPRUN_icon.png'))
+        self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('3D Viewer')
         self.setWindowFlag(Qt.WindowType.Tool)
         self.resize(1000, 700)

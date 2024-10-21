@@ -352,16 +352,16 @@ class StrokeLabel(QLabel):
         for style, value in self.stroke_style_options.items():
             self.stroke_style_combo.addItem(style, value)
 
-        self.stroke_style_combo.setItemData(0, QPixmap('ui/UI Icons/Combobox Images/solid_stroke.png'),
+        self.stroke_style_combo.setItemData(0, QPixmap('mprun_assets/assets/ui/combobox/solid_stroke.png'),
                                             Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(1, QPixmap('ui/UI Icons/Combobox Images/dotted_stroke.png'),
+        self.stroke_style_combo.setItemData(1, QPixmap('mprun_assets/assets/ui/combobox/dotted_stroke.png'),
                                             Qt.DecorationRole)
-        self.stroke_style_combo.setItemData(2, QPixmap('ui/UI Icons/Combobox Images/dashed_stroke.png'),
+        self.stroke_style_combo.setItemData(2, QPixmap('mprun_assets/assets/ui/combobox/dashed_stroke.png'),
                                             Qt.DecorationRole)
         self.stroke_style_combo.setItemData(3, QPixmap(
-            'ui/UI Icons/Combobox Images/dashed_dotted_stroke.png'), Qt.DecorationRole)
+            'mprun_assets/assets/ui/combobox/dashed_dotted_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setItemData(4, QPixmap(
-            'ui/UI Icons/Combobox Images/dashed_dot_dot_stroke.png'), Qt.DecorationRole)
+            'mprun_assets/assets/ui/combobox/dashed_dot_dot_stroke.png'), Qt.DecorationRole)
         self.stroke_style_combo.setIconSize(QSize(65, 20))
 
         self.stroke_pencap_options = {'Square Cap': Qt.SquareCap,
@@ -373,13 +373,13 @@ class StrokeLabel(QLabel):
             self.stroke_pencap_combo.addItem(pencap, value)
         self.stroke_pencap_combo.setIconSize(QSize(65, 20))
         self.stroke_pencap_combo.setItemData(0,
-                                             QIcon('ui/UI Icons/Combobox Images/projecting_cap.svg'),
+                                             QIcon('mprun_assets/assets/ui/combobox/projecting_cap.svg'),
                                              Qt.DecorationRole)
         self.stroke_pencap_combo.setItemData(1,
-                                             QIcon('ui/UI Icons/Combobox Images/flat_cap.svg'),
+                                             QIcon('mprun_assets/assets/ui/combobox/flat_cap.svg'),
                                              Qt.DecorationRole)
         self.stroke_pencap_combo.setItemData(2,
-                                             QIcon('ui/UI Icons/Combobox Images/round_cap.svg'),
+                                             QIcon('mprun_assets/assets/ui/combobox/round_cap.svg'),
                                              Qt.DecorationRole)
 
         self.join_style_options = {
@@ -393,9 +393,9 @@ class StrokeLabel(QLabel):
         for join, v in self.join_style_options.items():
             self.join_style_combo.addItem(join, v)
 
-        self.join_style_combo.setItemData(0, QIcon('ui/UI Icons/Combobox Images/bevel_join.png'), Qt.DecorationRole)
-        self.join_style_combo.setItemData(1, QIcon('ui/UI Icons/Combobox Images/round_join.png'), Qt.DecorationRole)
-        self.join_style_combo.setItemData(2, QIcon('ui/UI Icons/Combobox Images/miter_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(0, QIcon('mprun_assets/assets/ui/combobox/bevel_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(1, QIcon('mprun_assets/assets/ui/combobox/round_join.png'), Qt.DecorationRole)
+        self.join_style_combo.setItemData(2, QIcon('mprun_assets/assets/ui/combobox/miter_join.png'), Qt.DecorationRole)
 
         widget = QWidget()
         widget.setObjectName('tipWindow')
