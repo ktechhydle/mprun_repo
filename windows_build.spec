@@ -10,9 +10,9 @@ a = Analysis(
     binaries=[],
     datas=[
     ('mp_software_stylesheets', 'mp_software_stylesheets'),
+    ('mprun_assets', 'mprun_assets'),
     ('internal data', 'internal data'),
     ('course elements', 'course elements'),
-    ('ui', 'ui'),
     ('IMPORTANT', 'IMPORTANT'),
     ] + pyicloud_metadata,
     hiddenimports=['pyicloud'],
