@@ -63,15 +63,7 @@ class SceneSerializer:
                         'text': item.text_element.toPlainText(),
                         'textcolor': self.serialize_color(item.text_element.defaultTextColor()),
                         'textfont': self.serialize_font(item.text_element.font()),
-                        'textposx': item.text_element.pos().x(),
-                        'textposy': item.text_element.pos().y(),
-                        'textzval': item.text_element.zValue(),
-                        'texttransform': self.serialize_transform(item.text_element.transform()),
-                        'textscale': item.text_element.scale(),
-                        'texttransformorigin': self.serialize_point(item.text_element.transformOriginPoint()),
-                        'textrotation': item.text_element.rotation(),
-                        'textopacity': item.text_element.opacity(),
-                        'textvisible': item.text_element.isVisible(),
+                        'textattr': self.serialize_item_attributes(item.text_element)
                     }
 
                     items_data.append(data)

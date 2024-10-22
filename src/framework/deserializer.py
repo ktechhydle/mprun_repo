@@ -141,18 +141,11 @@ class SceneDeserializer:
         path_item = LeaderLineItem(sub_path, data['text'])
         path_item.setPen(self.deserialize_pen(data['pen']))
         path_item.setBrush(self.deserialize_brush(data['brush']))
-        path_item.text_element.setZValue(data['textzval'])
         path_item.text_element.setDefaultTextColor(self.deserialize_color(data['textcolor']))
         path_item.text_element.setFont(self.deserialize_font(data['textfont']))
-        path_item.text_element.setTransformOriginPoint(self.deserialize_point(data['texttransformorigin']))
-        path_item.text_element.setTransform(self.deserialize_transform(data['texttransform']))
-        path_item.text_element.setScale(data['textscale'])
-        path_item.text_element.setPos(data['textposx'], data['textposy'])
-        path_item.text_element.setRotation(data['textrotation'])
-        path_item.text_element.setOpacity(data['textopacity'])
-        path_item.text_element.setVisible(data['textvisible'])
 
         self.process_attributes(path_item, data['attr'])
+        self.process_attributes(path_item.text_element, data['textattr'])
 
         path_item.updatePathEndPoint()
 
