@@ -18,7 +18,7 @@
         "use_gpu": false,
         "gpu_samples": 4,
         "default_stroke": "red",
-        "default_fill": "#00ff00",
+        "default_fill": "transparent",
         "default_font": "black",
         "grid_size": 10,
         "recent_file_display_limit": 5,
