@@ -660,7 +660,6 @@ class MPRUN(QMainWindow):
         # Upper dock widget
         self.libraries_tab = LibrariesPanel(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.libraries_tab.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.libraries_tab.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
 

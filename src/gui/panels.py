@@ -1,3 +1,4 @@
+import re
 from src.scripts.imports import *
 from src.gui.custom_widgets import *
 from src.scripts.raw_functions import ItemStack
@@ -187,11 +188,11 @@ class PropertiesPanel(QWidget):
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addStretch()
-        
+
     def strokeColorChooser(self):
         color_dialog = CustomColorPicker(self.parent)
         color_dialog.setWindowTitle('Stroke Color')
-        
+
         color_dialog.hex_spin.setText(QColor(self.pen_color.get()).name()[1:])
 
         if color_dialog.exec_():
@@ -208,7 +209,7 @@ class PropertiesPanel(QWidget):
     def fillColorChooser(self):
         color_dialog = CustomColorPicker(self.parent)
         color_dialog.setWindowTitle('Fill Color')
-        
+
         color_dialog.hex_spin.setText(QColor(self.brush_color.get()).name()[1:])
 
         if color_dialog.exec_():
@@ -221,7 +222,7 @@ class PropertiesPanel(QWidget):
 
             self.brush_color.set(color.name() if color.alpha() != 0 else Qt.transparent)
             self.updateItemFill()
-            
+
     def updateItemPen(self):
         pen = self.getPen()
 
@@ -303,6 +304,9 @@ class LibrariesPanel(QWidget):
         self.setLayout(self.layout)
         self.canvas = canvas
 
+        self.createUI()
+
+    def createUI(self):
         # List widget for the library
         self.library_list_widget = CustomListWidget(self.canvas)
         self.library_list_widget.setStyleSheet('border: none')
@@ -363,7 +367,7 @@ class LibrariesPanel(QWidget):
         # List all SVG files in the selected folder (now supports pixmap as well)
         svg_files = [f for f in os.listdir(folder_path) if f.endswith(('.svg', '.png', '.jpg', '.jpeg'))]
 
-        # Check if no SVG files are found
+        # Check if no files are found
         if not svg_files:
             self.library_list_widget.setDragEnabled(False)
             list_item = QListWidgetItem('No files found')
@@ -374,11 +378,13 @@ class LibrariesPanel(QWidget):
             self.library_list_widget.setDragEnabled(True)
             # Add each SVG file to the list widget
             for svg_file in svg_files:
-                list_item = QListWidgetItem(svg_file)
+                display_name = re.sub(r'\.svg|\.png|\.jpg|\.jpeg', '', svg_file)
+                list_item = QListWidgetItem(display_name)
                 list_item.setData(Qt.UserRole, os.path.join(folder_path, svg_file))
                 list_item.setIcon(QIcon(os.path.join(folder_path, svg_file)))
                 list_item.setToolTip(f'<h2>{svg_file.split('.')[0]}</h2>'
-                                     f'<i>Simply drag and drop this item to add it to the scene.</i>')
+                                     f'<i>Simply drag and drop this item to add it to the scene.</i><br><br>'
+                                     f'<img src="{os.path.join(folder_path, svg_file)}">')
                 self.library_list_widget.setIconSize(QSize(80, 80))
                 self.library_list_widget.addItem(list_item)
                 self.library_list_widget.all_items.append(list_item)
@@ -481,11 +487,11 @@ class CharactersPanel(QWidget):
         self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
         self.characters_tab_layout.addWidget(font_style_hlayout)
         self.characters_tab_layout.addWidget(font_color_hlayout)
-        
+
     def fontColorChooser(self):
         color_dialog = CustomColorPicker(self.parent)
         color_dialog.setWindowTitle('Font Color')
-        
+
         color_dialog.hex_spin.setText(QColor(self.font_color.get()).name()[1:])
 
         if color_dialog.exec_():
