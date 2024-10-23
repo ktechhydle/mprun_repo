@@ -121,6 +121,11 @@ class CourseElementBuilderView(QGraphicsView):
             item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, False)
             item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, False)
 
+    def enableItemFlags(self):
+        for item in self.scene().items():
+            item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
+            item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
+
     def onPanStart(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
                                    Qt.LeftButton, Qt.NoButton, event.modifiers())

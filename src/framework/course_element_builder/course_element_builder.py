@@ -388,8 +388,8 @@ class CourseElementBuilderPanel(QWidget):
 
 
 class CourseElementBuilder(QWidget):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('Course Elements Builder')
         self.setLayout(QHBoxLayout())
@@ -453,6 +453,15 @@ class CourseElementBuilder(QWidget):
         self.pan_btn.setCheckable(True)
         self.pan_btn.triggered.connect(self.usePan)
 
+        self.lip_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Lip Tool', self)
+        self.lip_btn.setToolTip(
+            '<b>Lip</b><br>'
+            'Draw lips on to features.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        self.lip_btn.setCheckable(True)
+
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(self.pan_btn)
 
@@ -469,6 +478,10 @@ class CourseElementBuilder(QWidget):
         redo_action = QAction('Redo', self)
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
         redo_action.triggered.connect(self.scene.redo)
+
+        help_action = QAction('Help', self)
+        help_action.setShortcut(Qt.Key_F1)
+        help_action.triggered.connect(lambda: self.parent().show_help)
 
         self.addAction(undo_action)
         self.addAction(redo_action)
@@ -589,6 +602,7 @@ class CourseElementBuilder(QWidget):
 
     def useSelect(self):
         self.select_btn.setChecked(True)
+        self.view.enableItemFlags()
         self.view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def usePan(self):
