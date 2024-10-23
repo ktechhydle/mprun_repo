@@ -15,6 +15,7 @@ class CourseElementBuilderScene(QGraphicsScene):
 
         self.undo_stack = QUndoStack()
         self.undo_stack.setUndoLimit(200)
+        self.copy_stack = []
 
         self.oldPositions = {}
         self.movingItem = None
@@ -54,6 +55,48 @@ class CourseElementBuilderScene(QGraphicsScene):
             bounding_rect = bounding_rect.united(item.sceneBoundingRect())
         return bounding_rect
 
+    def copy(self):
+        self.copy_stack.clear()
+
+        for item in self.selectedItems():
+            self.copy_stack.append(item.copy())
+
+        self.views()[0].update()
+
+    def cut(self):
+        self.copy_stack.clear()
+
+        cut_items = []
+
+        for item in self.selectedItems():
+            self.copy_stack.append(item.copy())
+            cut_items.append(item)
+
+        self.addCommand(RemoveItemCommand(self, cut_items))
+        self.views()[0].update()
+
+    def paste(self):
+        new_items = []
+
+        for item in self.copy_stack:
+            new_items.append(item.copy())
+
+        if new_items:
+            self.addCommand(MultiAddItemCommand(self, new_items))
+
+        self.views()[0].update()
+
+    def duplicate(self):
+        new_items = []
+
+        for item in self.selectedItems():
+            new_items.append(item.copy())
+
+        if new_items:
+            self.addCommand(MultiAddItemCommand(self, new_items))
+
+        self.views()[0].update()
+
 
 class CourseElementBuilderView(QGraphicsView):
     def __init__(self, scene, parent):
@@ -82,6 +125,11 @@ class CourseElementBuilderView(QGraphicsView):
             self.disableItemFlags()
             super().mousePressEvent(event)
 
+        elif self.parent().line_btn.isChecked():
+            self.disableItemFlags()
+            self.lineTool.mousePress(event)
+            super().mousePressEvent(event)
+
         else:
             super().mousePressEvent(event)
 
@@ -98,6 +146,12 @@ class CourseElementBuilderView(QGraphicsView):
             self.disableItemFlags()
             super().mouseMoveEvent(event)
 
+        elif self.parent().line_btn.isChecked():
+            self.disableItemFlags()
+            self.lineTool.mouseMove(event)
+            self.lineTool.specialToolTip(event)
+            super().mouseMoveEvent(event)
+
         else:
             super().mouseMoveEvent(event)
 
@@ -109,6 +163,11 @@ class CourseElementBuilderView(QGraphicsView):
         elif self.parent().lip_btn.isChecked():
             self.lipTool.mouseRelease(event)
             super().mousePressEvent(event)
+
+        elif self.parent().line_btn.isChecked():
+            self.disableItemFlags()
+            self.lineTool.mouseRelease(event)
+            super().mouseReleaseEvent(event)
 
         else:
             super().mouseReleaseEvent(event)

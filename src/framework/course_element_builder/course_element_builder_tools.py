@@ -90,7 +90,7 @@ class LineTool(BaseTool):
         p.setX(p.x() + 10)
 
         if self.path_item:
-            QToolTip.showText(p, f'x: {int(self.path_item.x())}\ny: {int(self.path_item.y())}')
+            QToolTip.showText(p, f'x: {int(self.path_item.lineBox().p2().x())}\ny: {int(self.path_item.lineBox().p2().y())}')
 
     def mousePress(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
@@ -99,6 +99,7 @@ class LineTool(BaseTool):
                 self.start_pos = self.view.mapToScene(event.pos())
                 self.path_item = LineItem(QLineF(self.start_pos, self.start_pos))
                 self.path_item.setPen(self.view.parent().properties_tab.getPen())
+                self.path_item.setBrush(self.view.parent().properties_tab.getBrush())
                 self.scene.addItem(self.path_item)
             else:
                 # Second click: Finalize the rectangle

@@ -474,13 +474,25 @@ class CourseElementBuilder(QWidget):
         self.lip_btn.setShortcut(QKeySequence('L'))
         self.lip_btn.setCheckable(True)
 
+        self.line_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Lip Tool (Ctrl+L)', self)
+        self.line_btn.setToolTip(
+            '<b>Line (Ctrl+L)</b><br>'
+            'Draw line elements for features.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        self.line_btn.setShortcut(QKeySequence('Ctrl+L'))
+        self.line_btn.setCheckable(True)
+
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(self.pan_btn)
         self.toolbar.addAction(self.lip_btn)
+        self.toolbar.addAction(self.line_btn)
 
         self.action_group.addAction(self.select_btn)
         self.action_group.addAction(self.pan_btn)
         self.action_group.addAction(self.lip_btn)
+        self.action_group.addAction(self.line_btn)
 
         self.select_btn.trigger()
 
@@ -493,6 +505,26 @@ class CourseElementBuilder(QWidget):
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
         redo_action.triggered.connect(self.scene.redo)
 
+        copy_action = QAction('Copy', self)
+        copy_action.setShortcut(QKeySequence('Ctrl+C'))
+        copy_action.triggered.connect(self.scene.copy)
+
+        cut_action = QAction('Cut', self)
+        cut_action.setShortcut(QKeySequence('Ctrl+X'))
+        cut_action.triggered.connect(self.scene.cut)
+
+        paste_action = QAction('Paste', self)
+        paste_action.setShortcut(QKeySequence('Ctrl+V'))
+        paste_action.triggered.connect(self.scene.paste)
+
+        duplicate_action = QAction('Duplicate', self)
+        duplicate_action.setShortcut(QKeySequence('D'))
+        duplicate_action.triggered.connect(self.scene.duplicate)
+
+        delete_action = QAction('Delete', self)
+        delete_action.setShortcut(QKeySequence('Backspace'))
+        delete_action.triggered.connect(self.useDelete)
+
         exit_action = QAction('Exit', self)
         exit_action.setShortcut(QKeySequence(Qt.Key.Key_Escape))
         exit_action.triggered.connect(self.view.escape)
@@ -503,6 +535,11 @@ class CourseElementBuilder(QWidget):
 
         self.addAction(undo_action)
         self.addAction(redo_action)
+        self.addAction(copy_action)
+        self.addAction(cut_action)
+        self.addAction(paste_action)
+        self.addAction(duplicate_action)
+        self.addAction(delete_action)
         self.addAction(exit_action)
         self.addAction(help_action)
 
@@ -627,6 +664,13 @@ class CourseElementBuilder(QWidget):
 
     def usePan(self):
         self.pan_btn.setChecked(True)
+
+    def useDelete(self):
+        items = [item for item in self.scene.selectedItems()]
+
+        if items:
+            command = RemoveItemCommand(self.scene, items)
+            self.scene.addCommand(command)
 
 
 if __name__ == '__main__':

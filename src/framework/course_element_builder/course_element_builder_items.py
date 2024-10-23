@@ -31,6 +31,18 @@ class LipItem(QGraphicsPathItem):
 
         self.draw()
 
+    def copy(self):
+        item = LipItem(self.rectBox())
+        item.setPos(self.pos())
+        item.setFlags(self.flags())
+        item.setToolTip(self.toolTip())
+        item.setOpacity(self.opacity())
+        item.setPath(self.path())
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+
+        return item
+
 
 class LineItem(QGraphicsPathItem):
     def __init__(self, line: QLineF):
@@ -59,3 +71,15 @@ class LineItem(QGraphicsPathItem):
         super().paint(painter, option, widget)
 
         self.draw()
+
+    def copy(self):
+        item = LipItem(self.lineBox())
+        item.setPos(self.pos())
+        item.setFlags(self.flags())
+        item.setToolTip(self.toolTip())
+        item.setOpacity(self.opacity())
+        item.setPath(self.path())
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+
+        return item
