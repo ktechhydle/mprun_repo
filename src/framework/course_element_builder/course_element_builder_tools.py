@@ -76,6 +76,8 @@ class LipTool(BaseTool):
             self.path_item = None
             self.start_pos = None
 
+        QToolTip.hideText()
+
 
 class LineTool(BaseTool):
     def __init__(self, scene, view):
@@ -151,3 +153,5 @@ class LineTool(BaseTool):
             self.scene.removeItem(self.path_item)
             self.path_item = None
             self.start_pos = None
+
+        QToolTip.hideText()
