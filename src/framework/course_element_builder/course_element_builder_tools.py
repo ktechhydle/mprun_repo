@@ -115,9 +115,30 @@ class LineTool(BaseTool):
             self.updateLine(event)
 
     def updateLine(self, event):
-        # Calculate the new rectangle based on start_pos and current mouse position
+        # Calculate the new line based on start_pos and current mouse position
         current_pos = self.view.mapToScene(event.pos())
         line = QLineF(self.start_pos, current_pos)
+
+        # Check if Shift is pressed for snapping
+        if event.modifiers() & Qt.ShiftModifier:
+            # Calculate angle in radians
+            dx = current_pos.x() - self.start_pos.x()
+            dy = current_pos.y() - self.start_pos.y()
+            angle = math.atan2(dy, dx)
+
+            # Snap to the nearest 45 degrees (pi/4 radians)
+            snap_angle = round(angle / (math.pi / 4)) * (math.pi / 4)
+
+            # Recalculate end point based on the snapped angle and original line length
+            length = line.length()
+            new_dx = math.cos(snap_angle) * length
+            new_dy = math.sin(snap_angle) * length
+            snapped_pos = self.start_pos + QPointF(new_dx, new_dy)
+
+            # Update the line with the snapped position
+            line.setP2(snapped_pos)
+
+        # Update the path_item with the new line
         self.path_item.setLine(line)
 
     def mouseRelease(self, event):
