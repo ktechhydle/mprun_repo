@@ -23,6 +23,9 @@ class LipItem(QGraphicsPathItem):
         self.rect = rect
         self.update()
 
+    def rectBox(self):
+        return self.rect
+
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
 
@@ -45,9 +48,12 @@ class LineItem(QGraphicsPathItem):
         self.setPath(path)
         self.setPen(self.pen())
 
-    def setRect(self, line: QLineF):
+    def setLine(self, line: QLineF):
         self.line = line
         self.update()
+
+    def lineBox(self):
+        return self.line
 
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)

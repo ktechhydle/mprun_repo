@@ -1,3 +1,4 @@
+
 from src.framework.course_element_builder.course_element_builder_graphics import *
 from src.framework.course_element_builder.course_element_builder_items import *
 from src.gui.custom_widgets import HorizontalSeparator, CustomIconWidget, ToolbarHorizontalLayout, \
@@ -386,6 +387,14 @@ class CourseElementBuilderPanel(QWidget):
             command = OpacityCommand(canvas_items, old_opacities, opacity)
             self.scene.addCommand(command)
 
+    def default(self):
+        self.stroke_color_btn.setButtonColor('#000000')
+        self.fill_color_btn.setButtonColor('transparent')
+        self.pen_color.set('#000000')
+        self.brush_color.set('transparent')
+        self.updateItemPen()
+        self.updateItemFill()
+
 
 class CourseElementBuilder(QWidget):
     def __init__(self, parent=None):
@@ -407,6 +416,7 @@ class CourseElementBuilder(QWidget):
 
         self.properties_tab = CourseElementBuilderPanel(self.scene, self)
         self.properties_tab.setFixedWidth(280)
+        self.properties_tab.default()
 
         item = LipItem(QRectF(0, 0, 100, 100))
         item.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
@@ -437,7 +447,7 @@ class CourseElementBuilder(QWidget):
             '<hr>'
             '<i>Press F1 for more help.</i>'
         )
-
+        self.select_btn.setShortcut(QKeySequence(Qt.Key.Key_Space))
         self.select_btn.setCheckable(True)
         self.select_btn.setChecked(True)
         self.select_btn.triggered.connect(self.useSelect)
@@ -450,23 +460,27 @@ class CourseElementBuilder(QWidget):
             '<hr>'
             '<i>Press F1 for more help.</i>'
         )
+        self.pan_btn.setShortcut(QKeySequence('P'))
         self.pan_btn.setCheckable(True)
         self.pan_btn.triggered.connect(self.usePan)
 
-        self.lip_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Lip Tool', self)
+        self.lip_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Lip Tool (L)', self)
         self.lip_btn.setToolTip(
-            '<b>Lip</b><br>'
+            '<b>Lip (L)</b><br>'
             'Draw lips on to features.<br>'
             '<hr>'
             '<i>Press F1 for more help.</i>'
         )
+        self.lip_btn.setShortcut(QKeySequence('L'))
         self.lip_btn.setCheckable(True)
 
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(self.pan_btn)
+        self.toolbar.addAction(self.lip_btn)
 
         self.action_group.addAction(self.select_btn)
         self.action_group.addAction(self.pan_btn)
+        self.action_group.addAction(self.lip_btn)
 
         self.select_btn.trigger()
 
@@ -479,12 +493,18 @@ class CourseElementBuilder(QWidget):
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
         redo_action.triggered.connect(self.scene.redo)
 
+        exit_action = QAction('Exit', self)
+        exit_action.setShortcut(QKeySequence(Qt.Key.Key_Escape))
+        exit_action.triggered.connect(self.view.escape)
+
         help_action = QAction('Help', self)
         help_action.setShortcut(Qt.Key_F1)
         help_action.triggered.connect(lambda: self.parent().show_help)
 
         self.addAction(undo_action)
         self.addAction(redo_action)
+        self.addAction(exit_action)
+        self.addAction(help_action)
 
     def setPropertiesTabEnabled(self, enabled: bool):
         self.properties_tab.transform_separator.setHidden(enabled)
@@ -609,7 +629,7 @@ class CourseElementBuilder(QWidget):
         self.pan_btn.setChecked(True)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     window = CourseElementBuilder()

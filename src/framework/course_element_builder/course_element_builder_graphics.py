@@ -1,3 +1,4 @@
+from src.framework.course_element_builder.course_element_builder_tools import LipTool, LineTool
 from src.framework.undo_commands import *
 from src.scripts.imports import *
 
@@ -59,6 +60,10 @@ class CourseElementBuilderView(QGraphicsView):
         super().__init__(scene, parent)
         self.setMouseTracking(True)
 
+        # Tools
+        self.lipTool = LipTool(self.scene(), self)
+        self.lineTool = LineTool(self.scene(), self)
+
         self.zoomInFactor = 1.25
         self.zoomClamp = True
         self.zoom = 20
@@ -72,27 +77,46 @@ class CourseElementBuilderView(QGraphicsView):
             self.disableItemFlags()
             super().mousePressEvent(event)
 
-        elif event.button() == Qt.MiddleButton:
-            self.onPanStart(event)
+        elif self.parent().lip_btn.isChecked():
+            self.lipTool.mousePress(event)
+            self.disableItemFlags()
+            super().mousePressEvent(event)
 
         else:
             super().mousePressEvent(event)
 
+        if event.button() == Qt.MiddleButton:
+            self.onPanStart(event)
+
     def mouseMoveEvent(self, event):
-        super().mouseMoveEvent(event)
+        if self.parent().lip_btn.isChecked():
+            self.lipTool.mouseMove(event)
+            self.lipTool.specialToolTip(event)
+            super().mouseMoveEvent(event)
+
+        elif self.parent().pan_btn.isChecked():
+            self.disableItemFlags()
+            super().mouseMoveEvent(event)
+
+        else:
+            super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         if self.parent().pan_btn.isChecked():
             self.onPanEnd(event)
             super().mouseReleaseEvent(event)
 
-        elif event.button() == Qt.MiddleButton:
-            self.onPanEnd(event)
-            if self.parent().select_btn.isChecked():
-                self.parent().useSelect()
+        elif self.parent().lip_btn.isChecked():
+            self.lipTool.mouseRelease(event)
+            super().mousePressEvent(event)
 
         else:
             super().mouseReleaseEvent(event)
+
+        if event.button() == Qt.MiddleButton:
+            self.onPanEnd(event)
+            if self.parent().select_btn.isChecked():
+                self.parent().useSelect()
 
     def wheelEvent(self, event):
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
@@ -143,3 +167,8 @@ class CourseElementBuilderView(QGraphicsView):
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
         self.isPanning = False
+
+    def escape(self):
+        self.scene().clearSelection()
+        self.lipTool.cancel()
+        self.lineTool.cancel()
