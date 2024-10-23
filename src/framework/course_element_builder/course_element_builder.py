@@ -1,7 +1,7 @@
 from src.framework.course_element_builder.course_element_builder_graphics import *
 from src.framework.course_element_builder.course_element_builder_items import *
 from src.gui.custom_widgets import HorizontalSeparator, CustomIconWidget, ToolbarHorizontalLayout, \
-    CustomColorDisplayButton, StrokeLabel, CustomColorPicker
+    CustomColorDisplayButton, StrokeLabel, CustomColorPicker, CustomToolbar
 from src.scripts.imports import *
 from src.scripts.raw_functions import ItemStack
 
@@ -341,7 +341,7 @@ class CourseElementBuilderPanel(QWidget):
                 new_positions.append(new_pos)
 
             # Create and execute the command with all items
-            command = MultiItemPositionChangeCommand(self, items, old_positions, new_positions)
+            command = MultiItemPositionChangeCommand(None, items, old_positions, new_positions)
             self.scene.addCommand(command)
 
         finally:
@@ -357,7 +357,7 @@ class CourseElementBuilderPanel(QWidget):
             item.setTransformOriginPoint(item.boundingRect().center())
 
         if items:
-            command = RotateCommand(self, items, old_rotations, value)
+            command = RotateCommand(None, items, old_rotations, value)
             self.scene.addCommand(command)
 
     def useFlipHorizontal(self):
@@ -395,6 +395,8 @@ class CourseElementBuilder(QWidget):
         self.setLayout(QHBoxLayout())
 
         self.createUi()
+        self.createToolBar()
+        self.createToolBarActions()
         self.createActions()
 
     def createUi(self):
@@ -404,7 +406,7 @@ class CourseElementBuilder(QWidget):
         self.view = CourseElementBuilderView(self.scene, self)
 
         self.properties_tab = CourseElementBuilderPanel(self.scene, self)
-        self.properties_tab.setFixedWidth(300)
+        self.properties_tab.setFixedWidth(280)
 
         item = LipItem(QRectF(0, 0, 100, 100))
         item.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
@@ -414,6 +416,50 @@ class CourseElementBuilder(QWidget):
         self.layout().addWidget(self.properties_tab)
         self.updateTransformUI()
         self.updateAppearanceUI()
+
+    def createToolBar(self):
+        self.toolbar = CustomToolbar('ToolBar')
+        self.toolbar.setParent(self.view)
+        self.toolbar.setObjectName('customToolBar')
+        self.toolbar.setIconSize(QSize(32, 32))
+        self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
+        self.toolbar.setOrientation(Qt.Orientation.Vertical)
+        self.toolbar.setFloatable(True)
+        self.toolbar.move(11, 11)
+
+    def createToolBarActions(self):
+        self.action_group = QActionGroup(self)
+
+        self.select_btn = QAction(QIcon('mprun_assets/assets/tools/selection_icon.png'), 'Select Tool (Spacebar)', self)
+        self.select_btn.setToolTip(
+            '<b>Select (Spacebar)</b><br>'
+            'Select items on the scene by clicking and dragging a selection rectangle.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+
+        self.select_btn.setCheckable(True)
+        self.select_btn.setChecked(True)
+        self.select_btn.triggered.connect(self.useSelect)
+
+        # Pan Button
+        self.pan_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Pan Tool (P)', self)
+        self.pan_btn.setToolTip(
+            '<b>Pan (P)</b><br>'
+            'Pan around the scene by clicking and dragging.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        self.pan_btn.setCheckable(True)
+        self.pan_btn.triggered.connect(self.usePan)
+
+        self.toolbar.addAction(self.select_btn)
+        self.toolbar.addAction(self.pan_btn)
+
+        self.action_group.addAction(self.select_btn)
+        self.action_group.addAction(self.pan_btn)
+
+        self.select_btn.trigger()
 
     def createActions(self):
         undo_action = QAction('Undo', self)
@@ -540,6 +586,13 @@ class CourseElementBuilder(QWidget):
         # Unblock signals for all relevant widgets
         for widget in signal_block_widgets:
             widget.blockSignals(False)
+
+    def useSelect(self):
+        self.select_btn.setChecked(True)
+        self.view.setDragMode(QGraphicsView.RubberBandDrag)
+
+    def usePan(self):
+        self.pan_btn.setChecked(True)
 
 
 if __name__ == "__main__":

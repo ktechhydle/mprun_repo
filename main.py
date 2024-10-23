@@ -1359,7 +1359,6 @@ class MPRUN(QMainWindow):
         self.select_btn.setChecked(True)
         self.canvas_view.on_add_canvas_trigger()
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
-        self.canvas_view.setContextMenuPolicy(Qt.ActionsContextMenu)
 
     def use_select_all(self):
         self.select_btn.trigger()

@@ -40,12 +40,16 @@ class MultiItemPositionChangeCommand(QUndoCommand):
     def redo(self):
         for item, new_pos in zip(self.items, self.new_positions):
             item.setPos(new_pos)
-        self.parent.update_transform_ui()
+
+        if self.parent:
+            self.parent.update_transform_ui()
 
     def undo(self):
         for item, old_pos in zip(self.items, self.old_positions):
             item.setPos(old_pos)
-        self.parent.update_transform_ui()
+
+        if self.parent:
+            self.parent.update_transform_ui()
 
 
 class PositionChangeCommand(QUndoCommand):
@@ -58,11 +62,15 @@ class PositionChangeCommand(QUndoCommand):
 
     def redo(self):
         self.item.setPos(self.new)
-        self.parent.update_transform_ui()
+
+        if self.parent:
+            self.parent.update_transform_ui()
 
     def undo(self):
         self.item.setPos(self.old)
-        self.parent.update_transform_ui()
+
+        if self.parent:
+            self.parent.update_transform_ui()
 
 
 class AlignMultipleItemsCommand(QUndoCommand):
@@ -185,12 +193,16 @@ class RotateCommand(QUndoCommand):
     def redo(self):
         for item in self.items:
             item.setRotation(self.new_rotation)
-        self.parent.update_transform_ui()
+
+        if self.parent:
+            self.parent.update_transform_ui()
 
     def undo(self):
         for item, old_rotation in zip(self.items, self.old_rotations):
             item.setRotation(old_rotation)
-        self.parent.update_transform_ui()
+
+        if self.parent:
+            self.parent.update_transform_ui()
 
 
 class RotateDirectionCommand(QUndoCommand):

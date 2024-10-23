@@ -67,7 +67,12 @@ class CourseElementBuilderView(QGraphicsView):
         self.isPanning = False
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MiddleButton:
+        if self.parent().pan_btn.isChecked():
+            self.onPanStart(event)
+            self.disableItemFlags()
+            super().mousePressEvent(event)
+
+        elif event.button() == Qt.MiddleButton:
             self.onPanStart(event)
 
         else:
@@ -77,8 +82,14 @@ class CourseElementBuilderView(QGraphicsView):
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
-        if event.button() == Qt.MiddleButton:
+        if self.parent().pan_btn.isChecked():
             self.onPanEnd(event)
+            super().mouseReleaseEvent(event)
+
+        elif event.button() == Qt.MiddleButton:
+            self.onPanEnd(event)
+            if self.parent().select_btn.isChecked():
+                self.parent().useSelect()
 
         else:
             super().mouseReleaseEvent(event)
@@ -125,5 +136,5 @@ class CourseElementBuilderView(QGraphicsView):
         fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
                                 Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
-        self.setDragMode(QGraphicsView.DragMode.RubberBandDrag)
+        self.setDragMode(QGraphicsView.NoDrag)
         self.isPanning = False
