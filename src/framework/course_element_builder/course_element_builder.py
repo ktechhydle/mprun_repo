@@ -474,7 +474,7 @@ class CourseElementBuilder(QWidget):
         self.lip_btn.setShortcut(QKeySequence('L'))
         self.lip_btn.setCheckable(True)
 
-        self.line_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Lip Tool (Ctrl+L)', self)
+        self.line_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Line Tool (Ctrl+L)', self)
         self.line_btn.setToolTip(
             '<b>Line (Ctrl+L)</b><br>'
             'Draw line elements for features.<br>'
@@ -484,15 +484,27 @@ class CourseElementBuilder(QWidget):
         self.line_btn.setShortcut(QKeySequence('Ctrl+L'))
         self.line_btn.setCheckable(True)
 
+        self.arc_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Arc Tool (A)', self)
+        self.arc_btn.setToolTip(
+            '<b>Arc (A)</b><br>'
+            'Draw arc elements for features.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        self.arc_btn.setShortcut(QKeySequence('A'))
+        self.arc_btn.setCheckable(True)
+
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(self.pan_btn)
         self.toolbar.addAction(self.lip_btn)
         self.toolbar.addAction(self.line_btn)
+        self.toolbar.addAction(self.arc_btn)
 
         self.action_group.addAction(self.select_btn)
         self.action_group.addAction(self.pan_btn)
         self.action_group.addAction(self.lip_btn)
         self.action_group.addAction(self.line_btn)
+        self.action_group.addAction(self.arc_btn)
 
         self.select_btn.trigger()
 

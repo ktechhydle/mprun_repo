@@ -1,4 +1,4 @@
-from src.framework.course_element_builder.course_element_builder_tools import LipTool, LineTool
+from src.framework.course_element_builder.course_element_builder_tools import LipTool, LineTool, ArcTool
 from src.framework.undo_commands import *
 from src.scripts.imports import *
 
@@ -106,6 +106,7 @@ class CourseElementBuilderView(QGraphicsView):
         # Tools
         self.lipTool = LipTool(self.scene(), self)
         self.lineTool = LineTool(self.scene(), self)
+        self.arcTool = ArcTool(self.scene(), self)
 
         self.zoomInFactor = 1.25
         self.zoomClamp = True
@@ -130,6 +131,11 @@ class CourseElementBuilderView(QGraphicsView):
             self.lineTool.mousePress(event)
             super().mousePressEvent(event)
 
+        elif self.parent().arc_btn.isChecked():
+            self.disableItemFlags()
+            self.arcTool.mousePress(event)
+            super().mousePressEvent(event)
+
         else:
             super().mousePressEvent(event)
 
@@ -152,6 +158,12 @@ class CourseElementBuilderView(QGraphicsView):
             self.lineTool.specialToolTip(event)
             super().mouseMoveEvent(event)
 
+        elif self.parent().arc_btn.isChecked():
+            self.disableItemFlags()
+            self.arcTool.mouseMove(event)
+            self.arcTool.specialToolTip(event)
+            super().mouseMoveEvent(event)
+
         else:
             super().mouseMoveEvent(event)
 
@@ -167,6 +179,11 @@ class CourseElementBuilderView(QGraphicsView):
         elif self.parent().line_btn.isChecked():
             self.disableItemFlags()
             self.lineTool.mouseRelease(event)
+            super().mouseReleaseEvent(event)
+
+        elif self.parent().arc_btn.isChecked():
+            self.disableItemFlags()
+            self.arcTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
         else:
