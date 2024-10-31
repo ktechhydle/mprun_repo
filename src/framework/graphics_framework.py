@@ -632,6 +632,10 @@ class CustomGraphicsScene(QGraphicsScene):
         except Exception:
             pass
 
+    def clearSelection(self):
+        super().clearSelection()
+        self.update()
+
     def addItem(self, item):
         super().addItem(item)
 

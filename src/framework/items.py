@@ -439,6 +439,11 @@ class CustomTextItem(QGraphicsTextItem):
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.installEventFilter(self)
 
+        # Item resizing
+        self.selected_grip = None
+        self.og_transform = None
+        self.initial_size = None
+
         # Create the suggestion popup
         self.suggestion_popup = QListWidget()
         self.suggestion_popup.setToolTip('<i>Press the up-arrow key to accept suggestions</i>')
@@ -455,26 +460,39 @@ class CustomTextItem(QGraphicsTextItem):
 
     def mousePressEvent(self, event: QMouseEvent):
         if event.button() == Qt.LeftButton:
-            self.mouse_offset = event.pos()
+            self.mouse_offset = event.scenePos()
+
+        self.calculateSelectedGrip(event)
 
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self.gridEnabled:
-            if self.hasFocus():
-                super().mouseMoveEvent(event)
+        if self.selected_grip is not None:
+            # Calculate scaling factor based on the mouse movement
+            dx = event.scenePos().x() - self.mouse_offset.x()
+            dy = event.scenePos().y() - self.mouse_offset.y()
 
-            else:
-                # Calculate the position relative to the scene's coordinate system
-                scene_pos = event.scenePos()
-                x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
-                y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
+            # Use the initial size and mouse movement to determine scaling factors
+            scale_x = (self.initial_size.width() + dx) / self.initial_size.width()
+            scale_y = (self.initial_size.height() + dy) / self.initial_size.height()
 
-                # Set the position relative to the scene's coordinate system
-                self.setPos(x, y)
+            # Apply scaling with QTransform
+            transform = QTransform(self.og_transform)
+            transform.scale(scale_x, scale_y)
+            self.setTransform(transform)
 
         else:
             super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if self.selected_grip is not None:
+            self.scene().addCommand(TransformCommand([self], [self.og_transform], [self.transform()]))
+
+        self.selected_grip = None
+        self.og_transform = None
+        self.initial_size = None
+
+        super().mouseReleaseEvent(event)
 
     def mouseDoubleClickEvent(self, event):
         if self.locked == False:
@@ -536,6 +554,72 @@ class CustomTextItem(QGraphicsTextItem):
                 if event.key() not in (Qt.Key_Down, Qt.Key_Up):
                     self.suggestTrickTypes(self.getCurrentWord())
 
+    def focusOutEvent(self, event):
+        if self.suggestion_popup.isVisible():
+            self.suggestion_popup.close()
+            return
+
+        new_text = self.toPlainText()
+        if self.old_text != new_text:
+            edit_command = EditTextCommand(self, self.old_text, new_text)
+            self.scene().addCommand(edit_command)
+            self.old_text = new_text
+
+            if isinstance(self.parentItem(), LeaderLineItem):
+                self.parentItem().updatePathEndPoint()
+
+        cursor = self.textCursor()
+        cursor.clearSelection()
+        self.setTextCursor(cursor)
+        self.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.suggestion_popup.close()
+        super().focusOutEvent(event)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.KeyPress:
+            if event.key() == Qt.Key_Tab:
+                print("Tab key pressed")
+                if self.suggestion_popup.isVisible():
+                    self.completeText(self.suggestion_popup.currentItem())
+                return True
+
+        return super().eventFilter(obj, event)
+
+    def itemChange(self, change, value):
+        if change == QGraphicsItem.ItemPositionChange and isinstance(self.parentItem(), LeaderLineItem):
+            self.parentItem().updatePathEndPoint()
+
+        elif change == QGraphicsItem.ItemSelectedChange and isinstance(self.parentItem(), LeaderLineItem):
+            self.parentItem().updatePathEndPoint()
+        return super().itemChange(change, value)
+
+    def paint(self, painter, option, widget):
+        super().paint(painter, option, widget)
+
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        # Draw resize grips if the item is selected
+        if self.isSelected():
+            grip_size = 8
+            grip_color = QColor('#4f7fff')
+            painter.setPen(QPen(QColor('black'), 1))
+            painter.setBrush(grip_color)
+
+            painter.save()
+
+            # Define corner points in scene coordinates
+            grips = [self.boundingRect().topLeft(), self.boundingRect().topRight(),
+                     self.boundingRect().bottomLeft(), self.boundingRect().bottomRight()]
+
+            # Draw grips as small squares or circles at each corner
+            for grip in grips:
+                grip_rect = QRectF(grip.x() - grip_size / 2, grip.y() - grip_size / 2,
+                                   grip_size, grip_size)
+                painter.drawEllipse(grip_rect)  # Draw grip as a circle
+
+            # Restore the painter state to reapply transformations for other elements
+            painter.restore()
+
     def suggestTrickTypes(self, current_word):
         # Filter the suggestions and exclude the current word
         suggestions = [trick for trick in self.trick_types
@@ -577,37 +661,6 @@ class CustomTextItem(QGraphicsTextItem):
 
             if isinstance(self.parentItem(), LeaderLineItem):
                 self.parentItem().updatePathEndPoint()
-
-    def focusOutEvent(self, event):
-        if self.suggestion_popup.isVisible():
-            self.suggestion_popup.close()
-            return
-
-        new_text = self.toPlainText()
-        if self.old_text != new_text:
-            edit_command = EditTextCommand(self, self.old_text, new_text)
-            self.scene().addCommand(edit_command)
-            self.old_text = new_text
-
-            if isinstance(self.parentItem(), LeaderLineItem):
-                self.parentItem().updatePathEndPoint()
-
-        cursor = self.textCursor()
-        cursor.clearSelection()
-        self.setTextCursor(cursor)
-        self.setTextInteractionFlags(Qt.NoTextInteraction)
-        self.suggestion_popup.close()
-        super().focusOutEvent(event)
-
-    def eventFilter(self, obj, event):
-        if event.type() == QEvent.KeyPress:
-            if event.key() == Qt.Key_Tab:
-                print("Tab key pressed")
-                if self.suggestion_popup.isVisible():
-                    self.completeText(self.suggestion_popup.currentItem())
-                return True
-
-        return super().eventFilter(obj, event)
 
     def setLocked(self):
         self.locked = True
@@ -679,13 +732,23 @@ class CustomTextItem(QGraphicsTextItem):
         self.setFocus(Qt.MouseFocusReason)
         self.editing = True
 
-    def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemPositionChange and isinstance(self.parentItem(), LeaderLineItem):
-            self.parentItem().updatePathEndPoint()
+    def calculateSelectedGrip(self, event):
+        tolerance = 20  # 10-pixel tolerance
+        bounding_rect = self.sceneBoundingRect()
 
-        elif change == QGraphicsItem.ItemSelectedChange and isinstance(self.parentItem(), LeaderLineItem):
-            self.parentItem().updatePathEndPoint()
-        return super().itemChange(change, value)
+        # Define corner points
+        grips = [bounding_rect.topLeft(), bounding_rect.topRight(),
+                 bounding_rect.bottomLeft(), bounding_rect.bottomRight()]
+
+        # Check if the mouse click is within tolerance range of any corner grip
+        for grip in grips:
+            if (event.scenePos() - grip).manhattanLength() <= tolerance:
+                print(f'grip found {grip}')
+
+                self.selected_grip = grip
+                self.og_transform = self.transform()
+                self.initial_size = bounding_rect.size()
+                break
 
 
 class LeaderLineItem(QGraphicsPathItem):
