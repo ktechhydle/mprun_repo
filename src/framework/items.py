@@ -476,6 +476,11 @@ class CustomTextItem(QGraphicsTextItem):
             scale_x = (self.initial_size.width() + dx) / self.initial_size.width()
             scale_y = (self.initial_size.height() + dy) / self.initial_size.height()
 
+            # Check if the Shift key is held for uniform scaling
+            if event.modifiers() & Qt.ShiftModifier:
+                scale_factor = min(scale_x, scale_y)
+                scale_x = scale_y = scale_factor
+
             # Apply scaling with QTransform
             transform = QTransform(self.og_transform)
             transform.scale(scale_x, scale_y)

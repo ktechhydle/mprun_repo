@@ -39,6 +39,8 @@ class LipTool(BaseTool):
 
     def mousePress(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
+            self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
+
             if self.start_pos is None:
                 # First click: Set start position and create a rectangle item
                 self.start_pos = self.view.mapToScene(event.pos())
@@ -97,6 +99,8 @@ class LineTool(BaseTool):
 
     def mousePress(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
+            self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
+
             if self.start_pos is None:
                 # First click: Set start position and create a rectangle item
                 self.start_pos = self.view.mapToScene(event.pos())
@@ -179,6 +183,8 @@ class ArcTool(BaseTool):
 
     def mousePress(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
+            self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
+
             if self.click_count == 0:
                 # First click: Set start position
                 self.start_pos = self.view.mapToScene(event.pos())

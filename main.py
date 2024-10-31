@@ -17,8 +17,7 @@ import webbrowser
 from mp_software_stylesheets.styles import blenderCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
-from src.framework.trick_detector.trick_detector import PoseDetector
-from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin, ScriptingWin
+from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin
 from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, ScenePanel, \
@@ -272,7 +271,6 @@ class MPRUN(QMainWindow):
         characters_menu = self.tool_menu.addMenu('Characters', parent=self)
         image_menu = self.tool_menu.addMenu('Image', parent=self)
         scene_menu = self.tool_menu.addMenu('Scene', parent=self)
-        training_menu = self.tool_menu.addMenu('Training', parent=self)
 
         select_action = QAction('Select', self)
         select_action.setShortcut(QKeySequence(Qt.Key_Space))
@@ -343,9 +341,6 @@ class MPRUN(QMainWindow):
         add_shape_tri = QAction('Add Triangle', self)
         add_shape_tri.triggered.connect(lambda: self.use_insert_shape('triangle'))
 
-        trick_detection_action = QAction('Trick Detection', self)
-        trick_detection_action.triggered.connect(self.use_trick_detection)
-
         add_shape_menu.addAction(add_shape_rect)
         add_shape_menu.addAction(add_shape_circle)
         add_shape_menu.addAction(add_shape_tri)
@@ -372,8 +367,6 @@ class MPRUN(QMainWindow):
         scene_menu.addAction(add_canvas_action)
         scene_menu.addAction(arrange_canvases_action)
         scene_menu.addAction(rename_canvases_action)
-
-        training_menu.addAction(trick_detection_action)
 
     def create_edit_menu(self):
         undo_action = QAction('Undo', self)
@@ -585,12 +578,9 @@ class MPRUN(QMainWindow):
         reload_ui_action.triggered.connect(self.open_settings_data)
 
         show_tip_of_the_day_action = QAction('Show Tip Of The Day', self)
+        show_tip_of_the_day_action.setIcon(QIcon(self.style().standardIcon(self.style().SP_MessageBoxInformation)))
         show_tip_of_the_day_action.setShortcut(QKeySequence('Shift+T'))
         show_tip_of_the_day_action.triggered.connect(self.show_tip_of_the_day)
-
-        python_scripting_action = QAction('Python Scripting', self)
-        python_scripting_action.setIcon(QIcon('mprun_assets/assets/logos/python_icon.png'))
-        python_scripting_action.triggered.connect(self.show_scripts)
 
         self.help_menu.addAction(about_action)
         self.help_menu.addAction(show_version_action)
@@ -604,8 +594,6 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(reload_ui_action)
         self.help_menu.addSeparator()
         self.help_menu.addAction(show_tip_of_the_day_action)
-        self.help_menu.addSeparator()
-        self.help_menu.addAction(python_scripting_action)
 
     def create_corner_widget(self):
         find_action_searchbox = CustomSearchBox(self.actions, self)
@@ -715,12 +703,6 @@ class MPRUN(QMainWindow):
         self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
         self.toolbox.addItem(self.characters_tab, 'Characters')
         self.toolbox.addItem(self.properties_tab, 'Properties')
-        '''self.toolbox.setItemIcon(0, QIcon('ui/UI Icons/Major/properties_panel.svg'))
-        self.toolbox.setItemIcon(1, QIcon('ui/UI Icons/Major/libraries_panel.svg'))
-        self.toolbox.setItemIcon(2, QIcon('ui/UI Icons/Major/characters_panel.svg'))
-        self.toolbox.setItemIcon(3, QIcon('ui/UI Icons/Major/image_trace_panel.svg'))
-        self.toolbox.setItemIcon(4, QIcon('ui/UI Icons/Major/canvas_panel.svg'))
-        self.toolbox.setItemIcon(5, QIcon('ui/UI Icons/Major/scene_panel.svg'))'''
 
         # Add to actions dict
         self.actions['Change Stroke Color'] = self.properties_tab.stroke_color_btn
@@ -1989,10 +1971,6 @@ class MPRUN(QMainWindow):
     def use_repair_file(self):
         self.w = FileDataRepairer(self)
 
-    def use_trick_detection(self):
-        self.w = PoseDetector()
-        self.w.show()
-
     def insert_image(self):
         self.canvas.importManager.importFile()
 
@@ -2040,10 +2018,6 @@ class MPRUN(QMainWindow):
         self.w = SettingsWin(self)
         self.w.show()
 
-    def show_scripts(self):
-        self.w = ScriptingWin(self)
-        self.w.show()
-
     def show_tip_of_the_day(self):
         with open('internal data/_tips.txt', 'r') as f:
             content = [line for line in f if not line.startswith('#') and line.strip()]
@@ -2084,7 +2058,6 @@ class MPRUN(QMainWindow):
                 self.apply_action_group_settings(user_data)
                 self.apply_icon_size_settings(user_data)
                 self.apply_color_settings(user_data)
-                self.apply_startup_script(user_data)
                 self.finalize_ui_updates()
                 self.apply_disclaimer_and_tips(user_data)
 
@@ -2145,9 +2118,6 @@ class MPRUN(QMainWindow):
         self.properties_tab.updateItemPen()
         self.properties_tab.updateItemFill()
         self.characters_tab.updateItemFont()
-
-    def apply_startup_script(self, user_data):
-        ScriptingWin.runCustomScript(ScriptingWin(self), user_data['script_ran_on_startup'])
 
     def finalize_ui_updates(self):
         self.update('ui_update')
