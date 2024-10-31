@@ -418,10 +418,6 @@ class CourseElementBuilder(QWidget):
         self.properties_tab.setFixedWidth(280)
         self.properties_tab.default()
 
-        item = LipItem(QRectF(0, 0, 100, 100))
-        item.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable)
-        self.scene.addItem(item)
-
         self.layout().addWidget(self.view)
         self.layout().addWidget(self.properties_tab)
         self.updateTransformUI()
