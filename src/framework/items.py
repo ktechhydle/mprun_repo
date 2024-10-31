@@ -612,9 +612,16 @@ class CustomTextItem(QGraphicsTextItem):
 
             painter.save()
 
-            # Define corner points in scene coordinates
-            grips = [self.boundingRect().topLeft(), self.boundingRect().topRight(),
-                     self.boundingRect().bottomLeft(), self.boundingRect().bottomRight()]
+            # Define inset amount
+            inset = 2
+
+            # Define corner points in scene coordinates, adjusted for inset
+            grips = [
+                self.boundingRect().topLeft() + QPointF(inset, inset),
+                self.boundingRect().topRight() + QPointF(-inset, inset),
+                self.boundingRect().bottomLeft() + QPointF(inset, -inset),
+                self.boundingRect().bottomRight() + QPointF(-inset, -inset)
+            ]
 
             # Draw grips as small squares or circles at each corner
             for grip in grips:

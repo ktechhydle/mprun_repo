@@ -130,12 +130,32 @@ class SceneSerializer:
         }
 
     def serialize_pen(self, pen: QPen):
+        style_mapping = {
+            Qt.PenStyle.SolidLine: 'SolidLine',
+            Qt.PenStyle.DashLine: 'DashLine',
+            Qt.PenStyle.DotLine: 'DotLine',
+            Qt.PenStyle.DashDotLine: 'DashDotLine',
+            Qt.PenStyle.DashDotDotLine: 'DashDotDotLine',
+        }
+
+        capstyle_mapping = {
+            Qt.PenCapStyle.FlatCap: 'FlatCap',
+            Qt.PenCapStyle.SquareCap: 'SquareCap',
+            Qt.PenCapStyle.RoundCap: 'RoundCap'
+        }
+
+        joinstyle_mapping = {
+            Qt.PenJoinStyle.MiterJoin: 'MiterJoin',
+            Qt.PenJoinStyle.BevelJoin: 'BevelJoin',
+            Qt.PenJoinStyle.RoundJoin: 'RoundJoin'
+        }
+
         return {
             'width': pen.width(),
             'color': self.serialize_color(pen.color()),
-            'style': pen.style(),
-            'capstyle': pen.capStyle(),
-            'joinstyle': pen.joinStyle()
+            'style': style_mapping.get(pen.style(), 'UnknownStyle'),
+            'capstyle': capstyle_mapping.get(pen.capStyle(), 'UnknownCapStyle'),
+            'joinstyle': joinstyle_mapping.get(pen.joinStyle(), 'UnknownJoinStyle')
         }
 
     def serialize_brush(self, brush: QBrush):

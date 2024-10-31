@@ -46,9 +46,32 @@ class SceneDeserializer:
         pen = QPen()
         pen.setWidth(data['width'])
         pen.setColor(self.deserialize_color(data['color']))
-        pen.setStyle(data['style'])
-        pen.setCapStyle(data['capstyle'])
-        pen.setJoinStyle(data['joinstyle'])
+
+        # Mapping string values back to QPen styles
+        style_mapping = {
+            'SolidLine': Qt.PenStyle.SolidLine,
+            'DashLine': Qt.PenStyle.DashLine,
+            'DotLine': Qt.PenStyle.DotLine,
+            'DashDotLine': Qt.PenStyle.DashDotLine,
+            'DashDotDotLine': Qt.PenStyle.DashDotDotLine,
+        }
+
+        capstyle_mapping = {
+            'FlatCap': Qt.PenCapStyle.FlatCap,
+            'SquareCap': Qt.PenCapStyle.SquareCap,
+            'RoundCap': Qt.PenCapStyle.RoundCap
+        }
+
+        joinstyle_mapping = {
+            'MiterJoin': Qt.PenJoinStyle.MiterJoin,
+            'BevelJoin': Qt.PenJoinStyle.BevelJoin,
+            'RoundJoin': Qt.PenJoinStyle.RoundJoin
+        }
+
+        pen.setStyle(style_mapping.get(data['style'], Qt.PenStyle.SolidLine))
+        pen.setCapStyle(capstyle_mapping.get(data['capstyle'], Qt.PenCapStyle.FlatCap))
+        pen.setJoinStyle(joinstyle_mapping.get(data['joinstyle'], Qt.PenJoinStyle.MiterJoin))
+
         return pen
 
     def deserialize_brush(self, data):
