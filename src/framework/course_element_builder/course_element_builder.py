@@ -511,7 +511,7 @@ class CourseElementBuilder(QWidget):
         self.pan_btn.setCheckable(True)
         self.pan_btn.triggered.connect(self.usePan)
 
-        self.lip_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Lip Tool (L)', self)
+        self.lip_btn = QAction(QIcon('mprun_assets/assets/tools/ceb_lip_tool.svg'), 'Lip Tool (L)', self)
         self.lip_btn.setToolTip(
             '<b>Lip (L)</b><br>'
             'Draw lips on to features.<br>'
@@ -522,7 +522,7 @@ class CourseElementBuilder(QWidget):
         self.lip_btn.setCheckable(True)
         self.lip_btn.triggered.connect(self.useTool)
 
-        self.line_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Line Tool (Ctrl+L)', self)
+        self.line_btn = QAction(QIcon('mprun_assets/assets/tools/ceb_line_tool.svg'), 'Line Tool (Ctrl+L)', self)
         self.line_btn.setToolTip(
             '<b>Line (Ctrl+L)</b><br>'
             'Draw line elements for features.<br>'
@@ -533,7 +533,7 @@ class CourseElementBuilder(QWidget):
         self.line_btn.setCheckable(True)
         self.line_btn.triggered.connect(self.useTool)
 
-        self.arc_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Arc Tool (A)', self)
+        self.arc_btn = QAction(QIcon('mprun_assets/assets/tools/ceb_arc_tool.svg'), 'Arc Tool (A)', self)
         self.arc_btn.setToolTip(
             '<b>Arc (A)</b><br>'
             'Draw arc elements for features.<br>'
