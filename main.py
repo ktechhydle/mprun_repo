@@ -144,7 +144,7 @@ class MPRUN(QMainWindow):
 
         for mode in args:
             if mode == 'ui_update':
-                self.update_transform_ui()
+                self.properties_tab.updateTransformUi()
                 self.update_appearance_ui()
                 self.repaint()
 
@@ -179,8 +179,8 @@ class MPRUN(QMainWindow):
         self.canvas = CustomGraphicsScene(self.undo_stack)
         self.canvas.setParentWindow(self)
         self.canvas.selectionChanged.connect(self.update_appearance_ui)
-        self.canvas.selectionChanged.connect(self.update_transform_ui)
-        self.canvas.itemsMoved.connect(self.update_transform_ui)
+        self.canvas.selectionChanged.connect(lambda: self.properties_tab.updateTransformUi())
+        self.canvas.itemsMoved.connect(lambda: self.properties_tab.updateTransformUi())
         self.setWindowTitle(f'{os.path.basename(self.canvas.manager.filename)} - MPRUN')
 
     def create_menu(self):
@@ -324,7 +324,7 @@ class MPRUN(QMainWindow):
         insert_image_action.triggered.connect(self.insert_image)
 
         image_trace_action = QAction('Trace Image', self)
-        image_trace_action.triggered.connect(self.use_vectorize)
+        image_trace_action.triggered.connect(lambda: self.image_trace_tab.useVectorize())
 
         smooth_action = QAction('Smooth Path', self)
         smooth_action.setShortcut(QKeySequence('Shift+S'))
@@ -427,11 +427,11 @@ class MPRUN(QMainWindow):
 
         flip_horizontal_action = QAction('Flip Horizontal', self)
         flip_horizontal_action.setShortcut(QKeySequence(''))
-        flip_horizontal_action.triggered.connect(self.use_flip_horizontal)
+        flip_horizontal_action.triggered.connect(lambda: self.properties_tab.useFlipHorizontal())
 
         flip_vertical_action = QAction('Flip Vertical', self)
         flip_vertical_action.setShortcut(QKeySequence(''))
-        flip_vertical_action.triggered.connect(self.use_flip_vertical)
+        flip_vertical_action.triggered.connect(lambda: self.properties_tab.useFlipVertical())
 
         raise_layer_action = QAction('Raise Layer', self)
         raise_layer_action.setShortcut(QKeySequence('Up'))
@@ -717,7 +717,7 @@ class MPRUN(QMainWindow):
         self.actions['Reload Library'] = self.libraries_tab.reload_library_button
         self.actions['Enable Grid'] = self.scene_tab.gsnap_check_btn
 
-        self.set_properties_tab_enabled(False)
+        self.properties_tab.set_properties_tab_enabled(False)
 
     def create_toolbar1(self):
         self.action_group = QActionGroup(self)
@@ -1174,44 +1174,6 @@ class MPRUN(QMainWindow):
                     # Add the action to self.actions dictionary
                     self.actions[action_text] = action
 
-    def update_transform_ui(self):
-        # Block signals for all spinboxes at once
-        spinboxes = [self.properties_tab.x_pos_spin, self.properties_tab.y_pos_spin,
-                     self.properties_tab.width_scale_spin, self.properties_tab.height_scale_spin,
-                     self.properties_tab.rotate_item_spin, self.properties_tab.opacity_spin]
-        for spinbox in spinboxes:
-            spinbox.blockSignals(True)
-
-        selected_items = self.canvas.selectedItems()
-
-        if selected_items:
-            self.set_properties_tab_enabled(False)
-            first_item = selected_items[0]
-
-            # Update based on first item only
-            self.properties_tab.x_pos_spin.setValue(int(first_item.sceneBoundingRect().x()))
-            self.properties_tab.y_pos_spin.setValue(int(first_item.sceneBoundingRect().y()))
-            self.properties_tab.rotate_item_spin.setValue(int(first_item.rotation()))
-            self.properties_tab.opacity_spin.setValue(int(first_item.opacity() * 100))
-            self.properties_tab.width_scale_spin.setValue(first_item.transform().m11() * 100)
-            self.properties_tab.height_scale_spin.setValue(first_item.transform().m22() * 100)
-
-            # Update label based on selection count
-            if len(selected_items) > 1:
-                self.properties_tab.selection_label.setText(f'Combined Selection ({len(selected_items)} Items)')
-                bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
-                self.properties_tab.x_pos_spin.setValue(int(bounding_rect.x()))
-                self.properties_tab.y_pos_spin.setValue(int(bounding_rect.y()))
-            else:
-                self.properties_tab.selection_label.setText(first_item.toolTip())
-
-        else:
-            self.set_properties_tab_enabled(True)
-
-        # Unblock signals for all spinboxes at once
-        for spinbox in spinboxes:
-            spinbox.blockSignals(False)
-
     def update_appearance_ui(self):
         # Widgets to block/unblock signals for canvas and properties
         signal_block_widgets = [
@@ -1298,31 +1260,6 @@ class MPRUN(QMainWindow):
         for widget in signal_block_widgets:
             widget.blockSignals(False)
 
-    def set_properties_tab_enabled(self, enabled: bool):
-        self.properties_tab.transform_separator.setHidden(enabled)
-        self.properties_tab.transform_label.setHidden(enabled)
-        self.properties_tab.x_pos_label.setHidden(enabled)
-        self.properties_tab.x_pos_spin.setHidden(enabled)
-        self.properties_tab.y_pos_label.setHidden(enabled)
-        self.properties_tab.y_pos_spin.setHidden(enabled)
-        self.properties_tab.width_transform_label.setHidden(enabled)
-        self.properties_tab.height_transform_label.setHidden(enabled)
-        self.properties_tab.width_scale_spin.setHidden(enabled)
-        self.properties_tab.height_scale_spin.setHidden(enabled)
-        self.properties_tab.flip_horizontal_btn.setHidden(enabled)
-        self.properties_tab.flip_vertical_btn.setHidden(enabled)
-        self.properties_tab.rotation_label.setHidden(enabled)
-        self.properties_tab.rotate_item_spin.setHidden(enabled)
-
-        if enabled is True:
-            self.properties_tab.selection_label.setText('No Selection')
-            self.properties_tab.x_pos_spin.setValue(0)
-            self.properties_tab.y_pos_spin.setValue(0)
-            self.properties_tab.rotate_item_spin.setValue(0)
-            self.properties_tab.opacity_spin.setValue(100)
-            self.properties_tab.width_scale_spin.setValue(0.0)
-            self.properties_tab.height_scale_spin.setValue(0.0)
-
     def use_delete(self):
         items = [item for item in self.canvas.selectedItems()]
 
@@ -1389,48 +1326,6 @@ class MPRUN(QMainWindow):
     def use_text(self):
         self.add_text_btn.setChecked(True)
 
-    def use_scale_x(self, value):
-        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
-
-    def use_scale_y(self, value):
-        self.use_scale(self.properties_tab.width_scale_spin.value(), self.properties_tab.height_scale_spin.value())
-
-    def use_scale(self, x_value, y_value):
-        try:
-            items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-
-            # Remove items where parent is LeaderLineItem and selected
-            items = [item for item in items
-                     if not (isinstance(item, CustomTextItem) and isinstance(item.parentItem(),
-                                                                             LeaderLineItem) and item.parentItem().isSelected())]
-
-            old_transforms = []
-            new_transforms = []
-
-            for correct_item in items:
-                # Get the center of the bounding box
-                bounding_rect = correct_item.boundingRect()
-                center_x = bounding_rect.center().x()
-                center_y = bounding_rect.center().y()
-
-                scale_x = x_value / 100
-                scale_y = y_value / 100
-
-                # Record the old transform and calculate the new one
-                old_transforms.append(correct_item.transform())
-                transform = QTransform()
-                transform.translate(center_x, center_y)
-                transform.scale(scale_x, scale_y)
-                transform.translate(-center_x, -center_y)
-                new_transforms.append(transform)
-
-            # Create and add the command
-            command = TransformCommand(items, old_transforms, new_transforms)
-            self.canvas.addCommand(command)
-
-        except Exception as e:
-            print(f'Error during scaling: {e}')
-
     def use_scale_tool(self):
         self.scale_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
@@ -1442,23 +1337,6 @@ class MPRUN(QMainWindow):
         self.canvas_view.disable_item_flags()
 
         self.use_exit_grid()
-
-    def use_rotate(self, value):
-        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-        old_rotations = []
-
-        # Rotate each item around the center
-        for item in items:
-            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
-                if item.parentItem().isSelected():
-                    items.remove(item)
-
-            old_rotations.append(item.rotation())
-            item.setTransformOriginPoint(item.boundingRect().center())
-
-        if items:
-            command = RotateCommand(self, items, old_rotations, value)
-            self.canvas.addCommand(command)
 
     def use_rotate_direction(self, dir: str):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1515,151 +1393,6 @@ class MPRUN(QMainWindow):
 
         command = LayerChangeCommand(selected_items, old_z_values, new_z_values)
         self.canvas.addCommand(command)
-
-    def use_vectorize(self):
-        # Initialize progress dialog
-        progress_dialog = QProgressDialog("Converting images...", "Cancel", 0, len(self.canvas.selectedItems()), self)
-        progress_dialog.setWindowTitle("Progress")
-        progress_dialog.setWindowModality(Qt.WindowModal)
-        progress_dialog.setFixedWidth(300)
-        progress_dialog.setAutoClose(True)  # Automatically closes after reaching the maximum value
-
-        # Update the progress
-        progress = 0
-        progress_dialog.setValue(progress)
-
-        converted_items = []
-
-        for item in self.canvas.selectedItems():
-            # Check if the user pressed cancel
-            if progress_dialog.wasCanceled():
-                break
-
-            if isinstance(item, CustomPixmapItem):
-                try:
-                    temp_pixmap_path = os.path.abspath('internal data/temp_pixmap.png')
-                    item.pixmap().save(temp_pixmap_path)
-
-                    # Convert the pixmap to SVG
-                    vtracer.convert_image_to_svg_py(
-                        temp_pixmap_path,
-                        'internal data/output.svg',
-                        colormode=self.image_trace_tab.colormode_combo.itemData(
-                            self.image_trace_tab.colormode_combo.currentIndex()),
-                        hierarchical='cutout',
-                        mode=self.image_trace_tab.mode_combo.itemData(
-                            self.image_trace_tab.mode_combo.currentIndex()),
-                        filter_speckle=4,
-                        color_precision=6,
-                        layer_difference=16,
-                        corner_threshold=self.image_trace_tab.corner_threshold_spin.value(),
-                        length_threshold=4.0,
-                        max_iterations=10,
-                        splice_threshold=45,
-                        path_precision=3
-                    )
-
-                    # Add the item to the scene
-                    svg_item = CustomSvgItem()
-                    svg_item.store_filename('')
-                    svg_item.setToolTip('Imported SVG')
-                    svg_item.setPos(item.x() + 10, item.y() + 10)
-                    self.create_item_attributes(svg_item)
-                    converted_items.append(svg_item)
-
-                    with open(os.path.abspath('internal data/output.svg'), 'r', encoding='utf-8') as f:
-                        data = f.read()
-                        svg_item.loadFromData(data)
-
-                    # Remove the temporary files
-                    if os.path.exists(temp_pixmap_path):
-                        os.remove(temp_pixmap_path)
-                    os.remove(os.path.abspath('internal data/output.svg'))
-
-                    # Update progress
-                    progress += 1
-                    progress_dialog.setValue(progress)
-
-                except Exception as e:
-                    QMessageBox.critical(self, 'Convert Error', f'Failed to convert bitmap to vector: {e}')
-                    return  # Exit the loop on error
-
-        if not progress_dialog.wasCanceled():
-            if converted_items:
-                add_command = MultiAddItemCommand(self.canvas, converted_items)
-                self.canvas.addCommand(add_command)
-
-            QMessageBox.information(self, 'Convert Finished', 'All vectors converted successfully.')
-
-        else:
-            del converted_items
-
-    def use_set_item_pos(self):
-        self.canvas.blockSignals(True)
-        try:
-            # Get target position from spin boxes
-            target_x = self.properties_tab.x_pos_spin.value()
-            target_y = self.properties_tab.y_pos_spin.value()
-
-            # Get the bounding rect of selected items
-            items = [item for item in self.canvas.selectedItems()]
-            old_positions = []
-            new_positions = []
-
-            bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
-
-            # Calculate the offset
-            offset_x = target_x - bounding_rect.x()
-            offset_y = target_y - bounding_rect.y()
-
-            # Move each selected item by the offset and collect positions
-            for item in items:
-                if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
-                    if item.parentItem().isSelected():
-                        items.remove(item)
-
-                old_pos = item.pos()
-                new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
-                old_positions.append(old_pos)
-                new_positions.append(new_pos)
-
-            # Create and execute the command with all items
-            command = MultiItemPositionChangeCommand(self, items, old_positions, new_positions)
-            self.canvas.addCommand(command)
-
-        finally:
-            self.canvas.blockSignals(False)
-
-    def use_flip_horizontal(self):
-        self.properties_tab.width_scale_spin.setValue(-self.properties_tab.width_scale_spin.value())
-
-    def use_flip_vertical(self):
-        self.properties_tab.height_scale_spin.setValue(-self.properties_tab.height_scale_spin.value())
-
-    def use_change_opacity(self, value):
-        # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
-        opacity = value / self.properties_tab.opacity_spin.maximum()
-
-        items = self.canvas.selectedItems()
-        if not items:
-            return
-
-        canvas_items = []
-        old_opacities = []
-
-        # Apply the effect to selected items
-        for item in items:
-            if not isinstance(item, CanvasItem):
-                canvas_items.append(item)
-                old_opacities.append(item.opacity())
-
-        if canvas_items:
-            try:
-                command = OpacityCommand(canvas_items, old_opacities, opacity)
-                self.canvas.addCommand(command)
-            except Exception as e:
-                # Handle the exception (e.g., logging)
-                print(f'Exception: {e}')
 
     def use_reset_item(self):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]

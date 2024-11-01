@@ -267,7 +267,7 @@ y: {int(self.mapToScene(point).y())}''')
             if self.select_btn.isChecked():
                 self.parent().use_select()
 
-        self.parent().update_transform_ui()
+        self.parent().properties_tab.updateTransformUi()
 
     def mouseDoubleClickEvent(self, event):
         if self.sculpt_btn.isChecked():
@@ -296,7 +296,7 @@ y: {int(self.mapToScene(point).y())}''')
         duplicate_action = QAction('Duplicate', self)
         duplicate_action.triggered.connect(self.canvas.duplicate)
         vectorize_action = QAction('Vectorize', self)
-        vectorize_action.triggered.connect(self.canvas.parentWindow.use_vectorize)
+        vectorize_action.triggered.connect(self.canvas.parentWindow.image_trace_tab.useVectorize)
         raise_layer_action = QAction('Raise Layer', self)
         raise_layer_action.triggered.connect(self.canvas.parentWindow.use_raise_layer)
         lower_layer_action = QAction('Lower Layer', self)
@@ -662,7 +662,7 @@ class CustomGraphicsScene(QGraphicsScene):
             self.modified = True
             self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
-        self.parentWindow.update_transform_ui()
+        self.parentWindow.properties_tab.updateTransformUi()
         self.parentWindow.update_appearance_ui()
         self.views()[0].update()
 
@@ -677,7 +677,7 @@ class CustomGraphicsScene(QGraphicsScene):
             self.modified = True
             self.parentWindow.setWindowTitle(f'{os.path.basename(self.manager.filename)}* - MPRUN')
 
-        self.parentWindow.update_transform_ui()
+        self.parentWindow.properties_tab.updateTransformUi()
         self.parentWindow.update_appearance_ui()
         self.views()[0].update()
 

@@ -41,15 +41,9 @@ class MultiItemPositionChangeCommand(QUndoCommand):
         for item, new_pos in zip(self.items, self.new_positions):
             item.setPos(new_pos)
 
-        if self.parent:
-            self.parent.update_transform_ui()
-
     def undo(self):
         for item, old_pos in zip(self.items, self.old_positions):
             item.setPos(old_pos)
-
-        if self.parent:
-            self.parent.update_transform_ui()
 
 
 class PositionChangeCommand(QUndoCommand):
@@ -63,14 +57,8 @@ class PositionChangeCommand(QUndoCommand):
     def redo(self):
         self.item.setPos(self.new)
 
-        if self.parent:
-            self.parent.update_transform_ui()
-
     def undo(self):
         self.item.setPos(self.old)
-
-        if self.parent:
-            self.parent.update_transform_ui()
 
 
 class AlignMultipleItemsCommand(QUndoCommand):
@@ -84,12 +72,10 @@ class AlignMultipleItemsCommand(QUndoCommand):
     def redo(self):
         for item, new_pos in zip(self.items, self.new_positions):
             item.moveBy(new_pos.x(), new_pos.y())
-        self.parent.update_transform_ui()
 
     def undo(self):
         for item, old_pos in zip(self.items, self.old_positions):
             item.setPos(old_pos)
-        self.parent.update_transform_ui()
 
 
 class EditTextCommand(QUndoCommand):
@@ -194,15 +180,10 @@ class RotateCommand(QUndoCommand):
         for item in self.items:
             item.setRotation(self.new_rotation)
 
-        if self.parent:
-            self.parent.update_transform_ui()
 
     def undo(self):
         for item, old_rotation in zip(self.items, self.old_rotations):
             item.setRotation(old_rotation)
-
-        if self.parent:
-            self.parent.update_transform_ui()
 
 
 class RotateDirectionCommand(QUndoCommand):
@@ -216,12 +197,10 @@ class RotateDirectionCommand(QUndoCommand):
     def redo(self):
         for item, new_rotation in zip(self.items, self.new_rotations):
             item.setRotation(new_rotation)
-        self.parent.update_transform_ui()
 
     def undo(self):
         for item, old_rotation in zip(self.items, self.old_rotations):
             item.setRotation(old_rotation)
-        self.parent.update_transform_ui()
 
 
 class ItemMovedUndoCommand(QUndoCommand):

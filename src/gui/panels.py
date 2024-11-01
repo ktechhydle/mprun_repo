@@ -82,11 +82,11 @@ class PropertiesPanel(QWidget):
         self.flip_horizontal_btn = QPushButton(QIcon('ui/Tool Icons/flip_horizontal_icon.png'), '')
         self.flip_horizontal_btn.setToolTip('Flip horizontal')
         self.flip_horizontal_btn.setStyleSheet('border: none;')
-        self.flip_horizontal_btn.clicked.connect(self.parent.use_flip_horizontal)
+        self.flip_horizontal_btn.clicked.connect(self.useFlipHorizontal)
         self.flip_vertical_btn = QPushButton(QIcon('ui/Tool Icons/flip_vertical_icon.png'), '')
         self.flip_vertical_btn.setToolTip('Flip vertical')
         self.flip_vertical_btn.setStyleSheet('border: none;')
-        self.flip_vertical_btn.clicked.connect(self.parent.use_flip_vertical)
+        self.flip_vertical_btn.clicked.connect(self.useFlipVertical)
         widget7 = ToolbarHorizontalLayout()
         widget7.layout.addWidget(self.x_pos_label)
         widget7.layout.addWidget(self.x_pos_spin)
@@ -157,7 +157,7 @@ class PropertiesPanel(QWidget):
         self.opacity_spin.setValue(100)
         self.opacity_spin.setSuffix('%')
         self.opacity_spin.setToolTip('Change the opacity')
-        self.opacity_spin.valueChanged.connect(self.parent.use_change_opacity)
+        self.opacity_spin.valueChanged.connect(self.useChangeOpacity)
         opacity_hlayout = ToolbarHorizontalLayout()
         opacity_hlayout.layout.addWidget(self.opacity_btn)
         opacity_hlayout.layout.addWidget(opacity_label)
@@ -170,11 +170,11 @@ class PropertiesPanel(QWidget):
         self.stroke_style_combo.currentIndexChanged.connect(self.updateItemPen)
         self.stroke_pencap_combo.currentIndexChanged.connect(self.updateItemPen)
         self.join_style_combo.currentIndexChanged.connect(self.updateItemPen)
-        self.x_pos_spin.valueChanged.connect(self.parent.use_set_item_pos)
-        self.y_pos_spin.valueChanged.connect(self.parent.use_set_item_pos)
-        self.width_scale_spin.valueChanged.connect(self.parent.use_scale_x)
-        self.height_scale_spin.valueChanged.connect(self.parent.use_scale_y)
-        self.rotate_item_spin.valueChanged.connect(self.parent.use_rotate)
+        self.x_pos_spin.valueChanged.connect(self.useSetItemPos)
+        self.y_pos_spin.valueChanged.connect(self.useSetItemPos)
+        self.width_scale_spin.valueChanged.connect(self.useScaleX)
+        self.height_scale_spin.valueChanged.connect(self.useScaleY)
+        self.rotate_item_spin.valueChanged.connect(self.useRotate)
 
         self.properties_tab_layout.addWidget(self.selection_label)
         self.properties_tab_layout.addWidget(self.transform_separator)
@@ -284,6 +284,195 @@ class PropertiesPanel(QWidget):
 
     def getBrush(self) -> QBrush:
         return QBrush(QColor(self.brush_color.get()))
+
+    def useScaleX(self, value):
+        self.useScale(self.width_scale_spin.value(), self.height_scale_spin.value())
+
+    def useScaleY(self, value):
+        self.useScale(self.width_scale_spin.value(), self.height_scale_spin.value())
+
+    def useScale(self, x_value, y_value):
+        try:
+            items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+
+            # Remove items where parent is LeaderLineItem and selected
+            items = [item for item in items
+                     if not (isinstance(item, CustomTextItem) and isinstance(item.parentItem(),
+                                                                             LeaderLineItem) and item.parentItem().isSelected())]
+
+            old_transforms = []
+            new_transforms = []
+
+            for correct_item in items:
+                # Get the center of the bounding box
+                bounding_rect = correct_item.boundingRect()
+                center_x = bounding_rect.center().x()
+                center_y = bounding_rect.center().y()
+
+                scale_x = x_value / 100
+                scale_y = y_value / 100
+
+                # Record the old transform and calculate the new one
+                old_transforms.append(correct_item.transform())
+                transform = QTransform()
+                transform.translate(center_x, center_y)
+                transform.scale(scale_x, scale_y)
+                transform.translate(-center_x, -center_y)
+                new_transforms.append(transform)
+
+            # Create and add the command
+            command = TransformCommand(items, old_transforms, new_transforms)
+            self.canvas.addCommand(command)
+
+        except Exception as e:
+            print(f'Error during scaling: {e}')
+
+    def useRotate(self, value):
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+        old_rotations = []
+
+        # Rotate each item around the center
+        for item in items:
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                if item.parentItem().isSelected():
+                    items.remove(item)
+
+            old_rotations.append(item.rotation())
+            item.setTransformOriginPoint(item.boundingRect().center())
+
+        if items:
+            command = RotateCommand(self, items, old_rotations, value)
+            self.canvas.addCommand(command)
+
+    def useSetItemPos(self):
+        self.canvas.blockSignals(True)
+        try:
+            # Get target position from spin boxes
+            target_x = self.x_pos_spin.value()
+            target_y = self.y_pos_spin.value()
+
+            # Get the bounding rect of selected items
+            items = [item for item in self.canvas.selectedItems()]
+            old_positions = []
+            new_positions = []
+
+            bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
+
+            # Calculate the offset
+            offset_x = target_x - bounding_rect.x()
+            offset_y = target_y - bounding_rect.y()
+
+            # Move each selected item by the offset and collect positions
+            for item in items:
+                if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                    if item.parentItem().isSelected():
+                        items.remove(item)
+
+                old_pos = item.pos()
+                new_pos = QPointF(item.x() + offset_x, item.y() + offset_y)
+                old_positions.append(old_pos)
+                new_positions.append(new_pos)
+
+            # Create and execute the command with all items
+            command = MultiItemPositionChangeCommand(self, items, old_positions, new_positions)
+            self.canvas.addCommand(command)
+
+        finally:
+            self.canvas.blockSignals(False)
+
+    def useFlipHorizontal(self):
+        self.width_scale_spin.setValue(-self.width_scale_spin.value())
+
+    def useFlipVertical(self):
+        self.height_scale_spin.setValue(-self.height_scale_spin.value())
+
+    def useChangeOpacity(self, value):
+        # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
+        opacity = value / self.opacity_spin.maximum()
+
+        items = self.canvas.selectedItems()
+        if not items:
+            return
+
+        canvas_items = []
+        old_opacities = []
+
+        # Apply the effect to selected items
+        for item in items:
+            if not isinstance(item, CanvasItem):
+                canvas_items.append(item)
+                old_opacities.append(item.opacity())
+
+        if canvas_items:
+            try:
+                command = OpacityCommand(canvas_items, old_opacities, opacity)
+                self.canvas.addCommand(command)
+            except Exception as e:
+                # Handle the exception (e.g., logging)
+                print(f'Exception: {e}')
+
+    def updateTransformUi(self):
+        # Block signals for all spinboxes at once
+        spinboxes = [self.x_pos_spin, self.y_pos_spin,
+                     self.width_scale_spin, self.height_scale_spin,
+                     self.rotate_item_spin, self.opacity_spin]
+        for spinbox in spinboxes:
+            spinbox.blockSignals(True)
+
+        selected_items = self.canvas.selectedItems()
+
+        if selected_items:
+            self.set_properties_tab_enabled(False)
+            first_item = selected_items[0]
+
+            # Update based on first item only
+            self.x_pos_spin.setValue(int(first_item.sceneBoundingRect().x()))
+            self.y_pos_spin.setValue(int(first_item.sceneBoundingRect().y()))
+            self.rotate_item_spin.setValue(int(first_item.rotation()))
+            self.opacity_spin.setValue(int(first_item.opacity() * 100))
+            self.width_scale_spin.setValue(first_item.transform().m11() * 100)
+            self.height_scale_spin.setValue(first_item.transform().m22() * 100)
+
+            # Update label based on selection count
+            if len(selected_items) > 1:
+                self.selection_label.setText(f'Combined Selection ({len(selected_items)} Items)')
+                bounding_rect = self.canvas.selectedItemsSceneBoundingRect()
+                self.x_pos_spin.setValue(int(bounding_rect.x()))
+                self.y_pos_spin.setValue(int(bounding_rect.y()))
+            else:
+                self.selection_label.setText(first_item.toolTip())
+
+        else:
+            self.set_properties_tab_enabled(True)
+
+        # Unblock signals for all spinboxes at once
+        for spinbox in spinboxes:
+            spinbox.blockSignals(False)
+
+    def set_properties_tab_enabled(self, enabled: bool):
+        self.transform_separator.setHidden(enabled)
+        self.transform_label.setHidden(enabled)
+        self.x_pos_label.setHidden(enabled)
+        self.x_pos_spin.setHidden(enabled)
+        self.y_pos_label.setHidden(enabled)
+        self.y_pos_spin.setHidden(enabled)
+        self.width_transform_label.setHidden(enabled)
+        self.height_transform_label.setHidden(enabled)
+        self.width_scale_spin.setHidden(enabled)
+        self.height_scale_spin.setHidden(enabled)
+        self.flip_horizontal_btn.setHidden(enabled)
+        self.flip_vertical_btn.setHidden(enabled)
+        self.rotation_label.setHidden(enabled)
+        self.rotate_item_spin.setHidden(enabled)
+
+        if enabled is True:
+            self.selection_label.setText('No Selection')
+            self.x_pos_spin.setValue(0)
+            self.y_pos_spin.setValue(0)
+            self.rotate_item_spin.setValue(0)
+            self.opacity_spin.setValue(100)
+            self.width_scale_spin.setValue(0.0)
+            self.height_scale_spin.setValue(0.0)
 
     def default(self):
         self.stroke_color_btn.setButtonColor(self.pen_color.get())
@@ -560,9 +749,9 @@ class ImageTracingPanel(QWidget):
         self.canvas = canvas
         self.parent = parent
 
-        self.create_ui()
+        self.createUI()
 
-    def create_ui(self):
+    def createUI(self):
         # _____ Image Trace tab widgets _____
         colormode_label = QLabel('Preset:')
         mode_label = QLabel('Mode:')
@@ -620,6 +809,90 @@ class ImageTracingPanel(QWidget):
         self.image_trace_layout.addWidget(corner_threshold_label)
         self.image_trace_layout.addWidget(self.corner_threshold_spin)
 
+    def useVectorize(self):
+        # Initialize progress dialog
+        progress_dialog = QProgressDialog("Converting images...", "Cancel", 0, len(self.canvas.selectedItems()), self.parent)
+        progress_dialog.setWindowTitle("Progress")
+        progress_dialog.setWindowModality(Qt.WindowModal)
+        progress_dialog.setFixedWidth(300)
+        progress_dialog.setAutoClose(True)
+
+        # Update the progress
+        progress = 0
+        progress_dialog.setValue(progress)
+
+        converted_items = []
+
+        for item in self.canvas.selectedItems():
+            # Check if the user pressed cancel
+            if progress_dialog.wasCanceled():
+                break
+
+            if isinstance(item, CustomPixmapItem):
+                try:
+                    temp_pixmap_path = os.path.abspath('internal data/temp_pixmap.png')
+                    item.pixmap().save(temp_pixmap_path)
+
+                    # Convert the pixmap to SVG
+                    vtracer.convert_image_to_svg_py(
+                        temp_pixmap_path,
+                        'internal data/output.svg',
+                        colormode=self.colormode_combo.itemData(
+                            self.colormode_combo.currentIndex()),
+                        hierarchical='cutout',
+                        mode=self.mode_combo.itemData(
+                            self.mode_combo.currentIndex()),
+                        filter_speckle=4,
+                        color_precision=6,
+                        layer_difference=16,
+                        corner_threshold=self.corner_threshold_spin.value(),
+                        length_threshold=4.0,
+                        max_iterations=10,
+                        splice_threshold=45,
+                        path_precision=3
+                    )
+
+                    # Add the item to the scene
+                    svg_item = CustomSvgItem()
+                    svg_item.store_filename('')
+                    svg_item.setToolTip('Imported SVG')
+                    svg_item.setPos(item.x() + 10, item.y() + 10)
+                    self.createItemAttributes(svg_item)
+                    converted_items.append(svg_item)
+
+                    with open(os.path.abspath('internal data/output.svg'), 'r', encoding='utf-8') as f:
+                        data = f.read()
+                        svg_item.loadFromData(data)
+
+                    # Remove the temporary files
+                    if os.path.exists(temp_pixmap_path):
+                        os.remove(temp_pixmap_path)
+                    os.remove(os.path.abspath('internal data/output.svg'))
+
+                    # Update progress
+                    progress += 1
+                    progress_dialog.setValue(progress)
+
+                except Exception as e:
+                    QMessageBox.critical(self, 'Convert Error', f'Failed to convert bitmap to vector: {e}')
+                    return
+
+        if not progress_dialog.wasCanceled():
+            if converted_items:
+                add_command = MultiAddItemCommand(self.canvas, converted_items)
+                self.canvas.addCommand(add_command)
+
+            QMessageBox.information(self.parent, 'Convert Finished', 'All vectors converted successfully.')
+
+        else:
+            del converted_items
+
+    def createItemAttributes(self, item):
+        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(QGraphicsItem.ItemIsSelectable)
+
+        item.setZValue(0)
+
 
 class CanvasEditorPanel(QWidget):
     def __init__(self, canvas):
@@ -632,9 +905,9 @@ class CanvasEditorPanel(QWidget):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
 
-        self.create_ui()
+        self.createUI()
 
-    def create_ui(self):
+    def createUI(self):
         canvas_x_size_label = QLabel('W:')
         canvas_y_size_label = QLabel('H:')
         canvas_preset_label = QLabel('Preset:')
