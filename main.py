@@ -17,12 +17,13 @@ import webbrowser
 from mp_software_stylesheets.styles import blenderCSS
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
+from src.framework.three_dimensional_viewer.three_dimensional_viewer import SceneTo3DUserInterface
+from src.framework.course_element_builder.course_element_builder import CourseElementBuilder
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin
 from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegraterWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, ScenePanel, \
     CanvasEditorPanel
-from src.framework.three_dimensional_viewer.three_dimensional_viewer import SceneTo3DUserInterface
 from src.scripts.app_internal import *
 from src.scripts.raw_functions import nameismain
 from src.scripts.get_version import get_latest_version
@@ -310,6 +311,9 @@ class MPRUN(QMainWindow):
         linelabel_action.triggered.connect(self.use_label)
         linelabel_action.triggered.connect(self.update)
 
+        ceb_action = QAction('Course Elements Builder', self)
+        ceb_action.triggered.connect(self.show_ceb)
+
         text_action = QAction('Text', self)
         text_action.setShortcut(QKeySequence('Ctrl+T'))
         text_action.triggered.connect(self.use_text)
@@ -348,6 +352,7 @@ class MPRUN(QMainWindow):
         drawing_menu.addAction(path_action)
         drawing_menu.addAction(pen_action)
         drawing_menu.addAction(linelabel_action)
+        drawing_menu.addAction(ceb_action)
         drawing_menu.addMenu(add_shape_menu)
 
         path_menu.addAction(smooth_action)
@@ -2027,6 +2032,10 @@ class MPRUN(QMainWindow):
 
     def show_3d_viewer(self):
         self.w = SceneTo3DUserInterface(self)
+        self.w.show()
+
+    def show_ceb(self):
+        self.w = CourseElementBuilder(self)
         self.w.show()
 
     def show_help(self):

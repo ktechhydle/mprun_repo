@@ -1,6 +1,8 @@
+import time
 
 from src.framework.course_element_builder.course_element_builder_graphics import *
 from src.framework.course_element_builder.course_element_builder_items import *
+from src.framework.items import CustomSvgItem
 from src.gui.custom_widgets import HorizontalSeparator, CustomIconWidget, ToolbarHorizontalLayout, \
     CustomColorDisplayButton, StrokeLabel, CustomColorPicker, CustomToolbar
 from src.scripts.imports import *
@@ -8,7 +10,7 @@ from src.scripts.raw_functions import ItemStack
 
 
 class CourseElementBuilderPanel(QWidget):
-    def __init__(self, canvas, parent):
+    def __init__(self, canvas: QGraphicsScene, parent):
         super().__init__()
         self.setMinimumHeight(400)
         self.properties_tab_layout = QVBoxLayout()
@@ -165,6 +167,9 @@ class CourseElementBuilderPanel(QWidget):
         opacity_hlayout.layout.addSpacing(100)
         opacity_hlayout.layout.setContentsMargins(0, 14, 0, 0)
 
+        send_to_scene_btn = QPushButton('Send To Scene', self)
+        send_to_scene_btn.clicked.connect(self.sendToScene)
+
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.updateItemPen)
         self.stroke_style_combo.currentIndexChanged.connect(self.updateItemPen)
@@ -188,6 +193,7 @@ class CourseElementBuilderPanel(QWidget):
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addStretch()
+        self.properties_tab_layout.addWidget(send_to_scene_btn)
 
     def strokeColorChooser(self):
         color_dialog = CustomColorPicker(self.parent)
@@ -387,6 +393,47 @@ class CourseElementBuilderPanel(QWidget):
             command = OpacityCommand(canvas_items, old_opacities, opacity)
             self.scene.addCommand(command)
 
+    def sendToScene(self):
+        self.scene.setBackgroundBrush(QColor(Qt.GlobalColor.transparent))
+        self.scene.clearSelection()
+
+        file_path = 'internal data/output.svg'
+        rect = self.scene.itemsBoundingRect()
+
+        # Export as SVG
+        svg_generator = QSvgGenerator()
+        svg_generator.setFileName(file_path)
+        svg_generator.setSize(rect.size().toSize())
+        svg_generator.setViewBox(rect)
+
+        # Create a QPainter to paint onto the QSvgGenerator
+        painter = QPainter()
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+        painter.begin(svg_generator)
+
+        # Render the scene onto the QPainter
+        self.scene.render(painter, target=rect, source=rect)
+
+        # End painting
+        painter.end()
+
+        self.scene.setBackgroundBrush(QBrush(QColor('#606060')))
+
+        item = CustomSvgItem()
+        item.setToolTip('Imported SVG')
+        item.setPos(0, 0)
+        item.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+        item.setZValue(0)
+
+        with open(os.path.abspath(file_path), 'r', encoding='utf-8') as f:
+            data = f.read()
+            item.loadFromData(data)
+
+        # Add item to scene
+        add_command = AddItemCommand(self.parent.parentScene, item)
+        self.parent.parentScene.addCommand(add_command)
+
     def default(self):
         self.stroke_color_btn.setButtonColor('#000000')
         self.fill_color_btn.setButtonColor('transparent')
@@ -397,11 +444,15 @@ class CourseElementBuilderPanel(QWidget):
 
 
 class CourseElementBuilder(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent):
+        super().__init__()
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('Course Elements Builder')
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.resize(1000, 800)
         self.setLayout(QHBoxLayout())
+
+        self.parentScene = parent.canvas
 
         self.createUi()
         self.createToolBar()
@@ -679,12 +730,3 @@ class CourseElementBuilder(QWidget):
         if items:
             command = RemoveItemCommand(self.scene, items)
             self.scene.addCommand(command)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
-    window = CourseElementBuilder()
-    window.show()
-
-    sys.exit(app.exec_())

@@ -102,6 +102,8 @@ class CourseElementBuilderView(QGraphicsView):
     def __init__(self, scene, parent):
         super().__init__(scene, parent)
         self.setMouseTracking(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         # Tools
         self.lipTool = LipTool(self.scene(), self)
