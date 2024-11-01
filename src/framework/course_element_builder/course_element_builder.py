@@ -520,6 +520,7 @@ class CourseElementBuilder(QWidget):
         )
         self.lip_btn.setShortcut(QKeySequence('L'))
         self.lip_btn.setCheckable(True)
+        self.lip_btn.triggered.connect(self.useTool)
 
         self.line_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Line Tool (Ctrl+L)', self)
         self.line_btn.setToolTip(
@@ -530,6 +531,7 @@ class CourseElementBuilder(QWidget):
         )
         self.line_btn.setShortcut(QKeySequence('Ctrl+L'))
         self.line_btn.setCheckable(True)
+        self.line_btn.triggered.connect(self.useTool)
 
         self.arc_btn = QAction(QIcon('mprun_assets/assets/tools/pan_icon.png'), 'Arc Tool (A)', self)
         self.arc_btn.setToolTip(
@@ -540,6 +542,7 @@ class CourseElementBuilder(QWidget):
         )
         self.arc_btn.setShortcut(QKeySequence('A'))
         self.arc_btn.setCheckable(True)
+        self.arc_btn.triggered.connect(self.useTool)
 
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(self.pan_btn)
@@ -717,12 +720,17 @@ class CourseElementBuilder(QWidget):
             widget.blockSignals(False)
 
     def useSelect(self):
-        self.select_btn.setChecked(True)
+        self.useTool()
         self.view.enableItemFlags()
         self.view.setDragMode(QGraphicsView.RubberBandDrag)
 
     def usePan(self):
-        self.pan_btn.setChecked(True)
+        self.useTool()
+
+    def useTool(self):
+        self.view.lipTool.cancel()
+        self.view.lineTool.cancel()
+        self.view.arcTool.cancel()
 
     def useDelete(self):
         items = [item for item in self.scene.selectedItems()]

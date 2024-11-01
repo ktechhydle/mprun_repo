@@ -73,7 +73,7 @@ class LineItem(QGraphicsPathItem):
         self.draw()
 
     def copy(self):
-        item = LipItem(self.lineBox())
+        item = LineItem(self.lineBox())
         item.setPos(self.pos())
         item.setFlags(self.flags())
         item.setToolTip(self.toolTip())
@@ -122,7 +122,7 @@ class ArcItem(QGraphicsPathItem):
         self.draw()
 
     def copy(self):
-        item = LipItem(self.lineBox())
+        item = ArcItem(self.lineBox(), self.arcPoint())
         item.setPos(self.pos())
         item.setFlags(self.flags())
         item.setToolTip(self.toolTip())

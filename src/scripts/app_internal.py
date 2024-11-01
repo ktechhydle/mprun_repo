@@ -54,11 +54,7 @@ export_all_file_types = {
     'HEIC files (*.heic)': '.heic'
 }
 
-default_text = """Run #:
-Page #:
-Competition:
-Athlete:
-Date:"""
+default_text = 'Athlete:\nCompetition:\nDate:'
 
 use_disclaimer = '''MPRUN does NOT guarantee any success in planning competitions, MPRUN is a tool that will HELP plan successful competitions/runs. 
 
