@@ -452,7 +452,6 @@ class CustomTextItem(QGraphicsTextItem):
 
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
-
         self.setToolTip('Text')
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
         self.locked = False
@@ -646,11 +645,18 @@ class CustomTextItem(QGraphicsTextItem):
 
                 self.updateHandlesPos()
 
-    def handleAt(self, point):
-        # for k, v in self.handles.items():
-        #     if v.contains(point):
-        #         return k
+    def hoverMoveEvent(self, moveEvent):
+        if self.isSelected():
+            handle = self.handleAt(moveEvent.scenePos())
+            cursor = Qt.CursorShape.ArrowCursor if handle is None else self.handleCursors[handle]
+            self.setCursor(cursor)
+        super().hoverMoveEvent(moveEvent)
 
+    def hoverLeaveEvent(self, moveEvent):
+        self.unsetCursor()
+        super().hoverLeaveEvent(moveEvent)
+
+    def handleAt(self, point):
         # Check if the point is on the border
         rect = self.boundingRect()
         point = self.mapFromScene(point)
@@ -696,7 +702,7 @@ class CustomTextItem(QGraphicsTextItem):
         ):
             return self.handleMiddleLeft
         else:
-            # Check if the point is inside the SVG item
+            # Check if the point is inside the item
             if super().contains(point):
                 return None
             else:
@@ -765,17 +771,6 @@ class CustomTextItem(QGraphicsTextItem):
                 ), True)
 
         self.updateHandlesPos()
-
-    def hoverMoveEvent(self, moveEvent):
-        if self.isSelected():
-            handle = self.handleAt(moveEvent.scenePos())
-            cursor = Qt.CursorShape.ArrowCursor if handle is None else self.handleCursors[handle]
-            self.setCursor(cursor)
-        super().hoverMoveEvent(moveEvent)
-
-    def hoverLeaveEvent(self, moveEvent):
-        self.unsetCursor()
-        super().hoverLeaveEvent(moveEvent)
 
     def suggestTrickTypes(self, current_word):
         # Filter the suggestions and exclude the current word
