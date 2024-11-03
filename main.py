@@ -1330,13 +1330,9 @@ class MPRUN(QMainWindow):
         self.scale_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
 
-        self.use_exit_grid()
-
     def use_rotate_tool(self):
         self.rotate_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
-
-        self.use_exit_grid()
 
     def use_rotate_direction(self, dir: str):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1432,10 +1428,6 @@ class MPRUN(QMainWindow):
             if isinstance(item, CanvasItem):
                 item.setCanvasActive(False)
 
-        if self.scene_tab.gsnap_check_btn.isChecked():
-            self.scene_tab.gsnap_check_btn.click()
-
-    def use_exit_grid(self):
         if self.scene_tab.gsnap_check_btn.isChecked():
             self.scene_tab.gsnap_check_btn.click()
 
