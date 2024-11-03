@@ -656,6 +656,7 @@ class MPRUN(QMainWindow):
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
         self.libraries_tab.scroll_area.setMinimumWidth(150)
+        self.libraries_tab.scroll_area.setMaximumWidth(600)
 
         self.libraries_dock = QDockWidget()
         self.libraries_dock.setWindowFlag(Qt.WindowType.Tool)

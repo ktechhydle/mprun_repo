@@ -565,7 +565,7 @@ class LibrariesPanel(QWidget):
 
         else:
             self.library_list_widget.setDragEnabled(True)
-            # Add each SVG file to the list widget
+
             for svg_file in svg_files:
                 display_name = re.sub(r'\.svg|\.png|\.jpg|\.jpeg', '', svg_file)
                 list_item = QListWidgetItem(display_name)
