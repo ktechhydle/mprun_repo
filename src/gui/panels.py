@@ -1019,26 +1019,6 @@ class ScenePanel(QWidget):
         self.createUI()
 
     def createUI(self):
-        self.gsnap_check_btn = QCheckBox(self)
-        self.gsnap_check_btn.setText('Grid Enabled')
-        self.gsnap_check_btn.setToolTip('Enable snap to grid')
-        self.gsnap_check_btn.setShortcut(QKeySequence('Z'))
-        self.gsnap_check_btn.clicked.connect(self.use_enable_grid)
-        self.gsnap_grid_spin = QSpinBox(self)
-        self.gsnap_grid_spin.setFixedWidth(80)
-        self.gsnap_grid_spin.setSuffix(' pt')
-        grid_size_label = QLabel('Grid Size:', self)
-        self.gsnap_grid_spin.setValue(10)
-        self.gsnap_grid_spin.setMinimum(1)
-        self.gsnap_grid_spin.setMaximum(1000)
-        self.gsnap_grid_spin.setToolTip('Change the grid size')
-        horizontal_widget = ToolbarHorizontalLayout()
-        horizontal_widget.layout.addWidget(self.gsnap_check_btn)
-        gsnap_hlayout = ToolbarHorizontalLayout()
-        gsnap_hlayout.layout.addWidget(grid_size_label)
-        gsnap_hlayout.layout.addWidget(self.gsnap_grid_spin)
-        gsnap_hlayout.layout.addStretch()
-
         self.zoom_widget = CustomSpinBox(self)
         self.zoom_widget.label().setText('Zoom:     ')
         self.zoom_widget.spinBox().setRange(1, 80779)
@@ -1074,48 +1054,11 @@ class ScenePanel(QWidget):
         sculpt_hlayout.layout.addWidget(self.sculpt_radius_spin)
         sculpt_hlayout.layout.addStretch()
 
-        self.layout.addWidget(horizontal_widget)
-        self.layout.addWidget(gsnap_hlayout)
-        self.layout.addWidget(HorizontalSeparator())
         self.layout.addWidget(self.zoom_widget)
         self.layout.addWidget(self.rotate_widget)
         self.layout.addWidget(self.reset_btn)
         self.layout.addWidget(sculpt_hlayout)
         self.layout.addStretch()
-
-        # Update
-        self.gsnap_grid_spin.valueChanged.connect(self.update_grid)
-
-    def use_exit_grid(self):
-        if self.gsnap_check_btn.isChecked():
-            self.gsnap_check_btn.click()
-
-    def use_enable_grid(self):
-        if self.gsnap_check_btn.isChecked():
-            self.canvas.setGridEnabled(True)
-            self.canvas.update()
-
-            for item in self.canvas.items():
-                if isinstance(item, CanvasTextItem):
-                    pass
-
-                else:
-                    item.gridEnabled = True
-
-        else:
-            self.canvas.setGridEnabled(False)
-            self.canvas.update()
-
-            for item in self.canvas.items():
-                if isinstance(item, CanvasTextItem):
-                    pass
-
-                else:
-                    item.gridEnabled = False
-
-    def update_grid(self):
-        # Update grid
-        self.canvas.setGridSize(self.gsnap_grid_spin.value())
 
     def zoomAndRotateView(self):
         if self.zoom_widget.spinBox().value() != 100:

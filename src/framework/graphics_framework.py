@@ -52,7 +52,6 @@ class CustomGraphicsView(QGraphicsView):
         self.scale_btn = actions[7]
         self.rotate_btn = actions[8]
         self.add_canvas_btn = actions[9]
-        self.grid_checkbtn = actions[10]
 
         # Items
         self.canvas = canvas
@@ -552,11 +551,6 @@ class CustomGraphicsScene(QGraphicsScene):
         self.setSceneRect(-width // 2, -height // 2, width, height)
         self.setBackgroundBrush(QBrush(QColor('#606060')))
 
-        # Grid
-        self.gridEnabled = False
-        self.gridSize = 10
-        self.gridSquares = 5
-
         # Item Movement
         self.oldPositions = {}
         self.movingItem = None
@@ -585,67 +579,9 @@ class CustomGraphicsScene(QGraphicsScene):
                 self.itemsMoved.emit(self.oldPositions, newPositions)
             self.oldPositions = {}
 
-    def drawBackground(self, painter, rect):
-        try:
-            super().drawBackground(painter, rect)
-
-            if self.gridEnabled:
-                # settings
-                self._color_light = QColor("#a3a3a3")
-                self._color_dark = QColor("#b8b8b8")
-
-                self._pen_light = QPen(self._color_light)
-                self._pen_light.setWidth(1)
-                self._pen_dark = QPen(self._color_dark)
-                self._pen_dark.setWidth(1)
-
-                # here we create our grid
-                left = int(math.floor(rect.left()))
-                right = int(math.ceil(rect.right()))
-                top = int(math.floor(rect.top()))
-                bottom = int(math.ceil(rect.bottom()))
-
-                first_left = left - (left % self.gridSize)
-                first_top = top - (top % self.gridSize)
-
-                # compute all lines to be drawn
-                lines_light, lines_dark = [], []
-                for x in range(first_left, right, self.gridSize):
-                    if (x % (self.gridSize * self.gridSquares) != 0):
-                        lines_light.append(QLine(x, top, x, bottom))
-                    else:
-                        lines_dark.append(QLine(x, top, x, bottom))
-
-                for y in range(first_top, bottom, self.gridSize):
-                    if (y % (self.gridSize * self.gridSquares) != 0):
-                        lines_light.append(QLine(left, y, right, y))
-                    else:
-                        lines_dark.append(QLine(left, y, right, y))
-
-                # draw the lines
-                painter.setPen(self._pen_light)
-                painter.drawLines(*lines_light)
-
-                painter.setPen(self._pen_dark)
-                painter.drawLines(*lines_dark)
-
-        except Exception:
-            pass
-
     def clearSelection(self):
         super().clearSelection()
         self.update()
-
-    def addItem(self, item):
-        super().addItem(item)
-
-        if self.gridEnabled:
-            for item in self.items():
-                if isinstance(item, CanvasTextItem):
-                    pass
-
-                else:
-                    item.gridEnabled = True
 
     def update(self, rect=None):
         super().update()
@@ -747,13 +683,6 @@ class CustomGraphicsScene(QGraphicsScene):
             elif mode == 'canvas':
                 if isinstance(item, CanvasItem):
                     item.setSelected(True)
-
-    def setGridEnabled(self, enabled: bool):
-        self.gridEnabled = enabled
-
-    def setGridSize(self, grid_size: int):
-        self.gridSize = grid_size
-        self.update()
 
     def selectBelow(self):
         selected_items = self.selectedItems()

@@ -122,7 +122,6 @@ class MPRUN(QMainWindow):
             _data['document_toolbar_hidden'] = self.document_toolbar.isHidden()
             _data['toolbar_hidden'] = self.toolbar.isHidden()
             _data['last_used_tool'] = self.action_group.checkedAction().text()
-            _data['grid_size'] = self.canvas.gridSize
             _data['document_toolbar_size'] = self.document_toolbar.iconSize().width()
             _data['item_toolbar_size'] = self.item_toolbar.iconSize().width()
             _data['toolbar_size'] = self.toolbar.iconSize().width()
@@ -133,6 +132,8 @@ class MPRUN(QMainWindow):
         super().resizeEvent(event)
         print(f'Window Resize at {event}')
         self.canvas_view.updateTip()
+        self.libraries_dock.move(self.canvas_view.rect().topRight() - QPoint(self.libraries_dock.width() + 11, -11))
+        self.libraries_tab.scroll_area.setFixedHeight(self.canvas_view.height() - 22)
 
     def moveEvent(self, event):
         super().moveEvent(event)
@@ -653,17 +654,16 @@ class MPRUN(QMainWindow):
         # Upper dock widget
         self.libraries_tab = LibrariesPanel(self.canvas)
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.libraries_tab.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.libraries_tab.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
+        self.libraries_tab.scroll_area.setMinimumWidth(150)
 
-        self.libraries_dock = QDockWidget(self)
+        self.libraries_dock = QDockWidget()
+        self.libraries_dock.setWindowFlag(Qt.WindowType.Tool)
         self.libraries_dock.setTitleBarWidget(QWidget())
         self.libraries_dock.setContentsMargins(0, 3, 0, 3)
         self.libraries_dock.setWindowTitle('Libraries')
-        self.libraries_dock.setMaximumHeight(375)
         self.libraries_dock.setWidget(self.libraries_tab.scroll_area)
         self.libraries_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
-        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.libraries_dock)
 
         # Lower dock widget
         self.toolbox = CustomToolbox(self)
@@ -715,7 +715,6 @@ class MPRUN(QMainWindow):
         self.actions['Change Font Color'] = self.characters_tab.font_color_btn
         self.actions['Open Library'] = self.libraries_tab.open_library_button
         self.actions['Reload Library'] = self.libraries_tab.reload_library_button
-        self.actions['Enable Grid'] = self.scene_tab.gsnap_check_btn
 
         self.properties_tab.set_properties_tab_enabled(False)
 
@@ -1120,8 +1119,7 @@ class MPRUN(QMainWindow):
                                                             self.add_text_btn,
                                                             self.scale_btn,
                                                             self.rotate_btn,
-                                                            self.add_canvas_btn,
-                                                            self.scene_tab.gsnap_check_btn])
+                                                            self.add_canvas_btn])
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
 
@@ -1129,6 +1127,7 @@ class MPRUN(QMainWindow):
         self.setCentralWidget(self.canvas_view)
         self.toolbar.setParent(self.canvas_view)
         self.item_toolbar.setParent(self.canvas_view)
+        self.libraries_dock.setParent(self.canvas_view)
 
     def create_default_objects(self):
         # Drawing paper
@@ -1651,29 +1650,6 @@ class MPRUN(QMainWindow):
 
         self.align_items(selected_items, alignment_func, single_item_func)
 
-    def use_enable_grid(self):
-        if self.scene_tab.gsnap_check_btn.isChecked():
-            self.canvas.setGridEnabled(True)
-            self.canvas.update()
-
-            for item in self.canvas.items():
-                if isinstance(item, CanvasTextItem):
-                    pass
-
-                else:
-                    item.gridEnabled = True
-
-        else:
-            self.canvas.setGridEnabled(False)
-            self.canvas.update()
-
-            for item in self.canvas.items():
-                if isinstance(item, CanvasTextItem):
-                    pass
-
-                else:
-                    item.gridEnabled = False
-
     def use_insert_shape(self, shape: str):
         path = QPainterPath()
 
@@ -1821,7 +1797,6 @@ class MPRUN(QMainWindow):
 
     def apply_undo_and_canvas_settings(self, user_data):
         self.undo_stack.setUndoLimit(user_data['undo_limit'])
-        self.canvas.setGridSize(user_data['grid_size'])
 
         if user_data.get('use_gpu'):
             viewport = CustomViewport()
