@@ -1535,8 +1535,6 @@ class MPRUN(QMainWindow):
             item = selected_items[0]
             single_item_func(item)
 
-        self.update_transform_ui()
-
     def align_single_item(self, item, pos_func):
         if not isinstance(item, CanvasItem):
             for i in self.canvas.items():

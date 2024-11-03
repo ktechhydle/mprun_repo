@@ -81,6 +81,9 @@ class CustomToolbar(QToolBar):
         if isinstance(self.parent(), QMainWindow):
             help_action.triggered.connect(self.parent().show_help)
 
+        else:
+            return
+
         menu.addAction(help_action)
 
         menu.exec(event.globalPos())
