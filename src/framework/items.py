@@ -454,23 +454,21 @@ class CustomTextItem(QGraphicsTextItem):
         super().__init__(text, parent)
         self.setToolTip('Text')
         self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
+        self.setAcceptHoverEvents(True)
+        self.installEventFilter(self)
+
+        # Text editing
         self.locked = False
         self.editing = False
+        self.old_text = self.toPlainText()
+
+        # Item resizing
         self.handles = {}
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
-        self.setAcceptHoverEvents(True)
-        self.gridEnabled = False
-        self.old_text = self.toPlainText()
-        self.installEventFilter(self)
-
+        self.ogTransform = None
         self.updateHandlesPos()
-
-        # Item resizing
-        self.selected_grip = None
-        self.og_transform = None
-        self.initial_size = None
 
         # Create the suggestion popup
         self.suggestion_popup = QListWidget()
@@ -505,7 +503,7 @@ class CustomTextItem(QGraphicsTextItem):
     def mousePressEvent(self, event):
         self.handleSelected = self.handleAt(event.scenePos())
         if self.handleSelected:
-            self.og_transform = self.transform()
+            self.ogTransform = self.transform()
             self.mousePressPos = event.pos()
             self.mousePressRect = self.boundingRect()
 
@@ -520,13 +518,13 @@ class CustomTextItem(QGraphicsTextItem):
     def mouseReleaseEvent(self, mouseEvent):
         super().mouseReleaseEvent(mouseEvent)
 
-        if self.og_transform:
-            self.scene().addCommand(TransformCommand([self], [self.og_transform], [self.transform()]))
+        if self.ogTransform:
+            self.scene().addCommand(TransformCommand([self], [self.ogTransform], [self.transform()]))
 
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
-        self.og_transform = None
+        self.ogTransform = None
         self.update()
 
     def mouseDoubleClickEvent(self, event):
