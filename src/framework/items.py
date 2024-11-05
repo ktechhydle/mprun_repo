@@ -15,30 +15,6 @@ class CustomPathItem(QGraphicsPathItem):
 
         self.smooth = False
 
-        self.text_items = []
-        self.add_text = False
-        self.text_along_path = ''
-        self.text_along_path_font = QFont('Arial', 20)
-        self.text_along_path_color = QColor('black')
-        self.text_along_path_spacing = 3
-        self.start_text_from_beginning = False
-
-        self.gridEnabled = False
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mouse_offset = event.pos()
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.gridEnabled:
-            scene_pos = event.scenePos()
-            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
-            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
-            self.setPos(x, y)
-        else:
-            super().mouseMoveEvent(event)
-
     def duplicate(self):
         path = self.path()
         item = CustomPathItem(path)
@@ -655,56 +631,13 @@ class CustomTextItem(QGraphicsTextItem):
         super().hoverLeaveEvent(moveEvent)
 
     def handleAt(self, point):
-        # Check if the point is on the border
-        rect = self.boundingRect()
         point = self.mapFromScene(point)
-        border_width = self.handleSize + self.handleSpace
-        if (
-            point.x() >= rect.left() - border_width and point.x() <= rect.left() + border_width and
-            point.y() >= rect.top() - border_width and point.y() <= rect.top() + border_width
-        ):
-            return self.handleTopLeft
-        elif (
-            point.x() >= rect.right() - border_width and point.x() <= rect.right() + border_width and
-            point.y() >= rect.top() - border_width and point.y() <= rect.top() + border_width
-        ):
-            return self.handleTopRight
-        elif (
-            point.x() >= rect.right() - border_width and point.x() <= rect.right() + border_width and
-            point.y() >= rect.bottom() - border_width and point.y() <= rect.bottom() + border_width
-        ):
-            return self.handleBottomRight
-        elif (
-            point.x() >= rect.left() - border_width and point.x() <= rect.left() + border_width and
-            point.y() >= rect.bottom() - border_width and point.y() <= rect.bottom() + border_width
-        ):
-            return self.handleBottomLeft
-        elif (
-            point.x() >= rect.left() - border_width and point.x() <= rect.right() + border_width and
-            point.y() >= rect.top() - border_width and point.y() <= rect.top() + border_width
-        ):
-            return self.handleTopMiddle
-        elif (
-            point.x() >= rect.right() - border_width and point.x() <= rect.right() + border_width and
-            point.y() >= rect.top() - border_width and point.y() <= rect.bottom() + border_width
-        ):
-            return self.handleMiddleRight
-        elif (
-            point.x() >= rect.left() - border_width and point.x() <= rect.right() + border_width and
-            point.y() >= rect.bottom() - border_width and point.y() <= rect.bottom() + border_width
-        ):
-            return self.handleBottomMiddle
-        elif (
-            point.x() >= rect.left() - border_width and point.x() <= rect.left() + border_width and
-            point.y() >= rect.top() - border_width and point.y() <= rect.bottom() + border_width
-        ):
-            return self.handleMiddleLeft
-        else:
-            # Check if the point is inside the item
-            if super().contains(point):
-                return None
-            else:
-                return self.handleTopLeft
+
+        for f, v in self.handles.items():
+            if v.contains(point):
+                return f
+
+        return None
 
     def updateHandlesPos(self):
         s = self.handleSize
