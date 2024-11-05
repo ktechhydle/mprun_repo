@@ -17,7 +17,7 @@ class ResizeRect(QGraphicsRectItem):
     handleBottomMiddle = 7
     handleBottomRight = 8
 
-    handleSize = 8.0
+    handleSize = 12.0
     handleSpace = -4.0
 
     handleCursors = {
@@ -47,14 +47,21 @@ class ResizeRect(QGraphicsRectItem):
         self.updateHandlesPos()
 
     def boundingRect(self):
-        return self.parentItem().sceneBoundingRect()
+        # Calculate the bounding rectangle based on the transformed position of the parent item
+        rect = self.parentItem().sceneBoundingRect()
+        # Optionally expand it by handle size for accurate detection
+        return rect.adjusted(-self.handleSize, -self.handleSize, self.handleSize, self.handleSize)
+
+    def correctBoundingRect(self):
+        # Calculate the bounding rectangle based on the transformed position of the parent item
+        return self.parentItem().boundingRect()
 
     def mousePressEvent(self, event):
         self.handleSelected = self.handleAt(event.scenePos())
         if self.handleSelected:
             self.ogTransform = self.parentItem().transform()
-            self.mousePressPos = event.pos()
-            self.mousePressRect = self.boundingRect()
+            self.mousePressPos = self.parentItem().mapFromScene(event.scenePos())
+            self.mousePressRect = self.correctBoundingRect()
 
         self.parentItem().mousePressEvent(event)
 
@@ -102,7 +109,7 @@ class ResizeRect(QGraphicsRectItem):
         return self.parent_item
 
     def handleAt(self, point):
-        point = self.parentItem().mapFromScene(point)
+        point = self.mapFromScene(point)
 
         for f, v in self.handles.items():
             if v.contains(point):
@@ -129,13 +136,13 @@ class ResizeRect(QGraphicsRectItem):
         boundingRect = self.boundingRect()
         rect = boundingRect
 
-        mousePos = self.parentItem().mapFromScene(mousePos)
-
         self.parentItem().prepareGeometryChange()
+        self.prepareGeometryChange()
 
         if self.handleSelected is not None:
-            dx = mousePos.x() - self.mousePressPos.x()
-            dy = mousePos.y() - self.mousePressPos.y()
+            mappedMousePos = self.parentItem().mapFromScene(mousePos)
+            dx = mappedMousePos.x() - self.mousePressPos.x()
+            dy = mappedMousePos.y() - self.mousePressPos.y()
 
             if self.handleSelected == self.handleTopLeft:
                 self.parentItem().setTransform(QTransform().translate(dx, dy).scale(
@@ -177,6 +184,12 @@ class ResizeRect(QGraphicsRectItem):
                 ), True)
 
         self.updateHandlesPos()
+
+    def duplicate(self):
+        pass
+
+    def copy(self):
+        pass
 
 
 class CustomPathItem(QGraphicsPathItem):
