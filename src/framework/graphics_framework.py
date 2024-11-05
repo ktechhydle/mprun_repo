@@ -633,6 +633,12 @@ class CustomGraphicsScene(QGraphicsScene):
                 self.canvas_count += 1
 
         print(f'Command At: {command}')
+        
+    def removeItem(self, item):
+        if hasattr(item, 'resizer'):
+            super().removeItem(item.resizer)
+        
+        super().removeItem(item)
 
     def selectedItemsBoundingRect(self):
         bounding_rect = QRectF()

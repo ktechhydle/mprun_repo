@@ -34,6 +34,7 @@ class ResizeRect(QGraphicsRectItem):
     def __init__(self, parent_item: QGraphicsItem):
         super().__init__()
         self.setAcceptHoverEvents(True)
+        self.setZValue(10000)
 
         self.parent_item = parent_item
         self.setPos(self.parent_item.pos())
@@ -51,6 +52,14 @@ class ResizeRect(QGraphicsRectItem):
         rect = self.parentItem().sceneBoundingRect()
         # Optionally expand it by handle size for accurate detection
         return rect.adjusted(-self.handleSize, -self.handleSize, self.handleSize, self.handleSize)
+
+    def shape(self):
+        path = QPainterPath()
+
+        for rect in self.handles.values():
+            path.addRect(rect)
+
+        return path
 
     def correctBoundingRect(self):
         # Calculate the bounding rectangle based on the transformed position of the parent item
@@ -82,6 +91,7 @@ class ResizeRect(QGraphicsRectItem):
         self.mousePressRect = None
         self.ogTransform = None
         self.update()
+        self.updateHandlesPos()
 
     def paint(self, painter, option, widget=None):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -118,7 +128,7 @@ class ResizeRect(QGraphicsRectItem):
         return None
 
     def updateHandlesPos(self):
-        self.setRect(self.boundingRect())
+        self.setRect(self.parentItem().boundingRect().adjusted(-self.handleSize, -self.handleSize, self.handleSize, self.handleSize))
 
         s = self.handleSize
         b = self.boundingRect()
@@ -135,6 +145,9 @@ class ResizeRect(QGraphicsRectItem):
         """ Perform shape interactive resize. """
         boundingRect = self.boundingRect()
         rect = boundingRect
+
+        if self.rect().isEmpty():
+            return
 
         self.parentItem().prepareGeometryChange()
         self.prepareGeometryChange()
