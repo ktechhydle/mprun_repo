@@ -1428,9 +1428,6 @@ class MPRUN(QMainWindow):
             if isinstance(item, CanvasItem):
                 item.setCanvasActive(False)
 
-        if self.scene_tab.gsnap_check_btn.isChecked():
-            self.scene_tab.gsnap_check_btn.click()
-
     def use_smooth_path(self):
         items = [item for item in self.canvas.selectedItems() if isinstance(item, CustomPathItem) and
                  item.alreadySmooth() is not True]

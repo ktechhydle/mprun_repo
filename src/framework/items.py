@@ -394,26 +394,6 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         self.filename = None
 
-        self.gridEnabled = False
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.mouse_offset = event.pos()
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.gridEnabled:
-            # Calculate the position relative to the scene's coordinate system
-            scene_pos = event.scenePos()
-            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
-            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
-
-            # Set the position relative to the scene's coordinate system
-            self.setPos(x, y)
-
-        else:
-            super().mouseMoveEvent(event)
-
     def loadFromData(self, data):
         pixmap = QPixmap()
         pixmap.loadFromData(data)
@@ -466,13 +446,6 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         return item
 
-    def mouseDoubleClickEvent(self, event):
-        super().mouseDoubleClickEvent(event)
-
-        if event.modifiers() & Qt.ShiftModifier:
-            if os.path.exists(self.return_filename() if self.return_filename() is not None else ''):
-                QDesktopServices.openUrl(QUrl.fromLocalFile(self.return_filename()))
-
 
 class CustomSvgItem(QGraphicsSvgItem):
     def __init__(self, *file):
@@ -482,26 +455,6 @@ class CustomSvgItem(QGraphicsSvgItem):
         self.svg_data = None
         for f in file:
             self.render = QSvgRenderer(f)
-
-        self.gridEnabled = False
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            self.mouse_offset = event.pos()
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.gridEnabled:
-            # Calculate the position relative to the scene's coordinate system
-            scene_pos = event.scenePos()
-            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
-            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
-
-            # Set the position relative to the scene's coordinate system
-            self.setPos(x, y)
-
-        else:
-            super().mouseMoveEvent(event)
 
     def loadFromData(self, svg_data) -> None:
         try:
@@ -591,13 +544,6 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setToolTip('Imported SVG')
 
         return item
-
-    def mouseDoubleClickEvent(self, event):
-        super().mouseDoubleClickEvent(event)
-
-        if event.modifiers() & Qt.ShiftModifier:
-            if os.path.exists(self.source() if self.source() is not None else ''):
-                QDesktopServices.openUrl(QUrl.fromLocalFile(self.source()))
 
 
 class CustomTextItem(QGraphicsTextItem):
