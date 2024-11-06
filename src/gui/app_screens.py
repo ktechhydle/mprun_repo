@@ -1,17 +1,18 @@
 import os.path
 import sys
 import re
-from src.scripts.imports import *
-from src.framework.undo_commands import MultiItemPositionChangeCommand
-from src.gui.custom_widgets import *
+import mprun.gui
 from src.gui.limited_access import LimitedAccess
+from src.scripts.imports import *
 from src.scripts.app_internal import *
+from src.framework.items import *
+from src.framework.undo_commands import MultiItemPositionChangeCommand
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
 
-class CanvasItemSelector(QDialog):
+class CanvasItemSelector(mprun.gui.base_dialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
@@ -33,7 +34,7 @@ class CanvasItemSelector(QDialog):
 
     def createUI(self):
         # Scene and View
-        self.view = CustomViewWidget()
+        self.view = mprun.gui.standard_viewer()
         self.view.setFixedWidth(500)
         self.view.setScene(self.canvas)
         self.view.setDragMode(QGraphicsView.NoDrag)
@@ -65,7 +66,7 @@ class CanvasItemSelector(QDialog):
         self.export_btn.setToolTip('Export the selected canvas')
 
         # Add widgets
-        self.layout.addWidget(HorizontalSeparator())
+        self.layout.addWidget(mprun.gui.horizontal_splitter())
         self.hlayout.addWidget(self.view)
         self.layout.addWidget(selected_canvas_label)
         self.layout.addWidget(self.canvas_chooser_combo)
@@ -145,7 +146,7 @@ class CanvasItemSelector(QDialog):
                 self.watermark_item = None
 
 
-class AllCanvasExporter(QDialog):
+class AllCanvasExporter(mprun.gui.base_dialog):
     def __init__(self, canvas, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
@@ -168,7 +169,7 @@ class AllCanvasExporter(QDialog):
 
     def createUI(self):
         # Scene and View
-        self.view = CustomViewWidget()
+        self.view = mprun.gui.standard_viewer()
         self.view.setFixedWidth(500)
         self.view.setScene(self.canvas)
         self.view.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -203,7 +204,7 @@ class AllCanvasExporter(QDialog):
         self.export_btn.clicked.connect(self.export)
 
         # Add widgets
-        self.layout.addWidget(HorizontalSeparator())
+        self.layout.addWidget(mprun.gui.horizontal_splitter())
         self.hlayout.addWidget(self.view)
         self.layout.addWidget(file_type_label)
         self.layout.addWidget(self.file_type_combo)
@@ -336,7 +337,7 @@ class AllCanvasExporter(QDialog):
                 self.watermark_item = None
 
 
-class ArrangeWin(QDialog):
+class ArrangeWin(mprun.gui.base_dialog):
     def __init__(self, canvas, parent):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
@@ -384,37 +385,37 @@ class ArrangeWin(QDialog):
         self.button_group.rejected.connect(self.close)
 
         # Add canvas count label
-        canvas_count_layout = ToolbarHorizontalLayout()
-        canvas_count_layout.layout.addWidget(canvas_count_label)
-        canvas_count_layout.layout.setContentsMargins(0, 0, 0, 0)
+        canvas_count_layout = mprun.gui.horizontal_layout()
+        canvas_count_layout.layout().addWidget(canvas_count_label)
+        canvas_count_layout.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(canvas_count_layout)
 
         # Add recommended solution btn
-        recommended_layout = ToolbarHorizontalLayout()
-        recommended_layout.layout.addWidget(apply_recommended_btn)
-        recommended_layout.layout.setContentsMargins(0, 0, 0, 0)
+        recommended_layout = mprun.gui.horizontal_layout()
+        recommended_layout.layout().addWidget(apply_recommended_btn)
+        recommended_layout.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(recommended_layout)
-        self.layout().addWidget(HorizontalSeparator())
+        self.layout().addWidget(mprun.gui.horizontal_splitter())
 
         # Add rows label and spinbox
-        rows_layout = ToolbarHorizontalLayout()
-        rows_layout.layout.addWidget(rows_label)
-        rows_layout.layout.addWidget(self.rows_spin)
-        rows_layout.layout.setContentsMargins(0, 0, 0, 0)
+        rows_layout = mprun.gui.horizontal_layout()
+        rows_layout.layout().addWidget(rows_label)
+        rows_layout.layout().addWidget(self.rows_spin)
+        rows_layout.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(rows_layout)
 
         # Add columns label and spinbox
-        columns_layout = ToolbarHorizontalLayout()
-        columns_layout.layout.addWidget(columns_label)
-        columns_layout.layout.addWidget(self.columns_spin)
-        columns_layout.layout.setContentsMargins(0, 0, 0, 0)
+        columns_layout = mprun.gui.horizontal_layout()
+        columns_layout.layout().addWidget(columns_label)
+        columns_layout.layout().addWidget(self.columns_spin)
+        columns_layout.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(columns_layout)
 
         # Add spacing label and spinbox
-        spacing_layout = ToolbarHorizontalLayout()
-        spacing_layout.layout.addWidget(spacing_label)
-        spacing_layout.layout.addWidget(self.spacing_spin)
-        spacing_layout.layout.setContentsMargins(0, 0, 0, 0)
+        spacing_layout = mprun.gui.horizontal_layout()
+        spacing_layout.layout().addWidget(spacing_label)
+        spacing_layout.layout().addWidget(self.spacing_spin)
+        spacing_layout.layout().setContentsMargins(0, 0, 0, 0)
         self.layout().addWidget(spacing_layout)
 
         # Add buttons at the bottom
@@ -474,7 +475,7 @@ class ArrangeWin(QDialog):
         self.spacing_spin.setValue(count * 10 if count < 12 else 50)
 
 
-class AboutWin(QDialog):
+class AboutWin(mprun.gui.base_dialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
@@ -491,13 +492,13 @@ class AboutWin(QDialog):
 
         # Tabs, tab widget
         self.tab_view = QTabWidget(self)
-        self.about_tab = QWidget(self)
+        self.about_tab = mprun.gui.base_widget(self)
         self.about_tab.setLayout(QVBoxLayout())
-        self.license_tab = QWidget(self)
+        self.license_tab = mprun.gui.base_widget(self)
         self.license_tab.setLayout(QVBoxLayout())
-        self.credits_tab = QWidget(self)
+        self.credits_tab = mprun.gui.base_widget(self)
         self.credits_tab.setLayout(QVBoxLayout())
-        self.more_info_tab = QWidget(self)
+        self.more_info_tab = mprun.gui.base_widget(self)
         self.more_info_tab.setLayout(QVBoxLayout())
         self.tab_view.addTab(self.about_tab, 'About')
         self.tab_view.addTab(self.license_tab, 'License')
@@ -565,14 +566,14 @@ You are responsible for publishing your work under a license of your choosing an
         self.credits_tab.layout().addStretch()
 
         # Create more info tab
-        contact_label = CustomExternalLinkLabel('Contact Us', 'mailto:ktechindustries2019@gmail.com')
-        website_label = CustomExternalLinkLabel('Website', 'https://sites.google.com/view/mprun/home')
+        contact_label = mprun.gui.linked_label('Contact Us', 'mailto:ktechindustries2019@gmail.com')
+        website_label = mprun.gui.linked_label('Website', 'https://sites.google.com/view/mprun/home')
         self.more_info_tab.layout().addWidget(contact_label)
         self.more_info_tab.layout().addWidget(website_label)
         self.more_info_tab.layout().addStretch()
 
 
-class VersionWin(QDialog):
+class VersionWin(mprun.gui.base_dialog):
     def __init__(self, version, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
@@ -609,7 +610,7 @@ If you encounter any issues or have suggestions for improvements, contact us at:
         label.setAlignment(Qt.AlignLeft)
         label.move(20, 190)
 
-        email_label = CustomExternalLinkLabel('K-TECH Industries', 'mailto:ktechindustries2019@gmail.com')
+        email_label = mprun.gui.linked_label('K-TECH Industries', 'mailto:ktechindustries2019@gmail.com')
 
         # Add widgets to layout
         layout.addWidget(mprun_img_label)
@@ -639,7 +640,7 @@ class DisclaimerWin(QMessageBox):
         self.setCheckBox(self.show_on_startup_btn)
 
 
-class SettingsWin(QDialog):
+class SettingsWin(mprun.gui.base_dialog):
     def __init__(self, parent):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
@@ -665,7 +666,7 @@ class SettingsWin(QDialog):
         self.setDefaults()
 
     def createGeneralSettings(self):
-        self.general_tab = QWidget(self)
+        self.general_tab = mprun.gui.base_widget(self)
         self.general_tab.setLayout(QVBoxLayout())
 
         def createDialogAndGuiGB():
@@ -688,24 +689,24 @@ class SettingsWin(QDialog):
 
             default_stroke_label = QLabel('Default Stroke Color:')
             self.default_stroke_combo = QComboBox()
-            stroke_hlyaout = ToolbarHorizontalLayout()
-            stroke_hlyaout.layout.addWidget(default_stroke_label)
-            stroke_hlyaout.layout.addWidget(self.default_stroke_combo)
-            stroke_hlyaout.layout.addStretch()
+            stroke_hlyaout = mprun.gui.horizontal_layout()
+            stroke_hlyaout.layout().addWidget(default_stroke_label)
+            stroke_hlyaout.layout().addWidget(self.default_stroke_combo)
+            stroke_hlyaout.layout().addStretch()
 
             default_fill_label = QLabel('Default Fill Color:')
             self.default_fill_combo = QComboBox()
-            fill_hlyaout = ToolbarHorizontalLayout()
-            fill_hlyaout.layout.addWidget(default_fill_label)
-            fill_hlyaout.layout.addWidget(self.default_fill_combo)
-            fill_hlyaout.layout.addStretch()
+            fill_hlyaout = mprun.gui.horizontal_layout()
+            fill_hlyaout.layout().addWidget(default_fill_label)
+            fill_hlyaout.layout().addWidget(self.default_fill_combo)
+            fill_hlyaout.layout().addStretch()
 
             default_font_label = QLabel('Default Font Color:')
             self.default_font_combo = QComboBox()
-            font_hlyaout = ToolbarHorizontalLayout()
-            font_hlyaout.layout.addWidget(default_font_label)
-            font_hlyaout.layout.addWidget(self.default_font_combo)
-            font_hlyaout.layout.addStretch()
+            font_hlyaout = mprun.gui.horizontal_layout()
+            font_hlyaout.layout().addWidget(default_font_label)
+            font_hlyaout.layout().addWidget(self.default_font_combo)
+            font_hlyaout.layout().addStretch()
 
             for k, v in self.colors.items():
                 self.default_stroke_combo.addItem(k, v)
@@ -725,10 +726,10 @@ class SettingsWin(QDialog):
             recent_file_display_limit_label = QLabel('Maximum Number of Recent Files Shown:')
             self.recent_file_limit_spin = QSpinBox()
             self.recent_file_limit_spin.setRange(1, 35)
-            recent_file_hlyaout = ToolbarHorizontalLayout()
-            recent_file_hlyaout.layout.addWidget(recent_file_display_limit_label)
-            recent_file_hlyaout.layout.addWidget(self.recent_file_limit_spin)
-            recent_file_hlyaout.layout.addStretch()
+            recent_file_hlyaout = mprun.gui.horizontal_layout()
+            recent_file_hlyaout.layout().addWidget(recent_file_display_limit_label)
+            recent_file_hlyaout.layout().addWidget(self.recent_file_limit_spin)
+            recent_file_hlyaout.layout().addStretch()
 
             application_gb.layout().addWidget(recent_file_hlyaout)
 
@@ -740,7 +741,7 @@ class SettingsWin(QDialog):
         self.general_tab.layout().addStretch()
 
     def createPerformanceSettings(self):
-        self.performance_tab = QWidget(self)
+        self.performance_tab = mprun.gui.base_widget(self)
         self.performance_tab.setLayout(QVBoxLayout())
 
         def createMemoryGB():
@@ -752,10 +753,10 @@ class SettingsWin(QDialog):
             self.undo_limit_spin = QSpinBox(self)
             self.undo_limit_spin.setRange(5, 1000)
             self.undo_limit_spin.setFixedWidth(100)
-            undo_hlayout = ToolbarHorizontalLayout()
-            undo_hlayout.layout.addWidget(undo_limit_label)
-            undo_hlayout.layout.addWidget(self.undo_limit_spin)
-            undo_hlayout.layout.addStretch()
+            undo_hlayout = mprun.gui.horizontal_layout()
+            undo_hlayout.layout().addWidget(undo_limit_label)
+            undo_hlayout.layout().addWidget(self.undo_limit_spin)
+            undo_hlayout.layout().addStretch()
             memory_gb_layout.addWidget(undo_hlayout)
 
             self.performance_tab.layout().addWidget(memory_gb)
@@ -776,10 +777,10 @@ class SettingsWin(QDialog):
             self.gpu_samples_spin = QSpinBox()
             self.gpu_samples_spin.setRange(1, 16)
             self.gpu_samples_spin.setFixedWidth(100)
-            gpu_hlayout = ToolbarHorizontalLayout()
-            gpu_hlayout.layout.addWidget(gpu_samples_label)
-            gpu_hlayout.layout.addWidget(self.gpu_samples_spin)
-            gpu_hlayout.layout.addStretch()
+            gpu_hlayout = mprun.gui.horizontal_layout()
+            gpu_hlayout.layout().addWidget(gpu_samples_label)
+            gpu_hlayout.layout().addWidget(self.gpu_samples_spin)
+            gpu_hlayout.layout().addStretch()
 
             gpu_gb.layout().addWidget(compatible_label)
             gpu_gb.layout().addWidget(self.use_gpu_checkbtn)
@@ -792,7 +793,7 @@ class SettingsWin(QDialog):
         self.performance_tab.layout().addStretch()
 
     def createToolSettings(self):
-        self.tools_tab = QWidget(self)
+        self.tools_tab = mprun.gui.base_widget(self)
         self.tools_tab.setLayout(QVBoxLayout())
 
         def createSuggestionsBoxGB():
@@ -897,7 +898,7 @@ class SettingsWin(QDialog):
                 self.default_font_combo.setCurrentText(k)
 
 
-class TipWin(CustomMenu):
+class TipWin(mprun.gui.menu):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
         self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
@@ -919,7 +920,7 @@ class TipWin(CustomMenu):
         layout1.addWidget(main_label)
         layout1.addWidget(text)
         layout1.setContentsMargins(0, 0, 0, 0)
-        widget = QWidget()
+        widget = mprun.gui.base_widget()
         widget.setLayout(layout1)
 
         close_btn = QPushButton('✕')
@@ -927,7 +928,7 @@ class TipWin(CustomMenu):
         close_btn.setFixedSize(20, 20)
         close_btn.clicked.connect(self.delete)
 
-        central_widget = QWidget()
+        central_widget = mprun.gui.base_widget()
         central_widget.setLayout(QHBoxLayout())
         central_widget.layout().addWidget(img)
         central_widget.layout().addWidget(widget)
@@ -945,7 +946,7 @@ class TipWin(CustomMenu):
 
     def contextMenuEvent(self, event):
         # Create a custom context menu
-        menu = CustomMenu(self)
+        menu = mprun.gui.menu(self)
 
         close_action = QAction('Close', self)
         close_action.triggered.connect(self.delete)
