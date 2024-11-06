@@ -1,8 +1,7 @@
+import mprun.gui
 import os.path
 import sys
 import re
-import mprun.gui
-from src.gui.limited_access import LimitedAccess
 from src.scripts.imports import *
 from src.scripts.app_internal import *
 from src.framework.items import *

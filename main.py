@@ -21,7 +21,7 @@ from src.framework.three_dimensional_viewer.three_dimensional_viewer import Scen
 from src.framework.course_element_builder.course_element_builder import CourseElementBuilder
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin
 from src.gui.custom_widgets import *
-from src.gui.icloud_integrator import iCloudIntegraterWin
+from src.gui.icloud_integrator import iCloudIntegratorWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, ScenePanel, \
     CanvasEditorPanel
 from src.scripts.app_internal import *
@@ -1683,7 +1683,7 @@ class MPRUN(QMainWindow):
         item.setZValue(0)
 
     def send_to_icloud(self):
-        self.w = iCloudIntegraterWin(self.canvas, self)
+        self.w = iCloudIntegratorWin(self.canvas, self)
         self.w.show()
 
     def open_recent(self, filename: str):

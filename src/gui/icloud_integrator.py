@@ -1,9 +1,7 @@
+import mprun.gui
 from pyicloud import PyiCloudService
 from pyicloud.exceptions import PyiCloudFailedLoginException
 from pathlib import Path
-from src.scripts.imports import *
-from src.gui.custom_widgets import ToolbarHorizontalLayout
-from src.gui.app_screens import AllCanvasExporter
 from src.framework.items import *
 
 if getattr(sys, 'frozen', False):
@@ -12,7 +10,7 @@ if getattr(sys, 'frozen', False):
 downloads_path = str(Path.home() / "Downloads")
 
 
-class iCloudIntegraterWin(QDialog):
+class iCloudIntegratorWin(mprun.gui.base_dialog):
     def __init__(self, canvas, parent):
         super().__init__()
         self.setWindowTitle('Share To iCloud')
@@ -29,16 +27,16 @@ class iCloudIntegraterWin(QDialog):
     def createUI(self):
         apple_id_label = QLabel('<b>Apple ID:</b>')
         self.apple_id_input = QLineEdit()
-        id_hlayout = ToolbarHorizontalLayout()
-        id_hlayout.layout.addWidget(apple_id_label)
-        id_hlayout.layout.addWidget(self.apple_id_input)
+        id_hlayout = mprun.gui.horizontal_layout()
+        id_hlayout.layout().addWidget(apple_id_label)
+        id_hlayout.layout().addWidget(self.apple_id_input)
 
         password_label = QLabel('<b>Password:</b>')
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.Password)
-        password_hlayout = ToolbarHorizontalLayout()
-        password_hlayout.layout.addWidget(password_label)
-        password_hlayout.layout.addWidget(self.password_input)
+        password_hlayout = mprun.gui.horizontal_layout()
+        password_hlayout.layout().addWidget(password_label)
+        password_hlayout.layout().addWidget(self.password_input)
 
         warning = QLabel('<i>We do not collect any Apple ID data, such as names, passwords, or emails.</i>')
         warning.setAlignment(Qt.AlignCenter)

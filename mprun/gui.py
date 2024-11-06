@@ -26,6 +26,16 @@ class toolbar(CustomToolbar):
         super().__init__(*args)
 
 
+class toolbutton(CustomToolButton):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
+
+class icon_label(CustomIconWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
 class horizontal_splitter(HorizontalSeparator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,7 +46,12 @@ class color_picking_button(CustomColorDisplayButton):
         super().__init__(*args, **kwargs)
 
 
-class dockable(QDockWidget):
+class color_picker(CustomColorPicker):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class dockable(CustomDockWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -67,8 +82,8 @@ class searchable(CustomSearchBox):
 class standard_viewer(CustomViewWidget):
     def __init__(self):
         super().__init__()
-        
-        
+
+
 class linked_label(CustomExternalLinkLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -80,5 +95,10 @@ class menubar(CustomMenuBar):
 
 
 class menu(CustomMenu):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class more_or_less_label(CustomMoreOrLessLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
