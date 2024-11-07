@@ -507,51 +507,18 @@ class AboutWin(mprun.gui.base_dialog):
         self.layout().addWidget(self.tab_view)
 
         # Create about tab
-        about_text = '''
-MPRUN is a proof of concept that computer software can be useful for 
-Snowboard and Ski Athletes to help plan competition runs, tricks, or even goals.
+        with open('internal data/_about.html', 'r') as f:
+            about_text = f.read()
 
-Development started in late January 2024, when athlete Keller Hydle realized the 
-power of building apps. 
-
-Keller saw a missed opportunity when it came to Snowboard Competitions, there was really no way to create a solid plan for any event. That's when he came up with MPRUN, a software that would assist athletes in creating comp runs. 
-
-Some athletes (including Keller) struggle with creating good plans, especially for big events like Rev-Tour, and that's where MPRUN comes in. 
-
-MPRUN allows users to visualize comp runs on computer and paper, quickly and easily. It includes a proper toolset to create documents that match course setups, draw lines, and label tricks along the course.
-        '''
         about_label = QLabel(about_text, self)
         about_label.setWordWrap(True)
         about_label.setAlignment(Qt.AlignLeft)
-        mp_software_logo = QLabel('', self)
-        mp_software_logo.setAlignment(Qt.AlignCenter)
-        mp_software_logo.setPixmap(
-            QPixmap('mprun_assets/assets/logos/mp_software_icon.png').scaled(QSize(200, 200), Qt.KeepAspectRatio))
-        fsf_logo = QLabel('', self)
-        fsf_logo.setAlignment(Qt.AlignCenter)
-        fsf_logo.setPixmap(
-            QPixmap('mprun_assets/assets/logos/free_software_foundation_icon.svg').scaled(QSize(400, 400),
-                                                                                          Qt.KeepAspectRatio))
         self.about_tab.layout().addWidget(about_label)
         self.about_tab.layout().addStretch()
-        self.about_tab.layout().addWidget(mp_software_logo)
-        self.about_tab.layout().addWidget(fsf_logo)
 
         # Create licence tab
-        license_text = '''
-This program is free software and is distributed under the GNU General Public License, version 3. In short, this means you are free to use and distribute MPRUN for any purpose, commercial or non-commercial, without any restrictions. 
-
-You are also free to modify the program as you wish, with the only restriction that if you distribute the modified version, you must provide access to its source code.
-
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY. For more details about the license, check the LISCENSE.txt file included with this distribution.
-
-
-FILES MADE USING MPRUN:
-
-All files either saved or exported from MPRUN in any format (SVG, PNG, JPG, etc.) are owned by the creators of the work (that's you!) and/or the original authors in case you use derivative works. 
-
-You are responsible for publishing your work under a license of your choosing and for tracking your use of derivative works in the software.
-        '''
+        with open('internal data/_license.html', 'r') as f:
+            license_text = f.read()
         license_label = QLabel(license_text, self)
         license_label.setWordWrap(True)
         license_label.setAlignment(Qt.AlignLeft)
@@ -559,7 +526,7 @@ You are responsible for publishing your work under a license of your choosing an
         self.license_tab.layout().addStretch()
 
         # Create credits tab
-        with open('internal data/_credits.txt', 'r') as f:
+        with open('internal data/_credits.html', 'r') as f:
             credits = f.read()
         credits_label = QLabel(credits, self)
         self.credits_tab.layout().addWidget(credits_label)

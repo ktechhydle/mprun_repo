@@ -1,7 +1,7 @@
 <!--
   You are awesome!
   Thanks for contributing to our project, any help is greatly supported! 
-  If your PR is merged we will add you to our software credits document (internal data/_credits.txt)
+  If your PR is merged we will add you to our software credits document (internal data/_credits.html)
   This will only happen if you specify us adding you in the checklist below
   Please, DO NOT DELETE ANY TEXT from this template! (unless instructed).
 -->
