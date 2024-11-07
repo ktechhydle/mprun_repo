@@ -15,6 +15,7 @@ import sys
 import time
 import webbrowser
 import mprun.gui
+from mprun.constants import *
 from mp_software_stylesheets.styles import blenderCSS
 from src.framework.items import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
@@ -30,9 +31,6 @@ from src.scripts.get_version import get_latest_version
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
-
-DEFAULT_PANEL_WIDTH = 280
-SPLASH_CHOICES = [os.path.join('mprun_assets/assets/splash', f) for f in os.listdir('mprun_assets/assets/splash')]
 
 
 class MPRUN(QMainWindow):
@@ -624,7 +622,7 @@ class MPRUN(QMainWindow):
         # Toolbar
         self.toolbar = mprun.gui.toolbar('Toolset')
         self.toolbar.setObjectName('customToolBar')
-        self.toolbar.setWindowFlag(Qt.WindowType.Tool)
+        self.toolbar.setWindowFlag(WINDOW_TYPE_TOOL)
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.toolbar.setOrientation(Qt.Orientation.Vertical)
@@ -643,7 +641,7 @@ class MPRUN(QMainWindow):
         # Item toolbar
         self.item_toolbar = mprun.gui.toolbar('Control')
         self.item_toolbar.setObjectName('customToolBar')
-        self.item_toolbar.setWindowFlag(Qt.WindowType.Tool)
+        self.item_toolbar.setWindowFlag(WINDOW_TYPE_TOOL)
         self.item_toolbar.setIconSize(QSize(16, 16))
         self.item_toolbar.setOrientation(Qt.Orientation.Horizontal)
         self.item_toolbar.setMovable(False)
@@ -659,7 +657,7 @@ class MPRUN(QMainWindow):
         self.libraries_tab.scroll_area.setMaximumWidth(600)
 
         self.libraries_dock = QDockWidget()
-        self.libraries_dock.setWindowFlag(Qt.WindowType.Tool)
+        self.libraries_dock.setWindowFlag(WINDOW_TYPE_TOOL)
         self.libraries_dock.setTitleBarWidget(QWidget())
         self.libraries_dock.setContentsMargins(0, 3, 0, 3)
         self.libraries_dock.setWindowTitle('Libraries')
@@ -2014,7 +2012,9 @@ def main() -> None:
 
     app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'] if sys.platform != 'darwin' else [])
 
-    splash = QSplashScreen(QIcon(random.choice(SPLASH_CHOICES)).pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
+    splash = QSplashScreen(QIcon(random.choice([os.path.join('mprun_assets/assets/splash', f) for f in
+                                                os.listdir('mprun_assets/assets/splash')
+                                                ])).pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
     splash.show()
 
     app.processEvents()

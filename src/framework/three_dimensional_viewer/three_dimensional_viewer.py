@@ -6,6 +6,8 @@ from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from PyQt5.QtOpenGL import *
 from PyQt5.QtWidgets import *
+import mprun.gui
+from mprun.constants import WINDOW_TYPE_TOOL
 from src.framework.items import *
 from src.framework.three_dimensional_viewer.three_dimensional_item import *
 
@@ -17,12 +19,12 @@ frame_count = 0
 start_time = time.time()
 
 
-class SceneTo3DUserInterface(QWidget):
+class SceneTo3DUserInterface(mprun.gui.base_widget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('3D Viewer')
-        self.setWindowFlag(Qt.WindowType.Tool)
+        self.setWindowFlag(WINDOW_TYPE_TOOL)
         self.resize(1000, 700)
 
         self.setLayout(QHBoxLayout())

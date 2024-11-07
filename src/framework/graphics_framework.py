@@ -1,5 +1,6 @@
-import mprun.gui
 import os.path
+import mprun.gui
+from mprun.constants import *
 from src.framework.managers.export_manager import ExportManager
 from src.framework.managers.file_manager import SceneFileManager
 from src.framework.managers.import_manager import ImportManager
@@ -11,9 +12,6 @@ from src.scripts.imports import *
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
-
-TIP_WINDOW_Y_PADDING = -5
-TIP_WINDOW_X_PADDING = 10
 
 
 class CustomViewport(QOpenGLWidget):

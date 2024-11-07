@@ -1,6 +1,7 @@
+import time
 import mprun.gui
 import mprun.types
-import time
+from mprun.constants import WINDOW_MODAL
 from src.gui.custom_widgets import StrokeLabel
 from src.framework.course_element_builder.course_element_builder_graphics import *
 from src.framework.course_element_builder.course_element_builder_items import *
@@ -443,7 +444,7 @@ class CourseElementBuilder(mprun.gui.base_widget):
         super().__init__()
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('Course Elements Builder')
-        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.resize(1000, 800)
         self.setLayout(QHBoxLayout())
 

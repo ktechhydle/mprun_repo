@@ -1,7 +1,8 @@
-import mprun.gui
 import os.path
 import sys
 import re
+import mprun.gui
+from mprun.constants import WINDOW_TYPE_TOOL, WINDOW_TYPE_FRAMELESS, WINDOW_MODAL
 from src.scripts.imports import *
 from src.scripts.app_internal import *
 from src.framework.items import *
@@ -16,7 +17,7 @@ class CanvasItemSelector(mprun.gui.base_dialog):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle("Export Canvas")
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.setObjectName('tipWindow')
         self.setFixedWidth(750)
         self.setFixedHeight(500)
@@ -150,7 +151,7 @@ class AllCanvasExporter(mprun.gui.base_dialog):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle("Export All")
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.setObjectName('tipWindow')
         self.setFixedWidth(750)
         self.setFixedHeight(500)
@@ -341,7 +342,7 @@ class ArrangeWin(mprun.gui.base_dialog):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle("Arrange Canvases")
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.setObjectName('tipWindow')
         self.setFixedWidth(325)
         self.setFixedHeight(250)
@@ -479,7 +480,7 @@ class AboutWin(mprun.gui.base_dialog):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('About MPRUN')
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.setObjectName('tipWindow')
         self.setFixedWidth(500)
 
@@ -577,7 +578,7 @@ class VersionWin(mprun.gui.base_dialog):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('MPRUN Version')
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.setObjectName('tipWindow')
         self.setFixedSize(500, 250)
 
@@ -644,7 +645,7 @@ class SettingsWin(mprun.gui.base_dialog):
         super().__init__(parent)
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowTitle('Settings')
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.setObjectName('tipWindow')
         self.setFixedWidth(700)
 
@@ -900,7 +901,7 @@ class SettingsWin(mprun.gui.base_dialog):
 class TipWin(mprun.gui.menu):
     def __init__(self, label: str, tip: str, parent):
         super().__init__(parent)
-        self.setWindowFlags(Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint)
+        self.setWindowFlags(WINDOW_TYPE_TOOL | WINDOW_TYPE_FRAMELESS)
         self.setObjectName('tipWindow')
 
         self.createUI(label, tip)
