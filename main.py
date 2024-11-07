@@ -33,7 +33,7 @@ if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
 
-class MPRUN(QMainWindow):
+class MPRUN(mprun.gui.base_window):
     def __init__(self):
         super(MPRUN, self).__init__()
         # Creating the main window
