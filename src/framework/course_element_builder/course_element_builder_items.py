@@ -44,6 +44,50 @@ class LipItem(QGraphicsPathItem):
         return item
 
 
+class RectItem(QGraphicsPathItem):
+    def __init__(self, rect: QRectF):
+        super().__init__()
+        self.setToolTip('Path')
+        self.rect = rect
+
+        self.draw()
+
+    def draw(self):
+        path = QPainterPath()
+        path.moveTo(self.rect.topLeft())
+        path.lineTo(self.rect.topRight())
+        path.lineTo(self.rect.bottomRight())
+        path.lineTo(self.rect.bottomLeft())
+        path.lineTo(self.rect.topLeft())
+
+        self.setPath(path)
+        self.setPen(self.pen())
+
+    def setRect(self, rect: QRectF):
+        self.rect = rect
+        self.update()
+
+    def rectBox(self):
+        return self.rect
+
+    def paint(self, painter, option, widget=None):
+        super().paint(painter, option, widget)
+
+        self.draw()
+
+    def copy(self):
+        item = RectItem(self.rectBox())
+        item.setPos(self.pos())
+        item.setFlags(self.flags())
+        item.setToolTip(self.toolTip())
+        item.setOpacity(self.opacity())
+        item.setPath(self.path())
+        item.setPen(self.pen())
+        item.setBrush(self.brush())
+
+        return item
+
+
 class LineItem(QGraphicsPathItem):
     def __init__(self, line: QLineF):
         super().__init__()

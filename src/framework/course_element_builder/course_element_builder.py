@@ -167,6 +167,9 @@ class CourseElementBuilderPanel(mprun.gui.base_widget):
         opacity_hlayout.layout().addSpacing(100)
         opacity_hlayout.layout().setContentsMargins(0, 14, 0, 0)
 
+        send_to_scene_btn = QPushButton('Send To Scene', self)
+        send_to_scene_btn.clicked.connect(self.sendToScene)
+
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.updateItemPen)
         self.stroke_style_combo.currentIndexChanged.connect(self.updateItemPen)
@@ -190,6 +193,7 @@ class CourseElementBuilderPanel(mprun.gui.base_widget):
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addStretch()
+        self.properties_tab_layout.addWidget(send_to_scene_btn)
 
     def strokeColorChooser(self):
         color_dialog = mprun.gui.color_picker(self.parent)
@@ -450,12 +454,12 @@ class CourseElementBuilder(mprun.gui.base_widget):
 
         self.parentScene = parent.canvas
 
-        self.createUi()
+        self.createUI()
         self.createToolBar()
         self.createToolBarActions()
         self.createActions()
 
-    def createUi(self):
+    def createUI(self):
         self.scene = CourseElementBuilderScene()
         self.scene.selectionChanged.connect(self.updateTransformUI)
         self.scene.selectionChanged.connect(self.updateAppearanceUI)
@@ -518,6 +522,17 @@ class CourseElementBuilder(mprun.gui.base_widget):
         self.lip_btn.setCheckable(True)
         self.lip_btn.triggered.connect(self.useTool)
 
+        self.rect_btn = QAction(QIcon('mprun_assets/assets/tools/ceb_rect_tool.svg'), 'Rect Tool (R)', self)
+        self.rect_btn.setToolTip(
+            '<b>Rect (R)</b><br>'
+            'Draw rectangle objects.<br>'
+            '<hr>'
+            '<i>Press F1 for more help.</i>'
+        )
+        self.rect_btn.setShortcut(QKeySequence('R'))
+        self.rect_btn.setCheckable(True)
+        self.rect_btn.triggered.connect(self.useTool)
+
         self.line_btn = QAction(QIcon('mprun_assets/assets/tools/ceb_line_tool.svg'), 'Line Tool (Ctrl+L)', self)
         self.line_btn.setToolTip(
             '<b>Line (Ctrl+L)</b><br>'
@@ -543,12 +558,14 @@ class CourseElementBuilder(mprun.gui.base_widget):
         self.toolbar.addAction(self.select_btn)
         self.toolbar.addAction(self.pan_btn)
         self.toolbar.addAction(self.lip_btn)
+        self.toolbar.addAction(self.rect_btn)
         self.toolbar.addAction(self.line_btn)
         self.toolbar.addAction(self.arc_btn)
 
         self.action_group.addAction(self.select_btn)
         self.action_group.addAction(self.pan_btn)
         self.action_group.addAction(self.lip_btn)
+        self.action_group.addAction(self.rect_btn)
         self.action_group.addAction(self.line_btn)
         self.action_group.addAction(self.arc_btn)
 
