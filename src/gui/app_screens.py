@@ -566,12 +566,10 @@ class VersionWin(mprun.gui.base_dialog):
 
         # Text label
         text = f'''
-{self.version}
-
-Copyright © MP Software 2024-2025, All rights reserved.
-
-If you encounter any issues or have suggestions for improvements, 
-contact us at: <a href="mailto:ktechindustries2019@gmail.com">K-TECH Industries</a>
+<h2>{self.version}</h2>
+<i>Copyright © MP Software 2024-2025, All rights reserved.</i>
+<p>If you encounter any issues or have suggestions for improvements, 
+contact us at <a href="mailto:ktechindustries2019@gmail.com">K-TECH Industries</a>.</p>
         '''
         label = QLabel(text, self)
         label.setWordWrap(True)
