@@ -14,18 +14,18 @@ import os
 import sys
 import time
 import webbrowser
+import mprun.gui
 from mp_software_stylesheets.styles import blenderCSS
+from src.framework.items import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
 from src.framework.three_dimensional_viewer.three_dimensional_viewer import SceneTo3DUserInterface
 from src.framework.course_element_builder.course_element_builder import CourseElementBuilder
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin
-from src.gui.custom_widgets import *
 from src.gui.icloud_integrator import iCloudIntegratorWin
 from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, ScenePanel, \
     CanvasEditorPanel
 from src.scripts.app_internal import *
-from src.scripts.raw_functions import nameismain
 from src.scripts.get_version import get_latest_version
 
 if getattr(sys, 'frozen', False):
@@ -186,7 +186,7 @@ class MPRUN(QMainWindow):
 
     def create_menu(self):
         # Create menus
-        self.menu_bar = CustomMenuBar(self)
+        self.menu_bar = mprun.gui.menubar(self)
         self.setMenuBar(self.menu_bar)
         self.file_menu = self.menu_bar.addMenu('&File')
         self.tool_menu = self.menu_bar.addMenu('&Tools')
@@ -214,7 +214,7 @@ class MPRUN(QMainWindow):
         open_action.setShortcut(QKeySequence('Ctrl+O'))
         open_action.triggered.connect(lambda: self.canvas.manager.load(self))
 
-        self.open_recent_menu = CustomMenu('Open Recent')
+        self.open_recent_menu = mprun.gui.menu('Open Recent')
 
         open_template_action = QAction('Open Template', self)
         open_template_action.triggered.connect(self.canvas.template_manager.load_template)
@@ -526,7 +526,7 @@ class MPRUN(QMainWindow):
         control_toolbar_view_action.setShortcut(Qt.Key_F12)
         control_toolbar_view_action.triggered.connect(lambda: self.toggle_control_toolbar(control_toolbar_view_action))
 
-        view_options_menu = CustomMenu('Views', self)
+        view_options_menu = mprun.gui.menu('Views', self)
 
         read_only_view_action = QAction('Read Only', self)
         read_only_view_action.triggered.connect(lambda: self.view_as('read_only'))
@@ -602,7 +602,7 @@ class MPRUN(QMainWindow):
         self.help_menu.addAction(show_tip_of_the_day_action)
 
     def create_corner_widget(self):
-        find_action_searchbox = CustomSearchBox(self.actions, self)
+        find_action_searchbox = mprun.gui.searchable(self.actions, self)
 
         help_btn = QPushButton(self.style().standardIcon(QStyle.SP_MessageBoxQuestion), '', self)
         help_btn.setToolTip(
@@ -622,7 +622,7 @@ class MPRUN(QMainWindow):
 
     def init_toolbars(self):
         # Toolbar
-        self.toolbar = CustomToolbar('Toolset')
+        self.toolbar = mprun.gui.toolbar('Toolset')
         self.toolbar.setObjectName('customToolBar')
         self.toolbar.setWindowFlag(Qt.WindowType.Tool)
         self.toolbar.setIconSize(QSize(32, 32))
@@ -634,14 +634,14 @@ class MPRUN(QMainWindow):
         self.toolbar.move(11, 11)
 
         # Document toolbar
-        self.document_toolbar = CustomToolbar('Document')
+        self.document_toolbar = mprun.gui.toolbar('Document')
         self.document_toolbar.setIconSize(QSize(32, 32))
         self.document_toolbar.setMovable(False)
         self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.document_toolbar)
         self.addToolBarBreak()
 
         # Item toolbar
-        self.item_toolbar = CustomToolbar('Control')
+        self.item_toolbar = mprun.gui.toolbar('Control')
         self.item_toolbar.setObjectName('customToolBar')
         self.item_toolbar.setWindowFlag(Qt.WindowType.Tool)
         self.item_toolbar.setIconSize(QSize(16, 16))
@@ -667,7 +667,7 @@ class MPRUN(QMainWindow):
         self.libraries_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
 
         # Lower dock widget
-        self.toolbox = CustomToolbox(self)
+        self.toolbox = mprun.gui.panel_container(self)
         self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.toolbox.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
         self.toolbox.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
@@ -782,7 +782,7 @@ class MPRUN(QMainWindow):
         self.sculpt_btn.triggered.connect(self.update)
         self.sculpt_btn.triggered.connect(self.use_sculpt_path)
 
-        self.drawing_toolbutton = CustomToolButton()
+        self.drawing_toolbutton = mprun.gui.toolbutton()
         self.drawing_toolbutton.setDefaultAction(self.path_btn)
         self.drawing_toolbutton.addAction(self.path_btn)
         self.drawing_toolbutton.addAction(self.pen_btn)
@@ -2052,5 +2052,5 @@ def main() -> None:
     sys.exit(app.exec_())
 
 
-if nameismain:
+if __name__ == '__main__':
     main()

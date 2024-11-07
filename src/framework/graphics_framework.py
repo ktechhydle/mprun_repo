@@ -1,3 +1,4 @@
+import mprun.gui
 import os.path
 from src.framework.managers.export_manager import ExportManager
 from src.framework.managers.file_manager import SceneFileManager
@@ -5,7 +6,6 @@ from src.framework.managers.import_manager import ImportManager
 from src.framework.managers.template_manager import TemplateManager
 from src.gui.app_screens import TipWin, ArrangeWin
 from src.framework.tools import *
-from src.gui.custom_widgets import CustomMenu
 from src.scripts.app_internal import *
 from src.scripts.imports import *
 
@@ -283,7 +283,7 @@ y: {int(self.mapToScene(point).y())}''')
 
     def contextMenuEvent(self, event: QContextMenuEvent):
         # Create a custom context menu
-        menu = CustomMenu(self)
+        menu = mprun.gui.menu(self)
         menu.setAnimationEnabled(True)
 
         copy_action = QAction('&Copy', self)

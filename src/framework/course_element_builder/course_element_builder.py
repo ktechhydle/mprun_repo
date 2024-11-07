@@ -1,15 +1,14 @@
+import mprun.gui
+import mprun.types
 import time
-
+from src.gui.custom_widgets import StrokeLabel
 from src.framework.course_element_builder.course_element_builder_graphics import *
 from src.framework.course_element_builder.course_element_builder_items import *
 from src.framework.items import CustomSvgItem
-from src.gui.custom_widgets import HorizontalSeparator, CustomIconWidget, ToolbarHorizontalLayout, \
-    CustomColorDisplayButton, StrokeLabel, CustomColorPicker, CustomToolbar
 from src.scripts.imports import *
-from src.scripts.raw_functions import ItemStack
 
 
-class CourseElementBuilderPanel(QWidget):
+class CourseElementBuilderPanel(mprun.gui.base_widget):
     def __init__(self, canvas: QGraphicsScene, parent):
         super().__init__()
         self.setMinimumHeight(400)
@@ -18,15 +17,15 @@ class CourseElementBuilderPanel(QWidget):
 
         self.scene = canvas
         self.parent = parent
-        self.pen_color = ItemStack()
-        self.brush_color = ItemStack()
+        self.pen_color = mprun.types.item_stack()
+        self.brush_color = mprun.types.item_stack()
 
         self.createUI()
 
     def createUI(self):
         self.selection_label = QLabel('No Selection')
         self.selection_label.setStyleSheet("QLabel { font-size: 12px; }")
-        self.transform_separator = HorizontalSeparator()
+        self.transform_separator = mprun.gui.horizontal_splitter()
         self.transform_label = QLabel('Transform', self)
         self.transform_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         self.transform_label.setAlignment(Qt.AlignLeft)
@@ -34,7 +33,7 @@ class CourseElementBuilderPanel(QWidget):
         appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
 
-        self.rotation_label = CustomIconWidget('', 'ui/Tool Icons/rotate_icon.png', 20, 20)
+        self.rotation_label = mprun.gui.icon_label('', 'ui/Tool Icons/rotate_icon.png', 20, 20)
         self.rotation_label.setAlignment(Qt.AlignRight)
         self.rotation_label.setStyleSheet('font-size: 10px;')
         self.rotation_label.setContentsMargins(0, 0, 0, 0)
@@ -89,39 +88,39 @@ class CourseElementBuilderPanel(QWidget):
         self.flip_vertical_btn.setToolTip('Flip vertical')
         self.flip_vertical_btn.setStyleSheet('border: none;')
         self.flip_vertical_btn.clicked.connect(self.useFlipVertical)
-        widget7 = ToolbarHorizontalLayout()
-        widget7.layout.addWidget(self.x_pos_label)
-        widget7.layout.addWidget(self.x_pos_spin)
-        widget7.layout.addWidget(self.width_transform_label)
-        widget7.layout.addWidget(self.width_scale_spin)
-        widget7.layout.addStretch()
-        widget7.layout.addWidget(self.flip_horizontal_btn)
-        widget8 = ToolbarHorizontalLayout()
-        widget8.layout.addWidget(self.y_pos_label)
-        widget8.layout.addWidget(self.y_pos_spin)
-        widget8.layout.addWidget(self.height_transform_label)
-        widget8.layout.addWidget(self.height_scale_spin)
-        widget8.layout.addStretch()
-        widget8.layout.addWidget(self.flip_vertical_btn)
-        widget9 = ToolbarHorizontalLayout()
-        widget9.layout.addWidget(self.rotation_label)
-        widget9.layout.addWidget(self.rotate_item_spin)
-        widget9.layout.addStretch()
+        widget7 = mprun.gui.horizontal_layout()
+        widget7.layout().addWidget(self.x_pos_label)
+        widget7.layout().addWidget(self.x_pos_spin)
+        widget7.layout().addWidget(self.width_transform_label)
+        widget7.layout().addWidget(self.width_scale_spin)
+        widget7.layout().addStretch()
+        widget7.layout().addWidget(self.flip_horizontal_btn)
+        widget8 = mprun.gui.horizontal_layout()
+        widget8.layout().addWidget(self.y_pos_label)
+        widget8.layout().addWidget(self.y_pos_spin)
+        widget8.layout().addWidget(self.height_transform_label)
+        widget8.layout().addWidget(self.height_scale_spin)
+        widget8.layout().addStretch()
+        widget8.layout().addWidget(self.flip_vertical_btn)
+        widget9 = mprun.gui.horizontal_layout()
+        widget9.layout().addWidget(self.rotation_label)
+        widget9.layout().addWidget(self.rotate_item_spin)
+        widget9.layout().addStretch()
 
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
-        self.fill_color_btn = CustomColorDisplayButton(self)
+        self.fill_color_btn = mprun.gui.color_picking_button(self)
         self.fill_color_btn.setFixedWidth(28)
         self.fill_color_btn.setFixedHeight(26)
         self.fill_color_btn.setToolTip('Change the fill color')
         self.fill_color_btn.setShortcut(QKeySequence('Ctrl+2'))
         self.fill_color_btn.clicked.connect(self.fillColorChooser)
-        widget5 = ToolbarHorizontalLayout()
-        widget5.layout.addWidget(self.fill_color_btn)
-        widget5.layout.addWidget(fill_label)
-        widget5.layout.setContentsMargins(0, 14, 0, 0)
+        widget5 = mprun.gui.horizontal_layout()
+        widget5.layout().addWidget(self.fill_color_btn)
+        widget5.layout().addWidget(fill_label)
+        widget5.layout().setContentsMargins(0, 14, 0, 0)
 
-        self.stroke_color_btn = CustomColorDisplayButton(self)
+        self.stroke_color_btn = mprun.gui.color_picking_button(self)
         self.stroke_color_btn.setFixedWidth(28)
         self.stroke_color_btn.setFixedHeight(26)
         self.stroke_color_btn.setToolTip('Change the stroke color')
@@ -140,12 +139,12 @@ class CourseElementBuilderPanel(QWidget):
         self.stroke_pencap_options = stroke_label.pencap_options
         self.join_style_combo = stroke_label.join_style_combo
         self.join_style_options = stroke_label.join_style_options
-        widget6 = ToolbarHorizontalLayout()
-        widget6.layout.addWidget(self.stroke_color_btn)
-        widget6.layout.addWidget(stroke_label)
-        widget6.layout.addWidget(self.stroke_size_spin)
-        widget6.layout.addSpacing(100)
-        widget6.layout.setContentsMargins(0, 14, 0, 0)
+        widget6 = mprun.gui.horizontal_layout()
+        widget6.layout().addWidget(self.stroke_color_btn)
+        widget6.layout().addWidget(stroke_label)
+        widget6.layout().addWidget(self.stroke_size_spin)
+        widget6.layout().addSpacing(100)
+        widget6.layout().setContentsMargins(0, 14, 0, 0)
 
         opacity_label = QLabel('Opacity')
         opacity_label.setStyleSheet('color: white;')
@@ -160,15 +159,12 @@ class CourseElementBuilderPanel(QWidget):
         self.opacity_spin.setSuffix('%')
         self.opacity_spin.setToolTip('Change the opacity')
         self.opacity_spin.valueChanged.connect(self.useChangeOpacity)
-        opacity_hlayout = ToolbarHorizontalLayout()
-        opacity_hlayout.layout.addWidget(self.opacity_btn)
-        opacity_hlayout.layout.addWidget(opacity_label)
-        opacity_hlayout.layout.addWidget(self.opacity_spin)
-        opacity_hlayout.layout.addSpacing(100)
-        opacity_hlayout.layout.setContentsMargins(0, 14, 0, 0)
-
-        send_to_scene_btn = QPushButton('Send To Scene', self)
-        send_to_scene_btn.clicked.connect(self.sendToScene)
+        opacity_hlayout = mprun.gui.horizontal_layout()
+        opacity_hlayout.layout().addWidget(self.opacity_btn)
+        opacity_hlayout.layout().addWidget(opacity_label)
+        opacity_hlayout.layout().addWidget(self.opacity_spin)
+        opacity_hlayout.layout().addSpacing(100)
+        opacity_hlayout.layout().setContentsMargins(0, 14, 0, 0)
 
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.updateItemPen)
@@ -187,16 +183,15 @@ class CourseElementBuilderPanel(QWidget):
         self.properties_tab_layout.addWidget(widget7)
         self.properties_tab_layout.addWidget(widget8)
         self.properties_tab_layout.addWidget(widget9)
-        self.properties_tab_layout.addWidget(HorizontalSeparator())
+        self.properties_tab_layout.addWidget(mprun.gui.horizontal_splitter())
         self.properties_tab_layout.addWidget(appearence_label)
         self.properties_tab_layout.addWidget(widget5)
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addStretch()
-        self.properties_tab_layout.addWidget(send_to_scene_btn)
 
     def strokeColorChooser(self):
-        color_dialog = CustomColorPicker(self.parent)
+        color_dialog = mprun.gui.color_picker(self.parent)
         color_dialog.setWindowTitle('Stroke Color')
 
         color_dialog.hex_spin.setText(QColor(self.pen_color.get()).name()[1:])
@@ -213,7 +208,7 @@ class CourseElementBuilderPanel(QWidget):
             self.updateItemPen()
 
     def fillColorChooser(self):
-        color_dialog = CustomColorPicker(self.parent)
+        color_dialog = mprun.gui.color_picker(self.parent)
         color_dialog.setWindowTitle('Fill Color')
 
         color_dialog.hex_spin.setText(QColor(self.brush_color.get()).name()[1:])
@@ -443,7 +438,7 @@ class CourseElementBuilderPanel(QWidget):
         self.updateItemFill()
 
 
-class CourseElementBuilder(QWidget):
+class CourseElementBuilder(mprun.gui.base_widget):
     def __init__(self, parent):
         super().__init__()
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
@@ -475,7 +470,7 @@ class CourseElementBuilder(QWidget):
         self.updateAppearanceUI()
 
     def createToolBar(self):
-        self.toolbar = CustomToolbar('ToolBar')
+        self.toolbar = mprun.gui.toolbar('ToolBar')
         self.toolbar.setParent(self.view)
         self.toolbar.setObjectName('customToolBar')
         self.toolbar.setIconSize(QSize(32, 32))

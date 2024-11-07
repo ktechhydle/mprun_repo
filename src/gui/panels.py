@@ -1,9 +1,9 @@
 import mprun.gui
+import mprun.types
 import re
 from src.scripts.imports import *
 from src.framework.items import *
 from src.gui.custom_widgets import StrokeLabel
-from src.scripts.raw_functions import ItemStack
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
@@ -18,8 +18,8 @@ class PropertiesPanel(mprun.gui.base_widget):
 
         self.canvas = canvas
         self.parent = parent
-        self.pen_color = ItemStack()
-        self.brush_color = ItemStack()
+        self.pen_color = mprun.types.item_stack()
+        self.brush_color = mprun.types.item_stack()
 
         self.createUI()
 
@@ -605,7 +605,7 @@ class CharactersPanel(mprun.gui.base_widget):
 
         self.canvas = canvas
         self.parent = parent
-        self.font_color = ItemStack()
+        self.font_color = mprun.types.item_stack()
 
         self.createUI()
 
