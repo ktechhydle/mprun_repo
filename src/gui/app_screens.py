@@ -570,22 +570,32 @@ class VersionWin(mprun.gui.base_dialog):
 
 Copyright © MP Software 2024-2025, All rights reserved.
 
-If you encounter any issues or have suggestions for improvements, contact us at:
+If you encounter any issues or have suggestions for improvements, 
+contact us at: <a href="mailto:ktechindustries2019@gmail.com">K-TECH Industries</a>
         '''
         label = QLabel(text, self)
         label.setWordWrap(True)
         label.setAlignment(Qt.AlignLeft)
         label.move(20, 190)
 
-        email_label = mprun.gui.linked_label('K-TECH Industries', 'mailto:ktechindustries2019@gmail.com')
+        copy_info_btn = QPushButton('Copy MPRUN Info')
+        copy_info_btn.setFixedWidth(200)
+        copy_info_btn.clicked.connect(self.copyInfo)
 
         # Add widgets to layout
         layout.addWidget(mprun_img_label)
         layout.addWidget(label)
-        layout.addWidget(email_label)
+        layout.addSpacing(40)
+        layout.addWidget(copy_info_btn)
 
         # Set layout to the main window
         self.setLayout(layout)
+
+    def copyInfo(self):
+        full_info = (f'MPRUN Version: {self.version}\nPlatform Type: {sys.platform}\nPlatform Version: {sys.version}\n'
+                     f'QApplication Version: {QApplication.applicationVersion()}')
+
+        QApplication.clipboard().setText(full_info)
 
 
 class DisclaimerWin(QMessageBox):
