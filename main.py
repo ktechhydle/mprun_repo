@@ -510,7 +510,8 @@ class MPRUN(mprun.gui.base_window):
         self.selection_menu.addAction(select_canvases_action)
 
     def create_view_menu(self):
-        fullscreen_view_action = QAction('Toggle Full Screen', self)
+        fullscreen_view_action = QAction(QIcon('mprun_assets/assets/ui/menu/fullscreen_enter.svg'),
+                                         'Toggle Full Screen', self)
         fullscreen_view_action.setShortcut(Qt.Key_F11)
         fullscreen_view_action.triggered.connect(self.show_fullscreen)
 

@@ -998,7 +998,7 @@ class CustomStyle(QProxyStyle):
         if standardIcon == QStyle.SP_MessageBoxQuestion:
             return QIcon('mprun_assets/assets/standard/question.svg')
         elif standardIcon == QStyle.SP_MessageBoxInformation:
-            return QIcon('mprun_assets/assets/ui/panels/info_circle.svg')
+            return QIcon('mprun_assets/assets/standard/info.svg')
         elif standardIcon == QStyle.SP_MessageBoxWarning:
             return QIcon('mprun_assets/assets/standard/warning.svg')
         elif standardIcon == QStyle.SP_MessageBoxCritical:
