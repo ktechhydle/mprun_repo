@@ -655,7 +655,84 @@ class CustomListWidget(QListWidget):
         self.itemDoubleClicked.connect(self.addItemToScene)
 
         self.scene = scene
+        self.current_size = 'medium'
         self.all_items = []
+
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        # Create a custom context menu
+        menu = CustomMenu(self)
+        menu.setAnimationEnabled(True)
+
+        refresh_action = QAction('Refresh Library', self)
+        refresh_action.triggered.connect(self.parent().reloadLibrary)
+        menu.addAction(refresh_action)
+
+        tiny_action = QAction('&Tiny', self)
+        tiny_action.setCheckable(True)
+        tiny_action.triggered.connect(lambda: self.setDisplaySize('tiny'))
+        small_action = QAction('&Small', self)
+        small_action.setCheckable(True)
+        small_action.triggered.connect(lambda: self.setDisplaySize('small'))
+        medium_action = QAction('&Medium', self)
+        medium_action.setCheckable(True)
+        medium_action.triggered.connect(lambda: self.setDisplaySize('medium'))
+        big_action = QAction('&Big', self)
+        big_action.setCheckable(True)
+        big_action.triggered.connect(lambda: self.setDisplaySize('big'))
+        large_action = QAction('&Large', self)
+        large_action.setCheckable(True)
+        large_action.triggered.connect(lambda: self.setDisplaySize('large'))
+
+        icon_size_menu = menu.addMenu('Display Size')
+        icon_size_menu.addAction(tiny_action)
+        icon_size_menu.addAction(small_action)
+        icon_size_menu.addAction(medium_action)
+        icon_size_menu.addAction(big_action)
+        icon_size_menu.addAction(large_action)
+        action_group = QActionGroup(self)
+        action_group.addAction(tiny_action)
+        action_group.addAction(small_action)
+        action_group.addAction(medium_action)
+        action_group.addAction(big_action)
+        action_group.addAction(large_action)
+
+        if self.current_size == 'tiny':
+            tiny_action.setChecked(True)
+        elif self.current_size == 'small':
+            small_action.setChecked(True)
+        elif self.current_size == 'medium':
+            medium_action.setChecked(True)
+        elif self.current_size == 'big':
+            big_action.setChecked(True)
+        elif self.current_size == 'large':
+            large_action.setChecked(True)
+
+        menu.exec(event.globalPos())
+
+    def setDisplaySize(self, size: str):
+        for item in self.all_items:
+            if size == 'tiny':
+                item.setSizeHint(QSize(60, 60))
+                self.setIconSize(QSize(40, 40))
+
+            elif size == 'small':
+                item.setSizeHint(QSize(90, 90))
+                self.setIconSize(QSize(70, 70))
+
+            elif size == 'medium':
+                item.setSizeHint(QSize(120, 120))
+                self.setIconSize(QSize(100, 100))
+
+            elif size == 'big':
+                item.setSizeHint(QSize(150, 150))
+                self.setIconSize(QSize(130, 130))
+
+            else:
+                item.setSizeHint(QSize(180, 180))
+                self.setIconSize(QSize(160, 160))
+
+        self.current_size = size
+        self.parent().resize(self.parent().size())
 
     def startDrag(self, supportedActions):
         item = self.currentItem()
