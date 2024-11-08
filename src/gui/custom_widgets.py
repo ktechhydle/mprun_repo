@@ -732,7 +732,9 @@ class CustomListWidget(QListWidget):
                 self.setIconSize(QSize(160, 160))
 
         self.current_size = size
-        self.parent().resize(self.parent().size())
+
+    def currentDisplaySize(self):
+        return self.current_size
 
     def startDrag(self, supportedActions):
         item = self.currentItem()

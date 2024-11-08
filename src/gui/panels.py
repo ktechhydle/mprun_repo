@@ -562,7 +562,6 @@ class LibrariesPanel(mprun.gui.base_widget):
         if not svg_files:
             self.library_list_widget.setDragEnabled(False)
             list_item = QListWidgetItem('No files found')
-            self.library_list_widget.setIconSize(QSize(40, 40))
             self.library_list_widget.addItem(list_item)
 
         else:
@@ -574,12 +573,13 @@ class LibrariesPanel(mprun.gui.base_widget):
                 list_item.setData(Qt.UserRole, os.path.join(folder_path, svg_file))
                 list_item.setIcon(QIcon(os.path.join(folder_path, svg_file)))
                 list_item.setTextAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom)
-                list_item.setSizeHint(QSize(120, 120))
                 list_item.setToolTip(f'<h2>{svg_file.split('.')[0]}</h2>'
                                      f'<i>Simply drag and drop this item to add it to the scene.</i><br><br>'
                                      f'<img src="{os.path.join(folder_path, svg_file)}">')
                 self.library_list_widget.addItem(list_item)
                 self.library_list_widget.all_items.append(list_item)
+
+        self.library_list_widget.setDisplaySize(self.library_list_widget.currentDisplaySize())
 
     def filterLibrary(self, text):
         try:
