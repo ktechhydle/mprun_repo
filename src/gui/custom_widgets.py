@@ -647,6 +647,9 @@ class CustomListWidget(QListWidget):
     def __init__(self, scene: QGraphicsScene, parent=None):
         super().__init__(parent)
         self.setDragEnabled(True)
+        self.setIconSize(QSize(80, 80))
+        self.setViewMode(QListWidget.ViewMode.IconMode)
+        self.setResizeMode(QListWidget.ResizeMode.Adjust)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.itemDoubleClicked.connect(self.addItemToScene)
 
