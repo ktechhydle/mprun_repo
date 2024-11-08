@@ -990,3 +990,19 @@ class CustomSearchBox(QLineEdit):
         self.clearFocus()
         self.setText('')
         super().focusOutEvent(event)
+
+
+class CustomStyle(QProxyStyle):
+    def standardIcon(self, standardIcon, option=None, widget=None):
+        # Override specific icons, for example, MessageBox icons
+        if standardIcon == QStyle.SP_MessageBoxQuestion:
+            return QIcon('mprun_assets/assets/standard/question.svg')
+        elif standardIcon == QStyle.SP_MessageBoxInformation:
+            return QIcon('mprun_assets/assets/ui/panels/info_circle.svg')
+        elif standardIcon == QStyle.SP_MessageBoxWarning:
+            return QIcon('mprun_assets/assets/standard/warning.svg')
+        elif standardIcon == QStyle.SP_MessageBoxCritical:
+            return QIcon('mprun_assets/assets/standard/error.svg')
+
+        # Fall back to default icon for other standard icons
+        return super().standardIcon(standardIcon, option, widget)

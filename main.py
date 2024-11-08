@@ -602,7 +602,7 @@ class MPRUN(mprun.gui.base_window):
     def create_corner_widget(self):
         find_action_searchbox = mprun.gui.searchable(self.actions, self)
 
-        help_btn = QPushButton(self.style().standardIcon(QStyle.SP_MessageBoxQuestion), '', self)
+        help_btn = QPushButton(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '', self)
         help_btn.setToolTip(
             '<b>Help (F1)</b><br>'
             'Open the online help in your webbrowser.<br>'
@@ -2011,6 +2011,7 @@ def main() -> None:
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'] if sys.platform != 'darwin' else [])
+    app.setStyle(mprun.gui.application_style())
 
     splash = QSplashScreen(QIcon(random.choice([os.path.join('mprun_assets/assets/splash', f) for f in
                                                 os.listdir('mprun_assets/assets/splash')

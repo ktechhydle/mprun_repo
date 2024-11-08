@@ -102,3 +102,8 @@ class menu(CustomMenu):
 class more_or_less_label(CustomMoreOrLessLabel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class application_style(CustomStyle):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
