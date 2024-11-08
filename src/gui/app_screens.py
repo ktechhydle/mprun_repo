@@ -3,8 +3,8 @@ import sys
 import re
 import mprun.gui
 from mprun.constants import WINDOW_TYPE_TOOL, WINDOW_TYPE_FRAMELESS, WINDOW_MODAL
-from src.scripts.imports import *
 from src.scripts.app_internal import *
+from src.scripts.imports import *
 from src.framework.items import *
 from src.framework.undo_commands import MultiItemPositionChangeCommand
 
@@ -607,7 +607,9 @@ class DisclaimerWin(QMessageBox):
         self.setDefaultButton(QMessageBox.Yes)
 
         self.data_file = data_file
-        self.setText(use_disclaimer)
+
+        with open('internal data/_disclaimer.html', 'r') as f:
+            self.setText(f.read())
 
         self.show_on_startup_btn = QCheckBox()
         self.show_on_startup_btn.setText('Show this message on startup')

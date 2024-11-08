@@ -56,12 +56,4 @@ export_all_file_types = {
 
 default_text = 'Athlete:\nCompetition:\nDate:'
 
-use_disclaimer = '''MPRUN does NOT guarantee any success in planning competitions, MPRUN is a tool that will HELP plan successful competitions/runs. 
-
-MPRUN and MP Software are NOT responsible for any mistakes, injuries, or casualties caused during any competitions/runs. 
-
-YOU are responsible for your own safety and ultimately your own mindset. MPRUN is a Free, Open-Source, Competition Run Planning App that ASSISTS users.
-
-Do you accept?'''
-
 copyright_message = open('internal data/_copyright.txt', 'r').read()
