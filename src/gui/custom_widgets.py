@@ -1003,6 +1003,14 @@ class CustomStyle(QProxyStyle):
             return QIcon('mprun_assets/assets/standard/warning.svg')
         elif standardIcon == QStyle.SP_MessageBoxCritical:
             return QIcon('mprun_assets/assets/standard/error.svg')
+        elif standardIcon == QStyle.SP_FileDialogNewFolder:
+            return QIcon('mprun_assets/assets/standard/file_folder.svg')
+        elif standardIcon == QStyle.SP_FileDialogToParent:
+            return QIcon('mprun_assets/assets/standard/folder_redirect.svg')
+        elif standardIcon == QStyle.SP_FileIcon:
+            return QIcon('mprun_assets/assets/standard/file_new.svg')
+        elif standardIcon == QStyle.SP_DialogSaveButton:
+            return QIcon('mprun_assets/assets/standard/save_floppy.svg')
 
         # Fall back to default icon for other standard icons
         return super().standardIcon(standardIcon, option, widget)

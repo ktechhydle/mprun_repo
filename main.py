@@ -204,11 +204,11 @@ class MPRUN(mprun.gui.base_window):
         self.create_corner_widget()
 
     def create_file_menu(self):
-        new_action = QAction('New', self)
+        new_action = QAction(QIcon(self.style().standardIcon(self.style().SP_FileIcon)), 'New', self)
         new_action.setShortcut(QKeySequence('Ctrl+N'))
         new_action.triggered.connect(self.canvas.manager.restore)
 
-        open_action = QAction('Open', self)
+        open_action = QAction(QIcon(self.style().standardIcon(self.style().SP_FileDialogNewFolder)), 'Open', self)
         open_action.setShortcut(QKeySequence('Ctrl+O'))
         open_action.triggered.connect(lambda: self.canvas.manager.load(self))
 
@@ -217,7 +217,7 @@ class MPRUN(mprun.gui.base_window):
         open_template_action = QAction('Open Template', self)
         open_template_action.triggered.connect(self.canvas.template_manager.load_template)
 
-        save_action = QAction('Save', self)
+        save_action = QAction(QIcon(self.style().standardIcon(self.style().SP_DialogSaveButton)), 'Save', self)
         save_action.setShortcut(QKeySequence('Ctrl+S'))
         save_action.triggered.connect(self.canvas.manager.save)
 
@@ -231,9 +231,6 @@ class MPRUN(mprun.gui.base_window):
         saveas_template_action = QAction('Save As &Template...', self)
         saveas_template_action.triggered.connect(self.canvas.template_manager.save_template)
 
-        save_to_icloud_action = QAction('Save To &iCloud...', self)
-        save_to_icloud_action.triggered.connect(self.send_to_icloud)
-
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
         export_action.triggered.connect(self.canvas.exportManager.normalExport)
@@ -242,10 +239,14 @@ class MPRUN(mprun.gui.base_window):
         export_multiple_action.setShortcut(QKeySequence('Ctrl+Shift+E'))
         export_multiple_action.triggered.connect(self.canvas.exportManager.multipleExport)
 
-        repair_file_action = QAction('Repair File', self)
+        export_to_icloud_action = QAction(QIcon('mprun_assets/assets/ui/menu/url.svg'), 'Export To &iCloud...', self)
+        export_to_icloud_action.triggered.connect(self.send_to_icloud)
+
+        repair_file_action = QAction(QIcon(self.style().standardIcon(self.style().SP_FileDialogToParent)),
+                                     'Repair File', self)
         repair_file_action.triggered.connect(self.use_repair_file)
 
-        close_action = QAction('Close', self)
+        close_action = QAction(QIcon('mprun_assets/assets/ui/menu/panel_close.svg'), 'Close', self)
         close_action.triggered.connect(self.close)
 
         self.file_menu.addAction(new_action)
@@ -257,10 +258,10 @@ class MPRUN(mprun.gui.base_window):
         self.file_menu.addAction(saveas_action)
         self.file_menu.addAction(save_copy_action)
         self.file_menu.addAction(saveas_template_action)
-        self.file_menu.addAction(save_to_icloud_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(export_action)
         self.file_menu.addAction(export_multiple_action)
+        self.file_menu.addAction(export_to_icloud_action)
         self.file_menu.addSeparator()
         self.file_menu.addAction(repair_file_action)
         self.file_menu.addAction(close_action)
@@ -471,7 +472,7 @@ class MPRUN(mprun.gui.base_window):
         self.object_menu.addSeparator()
 
     def create_selection_menu(self):
-        select_all_action = QAction('Select All', self)
+        select_all_action = QAction(QIcon('mprun_assets/assets/ui/menu/select_extend.svg'), 'Select All', self)
         select_all_action.setShortcut(QKeySequence('Ctrl+A'))
         select_all_action.triggered.connect(self.use_select_all)
 
