@@ -1011,6 +1011,12 @@ class CustomStyle(QProxyStyle):
             return QIcon('mprun_assets/assets/standard/file_new.svg')
         elif standardIcon == QStyle.SP_DialogSaveButton:
             return QIcon('mprun_assets/assets/standard/save_floppy.svg')
+        elif standardIcon == QStyle.SP_DialogCloseButton:
+            return QIcon('mprun_assets/assets/standard/quit.svg')
+        elif standardIcon == QStyle.SP_ArrowBack:
+            return QIcon('mprun_assets/assets/standard/loop_back.svg')
+        elif standardIcon == QStyle.SP_ArrowForward:
+            return QIcon('mprun_assets/assets/standard/loop_forwards.svg')
 
         # Fall back to default icon for other standard icons
         return super().standardIcon(standardIcon, option, widget)

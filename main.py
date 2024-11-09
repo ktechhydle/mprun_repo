@@ -231,6 +231,7 @@ class MPRUN(mprun.gui.base_window):
         saveas_template_action = QAction('Save As &Template...', self)
         saveas_template_action.triggered.connect(self.canvas.template_manager.save_template)
 
+        # Export menu
         export_action = QAction('Export Canvas', self)
         export_action.setShortcut(QKeySequence('Ctrl+E'))
         export_action.triggered.connect(self.canvas.exportManager.normalExport)
@@ -242,11 +243,18 @@ class MPRUN(mprun.gui.base_window):
         export_to_icloud_action = QAction(QIcon('mprun_assets/assets/ui/menu/url.svg'), 'Export To &iCloud...', self)
         export_to_icloud_action.triggered.connect(self.send_to_icloud)
 
+        export_menu = mprun.gui.menu('Export', self)
+        export_menu.setIcon(QIcon('mprun_assets/assets/ui/menu/output.svg'))
+        export_menu.addAction(export_action)
+        export_menu.addAction(export_multiple_action)
+        export_menu.addAction(export_to_icloud_action)
+
         repair_file_action = QAction(QIcon(self.style().standardIcon(self.style().SP_FileDialogToParent)),
                                      'Repair File', self)
         repair_file_action.triggered.connect(self.use_repair_file)
 
-        close_action = QAction(QIcon('mprun_assets/assets/ui/menu/panel_close.svg'), 'Close', self)
+        close_action = QAction(QIcon(self.style().standardIcon(self.style().SP_DialogCloseButton)), 'Close', self)
+        close_action = QAction(QIcon(self.style().standardIcon(self.style().SP_DialogCloseButton)), 'Close', self)
         close_action.triggered.connect(self.close)
 
         self.file_menu.addAction(new_action)
@@ -259,9 +267,7 @@ class MPRUN(mprun.gui.base_window):
         self.file_menu.addAction(save_copy_action)
         self.file_menu.addAction(saveas_template_action)
         self.file_menu.addSeparator()
-        self.file_menu.addAction(export_action)
-        self.file_menu.addAction(export_multiple_action)
-        self.file_menu.addAction(export_to_icloud_action)
+        self.file_menu.addMenu(export_menu)
         self.file_menu.addSeparator()
         self.file_menu.addAction(repair_file_action)
         self.file_menu.addAction(close_action)
@@ -273,15 +279,15 @@ class MPRUN(mprun.gui.base_window):
         image_menu = self.tool_menu.addMenu('Image', parent=self)
         scene_menu = self.tool_menu.addMenu('Scene', parent=self)
 
-        select_action = QAction('Select', self)
+        select_action = QAction(QIcon('mprun_assets/assets/ui/menu/restrict_select_off.svg'), 'Select', self)
         select_action.setShortcut(QKeySequence(Qt.Key_Space))
         select_action.triggered.connect(self.use_select)
 
-        pan_action = QAction('Pan', self)
+        pan_action = QAction(QIcon('mprun_assets/assets/ui/menu/view_pan.svg'), 'Pan', self)
         pan_action.setShortcut(QKeySequence('P'))
         pan_action.triggered.connect(self.use_pan)
 
-        view_in_3d_action = QAction('View In 3D', self)
+        view_in_3d_action = QAction(QIcon('mprun_assets/assets/ui/menu/file_3D.svg'), 'View In 3D', self)
         view_in_3d_action.setShortcut(Qt.Key_F5)
         view_in_3d_action.triggered.connect(self.show_3d_viewer)
 
@@ -314,12 +320,12 @@ class MPRUN(mprun.gui.base_window):
         ceb_action = QAction('Course Elements Builder', self)
         ceb_action.triggered.connect(self.show_ceb)
 
-        text_action = QAction('Text', self)
+        text_action = QAction(QIcon('mprun_assets/assets/ui/menu/file_text.svg'), 'Text', self)
         text_action.setShortcut(QKeySequence('Ctrl+T'))
         text_action.triggered.connect(self.use_text)
         text_action.triggered.connect(self.update)
 
-        insert_image_action = QAction('Insert Image', self)
+        insert_image_action = QAction(QIcon('mprun_assets/assets/ui/menu/image_rgb.svg'), 'Insert Image', self)
         insert_image_action.setShortcut(QKeySequence('I'))
         insert_image_action.triggered.connect(self.insert_image)
 
@@ -338,6 +344,7 @@ class MPRUN(mprun.gui.base_window):
         sculpt_path_action.triggered.connect(self.use_sculpt_path)
 
         add_shape_menu = drawing_menu.addMenu('Add Shape', parent=self)
+        add_shape_menu.setIcon(QIcon('mprun_assets/assets/ui/menu/node_material.svg'))
         add_shape_rect = QAction('Add Rectangle', self)
         add_shape_rect.triggered.connect(lambda: self.use_insert_shape('rect'))
         add_shape_circle = QAction('Add Circle', self)
@@ -374,11 +381,11 @@ class MPRUN(mprun.gui.base_window):
         scene_menu.addAction(rename_canvases_action)
 
     def create_edit_menu(self):
-        undo_action = QAction('Undo', self)
+        undo_action = QAction(QIcon(self.style().standardIcon(self.style().SP_ArrowBack)), 'Undo', self)
         undo_action.setShortcut(QKeySequence('Ctrl+Z'))
         undo_action.triggered.connect(self.canvas.undo)
 
-        redo_action = QAction('Redo', self)
+        redo_action = QAction(QIcon(self.style().standardIcon(self.style().SP_ArrowForward)), 'Redo', self)
         redo_action.setShortcut(QKeySequence('Ctrl+Shift+Z'))
         redo_action.triggered.connect(self.canvas.redo)
 
