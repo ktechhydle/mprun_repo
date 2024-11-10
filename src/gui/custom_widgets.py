@@ -709,33 +709,6 @@ class CustomListWidget(QListWidget):
 
         menu.exec(event.globalPos())
 
-    def setDisplaySize(self, size: str):
-        for item in self.all_items:
-            if size == 'tiny':
-                item.setSizeHint(QSize(60, 60))
-                self.setIconSize(QSize(40, 40))
-
-            elif size == 'small':
-                item.setSizeHint(QSize(90, 90))
-                self.setIconSize(QSize(70, 70))
-
-            elif size == 'medium':
-                item.setSizeHint(QSize(120, 120))
-                self.setIconSize(QSize(100, 100))
-
-            elif size == 'big':
-                item.setSizeHint(QSize(150, 150))
-                self.setIconSize(QSize(130, 130))
-
-            else:
-                item.setSizeHint(QSize(180, 180))
-                self.setIconSize(QSize(160, 160))
-
-        self.current_size = size
-
-    def currentDisplaySize(self):
-        return self.current_size
-
     def startDrag(self, supportedActions):
         item = self.currentItem()
         if item:
@@ -762,6 +735,37 @@ class CustomListWidget(QListWidget):
             drag.setHotSpot(hotspot)
 
             drag.exec_(Qt.CopyAction | Qt.MoveAction)
+
+    def focusOutEvent(self, event):
+        super().focusOutEvent(event)
+        self.clearSelection()
+
+    def setDisplaySize(self, size: str):
+        for item in self.all_items:
+            if size == 'tiny':
+                item.setSizeHint(QSize(60, 60))
+                self.setIconSize(QSize(40, 40))
+
+            elif size == 'small':
+                item.setSizeHint(QSize(90, 90))
+                self.setIconSize(QSize(70, 70))
+
+            elif size == 'medium':
+                item.setSizeHint(QSize(120, 120))
+                self.setIconSize(QSize(100, 100))
+
+            elif size == 'big':
+                item.setSizeHint(QSize(150, 150))
+                self.setIconSize(QSize(130, 130))
+
+            else:
+                item.setSizeHint(QSize(180, 180))
+                self.setIconSize(QSize(160, 160))
+
+        self.current_size = size
+
+    def currentDisplaySize(self):
+        return self.current_size
 
     def filterItems(self, text):
         for item in self.all_items:
