@@ -318,6 +318,7 @@ class MPRUN(mprun.gui.base_window):
         linelabel_action.triggered.connect(self.update)
 
         ceb_action = QAction('Course Elements Builder', self)
+        ceb_action.setIcon(QIcon('mprun_assets/assets/ui/menu/modifier.svg'))
         ceb_action.triggered.connect(self.show_ceb)
 
         text_action = QAction(QIcon('mprun_assets/assets/ui/menu/file_text.svg'), 'Text', self)
@@ -663,7 +664,7 @@ class MPRUN(mprun.gui.base_window):
         self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.libraries_tab.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
         self.libraries_tab.scroll_area.setMinimumWidth(150)
-        self.libraries_tab.scroll_area.setMaximumWidth(600)
+        self.libraries_tab.scroll_area.setMaximumWidth(650)
 
         self.libraries_dock = QDockWidget()
         self.libraries_dock.setWindowFlag(WINDOW_TYPE_TOOL)
