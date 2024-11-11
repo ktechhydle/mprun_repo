@@ -23,6 +23,8 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
         self.parent = parent
 
         self.createUI()
+        self.default()
+        self.default()
 
     def createUI(self):
         apple_id_label = QLabel('<b>Apple ID:</b>')
@@ -42,6 +44,9 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
         warning.setAlignment(Qt.AlignCenter)
         warning.setWordWrap(True)
 
+        self.save_for_later_check_btn = QCheckBox('Save this info for later')
+        self.save_for_later_check_btn.setChecked(True)
+
         self.button_group = QDialogButtonBox(self)
         self.button_group.addButton('Share', QDialogButtonBox.AcceptRole)
         self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
@@ -51,7 +56,16 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
         self.layout().addWidget(id_hlayout)
         self.layout().addWidget(password_hlayout)
         self.layout().addWidget(warning)
+        self.layout().addWidget(self.save_for_later_check_btn)
         self.layout().addWidget(self.button_group)
+
+    def default(self):
+        _data = self.parent.read_settings()
+
+        for data in _data:
+            if data['icloud_username'] and data['icloud_password']:
+                self.apple_id_input.setText(data['icloud_username'])
+                self.password_input.setText(data['icloud_password'])
 
     def finish(self):
         try:
@@ -86,6 +100,15 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
             QMessageBox.information(self.parent, 'File Shared', 'The file has successfully been '
                                                                 'transferred to iCloud. It has been saved '
                                                                 'to the "Downloads" folder.')
+
+            if self.save_for_later_check_btn.isChecked():
+                _data = self.parent.read_settings()
+
+                for data in _data:
+                    data['icloud_username'] = self.apple_id_input.text()
+                    data['icloud_password'] = self.password_input.text()
+
+                self.parent.write_settings(_data)
 
             self.close()
 
