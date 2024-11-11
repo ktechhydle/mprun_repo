@@ -24,6 +24,7 @@ jobs:
           arch -x86_64 pip install pyinstaller
           arch -x86_64 pip install -r requirements.txt
           git clone https://github.com/ktechhydle/mp_software_stylesheets.git
+          git clone https://github.com/ktechhydle/mprun_assets.git
 
       - name: Build macOS app for x86_64 using PyInstaller
         run: |
