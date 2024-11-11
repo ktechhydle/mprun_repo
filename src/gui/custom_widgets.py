@@ -1,6 +1,8 @@
 import os.path
 import sys
 import time
+
+from mprun.constants import WINDOW_TYPE_FRAMELESS
 from src.scripts.imports import *
 from src.framework.items import *
 
@@ -847,12 +849,12 @@ class CustomMenuBar(QMenuBar):
 class CustomMenu(QMenu):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.setWindowFlag(WINDOW_TYPE_FRAMELESS)
+        self.setObjectName('customMenu')
         self.setMinimumSize(150, 30)
+
         self.radius = 10
         self._animation_enabled = False
-
-        if not sys.platform == 'darwin':
-            self.setObjectName('customMenu')
 
     def addMenu(self, menu, parent=None):
         if isinstance(menu, QMenu):
