@@ -1,8 +1,9 @@
 import mprun.gui
+from src.framework.items import *
 from pyicloud import PyiCloudService
 from pyicloud.exceptions import PyiCloudFailedLoginException
 from pathlib import Path
-from src.framework.items import *
+
 
 if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
@@ -17,7 +18,7 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
         self.setWindowModality(Qt.ApplicationModal)
         self.setObjectName('tipWindow')
-        self.setFixedWidth(300)
+        self.setFixedSize(300, 250)
         self.setLayout(QVBoxLayout())
         self.canvas = canvas
         self.parent = parent
@@ -29,34 +30,32 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
     def createUI(self):
         apple_id_label = QLabel('<b>Apple ID:</b>')
         self.apple_id_input = QLineEdit()
-        id_hlayout = mprun.gui.horizontal_layout()
-        id_hlayout.layout().addWidget(apple_id_label)
-        id_hlayout.layout().addWidget(self.apple_id_input)
 
         password_label = QLabel('<b>Password:</b>')
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.Password)
-        password_hlayout = mprun.gui.horizontal_layout()
-        password_hlayout.layout().addWidget(password_label)
-        password_hlayout.layout().addWidget(self.password_input)
-
-        warning = QLabel('<i>We do not collect any Apple ID data, such as names, passwords, or emails.</i>')
-        warning.setAlignment(Qt.AlignCenter)
-        warning.setWordWrap(True)
 
         self.save_for_later_check_btn = QCheckBox('Save this info for later')
         self.save_for_later_check_btn.setChecked(True)
 
+        warning = QLabel('<i>*We do not collect any Apple ID data, such as names, passwords, or emails.</i>')
+        warning.setWordWrap(True)
+
         self.button_group = QDialogButtonBox(self)
+        self.button_group.setCenterButtons(True)
         self.button_group.addButton('Share', QDialogButtonBox.AcceptRole)
         self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
         self.button_group.accepted.connect(self.finish)
         self.button_group.rejected.connect(self.close)
 
-        self.layout().addWidget(id_hlayout)
-        self.layout().addWidget(password_hlayout)
-        self.layout().addWidget(warning)
+        self.layout().addWidget(apple_id_label)
+        self.layout().addWidget(self.apple_id_input)
+        self.layout().addWidget(password_label)
+        self.layout().addWidget(self.password_input)
         self.layout().addWidget(self.save_for_later_check_btn)
+        self.layout().addSpacing(20)
+        self.layout().addWidget(warning)
+        self.layout().addStretch()
         self.layout().addWidget(self.button_group)
 
     def default(self):
