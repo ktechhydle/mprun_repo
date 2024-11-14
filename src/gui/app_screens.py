@@ -886,9 +886,7 @@ class TipWin(mprun.gui.menu):
 
     def createUI(self, label, tip):
         img = QLabel('')
-        img.setPixmap(QPixmap('mprun_assets/assets/ui/panels/info_circle.svg').scaled(35, 35,
-                                                                                       Qt.KeepAspectRatio,
-                                                                                       Qt.SmoothTransformation))
+        img.setPixmap(self.style().standardIcon(self.style().SP_MessageBoxInformation).pixmap(QSize(35, 35)))
         main_label = QLabel(f'<b>{label}</b>')
         text = QLabel(tip)
         text.setWordWrap(True)
