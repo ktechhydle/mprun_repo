@@ -12,3 +12,4 @@ WINDOW_TYPE_POPUP = Qt.WindowType.Popup
 WINDOW_TYPE_TOOLTIP = Qt.WindowType.ToolTip
 WINDOW_TYPE_FRAMELESS = Qt.WindowType.FramelessWindowHint
 WINDOW_MODAL = Qt.WindowModality.ApplicationModal
+APPLICATION_ATTRIBUTE = Qt.ApplicationAttribute
