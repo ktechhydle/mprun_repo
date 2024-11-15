@@ -9,6 +9,8 @@ if getattr(sys, 'frozen', False):
 
 
 class ResizeRect(QGraphicsItemGroup):
+    childrenChanged = pyqtSignal(object)
+
     handleTopLeft = 1
     handleTopMiddle = 2
     handleTopRight = 3
@@ -32,10 +34,14 @@ class ResizeRect(QGraphicsItemGroup):
         handleBottomRight: Qt.CursorShape.SizeFDiagCursor,
     }
 
-    def __init__(self):
+    def __init__(self, scene):
         super().__init__()
         self.setAcceptHoverEvents(True)
+        self.setToolTip('Multiple Items')
         self.setFlags(ITEM_MOVABLE | ITEM_SELECTABLE)
+
+        self.stored_items = []
+        self.stored_scene = scene
 
         # Item resizing
         self.handles = {}
@@ -113,14 +119,82 @@ class ResizeRect(QGraphicsItemGroup):
         self.unsetCursor()
         super().hoverLeaveEvent(moveEvent)
 
+    def setTransform(self, matrix, combine=False):
+        for item in self.stored_scene.items():
+            if item not in self.stored_scene.items():
+                self.addItemsToGroup(self.stored_items)
+
+        if self not in self.stored_scene.items():
+            self.stored_scene.addItem(self)
+
+        if not self.isSelected():
+            self.setSelected(True)
+
+        super().setTransform(matrix, combine)
+
+    def setPos(self, pos):
+        for item in self.stored_scene.items():
+            if item not in self.stored_scene.items():
+                self.addItemsToGroup(self.stored_items)
+
+        if self not in self.stored_scene.items():
+            self.stored_scene.addItem(self)
+
+        if not self.isSelected():
+            self.setSelected(True)
+
+        super().setPos(pos)
+
+    def setRotation(self, angle):
+        for item in self.stored_scene.items():
+            if item not in self.stored_scene.items():
+                self.addItemsToGroup(self.stored_items)
+
+        if self not in self.stored_scene.items():
+            self.stored_scene.addItem(self)
+
+        if not self.isSelected():
+            self.setSelected(True)
+
+        super().setRotation(angle)
+
+    def setScale(self, scale):
+        for item in self.stored_scene.items():
+            if item not in self.stored_scene.items():
+                self.addItemsToGroup(self.stored_items)
+
+        if self not in self.stored_scene.items():
+            self.stored_scene.addItem(self)
+
+        if not self.isSelected():
+            self.setSelected(True)
+
+        super().setScale(scale)
+
+    def removeFromGroup(self, item):
+        super().removeFromGroup(item)
+
     def addToGroup(self, item):
         item.setSelected(False)
+
+        if item not in self.stored_items:
+            self.stored_items.append(item)
 
         super().addToGroup(item)
 
     def addItemsToGroup(self, items: list[QGraphicsItem]):
         for item in items:
             self.addToGroup(item)
+
+    def updateGroup(self):
+        for item in self.stored_items:
+            if item not in self.stored_scene.items():
+                self.removeFromGroup(item)
+
+            else:
+                self.addToGroup(item)
+
+        self.setSelected(True)
 
     def clear(self):
         for child in self.childItems():

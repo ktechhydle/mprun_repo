@@ -567,6 +567,11 @@ class CustomGraphicsScene(QGraphicsScene):
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
 
+        for item in self.items():
+            if isinstance(item, ResizeRect):
+                if not item.isSelected():
+                    self.clearSelection()
+
         if event.button() == Qt.LeftButton:
             self.oldPositions = {i: i.pos() for i in self.selectedItems()}
 
@@ -592,6 +597,10 @@ class CustomGraphicsScene(QGraphicsScene):
         super().clearSelection()
         self.update()
 
+        for item in self.items():
+            if isinstance(item, ResizeRect):
+                item.clear()
+
     def update(self, rect=None):
         super().update()
 
@@ -600,7 +609,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def showTransformBox(self):
         if self.selectedItems():
-            rect = ResizeRect()
+            rect = ResizeRect(self)
             rect.addItemsToGroup(self.selectedItems())
             self.addItem(rect)
 
@@ -620,6 +629,9 @@ class CustomGraphicsScene(QGraphicsScene):
         self.views()[0].update()
 
         for item in self.items():
+            if isinstance(item, ResizeRect):
+                item.updateGroup()
+
             if isinstance(item, CustomTextItem):
                 if isinstance(item.parentItem(), LeaderLineItem):
                     item.parentItem().updatePathEndPoint()
@@ -635,6 +647,9 @@ class CustomGraphicsScene(QGraphicsScene):
         self.views()[0].update()
 
         for item in self.items():
+            if isinstance(item, ResizeRect):
+                item.updateGroup()
+
             if isinstance(item, CustomTextItem):
                 if isinstance(item.parentItem(), LeaderLineItem):
                     item.parentItem().updatePathEndPoint()
