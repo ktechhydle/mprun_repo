@@ -566,54 +566,26 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
-
-        for item in self.items():
-            if isinstance(item, ResizeRect):
-                if not item.isSelected():
-                    self.clearSelection()
-
         if event.button() == Qt.LeftButton:
             self.oldPositions = {i: i.pos() for i in self.selectedItems()}
 
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
-
         if event.button() == Qt.LeftButton and self.oldPositions:
             newPositions = {i: i.pos() for i in self.oldPositions.keys()}
             if any(self.oldPositions[i] != newPositions[i] for i in self.oldPositions.keys()):
                 self.itemsMoved.emit(self.oldPositions, newPositions)
             self.oldPositions = {}
 
-        for item in self.items():
-            if isinstance(item, ResizeRect):
-                if not item.isSelected():
-                    item.clear()
-                    return
-                return
-
-        self.showTransformBox()
-
     def clearSelection(self):
         super().clearSelection()
         self.update()
-
-        for item in self.items():
-            if isinstance(item, ResizeRect):
-                item.clear()
 
     def update(self, rect=None):
         super().update()
 
         for item in self.items():
             item.update()
-
-    def showTransformBox(self):
-        if self.selectedItems():
-            rect = ResizeRect(self)
-            rect.addItemsToGroup(self.selectedItems())
-            self.addItem(rect)
-
-            rect.setSelected(True)
 
     def onItemMoved(self, oldPositions, newPositions):
         self.addCommand(ItemMovedUndoCommand(oldPositions, newPositions))
@@ -629,9 +601,6 @@ class CustomGraphicsScene(QGraphicsScene):
         self.views()[0].update()
 
         for item in self.items():
-            if isinstance(item, ResizeRect):
-                item.updateGroup()
-
             if isinstance(item, CustomTextItem):
                 if isinstance(item.parentItem(), LeaderLineItem):
                     item.parentItem().updatePathEndPoint()
@@ -647,9 +616,6 @@ class CustomGraphicsScene(QGraphicsScene):
         self.views()[0].update()
 
         for item in self.items():
-            if isinstance(item, ResizeRect):
-                item.updateGroup()
-
             if isinstance(item, CustomTextItem):
                 if isinstance(item.parentItem(), LeaderLineItem):
                     item.parentItem().updatePathEndPoint()
