@@ -24,8 +24,8 @@ class CustomViewport(QOpenGLWidget):
 
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, actions: list):
-        super().__init__()
+    def __init__(self, canvas, actions: list, parent=None):
+        super().__init__(parent)
         self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
         self.setOptimizationFlag(QGraphicsView.DontSavePainterState, True)
         self.setOptimizationFlag(QGraphicsView.DontAdjustForAntialiasing, True)
@@ -36,6 +36,7 @@ class CustomGraphicsView(QGraphicsView):
         self.installEventFilter(self)
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
+        self.resizeEvent = self.parent().resizeEvent
 
         self.w = None
 
@@ -383,11 +384,6 @@ y: {int(self.mapToScene(point).y())}''')
         self.parent().scene_tab.zoom_widget.spinBox().blockSignals(True)
         self.parent().scene_tab.zoom_widget.spinBox().setValue(int(self.transform().m11() * 100))
         self.parent().scene_tab.zoom_widget.spinBox().blockSignals(False)
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        print(f'View Resize at {event}')
-        self.updateTip()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():

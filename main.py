@@ -1128,7 +1128,7 @@ class MPRUN(mprun.gui.base_window):
                                                             self.add_text_btn,
                                                             self.scale_btn,
                                                             self.rotate_btn,
-                                                            self.add_canvas_btn])
+                                                            self.add_canvas_btn], self)
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
 
