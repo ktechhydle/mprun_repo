@@ -628,15 +628,15 @@ class CustomSvgItem(QGraphicsSvgItem):
 
                 self.updateHandlesPos()
 
-    def hoverMoveEvent(self, moveEvent):
+    def hoverMoveEvent(self, event):
         if self.isSelected():
-            handle = self.handleAt(moveEvent.scenePos())
+            handle = self.handleAt(event.scenePos())
             if handle is not None:
                 cursor = self.getTransformedCursor(handle)
                 self.setCursor(cursor)
             else:
                 self.setCursor(Qt.CursorShape.ArrowCursor)
-        super().hoverMoveEvent(moveEvent)
+        super().hoverMoveEvent(event)
 
     def hoverLeaveEvent(self, moveEvent):
         self.unsetCursor()
