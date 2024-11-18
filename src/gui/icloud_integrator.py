@@ -1,4 +1,5 @@
 import mprun.gui
+from mprun.constants import WINDOW_MODAL
 from src.framework.items import *
 from pyicloud import PyiCloudService
 from pyicloud.exceptions import PyiCloudFailedLoginException
@@ -16,7 +17,7 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
         super().__init__()
         self.setWindowTitle('Share To iCloud')
         self.setWindowIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(WINDOW_MODAL)
         self.setObjectName('tipWindow')
         self.setFixedSize(300, 250)
         self.setLayout(QVBoxLayout())
@@ -114,7 +115,7 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
         except Exception as e:
             QMessageBox.critical(self.parent, 'Error', f'An unexpected error occurred: {e}')
 
-    def export(self):
+    def export(self) -> list[str]:
         try:
             # Get the user's Downloads folder
             downloads_folder = downloads_path
