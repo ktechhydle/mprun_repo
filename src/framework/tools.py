@@ -68,39 +68,54 @@ class DrawingTool(Tool):
             self.view.show_tooltip(event)
 
 
-class PathDrawerTool(DrawingTool):
+class PathDrawerTool(Tool):
     def __init__(self, scene, view):
         super().__init__(scene, view)
+        self.path_item = None
 
     def specialToolTip(self, event):
-        self.showPathLengthToolTip(event)
+        point = event.pos()
+        p = self.view.mapToGlobal(point)
+        p.setY(p.y())
+        p.setX(p.x() + 10)
+
+        if self.path_item:
+            QToolTip.showText(p, f'path length: {int(self.path_item.path().length())} pt')
+        else:
+            self.view.show_tooltip(event)
 
     def mousePress(self, event):
-        if event.button() == Qt.LeftButton:
-            self.createNewPath(event)
+        if event.button() == LEFT_BUTTON:
+            path = QPainterPath()
+            path.moveTo(self.view.mapToScene(event.pos()))
+
+            self.path_item = CustomPathItem(path)
+            self.path_item.setPath(path)
+            self.path_item.setPen(self.scene.parentWindow.properties_tab.getPen())
+            self.path_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
+            self.path_item.setZValue(1)
+
+            self.scene.addItem(self.path_item)
             self.view.setDragMode(QGraphicsView.NoDrag)
 
     def mouseMove(self, event):
-        if event.buttons() == Qt.LeftButton and self.path:
-            self.path.lineTo(self.view.mapToScene(event.pos()))
-            self.removeTemporaryPath()
+        if event.buttons() == LEFT_BUTTON and self.path_item:
+            path = self.path_item.path()
+            path.lineTo(self.view.mapToScene(event.pos()))
 
-            self.temp_path_item = CustomPathItem(self.path)
-            self.addPathToScene(self.temp_path_item)
-            self.scene.update()
+            self.path_item.setPath(path)
 
     def mouseRelease(self, event):
-        if event.button() == Qt.LeftButton and self.path:
-            self.path.lineTo(self.view.mapToScene(event.pos()))
-            self.removeTemporaryPath()
-            path_item = CustomPathItem(self.path)
+        if event.button() == LEFT_BUTTON and self.path_item:
+            self.path_item.path().lineTo(self.view.mapToScene(event.pos()))
+            self.path_item.setFlag(ITEM_SELECTABLE)
+            self.path_item.setFlag(ITEM_MOVABLE)
 
-            self.addPathToScene(path_item)
-            if not path_item.path().isEmpty():
-                add_command = AddItemCommand(self.scene, path_item)
+            if not self.path_item.path().isEmpty():
+                add_command = AddItemCommand(self.scene, self.path_item)
                 self.scene.addCommand(add_command)
 
-            self.path = None
+            self.path_item = None
 
 
 class PenDrawerTool(DrawingTool):
@@ -191,7 +206,8 @@ class LineAndLabelTool(Tool):
 
     def addLabelToScene(self):
         self.pathg_item.setZValue(2)
-        self.pathg_item.setPos(self.pathg_item.pos().x() - self.pathg_item.boundingRect().width(), self.pathg_item.pos().y())
+        self.pathg_item.setPos(self.pathg_item.pos().x() - self.pathg_item.boundingRect().width(),
+                               self.pathg_item.pos().y())
         self.pathg_item.setPen(self.scene.parentWindow.properties_tab.getPen())
         self.pathg_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
         self.pathg_item.text_element.setFont(self.scene.parentWindow.characters_tab.getFont())
