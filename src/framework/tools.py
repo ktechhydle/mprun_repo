@@ -36,7 +36,7 @@ class DrawingTool(Tool):
     def createNewPath(self, event):
         """Initializes a new path at the event position."""
         self.path = QPainterPath()
-        self.path.setFillRule(Qt.WindingFill)
+        self.path.setFillRule(Qt.FillRule.WindingFill)
         self.path.moveTo(self.view.mapToScene(event.pos()))
         self.last_point = self.view.mapToScene(event.pos())
 
@@ -126,19 +126,19 @@ class PenDrawerTool(DrawingTool):
         self.showPathLengthToolTip(event)
 
     def mousePress(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.createNewPath(event)
             self.view.setDragMode(QGraphicsView.NoDrag)
 
     def mouseMove(self, event):
-        if event.buttons() == Qt.LeftButton and self.path:
+        if event.buttons() == LEFT_BUTTON and self.path:
             self.path.lineTo(self.view.mapToScene(event.pos()))
             self.removeTemporaryPath()
 
             self.temp_path_item = CustomPathItem(self.path)
             self.addPathToScene(self.temp_path_item)
             try:
-                if event.modifiers() & Qt.ShiftModifier:
+                if event.modifiers() & SHIFT_MODIFIER:
                     self.temp_path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
                     self.path = self.temp_path_item.path()
                 else:
@@ -149,12 +149,12 @@ class PenDrawerTool(DrawingTool):
             self.scene.update()
 
     def mouseRelease(self, event):
-        if event.button() == Qt.LeftButton and self.path:
+        if event.button() == LEFT_BUTTON and self.path:
             self.path.lineTo(self.view.mapToScene(event.pos()))
             self.removeTemporaryPath()
             path_item = CustomPathItem(self.path)
             try:
-                if event.modifiers() & Qt.ShiftModifier:
+                if event.modifiers() & SHIFT_MODIFIER:
                     path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
                 else:
                     path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
@@ -176,7 +176,7 @@ class LineAndLabelTool(Tool):
         self.start_point = None
 
     def mousePress(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.label_drawing = True
             self.start_point = self.view.mapToScene(event.pos())
             self.leader_line = QPainterPath()
@@ -196,7 +196,7 @@ class LineAndLabelTool(Tool):
             self.view.update()
 
     def mouseRelease(self, event):
-        if event.button() == Qt.LeftButton and self.label_drawing:
+        if event.button() == LEFT_BUTTON and self.label_drawing:
             self.label_drawing = False
             end_point = self.view.mapToScene(event.pos())
             self.leader_line.lineTo(end_point)
@@ -358,7 +358,7 @@ class MouseRotatingTool(Tool):
 
                 new_angle = self.start_angle + angle_change
 
-                if event.modifiers() & Qt.ShiftModifier:
+                if event.modifiers() & SHIFT_MODIFIER:
                     new_angle = round(new_angle / 45) * 45
 
                 self.rotating_item.setTransformOriginPoint(self.rotating_item.boundingRect().center())
@@ -491,7 +491,7 @@ class PathSculptingTool(Tool):
                 elements[i].y += delta_pos.y() * influence
 
         new_path = QPainterPath()
-        new_path.setFillRule(Qt.WindingFill)
+        new_path.setFillRule(Qt.FillRule.WindingFill)
         new_path.moveTo(elements[0].x, elements[0].y)
 
         i = 1
@@ -554,7 +554,7 @@ height: {int(self.scene_item.rect().height())}''')
             self.view.show_tooltip(event)
 
     def mousePress(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == LEFT_BUTTON:
             item_under_mouse = self.view.itemAt(event.pos())
 
             if item_under_mouse is None:  # No item under mouse, create new CanvasItem
@@ -569,12 +569,12 @@ height: {int(self.scene_item.rect().height())}''')
                 pass
 
     def mouseMove(self, event):
-        if self.scene_item is not None and event.buttons() & Qt.LeftButton and self.clicked_canvas_point is not None:
+        if self.scene_item is not None and event.buttons() & LEFT_BUTTON and self.clicked_canvas_point is not None:
             current_pos = self.view.mapToScene(event.pos())
             width = current_pos.x() - self.clicked_canvas_point.x()
             height = current_pos.y() - self.clicked_canvas_point.y()
 
-            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
+            if QApplication.keyboardModifiers() & SHIFT_MODIFIER:  # Check if 'C' key is pressed
                 # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
                 size = min(abs(width), abs(height))
                 width = size if width >= 0 else -size
@@ -583,12 +583,12 @@ height: {int(self.scene_item.rect().height())}''')
             self.scene_item.setRect(0, 0, width, height)
 
     def mouseRelease(self, event):
-        if self.scene_item is not None and event.button() == Qt.LeftButton:
+        if self.scene_item is not None and event.button() == LEFT_BUTTON:
             current_pos = self.view.mapToScene(event.pos())
             width = current_pos.x() - self.clicked_canvas_point.x()
             height = current_pos.y() - self.clicked_canvas_point.y()
 
-            if QApplication.keyboardModifiers() & Qt.ShiftModifier:  # Check if 'C' key is pressed
+            if QApplication.keyboardModifiers() & SHIFT_MODIFIER:  # Check if 'C' key is pressed
                 # Constrain the size to maintain aspect ratio (assuming 1:1 for simplicity)
                 size = min(abs(width), abs(height))
                 width = size if width >= 0 else -size
