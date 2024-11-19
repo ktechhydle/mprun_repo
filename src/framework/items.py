@@ -866,6 +866,8 @@ class CustomTextItem(QGraphicsTextItem):
         self.mousePressPos = None
         self.mousePressRect = None
         self.ogTransform = None
+        self._rotation = 0
+        self._scale = 1.0
         self.updateHandlesPos()
 
         # Create the suggestion popup
@@ -1057,6 +1059,29 @@ class CustomTextItem(QGraphicsTextItem):
     def hoverLeaveEvent(self, moveEvent):
         self.unsetCursor()
         super().hoverLeaveEvent(moveEvent)
+
+    def setRotation(self, angle):
+        self._rotation = angle
+        self.updateTransform()
+
+    def setScale(self, scale):
+        self._scale = scale
+        self.updateTransform()
+
+    def rotation(self):
+        return self._rotation
+
+    def scale(self):
+        return self._scale
+
+    def updateTransform(self):
+        # Compute the custom transformation
+        transform = self.transform()
+        transform.translate(self.boundingRect().center().x(), self.boundingRect().center().y())
+        transform.rotate(self._rotation)
+        transform.scale(self._scale, self._scale)
+        transform.translate(-self.boundingRect().center().x(), -self.boundingRect().center().y())
+        self.setTransform(transform)
 
     def handleAt(self, point):
         point = self.mapFromScene(point)
