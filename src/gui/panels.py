@@ -503,47 +503,23 @@ class LibrariesPanel(mprun.gui.base_widget):
         self.library_list_widget.setStyleSheet('border: none')
         self.library_list_widget.setIconSize(QSize(80, 80))
 
-        # Library button
-        self.open_library_button = QPushButton("Open Library")
-        self.open_library_button.setToolTip('Open library from local directory')
-        self.reload_library_button = QPushButton("")
-        self.reload_library_button.setFixedWidth(28)
-        self.reload_library_button.setStyleSheet('border: none')
-        self.reload_library_button.setIcon(QIcon('mprun_assets/assets/ui/panels/refresh_icon.svg'))
-        self.reload_library_button.setToolTip('Reload the current library')
-
         # Search bar
         self.search_bar = QLineEdit()
         self.search_bar.setToolTip('Search for files in the current library')
-        self.search_bar.setPlaceholderText("Search...")
+        self.search_bar.setPlaceholderText('Search Features...')
         self.search_bar.setObjectName('modernLineEdit')
         self.search_bar.textChanged.connect(self.filterLibrary)
 
         library_btn_hlayout = QHBoxLayout()
-        library_btn_hlayout.addWidget(self.open_library_button)
-        library_btn_hlayout.addWidget(self.reload_library_button)
 
         search_hlayout = QHBoxLayout()
-        search_hlayout.addWidget(self.open_library_button)
         search_hlayout.addWidget(self.search_bar)
 
         self.layout.addLayout(library_btn_hlayout)
         self.layout.addWidget(self.search_bar)
         self.layout.addWidget(self.library_list_widget)
 
-        # Connect button to the method
-        self.open_library_button.clicked.connect(self.openLibrary)
-        self.reload_library_button.clicked.connect(self.reloadLibrary)
-
         self.loadLibrary(os.path.abspath('course elements'))
-
-    def openLibrary(self):
-        # Open file dialog to select a folder
-        folder_path = QFileDialog.getExistingDirectory(self, "Select Library Folder")
-
-        if folder_path:
-            self.current_folder_path = folder_path
-            self.loadLibrary(folder_path)
 
     def reloadLibrary(self):
         if self.current_folder_path:

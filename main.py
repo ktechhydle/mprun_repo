@@ -670,7 +670,7 @@ class MPRUN(mprun.gui.base_window):
         self.libraries_dock.setWindowFlag(WINDOW_TYPE_TOOL)
         self.libraries_dock.setTitleBarWidget(QWidget())
         self.libraries_dock.setContentsMargins(0, 3, 0, 3)
-        self.libraries_dock.setWindowTitle('Libraries')
+        self.libraries_dock.setWindowTitle('Course Features')
         self.libraries_dock.setWidget(self.libraries_tab.scroll_area)
         self.libraries_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
 
@@ -722,8 +722,6 @@ class MPRUN(mprun.gui.base_window):
         self.actions['Change Stroke Color'] = self.properties_tab.stroke_color_btn
         self.actions['Change Fill Color'] = self.properties_tab.fill_color_btn
         self.actions['Change Font Color'] = self.characters_tab.font_color_btn
-        self.actions['Open Library'] = self.libraries_tab.open_library_button
-        self.actions['Reload Library'] = self.libraries_tab.reload_library_button
 
         self.properties_tab.set_properties_tab_enabled(False)
 
