@@ -1269,13 +1269,16 @@ class MPRUN(mprun.gui.base_window):
     def use_delete(self):
         items = [item for item in self.canvas.selectedItems()]
 
-        items = [item for item in items
-                 if not (isinstance(item, CustomTextItem) and isinstance(item.parentItem(),
-                                                                         LeaderLineItem) and
-                         item.parentItem().isSelected())]
+        sorted_items = []
 
-        if items:
-            command = RemoveItemCommand(self.canvas, items)
+        for item in items:
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                sorted_items.append(item.parentItem())
+            else:
+                sorted_items.append(item)
+
+        if sorted_items:
+            command = RemoveItemCommand(self.canvas, sorted_items)
             self.canvas.addCommand(command)
 
     def use_hard_delete(self):
