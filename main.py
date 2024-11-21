@@ -13,7 +13,6 @@ internal functions.
 import os
 import sys
 import time
-import webbrowser
 import mprun.gui
 from mprun.constants import *
 from mp_software_stylesheets.styles import blenderCSS
@@ -572,13 +571,13 @@ class MPRUN(mprun.gui.base_window):
         contact_developers_action = QAction('Contact Developers', self)
         contact_developers_action.setIcon(QIcon('mprun_assets/assets/logos/github_icon.png'))
         contact_developers_action.triggered.connect(lambda:
-                                                    webbrowser.open(
-                                                        'https://github.com/ktechhydle/mprun_repo/discussions/5'))
+                                                    QDesktopServices.openUrl(QUrl(
+                                                        'https://github.com/ktechhydle/mprun_repo/discussions/5')))
 
         ask_a_question_action = QAction('Ask A Question', self)
         ask_a_question_action.setIcon(QIcon('mprun_assets/assets/logos/reddit_icon.png'))
         ask_a_question_action.triggered.connect(lambda:
-                                                webbrowser.open('https://www.reddit.com/r/mp_software/'))
+                                                QDesktopServices.openUrl(QUrl('https://www.reddit.com/r/mp_software/')))
 
         check_update_action = QAction('Check for Updates', self)
         check_update_action.triggered.connect(self.check_for_updates)
@@ -615,7 +614,7 @@ class MPRUN(mprun.gui.base_window):
         help_btn = QPushButton(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '', self)
         help_btn.setToolTip(
             '<b>Help (F1)</b><br>'
-            'Open the online help in your webbrowser.<br>'
+            'Open the online help in your web browser.<br>'
         )
         help_btn.clicked.connect(self.show_help)
         help_btn.setObjectName('noneBorderedButton')
@@ -1745,7 +1744,7 @@ class MPRUN(mprun.gui.base_window):
         self.w.show()
 
     def show_help(self):
-        webbrowser.open('https://sites.google.com/view/mprun-studio/home')
+        QDesktopServices.openUrl(QUrl('https://www.youtube.com/@mprun-software'))
 
     def read_settings(self):
         with open('internal data/_settings.json', 'r') as f:
@@ -2010,7 +2009,7 @@ class MPRUN(mprun.gui.base_window):
                                                f'Would you like to download it?',
                                                QMessageBox.Yes | QMessageBox.Cancel)
             if download == QMessageBox.Yes:
-                webbrowser.open('https://github.com/ktechhydle/mprun_repo/releases')
+                QDesktopServices.openUrl(QUrl('https://github.com/ktechhydle/mprun_repo/releases'))
 
         else:
             if show_message is False:
