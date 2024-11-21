@@ -564,7 +564,7 @@ class MPRUN(mprun.gui.base_window):
         show_version_action = QAction('Version', self)
         show_version_action.triggered.connect(self.show_version)
 
-        browse_tutorials_action = QAction('Browse Tutorials', self)
+        browse_tutorials_action = QAction(QIcon('mprun_assets/assets/logos/youtube_icon.png'), 'Browse Tutorials', self)
         browse_tutorials_action.setShortcut(Qt.Key_F1)
         browse_tutorials_action.triggered.connect(self.show_help)
 
