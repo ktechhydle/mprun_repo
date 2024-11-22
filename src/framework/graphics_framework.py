@@ -39,6 +39,7 @@ class CustomGraphicsView(QGraphicsView):
         self.resizeEvent = self.parent().resizeEvent
 
         self.w = None
+        self.current_drag_item = None
 
         # Set widgets
         self.select_btn = actions[0]
@@ -393,36 +394,41 @@ y: {int(self.mapToScene(point).y())}''')
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
 
+            # Temporary item movement during drag
+            if not self.current_drag_item:
+                # Initialize the item based on the file type
+                url = event.mimeData().urls()[0]  # Assume one file per drag
+                self.current_drag_item = self.createTemporaryItem(url)
+
+                if self.current_drag_item:
+                    self.canvas.addItem(self.current_drag_item)
+
+            if self.current_drag_item:
+                # Update item position to follow cursor
+                self.current_drag_item.setPos(
+                    self.mapToScene(event.pos()) - self.current_drag_item.boundingRect().center()
+                )
+
     def dropEvent(self, event):
-        for url in event.mimeData().urls():
-            if url.toLocalFile().endswith('.svg'):
-                item = CustomSvgItem(url.toLocalFile())
-                item.store_filename(os.path.abspath(url.toLocalFile()))
-                item.setToolTip('Imported SVG')
+        if not self.current_drag_item:
+            return  # No item was created, abort
 
-            elif url.toLocalFile().endswith(('.txt', '.csv')):
-                with open(url.toLocalFile(), 'r') as f:
-                    item = CustomTextItem(f.read())
-                    item.setToolTip('Imported Text')
+        # Finalize the item's position
+        self.current_drag_item.setPos(
+            self.mapToScene(event.pos()) - self.current_drag_item.boundingRect().center()
+        )
 
-            elif url.toLocalFile().endswith('.mp'):
-                self.canvas.parentWindow.open_recent(url.toLocalFile())
-                return
+        # Add the item via AddItemCommand
+        add_command = AddItemCommand(self.canvas, self.current_drag_item)
+        self.canvas.addCommand(add_command)
 
-            else:
-                pixmap = QPixmap(url.toLocalFile())
-                item = CustomPixmapItem(pixmap)
-                item.store_filename(os.path.abspath(url.toLocalFile()))
-                item.setToolTip('Imported Bitmap')
+        self.current_drag_item = None  # Reset after drop
 
-            # Set default attributes
-            item.setPos(self.mapToScene(event.pos()) - item.boundingRect().center())
-            item.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-            item.setZValue(0)
-
-            # Add item to scene
-            add_command = AddItemCommand(self.canvas, item)
-            self.canvas.addCommand(add_command)
+    def dragLeaveEvent(self, event):
+        # Cleanup in case the drag is cancelled
+        if self.current_drag_item:
+            self.canvas.removeItem(self.current_drag_item)
+            self.current_drag_item = None
 
     def fitInView(self, *args, **kwargs):
         super().fitInView(*args, **kwargs)
@@ -437,6 +443,33 @@ y: {int(self.mapToScene(point).y())}''')
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
         self.update()
+
+    def createTemporaryItem(self, url):
+        """
+        Create a temporary item based on the file type. Return None if not supported.
+        """
+        local_file = url.toLocalFile()
+        if local_file.endswith('.svg'):
+            item = CustomSvgItem(local_file)
+            item.store_filename(os.path.abspath(local_file))
+            item.setToolTip('Imported SVG')
+        elif local_file.endswith(('.txt', '.csv')):
+            with open(local_file, 'r') as f:
+                item = CustomTextItem(f.read())
+                item.setToolTip('Imported Text')
+        elif local_file.endswith('.mp'):
+            self.canvas.parentWindow.open_recent(local_file)
+            return None
+        else:
+            pixmap = QPixmap(local_file)
+            item = CustomPixmapItem(pixmap)
+            item.store_filename(os.path.abspath(local_file))
+            item.setToolTip('Imported Bitmap')
+
+        # Set default attributes for the temporary item
+        item.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+        item.setZValue(0)
+        return item
 
     def applyZoom(self):
         # Reset the transformation and apply the stored zoom level

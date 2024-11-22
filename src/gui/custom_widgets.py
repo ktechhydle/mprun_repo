@@ -719,24 +719,7 @@ class CustomListWidget(QListWidget):
             mime_data.setUrls([QUrl.fromLocalFile(item.data(Qt.UserRole))])
             drag.setMimeData(mime_data)
 
-            # Set a drag image to the list widget item
-            pixmap = QPixmap(item.data(Qt.ItemDataRole.UserRole))
-
-            # Create a transparent version of the pixmap by adjusting its opacity
-            opacity = 0.5
-            transparent_pixmap = pixmap.copy()
-            painter = QPainter(transparent_pixmap)
-            painter.setCompositionMode(QPainter.CompositionMode_DestinationIn)
-            painter.fillRect(transparent_pixmap.rect(), QColor(0, 0, 0, int(255 * opacity)))
-            painter.end()
-
-            drag.setPixmap(transparent_pixmap)
-
-            # Center the drag pixmap at the cursor
-            hotspot = QPoint(pixmap.width() // 2, pixmap.height() // 2)
-            drag.setHotSpot(hotspot)
-
-            drag.exec_(Qt.CopyAction | Qt.MoveAction)
+            drag.exec_(Qt.DropAction.CopyAction | Qt.DropAction.MoveAction)
 
     def focusOutEvent(self, event):
         super().focusOutEvent(event)
