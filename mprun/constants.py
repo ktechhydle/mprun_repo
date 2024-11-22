@@ -15,6 +15,7 @@ WINDOW_MODAL = Qt.WindowModality.ApplicationModal
 APPLICATION_ATTRIBUTE = Qt.ApplicationAttribute
 LEFT_BUTTON = Qt.MouseButton.LeftButton
 RIGHT_BUTTON = Qt.MouseButton.RightButton
+NO_BUTTON = Qt.MouseButton.NoButton
 MIDDLE_BUTTON = Qt.MouseButton.MiddleButton
 SHIFT_MODIFIER = Qt.KeyboardModifier.ShiftModifier
 CONTROL_MODIFIER = Qt.KeyboardModifier.ControlModifier

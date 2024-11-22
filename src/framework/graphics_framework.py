@@ -498,7 +498,7 @@ y: {int(self.mapToScene(point).y())}''')
             pass
 
     def on_add_text(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.setDragMode(QGraphicsView.NoDrag)
             i = self.scene().itemAt(self.mapToScene(event.pos()), self.transform())
 
@@ -541,18 +541,18 @@ y: {int(self.mapToScene(point).y())}''')
 
     def on_pan_start(self, event):
         releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
-                                   Qt.LeftButton, Qt.NoButton, event.modifiers())
+                                   LEFT_BUTTON, NO_BUTTON, event.modifiers())
         super().mouseReleaseEvent(releaseEvent)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.disable_item_flags()
         self.isPanning = True
         fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
-                                Qt.LeftButton, event.buttons() | Qt.LeftButton, event.modifiers())
+                                LEFT_BUTTON, event.buttons() | LEFT_BUTTON, event.modifiers())
         super().mousePressEvent(fakeEvent)
 
     def on_pan_end(self, event):
         fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
-                                Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
+                                LEFT_BUTTON, event.buttons() & ~LEFT_BUTTON, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
         self.isPanning = False
@@ -595,12 +595,12 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
-        if event.button() == Qt.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.oldPositions = {i: i.pos() for i in self.selectedItems()}
 
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
-        if event.button() == Qt.LeftButton and self.oldPositions:
+        if event.button() == LEFT_BUTTON and self.oldPositions:
             newPositions = {i: i.pos() for i in self.oldPositions.keys()}
             if any(self.oldPositions[i] != newPositions[i] for i in self.oldPositions.keys()):
                 self.itemsMoved.emit(self.oldPositions, newPositions)
