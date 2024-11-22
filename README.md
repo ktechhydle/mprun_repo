@@ -8,11 +8,6 @@ of tools to help athletes draw out their competition runs.
 
 # Project Pages
 - [Website](https://sites.google.com/view/mprun/home)
-- [Documentation](https://sites.google.com/view/mprun-studio/documentation)
-- [Wikipedia](www.example.com)
-
-# Developers
-- [Build Instructions](https://sites.google.com/view/mprun-studio/documentation/developer/building-instructions)
 - [Bug Tracker](https://github.com/ktechhydle/mprun_repo/issues)
 - [Releases](https://github.com/ktechhydle/mprun_repo/releases)
 
