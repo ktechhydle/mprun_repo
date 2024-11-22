@@ -860,7 +860,8 @@ class MPRUN(mprun.gui.base_window):
         self.unhide_btn.triggered.connect(self.use_unhide_all)
 
         # Add Canvas Button
-        self.add_canvas_btn = QAction(QIcon('mprun_assets/assets/tools/add_canvas_icon.png'), 'Add Canvas Tool (A)', self)
+        self.add_canvas_btn = QAction(QIcon('mprun_assets/assets/tools/add_canvas_icon.png'), 'Add Canvas Tool (A)',
+                                      self)
         self.add_canvas_btn.setToolTip(
             '<b>Add Canvas (A)</b><br>'
             'Add canvas items to the scene by clicking and dragging.<br>'
@@ -871,7 +872,8 @@ class MPRUN(mprun.gui.base_window):
         self.add_canvas_btn.triggered.connect(self.use_add_canvas)
 
         # Insert Image Button
-        self.insert_btn = QAction(QIcon('mprun_assets/assets/tools/insert_image_icon2.png'), 'Insert Element Tool (I)', self)
+        self.insert_btn = QAction(QIcon('mprun_assets/assets/tools/insert_image_icon2.png'), 'Insert Element Tool (I)',
+                                  self)
         self.insert_btn.setToolTip(
             '<b>Insert (I)</b><br>'
             'Insert a supported file type on to the scene.<br>'
@@ -2004,12 +2006,31 @@ class MPRUN(mprun.gui.base_window):
         latest_version = get_latest_version(self)
 
         if latest_version > current_version:
-            download = QMessageBox.information(self, 'Update Available',
-                                               f'New version {latest_version} is available. '
-                                               f'Would you like to download it?',
-                                               QMessageBox.Yes | QMessageBox.Cancel)
-            if download == QMessageBox.Yes:
-                QDesktopServices.openUrl(QUrl('https://github.com/ktechhydle/mprun_repo/releases'))
+            if not show_message:
+                download = QMessageBox.information(self, 'Update Available',
+                                                   f'New version {latest_version} is available. '
+                                                   f'Would you like to download it?',
+                                                   QMessageBox.Yes | QMessageBox.Cancel)
+                if download == QMessageBox.Yes:
+                    QDesktopServices.openUrl(QUrl('https://github.com/ktechhydle/mprun_repo/releases'))
+
+            else:
+                self.tray_icon = QSystemTrayIcon(QIcon('mprun_assets/assets/logos/mprun_icon.png'))
+
+                if not self.tray_icon.isSystemTrayAvailable():
+                    return
+
+                self.tray_icon.show()
+                self.tray_icon.showMessage(
+                    'Update Available',
+                    f'New version {latest_version} is available. Click here to download it.',
+                    QSystemTrayIcon.MessageIcon.Information
+                )
+
+                self.tray_icon.messageClicked.connect(lambda:
+                                                 QDesktopServices.openUrl(
+                                                     QUrl('https://github.com/ktechhydle/mprun_repo/releases')
+                                                 ))
 
         else:
             if show_message is False:
