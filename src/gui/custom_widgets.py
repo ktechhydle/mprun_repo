@@ -652,7 +652,7 @@ class CustomListWidget(QListWidget):
         self.setIconSize(QSize(80, 80))
         self.setViewMode(QListWidget.ViewMode.IconMode)
         self.setResizeMode(QListWidget.ResizeMode.Adjust)
-        self.setSelectionMode(QListWidget.SelectionMode.ContiguousSelection)
+        self.setSelectionMode(QListWidget.SelectionMode.SingleSelection)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.itemDoubleClicked.connect(self.addItemToScene)
 
