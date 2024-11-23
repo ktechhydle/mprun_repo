@@ -129,8 +129,8 @@ y: {int(self.mapToScene(point).y())}''')
             self.disable_item_flags()
 
         elif self.text_btn.isChecked():
+            self.disable_item_flags()
             self.on_add_text(event)
-            self.disable_item_movement()
             super().mousePressEvent(event)
 
         elif self.scale_btn.isChecked():
