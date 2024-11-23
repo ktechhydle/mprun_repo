@@ -643,13 +643,14 @@ class CustomSvgItem(QGraphicsSvgItem):
         super().hoverLeaveEvent(moveEvent)
 
     def handleAt(self, point):
-        point = self.mapFromScene(point)
+        if self.isSelected():
+            point = self.mapFromScene(point)
 
-        for f, v in self.handles.items():
-            if v.contains(point):
-                return f
+            for f, v in self.handles.items():
+                if v.contains(point):
+                    return f
 
-        return None
+            return None
 
     def getTransformedCursor(self, handle):
         """Get the correct cursor for a handle based on the item's transformation."""
@@ -1084,13 +1085,14 @@ class CustomTextItem(QGraphicsTextItem):
         self.setTransform(transform)
 
     def handleAt(self, point):
-        point = self.mapFromScene(point)
+        if self.isSelected():
+            point = self.mapFromScene(point)
 
-        for f, v in self.handles.items():
-            if v.contains(point):
-                return f
+            for f, v in self.handles.items():
+                if v.contains(point):
+                    return f
 
-        return None
+            return None
 
     def getTransformedCursor(self, handle):
         """Get the correct cursor for a handle based on the item's transformation."""
