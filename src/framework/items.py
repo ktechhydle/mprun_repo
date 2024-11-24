@@ -286,7 +286,7 @@ class CustomPathItem(QGraphicsPathItem):
     def __init__(self, path):
         super().__init__(path)
 
-        path.setFillRule(Qt.WindingFill)
+        path.setFillRule(Qt.FillRule.WindingFill)
 
         self.smooth = False
 
@@ -304,8 +304,8 @@ class CustomPathItem(QGraphicsPathItem):
         item.setAlreadySmooth(self.alreadySmooth())
         item.setOpacity(self.opacity())
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Path')
 
         return item
@@ -324,8 +324,8 @@ class CustomPathItem(QGraphicsPathItem):
         item.setAlreadySmooth(self.alreadySmooth())
         item.setOpacity(self.opacity())
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Path')
 
         return item
@@ -444,7 +444,7 @@ class CustomPathItem(QGraphicsPathItem):
         simplified_vertices = self.approximate_polygon(smoothed_vertices, tolerance=tolerance)
 
         smooth_path = QPainterPath()
-        smooth_path.setFillRule(Qt.WindingFill)
+        smooth_path.setFillRule(Qt.FillRule.WindingFill)
         smooth_path.moveTo(simplified_vertices[0][0], simplified_vertices[0][1])
 
         for i in range(1, len(simplified_vertices) - 2, 3):
@@ -497,8 +497,8 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         else:
             item.store_filename(None)
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Imported Pixmap')
 
         return item
@@ -517,8 +517,8 @@ class CustomPixmapItem(QGraphicsPixmapItem):
         else:
             item.store_filename(None)
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setOpacity(self.opacity())
 
         return item
@@ -618,7 +618,7 @@ class CustomSvgItem(QGraphicsSvgItem):
         if self.isSelected():
             grip_color = QColor('#4f7fff')
             pen = QPen(QColor('#4f7fff'), 1)
-            pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+            pen.setJoinStyle(PEN_JOIN_STYLE.MiterJoin)
             painter.setPen(pen)
             painter.setBrush(grip_color)
 
@@ -768,8 +768,8 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.store_filename(svg)
             item.setOpacity(self.opacity())
 
-            item.setFlag(QGraphicsItem.ItemIsSelectable)
-            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setFlag(ITEM_SELECTABLE)
+            item.setFlag(ITEM_MOVABLE)
             item.setToolTip('Imported SVG')
 
         else:
@@ -783,8 +783,8 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setTransform(self.transform())
             item.setOpacity(self.opacity())
 
-            item.setFlag(QGraphicsItem.ItemIsSelectable)
-            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setFlag(ITEM_SELECTABLE)
+            item.setFlag(ITEM_MOVABLE)
             item.setToolTip('Imported SVG')
 
         return item
@@ -803,8 +803,8 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setOpacity(self.opacity())
             item.store_filename(svg)
 
-            item.setFlag(QGraphicsItem.ItemIsSelectable)
-            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setFlag(ITEM_SELECTABLE)
+            item.setFlag(ITEM_MOVABLE)
             item.setToolTip('Imported SVG')
 
         else:
@@ -818,8 +818,8 @@ class CustomSvgItem(QGraphicsSvgItem):
             item.setTransform(self.transform())
             item.setOpacity(self.opacity())
 
-            item.setFlag(QGraphicsItem.ItemIsSelectable)
-            item.setFlag(QGraphicsItem.ItemIsMovable)
+            item.setFlag(ITEM_SELECTABLE)
+            item.setFlag(ITEM_MOVABLE)
             item.setToolTip('Imported SVG')
 
         return item
@@ -877,7 +877,7 @@ class CustomTextItem(QGraphicsTextItem):
         self.suggestion_popup.setObjectName('searchList')
         self.suggestion_popup.setFixedWidth(250)
         self.suggestion_popup.setFixedHeight(100)
-        self.suggestion_popup.setWindowFlags(Qt.Popup)
+        self.suggestion_popup.setWindowFlags(WINDOW_TYPE_POPUP)
 
         self.trick_types = []
 
@@ -934,9 +934,9 @@ class CustomTextItem(QGraphicsTextItem):
             if self.editing:
                 super().mouseDoubleClickEvent(event)
 
-            if event.button() == Qt.LeftButton:
-                self.setTextInteractionFlags(Qt.TextEditorInteraction)
-                self.setFocus(Qt.MouseFocusReason)
+            if event.button() == LEFT_BUTTON:
+                self.setTextInteractionFlags(Qt.TextInteractionFlag.TextEditorInteraction)
+                self.setFocus(Qt.FocusReason.MouseFocusReason)
                 self.editing = True
                 event.accept()
             else:
@@ -1006,7 +1006,7 @@ class CustomTextItem(QGraphicsTextItem):
         cursor = self.textCursor()
         cursor.clearSelection()
         self.setTextCursor(cursor)
-        self.setTextInteractionFlags(Qt.NoTextInteraction)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
         self.suggestion_popup.close()
         super().focusOutEvent(event)
 
@@ -1037,7 +1037,7 @@ class CustomTextItem(QGraphicsTextItem):
         if self.isSelected():
             grip_color = QColor('#4f7fff')
             pen = QPen(QColor('#4f7fff'), 1)
-            pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+            pen.setJoinStyle(PEN_JOIN_STYLE.MiterJoin)
             painter.setPen(pen)
             painter.setBrush(grip_color)
 
@@ -1237,8 +1237,8 @@ class CustomTextItem(QGraphicsTextItem):
         item.setTransform(self.transform())
         item.setOpacity(self.opacity())
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Text')
         item.setPlainText(self.toPlainText())
 
@@ -1259,15 +1259,15 @@ class CustomTextItem(QGraphicsTextItem):
         item.setTransform(self.transform())
         item.setOpacity(self.opacity())
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Text')
         item.setPlainText(self.toPlainText())
 
         return item
 
     def selectTextAndSetCursor(self):
-        self.setTextInteractionFlags(Qt.TextEditorInteraction)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.TextEditorInteraction)
         self.setFocus()
         cursor = self.textCursor()
         cursor.movePosition(QTextCursor.End)
@@ -1285,8 +1285,8 @@ class CustomTextItem(QGraphicsTextItem):
         return cursor.selectedText()
 
     def setEditing(self):
-        self.setTextInteractionFlags(Qt.TextEditorInteraction)
-        self.setFocus(Qt.MouseFocusReason)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.TextEditorInteraction)
+        self.setFocus(Qt.FocusReason.MouseFocusReason)
         self.editing = True
 
 
@@ -1300,7 +1300,7 @@ class LeaderLineItem(QGraphicsPathItem):
         self.text_element.setToolTip("Text")
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.mouse_offset = event.pos()
         super().mousePressEvent(event)
 
@@ -1409,8 +1409,8 @@ class LeaderLineItem(QGraphicsPathItem):
         item.setTransform(self.transform())
         item.setOpacity(self.opacity())
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Leader Line')
 
         item.text_element.setFont(self.text_element.font())
@@ -1441,8 +1441,8 @@ class LeaderLineItem(QGraphicsPathItem):
         item.setTransform(self.transform())
         item.setOpacity(self.opacity())
 
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
-        item.setFlag(QGraphicsItem.ItemIsMovable)
+        item.setFlag(ITEM_SELECTABLE)
+        item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Leader Line')
 
         item.text_element.setFont(self.text_element.font())
@@ -1465,9 +1465,9 @@ class CanvasItem(QGraphicsRectItem):
         super().__init__(coords)
 
         brush = QBrush(QColor('white'))
-        pen = QPen(QColor('white'), 2, Qt.SolidLine)
+        pen = QPen(QColor('white'), 2, PEN_STYLE.SolidLine)
         pen.setWidthF(0)
-        pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+        pen.setJoinStyle(PEN_JOIN_STYLE.MiterJoin)
         self.setBrush(brush)
         self.setPen(pen)
         self.setToolTip(name)
@@ -1481,7 +1481,7 @@ class CanvasItem(QGraphicsRectItem):
         self.setZValue(-1)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.mouse_offset = event.pos()
         super().mousePressEvent(event)
 
@@ -1511,19 +1511,19 @@ class CanvasItem(QGraphicsRectItem):
 
     def setCanvasActive(self, enabled: bool):
         self.scene().setBackgroundBrush(QBrush(QColor('#737373')))
-        self.setFlag(QGraphicsItem.ItemIsMovable, enabled)
-        self.setFlag(QGraphicsItem.ItemIsSelectable, enabled)
+        self.setFlag(ITEM_MOVABLE, enabled)
+        self.setFlag(ITEM_SELECTABLE, enabled)
         self.text.setVisible(enabled)
         self.active = enabled
         if enabled:
-            self.setCursor(Qt.SizeAllCursor)
+            self.setCursor(Qt.CursorShape.SizeAllCursor)
         else:
             self.unsetCursor()
             self.scene().setBackgroundBrush(QBrush(QColor('#606060')))
             brush = QBrush(QColor('white'))
-            pen = QPen(QColor('white'), 2, Qt.SolidLine)
+            pen = QPen(QColor('white'), 2, PEN_STYLE.SolidLine)
             pen.setWidthF(0)
-            pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+            pen.setJoinStyle(PEN_JOIN_STYLE.MiterJoin)
             self.setBrush(brush)
             self.setPen(pen)
 
@@ -1531,23 +1531,23 @@ class CanvasItem(QGraphicsRectItem):
             if isinstance(item, CanvasItem):
                 pass
             else:
-                item.setFlag(QGraphicsItem.ItemIsSelectable, not enabled)
-                item.setFlag(QGraphicsItem.ItemIsMovable, not enabled)
+                item.setFlag(ITEM_SELECTABLE, not enabled)
+                item.setFlag(ITEM_MOVABLE, not enabled)
 
     def setTransparentMode(self):
         b = self.brush()
         p = self.pen()
-        b.setColor(QColor(Qt.transparent))
-        p.setColor(QColor(Qt.transparent))
+        b.setColor(QColor(TRANSPARENT))
+        p.setColor(QColor(TRANSPARENT))
 
         self.setBrush(b)
         self.setPen(p)
 
     def restore(self):
         brush = QBrush(QColor('white'))
-        pen = QPen(QColor('white'), 2, Qt.SolidLine)
+        pen = QPen(QColor('white'), 2, PEN_STYLE.SolidLine)
         pen.setWidthF(0)
-        pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+        pen.setJoinStyle(PEN_JOIN_STYLE.MiterJoin)
         self.setBrush(brush)
         self.setPen(pen)
 
@@ -1595,7 +1595,7 @@ class WaterMarkItem(QGraphicsPixmapItem):
         self.gridEnabled = False
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.mouse_offset = event.pos()
         super().mousePressEvent(event)
 

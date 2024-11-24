@@ -25,5 +25,8 @@ LEFT_TOOLBAR_AREA = Qt.ToolBarArea.LeftToolBarArea
 TOP_TOOLBAR_AREA = Qt.ToolBarArea.TopToolBarArea
 LEFT_DOCK_AREA = Qt.DockWidgetArea.LeftDockWidgetArea
 RIGHT_DOCK_AREA = Qt.DockWidgetArea.RightDockWidgetArea
+PEN_STYLE = Qt.PenStyle
+PEN_JOIN_STYLE = Qt.PenJoinStyle
+PEN_CAP_STYLE = Qt.PenCapStyle
 
 TRANSPARENT = Qt.GlobalColor.transparent
