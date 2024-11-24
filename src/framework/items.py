@@ -946,11 +946,11 @@ class CustomTextItem(QGraphicsTextItem):
             super().mouseDoubleClickEvent(event)
 
     def keyPressEvent(self, event: QKeyEvent):
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             self.clearFocus()
 
         if isinstance(self.parentItem(), LeaderLineItem):
-            if event.key() == Qt.Key_Up and self.suggestion_popup.isVisible():
+            if event.key() == Qt.Key.Key_Up and self.suggestion_popup.isVisible():
                 # Move up in the suggestion list
                 current_index = self.suggestion_popup.currentRow()
                 next_index = current_index - 1
@@ -959,7 +959,7 @@ class CustomTextItem(QGraphicsTextItem):
                 event.accept()
                 return
 
-            elif event.key() == Qt.Key_Down and self.suggestion_popup.isVisible():
+            elif event.key() == Qt.Key.Key_Down and self.suggestion_popup.isVisible():
                 # Move down in the suggestion list
                 current_index = self.suggestion_popup.currentRow()
                 next_index = current_index + 1
@@ -986,7 +986,7 @@ class CustomTextItem(QGraphicsTextItem):
             self.parentItem().updatePathEndPoint()
 
             if self.suggestion_popup.isVisible():
-                if event.key() not in (Qt.Key_Down, Qt.Key_Up):
+                if event.key() not in (Qt.Key.Key_Down, Qt.Key.Key_Up):
                     self.suggestTrickTypes(self.getCurrentWord())
 
     def focusOutEvent(self, event):
@@ -1012,7 +1012,7 @@ class CustomTextItem(QGraphicsTextItem):
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.KeyPress:
-            if event.key() == Qt.Key_Tab:
+            if event.key() == Qt.Key.Key_Tab:
                 print("Tab key pressed")
                 if self.suggestion_popup.isVisible():
                     self.completeText(self.suggestion_popup.currentItem())
