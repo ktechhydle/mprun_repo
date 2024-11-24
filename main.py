@@ -279,7 +279,7 @@ class MPRUN(mprun.gui.base_window):
         scene_menu = self.tool_menu.addMenu('Scene', parent=self)
 
         select_action = QAction(QIcon('mprun_assets/assets/ui/menu/restrict_select_off.svg'), 'Select', self)
-        select_action.setShortcut(QKeySequence(Qt.Key_Space))
+        select_action.setShortcut(QKeySequence(Qt.Key.Key_Space))
         select_action.triggered.connect(self.use_select)
 
         pan_action = QAction(QIcon('mprun_assets/assets/ui/menu/view_pan.svg'), 'Pan', self)
@@ -287,7 +287,7 @@ class MPRUN(mprun.gui.base_window):
         pan_action.triggered.connect(self.use_pan)
 
         view_in_3d_action = QAction(QIcon('mprun_assets/assets/ui/menu/file_3D.svg'), 'View In 3D', self)
-        view_in_3d_action.setShortcut(Qt.Key_F5)
+        view_in_3d_action.setShortcut(Qt.Key.Key_F5)
         view_in_3d_action.triggered.connect(self.show_3d_viewer)
 
         add_canvas_action = QAction('Add Canvas', self)
@@ -295,7 +295,7 @@ class MPRUN(mprun.gui.base_window):
         add_canvas_action.triggered.connect(self.use_add_canvas)
 
         arrange_canvases_action = QAction('Arrange Canvases', self)
-        arrange_canvases_action.setShortcut(Qt.Key_F3)
+        arrange_canvases_action.setShortcut(Qt.Key.Key_F3)
         arrange_canvases_action.triggered.connect(self.canvas.arrange)
 
         rename_canvases_action = QAction('Rename Canvases', self)
@@ -520,7 +520,7 @@ class MPRUN(mprun.gui.base_window):
     def create_view_menu(self):
         fullscreen_view_action = QAction(QIcon('mprun_assets/assets/ui/menu/fullscreen_enter.svg'),
                                          'Toggle Full Screen', self)
-        fullscreen_view_action.setShortcut(Qt.Key_F11)
+        fullscreen_view_action.setShortcut(Qt.Key.Key_F11)
         fullscreen_view_action.triggered.connect(self.show_fullscreen)
 
         reset_toolbar_sizes_action = QAction('Reset Toolbars', self)
@@ -530,7 +530,7 @@ class MPRUN(mprun.gui.base_window):
         control_toolbar_view_action = QAction('Control Toolbar', self)
         control_toolbar_view_action.setCheckable(True)
         control_toolbar_view_action.setChecked(True)
-        control_toolbar_view_action.setShortcut(Qt.Key_F12)
+        control_toolbar_view_action.setShortcut(Qt.Key.Key_F12)
         control_toolbar_view_action.triggered.connect(lambda: self.toggle_control_toolbar(control_toolbar_view_action))
 
         view_options_menu = mprun.gui.menu('Views', self)
@@ -565,7 +565,7 @@ class MPRUN(mprun.gui.base_window):
         show_version_action.triggered.connect(self.show_version)
 
         browse_tutorials_action = QAction(QIcon('mprun_assets/assets/logos/youtube_icon.png'), 'Browse Tutorials', self)
-        browse_tutorials_action.setShortcut(Qt.Key_F1)
+        browse_tutorials_action.setShortcut(Qt.Key.Key_F1)
         browse_tutorials_action.triggered.connect(self.show_help)
 
         contact_developers_action = QAction('Contact Developers', self)
@@ -583,11 +583,11 @@ class MPRUN(mprun.gui.base_window):
         check_update_action.triggered.connect(self.check_for_updates)
 
         view_settings_action = QAction('Settings', self)
-        view_settings_action.setShortcut(Qt.Key_F2)
+        view_settings_action.setShortcut(Qt.Key.Key_F2)
         view_settings_action.triggered.connect(self.show_settings)
 
         reload_ui_action = QAction('Restart User Interface', self)
-        reload_ui_action.setShortcut(Qt.Key_F4)
+        reload_ui_action.setShortcut(Qt.Key.Key_F4)
         reload_ui_action.triggered.connect(self.open_settings_data)
 
         show_tip_of_the_day_action = QAction('Show Tip Of The Day', self)
@@ -632,7 +632,7 @@ class MPRUN(mprun.gui.base_window):
         self.toolbar.setIconSize(QSize(32, 32))
         self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.toolbar.setOrientation(Qt.Orientation.Vertical)
-        self.toolbar.setAllowedAreas(Qt.LeftToolBarArea | Qt.RightToolBarArea)
+        self.toolbar.setAllowedAreas(LEFT_TOOLBAR_AREA | RIGHT_TOOLBAR_AREA)
         self.toolbar.setFloatable(True)
         self.toolbar.iconSizeChanged.connect(self.adjust_item_toolbar)
         self.toolbar.move(11, 11)
@@ -641,7 +641,7 @@ class MPRUN(mprun.gui.base_window):
         self.document_toolbar = mprun.gui.toolbar('Document')
         self.document_toolbar.setIconSize(QSize(32, 32))
         self.document_toolbar.setMovable(False)
-        self.addToolBar(Qt.ToolBarArea.TopToolBarArea, self.document_toolbar)
+        self.addToolBar(TOP_TOOLBAR_AREA, self.document_toolbar)
         self.addToolBarBreak()
 
         # Item toolbar
@@ -657,7 +657,7 @@ class MPRUN(mprun.gui.base_window):
     def create_panels(self):
         # Upper dock widget
         self.libraries_tab = LibrariesPanel(self.canvas)
-        self.libraries_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.libraries_tab.setWindowFlag(WINDOW_TYPE_ON_TOP)
         self.libraries_tab.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
         self.libraries_tab.scroll_area.setMinimumWidth(150)
         self.libraries_tab.scroll_area.setMaximumWidth(650)
@@ -668,7 +668,7 @@ class MPRUN(mprun.gui.base_window):
         self.libraries_dock.setContentsMargins(0, 3, 0, 3)
         self.libraries_dock.setWindowTitle('Course Features')
         self.libraries_dock.setWidget(self.libraries_tab.scroll_area)
-        self.libraries_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
+        self.libraries_dock.setAllowedAreas(RIGHT_DOCK_AREA | LEFT_DOCK_AREA)
 
         # Lower dock widget
         self.toolbox = mprun.gui.panel_container(self)
@@ -680,7 +680,7 @@ class MPRUN(mprun.gui.base_window):
         self.tab_view_dock.setTitleBarWidget(QWidget())
         self.tab_view_dock.setWindowTitle('Panels')
         self.tab_view_dock.setContentsMargins(0, 3, 0, 0)
-        self.tab_view_dock.setAllowedAreas(Qt.RightDockWidgetArea | Qt.LeftDockWidgetArea)
+        self.tab_view_dock.setAllowedAreas(RIGHT_DOCK_AREA | LEFT_DOCK_AREA)
         self.tab_view_dock.setWidget(self.toolbox.scroll_area)
 
         # Properties Tab
@@ -689,13 +689,13 @@ class MPRUN(mprun.gui.base_window):
 
         # Characters Tab
         self.characters_tab = CharactersPanel(self.canvas, self)
-        self.characters_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.characters_tab.setWindowFlag(WINDOW_TYPE_ON_TOP)
         self.characters_tab.setFixedHeight(185)
         self.characters_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Vectorize Tab
         self.image_trace_tab = ImageTracingPanel(self.canvas, self)
-        self.image_trace_tab.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.image_trace_tab.setWindowFlag(WINDOW_TYPE_ON_TOP)
         self.image_trace_tab.setFixedHeight(375)
         self.image_trace_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
@@ -1203,7 +1203,7 @@ class MPRUN(mprun.gui.base_window):
                     color_attr.set(color.name())
                 else:
                     btn.setTransparent(True)
-                    color_attr.set(Qt.transparent)
+                    color_attr.set(TRANSPARENT)
 
             for item in self.canvas.selectedItems():
                 if isinstance(item, (CustomPathItem, LeaderLineItem)):
@@ -1776,7 +1776,7 @@ class MPRUN(mprun.gui.base_window):
 
     def apply_view_settings(self, user_data):
         self.view_as(user_data['saved_view'])
-        dock_position = Qt.RightDockWidgetArea if user_data['toolbox_pos'] == 1 else Qt.LeftDockWidgetArea
+        dock_position = RIGHT_DOCK_AREA if user_data['toolbox_pos'] == 1 else LEFT_DOCK_AREA
         self.addDockWidget(dock_position, self.tab_view_dock)
 
     def apply_toolbar_settings(self, user_data):
@@ -1954,12 +1954,12 @@ class MPRUN(mprun.gui.base_window):
         return self.cur_view
 
     def current_toolbox_pos(self):
-        return 1 if self.dockWidgetArea(self.tab_view_dock) == Qt.RightDockWidgetArea else 2
+        return 1 if self.dockWidgetArea(self.tab_view_dock) == RIGHT_DOCK_AREA else 2
 
     def unhide(self) -> None:
         self.tab_view_dock.setHidden(False)
         self.libraries_dock.setHidden(False)
-        self.addDockWidget(Qt.RightDockWidgetArea, self.tab_view_dock)
+        self.addDockWidget(RIGHT_DOCK_AREA, self.tab_view_dock)
         self.reset_toolbars()
 
         self.menuBar().setStyleSheet('font-size: 16px;')
@@ -2044,7 +2044,7 @@ def main() -> None:
 
     splash = QSplashScreen(QIcon(random.choice([os.path.join('mprun_assets/assets/splash', f) for f in
                                                 os.listdir('mprun_assets/assets/splash')
-                                                ])).pixmap(QSize(7000, 600)), Qt.WindowStaysOnTopHint)
+                                                ])).pixmap(QSize(7000, 600)), WINDOW_TYPE_ON_TOP)
     splash.show()
 
     app.processEvents()
