@@ -74,11 +74,6 @@ class horizontal_layout(base_widget):
         self.setLayout(self._layout)
 
 
-class searchable(CustomSearchBox):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
 class standard_viewer(CustomViewWidget):
     def __init__(self):
         super().__init__()

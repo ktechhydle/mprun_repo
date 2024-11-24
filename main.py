@@ -609,8 +609,6 @@ class MPRUN(mprun.gui.base_window):
         self.help_menu.addAction(show_tip_of_the_day_action)
 
     def create_corner_widget(self):
-        find_action_searchbox = mprun.gui.searchable(self.actions, self)
-
         help_btn = QPushButton(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '', self)
         help_btn.setToolTip(
             '<b>Help (F1)</b><br>'
@@ -623,7 +621,6 @@ class MPRUN(mprun.gui.base_window):
         widget.setObjectName('containerWidget')
         widget.setLayout(QHBoxLayout())
         widget.layout().setContentsMargins(0, 2, 0, 0)
-        widget.layout().addWidget(find_action_searchbox)
         widget.layout().addWidget(help_btn)
         self.menu_bar.setCornerWidget(widget)
 
