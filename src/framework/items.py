@@ -1299,6 +1299,12 @@ class LeaderLineItem(QGraphicsPathItem):
         self.text_element.setParentItem(self)
         self.text_element.setToolTip("Text")
 
+    def shape(self):
+        path = super().shape()
+        path.addRect(self.boundingRect())
+
+        return path
+
     def mousePressEvent(self, event):
         if event.button() == LEFT_BUTTON:
             self.mouse_offset = event.pos()
