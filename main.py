@@ -2035,9 +2035,9 @@ class MPRUN(mprun.gui.base_window):
 
 
 def main() -> None:
-    QCoreApplication.setAttribute(APPLICATION_ATTRIBUTE.AA_EnableHighDpiScaling)
-    QCoreApplication.setAttribute(APPLICATION_ATTRIBUTE.AA_UseHighDpiPixmaps)
-    QCoreApplication.setAttribute(APPLICATION_ATTRIBUTE.AA_DontUseNativeMenuBar)
+    QApplication.setAttribute(APPLICATION_ATTRIBUTE.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(APPLICATION_ATTRIBUTE.AA_UseHighDpiPixmaps)
+    QApplication.setAttribute(APPLICATION_ATTRIBUTE.AA_DontUseNativeMenuBar)
 
     app = QApplication(sys.argv + ['-platform', 'windows:darkmode=1'] if sys.platform != 'darwin' else [])
     app.setStyle(mprun.gui.application_style())
