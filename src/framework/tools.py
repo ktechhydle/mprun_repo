@@ -212,6 +212,8 @@ class LineAndLabelTool(Tool):
         self.pathg_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
         self.pathg_item.text_element.setFont(self.scene.parentWindow.characters_tab.getFont())
         self.pathg_item.text_element.setDefaultTextColor(self.scene.parentWindow.characters_tab.getFontColor())
+        self.pathg_item.text_element.setTextAlignment(self.scene.parentWindow.characters_tab.getFontAlignment())
+        self.pathg_item.text_element.setTextWidth(self.scene.parentWindow.characters_tab.getTextWidth())
         self.pathg_item.text_element.setPos(
             self.start_point - QPointF(0, self.pathg_item.text_element.boundingRect().height()))
         self.scene.addItem(self.pathg_item)

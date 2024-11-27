@@ -92,8 +92,8 @@ class CustomGraphicsView(QGraphicsView):
                 pass
 
             else:
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                item.setFlag(ITEM_MOVABLE, False)
+                item.setFlag(ITEM_SELECTABLE, False)
 
     def disable_item_movement(self):
         for item in self.canvas.items():
@@ -104,7 +104,7 @@ class CustomGraphicsView(QGraphicsView):
                 pass
 
             else:
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+                item.setFlag(ITEM_MOVABLE, False)
 
     def show_tooltip(self, event):
         point = event.pos()
@@ -160,7 +160,7 @@ y: {int(self.mapToScene(point).y())}''')
         else:
             super().mousePressEvent(event)
 
-        if event.button() == Qt.MiddleButton:
+        if event.button() == MIDDLE_BUTTON:
             self.on_pan_start(event)
 
         self.on_add_canvas_trigger()
@@ -261,7 +261,7 @@ y: {int(self.mapToScene(point).y())}''')
         else:
             super().mouseReleaseEvent(event)
 
-        if event.button() == Qt.MiddleButton:
+        if event.button() == MIDDLE_BUTTON:
             self.on_pan_end(event)
             if self.select_btn.isChecked():
                 self.parent().use_select()
@@ -467,7 +467,7 @@ y: {int(self.mapToScene(point).y())}''')
             item.setToolTip('Imported Bitmap')
 
         # Set default attributes for the temporary item
-        item.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+        item.setFlags(ITEM_SELECTABLE | ITEM_MOVABLE)
         item.setZValue(0)
         return item
 
@@ -518,6 +518,8 @@ y: {int(self.mapToScene(point).y())}''')
                 self.text = CustomTextItem('Lorem Ipsum')
                 self.text.setFont(self.parent().characters_tab.getFont())
                 self.text.setDefaultTextColor(self.parent().characters_tab.getFontColor())
+                self.text.setTextAlignment(self.parent().characters_tab.getFontAlignment())
+                self.text.setTextWidth(self.parent().characters_tab.getTextWidth())
 
                 add_command = AddItemCommand(self.canvas, self.text)
                 self.canvas.addCommand(add_command)
@@ -563,7 +565,7 @@ class CustomGraphicsScene(QGraphicsScene):
 
     def __init__(self, undoStack):
         super().__init__()
-        self.setItemIndexMethod(QGraphicsScene.BspTreeIndex)
+        self.setItemIndexMethod(QGraphicsScene.ItemIndexMethod.BspTreeIndex)
 
         self.file_name = None
         self.mpversion = open('internal data/_version.txt', 'r').read()

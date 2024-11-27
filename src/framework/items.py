@@ -852,7 +852,7 @@ class CustomTextItem(QGraphicsTextItem):
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
         self.setToolTip('Text')
-        self.setFlag(QGraphicsItem.ItemSendsGeometryChanges)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges)
         self.setAcceptHoverEvents(True)
         self.installEventFilter(self)
 
@@ -860,6 +860,7 @@ class CustomTextItem(QGraphicsTextItem):
         self.locked = False
         self.editing = False
         self.old_text = self.toPlainText()
+        self.text_alignment = None
 
         # Item resizing
         self.handles = {}
@@ -867,8 +868,6 @@ class CustomTextItem(QGraphicsTextItem):
         self.mousePressPos = None
         self.mousePressRect = None
         self.ogTransform = None
-        self._rotation = 0
-        self._scale = 1.0
         self.updateHandlesPos()
 
         # Create the suggestion popup
@@ -1061,28 +1060,15 @@ class CustomTextItem(QGraphicsTextItem):
         self.unsetCursor()
         super().hoverLeaveEvent(moveEvent)
 
-    def setRotation(self, angle):
-        self._rotation = angle
-        self.updateTransform()
+    def setTextAlignment(self, alignment: Qt.AlignmentFlag):
+        option = self.document().defaultTextOption()
+        option.setAlignment(alignment)
+        self.document().setDefaultTextOption(option)
 
-    def setScale(self, scale):
-        self._scale = scale
-        self.updateTransform()
+        self.text_alignment = alignment
 
-    def rotation(self):
-        return self._rotation
-
-    def scale(self):
-        return self._scale
-
-    def updateTransform(self):
-        # Compute the custom transformation
-        transform = self.transform()
-        transform.translate(self.boundingRect().center().x(), self.boundingRect().center().y())
-        transform.rotate(self._rotation)
-        transform.scale(self._scale, self._scale)
-        transform.translate(-self.boundingRect().center().x(), -self.boundingRect().center().y())
-        self.setTransform(transform)
+    def textAlignment(self):
+        return self.text_alignment
 
     def handleAt(self, point):
         if self.isSelected():
@@ -1241,6 +1227,8 @@ class CustomTextItem(QGraphicsTextItem):
         item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Text')
         item.setPlainText(self.toPlainText())
+        item.setTextAlignment(self.textAlignment())
+        item.setTextWidth(self.textWidth())
 
         return item
 
@@ -1263,6 +1251,8 @@ class CustomTextItem(QGraphicsTextItem):
         item.setFlag(ITEM_MOVABLE)
         item.setToolTip('Text')
         item.setPlainText(self.toPlainText())
+        item.setTextAlignment(self.textAlignment())
+        item.setTextWidth(self.textWidth())
 
         return item
 

@@ -1144,6 +1144,8 @@ class MPRUN(mprun.gui.base_window):
         self.paper_text.setPos(2, 2)
         self.paper_text.setDefaultTextColor(self.characters_tab.getFontColor())
         self.paper_text.setFont(self.characters_tab.getFont())
+        self.paper_text.setTextAlignment(self.characters_tab.getFontAlignment())
+        self.paper_text.setTextWidth(self.characters_tab.getTextWidth())
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
         self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.paper_text.setZValue(0)
@@ -1189,7 +1191,8 @@ class MPRUN(mprun.gui.base_window):
             self.characters_tab.font_choice_combo, self.characters_tab.font_color_btn,
             self.characters_tab.font_size_spin, self.characters_tab.font_letter_spacing_spin,
             self.characters_tab.bold_btn, self.characters_tab.italic_btn,
-            self.characters_tab.underline_btn
+            self.characters_tab.underline_btn, self.characters_tab.text_width_spin, self.characters_tab.alignleft_btn,
+            self.characters_tab.alignmiddle_btn, self.characters_tab.alignright_btn
         ]
 
         # Block signals for all relevant widgets
@@ -1246,7 +1249,7 @@ class MPRUN(mprun.gui.base_window):
 
                 elif isinstance(item, CustomTextItem):
                     # Text item specific updates
-                    font, color = item.font(), item.defaultTextColor()
+                    font, color, text_width, text_align = item.font(), item.defaultTextColor(), item.textWidth(), item.textAlignment()
 
                     set_color(self.characters_tab.font_color_btn, color, self.characters_tab.font_color)
 
@@ -1256,6 +1259,11 @@ class MPRUN(mprun.gui.base_window):
                     self.characters_tab.bold_btn.setChecked(font.bold())
                     self.characters_tab.italic_btn.setChecked(font.italic())
                     self.characters_tab.underline_btn.setChecked(font.underline())
+                    self.characters_tab.text_width_spin.setValue(int(text_width))
+
+                    for button in self.characters_tab.alignment_group.buttons():
+                        if button.stored_align == text_align:
+                            button.setChecked(True)
 
         except Exception as e:
             print(e)

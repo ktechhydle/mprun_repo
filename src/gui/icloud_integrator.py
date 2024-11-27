@@ -34,7 +34,7 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
 
         password_label = QLabel('<b>Password:</b>')
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
         self.save_for_later_check_btn = QCheckBox('Save this info for later')
         self.save_for_later_check_btn.setChecked(True)
@@ -44,8 +44,8 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
 
         self.button_group = QDialogButtonBox(self)
         self.button_group.setCenterButtons(True)
-        self.button_group.addButton('Share', QDialogButtonBox.AcceptRole)
-        self.button_group.addButton('Cancel', QDialogButtonBox.RejectRole)
+        self.button_group.addButton('Share', QDialogButtonBox.ButtonRole.AcceptRole)
+        self.button_group.addButton('Cancel', QDialogButtonBox.ButtonRole.RejectRole)
         self.button_group.accepted.connect(self.finish)
         self.button_group.rejected.connect(self.close)
 
@@ -152,7 +152,7 @@ class iCloudIntegratorWin(mprun.gui.base_dialog):
     def export_as_png(self, filename, selected_item):
         # Create a QImage with the size of the selected item (QGraphicsRectItem)
         rect = selected_item.sceneBoundingRect()
-        image = QImage(rect.size().toSize(), QImage.Format_ARGB32)
+        image = QImage(rect.size().toSize(), QImage.Format.Format_ARGB32)
 
         # Render the QGraphicsRectItem onto the image
         painter = QPainter(image)

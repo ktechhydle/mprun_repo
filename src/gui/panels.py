@@ -604,10 +604,50 @@ class CharactersPanel(mprun.gui.base_widget):
         self.font_letter_spacing_spin.setFixedWidth(105)
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
+
+        self.text_width_spin = QSpinBox(self)
+        self.text_width_spin.setValue(200)
+        self.text_width_spin.setRange(1, 10000)
+        self.text_width_spin.setFixedWidth(90)
+        self.text_width_spin.setSuffix(' pt')
+        self.text_width_spin.setToolTip('Change the text width')
         self.font_color_btn = mprun.gui.color_picking_button(self)
         self.font_color_btn.setFixedWidth(81)
         self.font_color_btn.setToolTip('Change the font color')
         self.font_color_btn.clicked.connect(self.fontColorChooser)
+
+        self.alignleft_btn = QPushButton('', self.parent)
+        self.alignleft_btn.setToolTip('Align the text to the left')
+        self.alignleft_btn.setCheckable(True)
+        self.alignleft_btn.setChecked(True)
+        self.alignleft_btn.stored_align = Qt.AlignmentFlag.AlignLeft
+
+        self.alignmiddle_btn = QPushButton('', self.parent)
+        self.alignmiddle_btn.setToolTip('Align the text to the middle')
+        self.alignmiddle_btn.setCheckable(True)
+        self.alignmiddle_btn.stored_align = Qt.AlignmentFlag.AlignCenter
+
+        self.alignright_btn = QPushButton('', self.parent)
+        self.alignright_btn.setToolTip('Align the text to the right')
+        self.alignright_btn.setCheckable(True)
+        self.alignright_btn.stored_align = Qt.AlignmentFlag.AlignRight
+
+
+        self.alignleft_btn.clicked.connect(self.updateItemFont)
+        self.alignmiddle_btn.clicked.connect(self.updateItemFont)
+        self.alignright_btn.clicked.connect(self.updateItemFont)
+
+        self.alignment_group = QButtonGroup(self.parent)
+        self.alignment_group.addButton(self.alignleft_btn)
+        self.alignment_group.addButton(self.alignmiddle_btn)
+        self.alignment_group.addButton(self.alignright_btn)
+
+        font_alignment_layout = mprun.gui.horizontal_layout()
+        font_alignment_layout.layout().setContentsMargins(0, 0, 0, 0)
+        font_alignment_layout.layout().addWidget(self.alignleft_btn)
+        font_alignment_layout.layout().addWidget(self.alignmiddle_btn)
+        font_alignment_layout.layout().addWidget(self.alignright_btn)
+
         self.bold_btn = QPushButton('B', self.parent)
         self.bold_btn.setToolTip('Set the font bold')
         self.bold_btn.setStyleSheet('font-weight: bold; font-size: 15px;')
@@ -641,17 +681,20 @@ class CharactersPanel(mprun.gui.base_widget):
 
         font_color_hlayout = mprun.gui.horizontal_layout()
         font_color_hlayout.layout().setContentsMargins(0, 0, 0, 0)
+        font_color_hlayout.layout().addWidget(self.text_width_spin)
         font_color_hlayout.layout().addStretch()
         font_color_hlayout.layout().addWidget(QLabel('Color:'))
         font_color_hlayout.layout().addWidget(self.font_color_btn)
 
         self.font_size_spin.valueChanged.connect(self.updateItemFont)
         self.font_letter_spacing_spin.valueChanged.connect(self.updateItemFont)
+        self.text_width_spin.valueChanged.connect(self.updateItemFont)
         self.font_choice_combo.currentFontChanged.connect(self.updateItemFont)
         self.font_choice_combo.currentTextChanged.connect(self.updateItemFont)
 
         self.characters_tab_layout.addWidget(self.font_choice_combo)
         self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
+        self.characters_tab_layout.addWidget(font_alignment_layout)
         self.characters_tab_layout.addWidget(font_style_hlayout)
         self.characters_tab_layout.addWidget(font_color_hlayout)
 
@@ -676,30 +719,31 @@ class CharactersPanel(mprun.gui.base_widget):
         # Update font
         font = self.getFont()
         new_color = QColor(self.font_color.get())
+        alignment_option = self.getFontAlignment()
+        text_width = self.getTextWidth()
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
             items = []
             old_fonts = []
             old_colors = []
+            old_alignment_options = []
+            old_text_widths = []
             for item in selected_items:
                 if isinstance(item, CustomTextItem):
                     items.append(item)
                     old_fonts.append(item.font())
                     old_colors.append(item.defaultTextColor())
+                    old_alignment_options.append(item.textAlignment())
+                    old_text_widths.append(item.textWidth())
 
             if items:
-                try:
-                    command = FontChangeCommand(items, old_fonts, font, old_colors, new_color)
-                    self.canvas.addCommand(command)
-                    for item in items:
-                        if isinstance(item.parentItem(), LeaderLineItem):
-                            item.parentItem().updatePathEndPoint()
-                except Exception as e:
-                    # Handle the exception (e.g., logging)
-                    print(f'Exception: {e}')
-
-        self.parent.canvas_view.update()
+                command = FontChangeCommand(items, old_fonts, font, old_colors, new_color,
+                                            old_alignment_options, alignment_option, old_text_widths, text_width)
+                self.canvas.addCommand(command)
+                for item in items:
+                    if isinstance(item.parentItem(), LeaderLineItem):
+                        item.parentItem().updatePathEndPoint()
 
     def getFont(self):
         font = QFont()
@@ -713,6 +757,14 @@ class CharactersPanel(mprun.gui.base_widget):
 
     def getFontColor(self):
         return QColor(self.font_color.get())
+
+    def getFontAlignment(self):
+        for button in self.alignment_group.buttons():
+            if button.isChecked():
+                return button.stored_align
+
+    def getTextWidth(self):
+        return self.text_width_spin.value()
 
     def default(self):
         self.font_color_btn.setButtonColor(self.font_color.get())
