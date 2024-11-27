@@ -617,21 +617,23 @@ class CharactersPanel(mprun.gui.base_widget):
         self.font_color_btn.clicked.connect(self.fontColorChooser)
 
         self.alignleft_btn = QPushButton('', self.parent)
+        self.alignleft_btn.setIcon(QIcon('mprun_assets/assets/ui/panels/align_text_left.svg'))
         self.alignleft_btn.setToolTip('Align the text to the left')
         self.alignleft_btn.setCheckable(True)
         self.alignleft_btn.setChecked(True)
         self.alignleft_btn.stored_align = Qt.AlignmentFlag.AlignLeft
 
         self.alignmiddle_btn = QPushButton('', self.parent)
+        self.alignmiddle_btn.setIcon(QIcon('mprun_assets/assets/ui/panels/align_text_middle.svg'))
         self.alignmiddle_btn.setToolTip('Align the text to the middle')
         self.alignmiddle_btn.setCheckable(True)
         self.alignmiddle_btn.stored_align = Qt.AlignmentFlag.AlignCenter
 
         self.alignright_btn = QPushButton('', self.parent)
+        self.alignright_btn.setIcon(QIcon('mprun_assets/assets/ui/panels/align_text_right.svg'))
         self.alignright_btn.setToolTip('Align the text to the right')
         self.alignright_btn.setCheckable(True)
         self.alignright_btn.stored_align = Qt.AlignmentFlag.AlignRight
-
 
         self.alignleft_btn.clicked.connect(self.updateItemFont)
         self.alignmiddle_btn.clicked.connect(self.updateItemFont)
