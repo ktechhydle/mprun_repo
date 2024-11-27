@@ -45,8 +45,8 @@ class DrawingTool(Tool):
         path_item.setPen(self.scene.parentWindow.properties_tab.getPen())
         path_item.setBrush(self.scene.parentWindow.properties_tab.getBrush())
         path_item.setZValue(1)
-        path_item.setFlag(QGraphicsItem.ItemIsSelectable)
-        path_item.setFlag(QGraphicsItem.ItemIsMovable)
+        path_item.setFlag(ITEM_SELECTABLE)
+        path_item.setFlag(ITEM_MOVABLE)
         self.scene.addItem(path_item)
 
     def removeTemporaryPath(self):
@@ -96,7 +96,7 @@ class PathDrawerTool(Tool):
             self.path_item.setZValue(1)
 
             self.scene.addItem(self.path_item)
-            self.view.setDragMode(QGraphicsView.NoDrag)
+            self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
 
     def mouseMove(self, event):
         if event.buttons() == LEFT_BUTTON and self.path_item:
@@ -128,7 +128,7 @@ class PenDrawerTool(DrawingTool):
     def mousePress(self, event):
         if event.button() == LEFT_BUTTON:
             self.createNewPath(event)
-            self.view.setDragMode(QGraphicsView.NoDrag)
+            self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
 
     def mouseMove(self, event):
         if event.buttons() == LEFT_BUTTON and self.path:
@@ -182,7 +182,7 @@ class LineAndLabelTool(Tool):
             self.leader_line = QPainterPath()
             self.leader_line.moveTo(self.start_point)
 
-            self.view.setDragMode(QGraphicsView.NoDrag)
+            self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
             self.pathg_item = LeaderLineItem(self.leader_line, 'Lorem Ipsum')
             self.addLabelToScene()
 
@@ -223,8 +223,8 @@ class LineAndLabelTool(Tool):
         if not self.leader_line.isEmpty():
             command = AddItemCommand(self.scene, self.pathg_item)
             self.scene.addCommand(command)
-            self.pathg_item.setFlag(QGraphicsItem.ItemIsSelectable)
-            self.pathg_item.setFlag(QGraphicsItem.ItemIsMovable)
+            self.pathg_item.setFlag(ITEM_SELECTABLE)
+            self.pathg_item.setFlag(ITEM_MOVABLE)
             self.pathg_item.setToolTip('Leader Line')
         else:
             self.scene.removeItem(self.pathg_item)
@@ -253,7 +253,7 @@ class MouseScalingTool(Tool):
             self.view.show_tooltip(event)
 
     def mousePress(self, event):
-        self.view.setDragMode(QGraphicsView.NoDrag)
+        self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
         pos = self.view.mapToScene(event.pos())
         item = self.scene.itemAt(pos.toPoint(), self.view.transform())
         if item and not isinstance(item, CanvasItem):
@@ -331,7 +331,7 @@ class MouseRotatingTool(Tool):
             self.view.show_tooltip(event)
 
     def mousePress(self, event):
-        self.view.setDragMode(QGraphicsView.NoDrag)
+        self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
         pos = self.view.mapToScene(event.pos())
         item = self.scene.itemAt(pos.toPoint(), self.view.transform())
         if item and not isinstance(item, CanvasItem):
@@ -560,7 +560,7 @@ height: {int(self.scene_item.rect().height())}''')
             item_under_mouse = self.view.itemAt(event.pos())
 
             if item_under_mouse is None:  # No item under mouse, create new CanvasItem
-                self.view.setDragMode(QGraphicsView.NoDrag)
+                self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
 
                 self.clicked_canvas_point = self.view.mapToScene(event.pos())
                 self.scene_item = CanvasItem(QRectF(0, 0, 1, 1), f'Canvas {self.view.scene().canvas_count}')

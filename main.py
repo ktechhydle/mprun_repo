@@ -1146,8 +1146,8 @@ class MPRUN(mprun.gui.base_window):
         self.paper_text.setFont(self.characters_tab.getFont())
         self.paper_text.setTextAlignment(self.characters_tab.getFontAlignment())
         self.paper_text.setTextWidth(self.characters_tab.getTextWidth())
-        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable)
-        self.paper_text.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
+        self.paper_text.setFlag(ITEM_SELECTABLE)
+        self.paper_text.setFlag(ITEM_MOVABLE)
         self.paper_text.setZValue(0)
         self.canvas.addItem(self.paper_text)
 
@@ -1432,8 +1432,8 @@ class MPRUN(mprun.gui.base_window):
                         self.canvas.removeItem(item)
 
             else:
-                item.setFlag(QGraphicsItem.ItemIsSelectable, False)
-                item.setFlag(QGraphicsItem.ItemIsMovable, False)
+                item.setFlag(ITEM_SELECTABLE, False)
+                item.setFlag(ITEM_MOVABLE, False)
 
     def use_exit_add_canvas(self):
         # Deactivate the add canvas tool
@@ -1692,8 +1692,8 @@ class MPRUN(mprun.gui.base_window):
         self.canvas.importManager.importFile()
 
     def create_item_attributes(self, item):
-        item.setFlag(QGraphicsItem.ItemIsMovable)
-        item.setFlag(QGraphicsItem.ItemIsSelectable)
+        item.setFlag(ITEM_MOVABLE)
+        item.setFlag(ITEM_SELECTABLE)
 
         item.setZValue(0)
 

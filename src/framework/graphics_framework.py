@@ -496,7 +496,7 @@ y: {int(self.mapToScene(point).y())}''')
 
     def on_add_text(self, event):
         if event.button() == LEFT_BUTTON:
-            self.setDragMode(QGraphicsView.NoDrag)
+            self.setDragMode(QGraphicsView.DragMode.NoDrag)
             i = self.scene().itemAt(self.mapToScene(event.pos()), self.transform())
 
             if i and isinstance(i, CustomTextItem):
@@ -553,7 +553,7 @@ y: {int(self.mapToScene(point).y())}''')
         fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
                                 LEFT_BUTTON, event.buttons() & ~LEFT_BUTTON, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
-        self.setDragMode(QGraphicsView.NoDrag)
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
         self.isPanning = False
 
 
