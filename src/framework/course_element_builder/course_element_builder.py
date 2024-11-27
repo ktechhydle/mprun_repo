@@ -390,45 +390,46 @@ class CourseElementBuilderPanel(mprun.gui.base_widget):
             self.scene.addCommand(command)
 
     def sendToScene(self):
-        self.scene.setBackgroundBrush(QColor(Qt.GlobalColor.transparent))
-        self.scene.clearSelection()
+        if self.scene.items():
+            self.scene.setBackgroundBrush(QColor(Qt.GlobalColor.transparent))
+            self.scene.clearSelection()
 
-        file_path = 'internal data/output.svg'
-        rect = self.scene.itemsBoundingRect()
+            file_path = 'internal data/output.svg'
+            rect = self.scene.itemsBoundingRect()
 
-        # Export as SVG
-        svg_generator = QSvgGenerator()
-        svg_generator.setFileName(file_path)
-        svg_generator.setSize(rect.size().toSize())
-        svg_generator.setViewBox(rect)
+            # Export as SVG
+            svg_generator = QSvgGenerator()
+            svg_generator.setFileName(file_path)
+            svg_generator.setSize(rect.size().toSize())
+            svg_generator.setViewBox(rect)
 
-        # Create a QPainter to paint onto the QSvgGenerator
-        painter = QPainter()
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
-        painter.begin(svg_generator)
+            # Create a QPainter to paint onto the QSvgGenerator
+            painter = QPainter()
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            painter.setRenderHint(QPainter.RenderHint.TextAntialiasing)
+            painter.begin(svg_generator)
 
-        # Render the scene onto the QPainter
-        self.scene.render(painter, target=rect, source=rect)
+            # Render the scene onto the QPainter
+            self.scene.render(painter, target=rect, source=rect)
 
-        # End painting
-        painter.end()
+            # End painting
+            painter.end()
 
-        self.scene.setBackgroundBrush(QBrush(QColor('#606060')))
+            self.scene.setBackgroundBrush(QBrush(QColor('#606060')))
 
-        item = CustomSvgItem()
-        item.setToolTip('Imported SVG')
-        item.setPos(0, 0)
-        item.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
-        item.setZValue(0)
+            item = CustomSvgItem()
+            item.setToolTip('Imported SVG')
+            item.setPos(0, 0)
+            item.setFlags(QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemIsMovable)
+            item.setZValue(0)
 
-        with open(os.path.abspath(file_path), 'r', encoding='utf-8') as f:
-            data = f.read()
-            item.loadFromData(data)
+            with open(os.path.abspath(file_path), 'r', encoding='utf-8') as f:
+                data = f.read()
+                item.loadFromData(data)
 
-        # Add item to scene
-        add_command = AddItemCommand(self.parent.parentScene, item)
-        self.parent.parentScene.addCommand(add_command)
+            # Add item to scene
+            add_command = AddItemCommand(self.parent.parentScene, item)
+            self.parent.parentScene.addCommand(add_command)
 
     def default(self):
         self.stroke_color_btn.setButtonColor('#000000')
