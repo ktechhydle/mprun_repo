@@ -690,7 +690,7 @@ class MPRUN(mprun.gui.base_window):
         # Characters Tab
         self.characters_tab = CharactersPanel(self.canvas, self)
         self.characters_tab.setWindowFlag(WINDOW_TYPE_ON_TOP)
-        self.characters_tab.setFixedHeight(185)
+        self.characters_tab.setFixedHeight(215)
         self.characters_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Vectorize Tab

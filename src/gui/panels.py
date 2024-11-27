@@ -606,11 +606,11 @@ class CharactersPanel(mprun.gui.base_widget):
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
 
         self.text_width_spin = QSpinBox(self)
-        self.text_width_spin.setValue(200)
         self.text_width_spin.setRange(1, 10000)
         self.text_width_spin.setFixedWidth(90)
         self.text_width_spin.setSuffix(' pt')
         self.text_width_spin.setToolTip('Change the text width')
+        self.text_width_spin.setValue(135)
         self.font_color_btn = mprun.gui.color_picking_button(self)
         self.font_color_btn.setFixedWidth(81)
         self.font_color_btn.setToolTip('Change the font color')
@@ -696,6 +696,7 @@ class CharactersPanel(mprun.gui.base_widget):
         self.characters_tab_layout.addWidget(font_size_and_spacing_hlayout)
         self.characters_tab_layout.addWidget(font_alignment_layout)
         self.characters_tab_layout.addWidget(font_style_hlayout)
+        self.characters_tab_layout.addSpacing(20)
         self.characters_tab_layout.addWidget(font_color_hlayout)
 
     def fontColorChooser(self):
