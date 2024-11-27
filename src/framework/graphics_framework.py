@@ -78,7 +78,7 @@ class CustomGraphicsView(QGraphicsView):
         self.isPanning = False
 
     def eventFilter(self, obj, event):
-        if event.type() == QEvent.ContextMenu:
+        if event.type() == QEvent.Type.ContextMenu:
             self.contextMenuEvent(event)  # Check if this is triggered instead
             return True  # This prevents contextMenuEvent from being called
         return super().eventFilter(obj, event)
@@ -539,7 +539,7 @@ y: {int(self.mapToScene(point).y())}''')
                     item.setCanvasActive(False)
 
     def on_pan_start(self, event):
-        releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
+        releaseEvent = QMouseEvent(QEvent.Type.MouseButtonRelease, event.localPos(), event.screenPos(),
                                    LEFT_BUTTON, NO_BUTTON, event.modifiers())
         super().mouseReleaseEvent(releaseEvent)
         self.setDragMode(QGraphicsView.ScrollHandDrag)

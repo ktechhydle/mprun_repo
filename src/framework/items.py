@@ -952,7 +952,7 @@ class CustomTextItem(QGraphicsTextItem):
         super().focusOutEvent(event)
 
     def eventFilter(self, obj, event):
-        if event.type() == QEvent.KeyPress:
+        if event.type() == QEvent.Type.KeyPress:
             if event.key() == Qt.Key.Key_Tab:
                 print("Tab key pressed")
                 if self.suggestion_popup.isVisible():
@@ -1465,7 +1465,7 @@ class CanvasTextItem(QGraphicsTextItem):
         self.setPos(parent.boundingRect().x(), parent.boundingRect().y())
         self.setParentItem(parent)
         self.setPlainText(text)
-        self.setFlag(QGraphicsItem.ItemIgnoresTransformations)
+        self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIgnoresTransformations)
         self.setZValue(10000)
 
         font = QFont()

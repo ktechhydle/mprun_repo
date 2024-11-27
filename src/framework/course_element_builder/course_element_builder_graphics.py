@@ -1,6 +1,7 @@
 from src.framework.course_element_builder.course_element_builder_tools import LipTool, LineTool, ArcTool, RectTool
 from src.framework.undo_commands import *
 from src.scripts.imports import *
+from mprun.constants import LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON, NO_BUTTON
 
 
 class CourseElementBuilderScene(QGraphicsScene):
@@ -24,12 +25,12 @@ class CourseElementBuilderScene(QGraphicsScene):
 
     def mousePressEvent(self, event):
         super().mousePressEvent(event)
-        if event.button() == Qt.LeftButton:
+        if event.button() == LEFT_BUTTON:
             self.oldPositions = {i: i.pos() for i in self.selectedItems()}
 
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
-        if event.button() == Qt.LeftButton and self.oldPositions:
+        if event.button() == LEFT_BUTTON and self.oldPositions:
             newPositions = {i: i.pos() for i in self.oldPositions.keys()}
             if any(self.oldPositions[i] != newPositions[i] for i in self.oldPositions.keys()):
                 self.itemsMoved.emit(self.oldPositions, newPositions)
@@ -147,7 +148,7 @@ class CourseElementBuilderView(QGraphicsView):
         else:
             super().mousePressEvent(event)
 
-        if event.button() == Qt.MiddleButton:
+        if event.button() == MIDDLE_BUTTON:
             self.onPanStart(event)
 
     def mouseMoveEvent(self, event):
@@ -207,7 +208,7 @@ class CourseElementBuilderView(QGraphicsView):
         else:
             super().mouseReleaseEvent(event)
 
-        if event.button() == Qt.MiddleButton:
+        if event.button() == MIDDLE_BUTTON:
             self.onPanEnd(event)
             if self.parent().select_btn.isChecked():
                 self.parent().useSelect()
@@ -245,19 +246,19 @@ class CourseElementBuilderView(QGraphicsView):
             item.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsSelectable, True)
 
     def onPanStart(self, event):
-        releaseEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
-                                   Qt.LeftButton, Qt.NoButton, event.modifiers())
+        releaseEvent = QMouseEvent(QEvent.Type.MouseButtonRelease, event.localPos(), event.screenPos(),
+                                   LEFT_BUTTON, NO_BUTTON, event.modifiers())
         super().mouseReleaseEvent(releaseEvent)
         self.setDragMode(QGraphicsView.ScrollHandDrag)
         self.disableItemFlags()
         self.isPanning = True
         fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
-                                Qt.LeftButton, event.buttons() | Qt.LeftButton, event.modifiers())
+                                LEFT_BUTTON, event.buttons() | LEFT_BUTTON, event.modifiers())
         super().mousePressEvent(fakeEvent)
 
     def onPanEnd(self, event):
         fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
-                                Qt.LeftButton, event.buttons() & ~Qt.LeftButton, event.modifiers())
+                                LEFT_BUTTON, event.buttons() & ~LEFT_BUTTON, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
         self.isPanning = False
