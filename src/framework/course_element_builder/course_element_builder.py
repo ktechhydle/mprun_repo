@@ -1,7 +1,7 @@
 import time
 import mprun.gui
 import mprun.types
-from mprun.constants import WINDOW_MODAL
+from mprun.constants import WINDOW_MODAL, DEFAULT_PANEL_WIDTH
 from src.gui.custom_widgets import StrokeLabel
 from src.framework.course_element_builder.course_element_builder_graphics import *
 from src.framework.course_element_builder.course_element_builder_items import *
@@ -29,13 +29,13 @@ class CourseElementBuilderPanel(mprun.gui.base_widget):
         self.transform_separator = mprun.gui.horizontal_splitter()
         self.transform_label = QLabel('Transform', self)
         self.transform_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
-        self.transform_label.setAlignment(Qt.AlignLeft)
+        self.transform_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         appearence_label = QLabel('Appearance', self)
         appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
-        appearence_label.setAlignment(Qt.AlignLeft)
+        appearence_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         self.rotation_label = mprun.gui.icon_label('', 'ui/Tool Icons/rotate_icon.png', 20, 20)
-        self.rotation_label.setAlignment(Qt.AlignRight)
+        self.rotation_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.rotation_label.setStyleSheet('font-size: 10px;')
         self.rotation_label.setContentsMargins(0, 0, 0, 0)
 
@@ -167,9 +167,6 @@ class CourseElementBuilderPanel(mprun.gui.base_widget):
         opacity_hlayout.layout().addSpacing(100)
         opacity_hlayout.layout().setContentsMargins(0, 14, 0, 0)
 
-        send_to_scene_btn = QPushButton('Send To Scene', self)
-        send_to_scene_btn.clicked.connect(self.sendToScene)
-
         # If any changes are made, update them
         self.stroke_size_spin.valueChanged.connect(self.updateItemPen)
         self.stroke_style_combo.currentIndexChanged.connect(self.updateItemPen)
@@ -193,7 +190,6 @@ class CourseElementBuilderPanel(mprun.gui.base_widget):
         self.properties_tab_layout.addWidget(widget6)
         self.properties_tab_layout.addWidget(opacity_hlayout)
         self.properties_tab_layout.addStretch()
-        self.properties_tab_layout.addWidget(send_to_scene_btn)
 
     def strokeColorChooser(self):
         color_dialog = mprun.gui.color_picker(self.parent)
@@ -466,11 +462,19 @@ class CourseElementBuilder(mprun.gui.base_widget):
         self.view = CourseElementBuilderView(self.scene, self)
 
         self.properties_tab = CourseElementBuilderPanel(self.scene, self)
-        self.properties_tab.setFixedWidth(280)
         self.properties_tab.default()
 
+        send_to_scene_btn = QPushButton('Send To Scene', self)
+        send_to_scene_btn.clicked.connect(self.properties_tab.sendToScene)
+
+        self.toolbox = mprun.gui.panel_container(self.parent())
+        self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH)
+        self.toolbox.addItem(self.properties_tab, 'Properties')
+        self.toolbox.addItem(send_to_scene_btn, 'Options')
+        self.toolbox.addSpacer()
+
         self.layout().addWidget(self.view)
-        self.layout().addWidget(self.properties_tab)
+        self.layout().addWidget(self.toolbox)
         self.updateTransformUI()
         self.updateAppearanceUI()
 

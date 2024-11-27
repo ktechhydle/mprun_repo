@@ -673,15 +673,13 @@ class MPRUN(mprun.gui.base_window):
         # Lower dock widget
         self.toolbox = mprun.gui.panel_container(self)
         self.toolbox.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
-        self.toolbox.scroll_area.setFixedWidth(DEFAULT_PANEL_WIDTH + 20)
-        self.toolbox.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
 
         self.tab_view_dock = QDockWidget(self)
         self.tab_view_dock.setTitleBarWidget(QWidget())
         self.tab_view_dock.setWindowTitle('Panels')
         self.tab_view_dock.setContentsMargins(0, 3, 0, 0)
         self.tab_view_dock.setAllowedAreas(RIGHT_DOCK_AREA | LEFT_DOCK_AREA)
-        self.tab_view_dock.setWidget(self.toolbox.scroll_area)
+        self.tab_view_dock.setWidget(self.toolbox)
 
         # Properties Tab
         self.properties_tab = PropertiesPanel(self.canvas, self)
@@ -708,11 +706,12 @@ class MPRUN(mprun.gui.base_window):
         self.scene_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
         # Add tabs
-        self.toolbox.addItem(self.scene_tab, 'Scene')
-        self.toolbox.addItem(self.canvas_tab, 'Canvas')
-        self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
-        self.toolbox.addItem(self.characters_tab, 'Characters')
         self.toolbox.addItem(self.properties_tab, 'Properties')
+        self.toolbox.addItem(self.characters_tab, 'Characters')
+        self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
+        self.toolbox.addItem(self.canvas_tab, 'Canvas')
+        self.toolbox.addItem(self.scene_tab, 'Scene')
+        self.toolbox.addSpacer()
 
         # Add to actions dict
         self.actions['Change Stroke Color'] = self.properties_tab.stroke_color_btn

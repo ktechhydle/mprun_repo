@@ -518,7 +518,6 @@ class CustomButton(QPushButton):
         new_pos = QPoint(padding_x, padding_y)
 
         painter = QPainter(self)
-        painter.begin(self)
         painter.drawPixmap(QRect(0, -2, 30, 30), pixmap, pixmap.rect())
         painter.drawText(new_pos, self._text)
         painter.end()
@@ -548,20 +547,20 @@ class CustomButton(QPushButton):
         self.setFixedHeight(27)
 
 
-class CustomToolbox(QWidget):
+class CustomToolbox(QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
-        self.setLayout(QVBoxLayout())
-        self.layout().setContentsMargins(10, 10, 10, 10)
-        self.layout().addStretch()
+        self.horizontalScrollBar().setEnabled(False)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setWidgetResizable(True)
 
-        self.scroll_area = QScrollArea()
-        self.scroll_area.horizontalScrollBar().setEnabled(False)
-        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.scroll_area.setObjectName('customScrollArea')
-        self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setWidget(self)
+        self.container = QWidget()
+        self.container.setObjectName('customScrollArea')
+        self.setStyleSheet('QWidget { border-radius: 5px; }')
+        self.container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.container.setLayout(QVBoxLayout())
+        self.container.layout().setContentsMargins(10, 10, 10, 10)
+        self.setWidget(self.container)
 
         self._control_parent = parent
         self._buttons = []
@@ -575,13 +574,15 @@ class CustomToolbox(QWidget):
         collapse_all_action.triggered.connect(self.collapseAll)
         expand_all_action = QAction('&Expand All', self)
         expand_all_action.triggered.connect(self.expandAll)
-        help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
-        help_action.triggered.connect(self.controlParent().show_help)
-
         menu.addAction(collapse_all_action)
         menu.addAction(expand_all_action)
-        menu.addSeparator()
-        menu.addAction(help_action)
+
+        if isinstance(self.parent().parent(), QMainWindow):
+            help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
+            help_action.triggered.connect(self.controlParent().show_help)
+
+            menu.addSeparator()
+            menu.addAction(help_action)
 
         menu.exec(event.globalPos())
 
@@ -601,7 +602,10 @@ class CustomToolbox(QWidget):
             button.setIcon(icon)
 
         self._buttons.append(button)
-        self.layout().insertWidget(0, button)
+        self.container.layout().insertWidget(self.container.layout().count(), button)
+
+    def addSpacer(self):
+        self.container.layout().addStretch()
 
     def collapseAll(self):
         for button in self.buttons():
@@ -621,7 +625,7 @@ class CustomToolbox(QWidget):
                     button.expandedHeight = button.widget.height() + button.height() + (
                         button.height() if sys.platform == 'darwin' else 0)
                 button.setFixedHeight(button.expandedHeight)
-                self.scroll_area.ensureWidgetVisible(button.widget)
+                self.ensureWidgetVisible(button.widget)
         else:
             button.widget.setVisible(False)
             button.restoreSize()
