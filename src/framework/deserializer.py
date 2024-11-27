@@ -90,6 +90,16 @@ class SceneDeserializer:
         font.setUnderline(data['underline'])
         return font
 
+    def deserialize_alignment(self, data: str):
+        if data == 'left':
+            return Qt.AlignmentFlag.AlignLeft
+        elif data == 'middle':
+            return Qt.AlignmentFlag.AlignCenter
+        elif data == 'right':
+            return Qt.AlignmentFlag.AlignRight
+        else:
+            raise ValueError(f"Unknown alignment value: {data}")
+
     def deserialize_transform(self, data):
         transform = QTransform(
             data['m11'], data['m12'], data['m13'],
@@ -111,6 +121,8 @@ class SceneDeserializer:
         text_item = CustomTextItem(data['text'])
         text_item.setFont(self.deserialize_font(data['font']))
         text_item.setDefaultTextColor(self.deserialize_color(data['color']))
+        text_item.setTextWidth(data['width'])
+        text_item.setTextAlignment(self.deserialize_alignment(data['alignment']))
         text_item.locked = data['locked']
 
         self.process_attributes(text_item, data['attr'])
@@ -165,6 +177,8 @@ class SceneDeserializer:
         path_item.setPen(self.deserialize_pen(data['pen']))
         path_item.setBrush(self.deserialize_brush(data['brush']))
         path_item.text_element.setDefaultTextColor(self.deserialize_color(data['textcolor']))
+        path_item.text_element.setTextWidth(data['textwidth'])
+        path_item.text_element.setTextAlignment(self.deserialize_alignment(data['textalignment']))
         path_item.text_element.setFont(self.deserialize_font(data['textfont']))
 
         self.process_attributes(path_item, data['attr'])

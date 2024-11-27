@@ -27,6 +27,8 @@ class SceneSerializer:
                     items_data.append({
                         'type': 'CustomTextItem',
                         'text': item.toPlainText(),
+                        'width': item.textWidth(),
+                        'alignment': self.serialize_alignment(item.textAlignment()),
                         'font': self.serialize_font(item.font()),
                         'color': self.serialize_color(item.defaultTextColor()),
                         'attr': self.serialize_item_attributes(item),
@@ -61,6 +63,8 @@ class SceneSerializer:
                         'attr': self.serialize_item_attributes(item),
                         'elements': self.serialize_path(item.path()),
                         'text': item.text_element.toPlainText(),
+                        'textwidth': item.text_element.textWidth(),
+                        'textalignment': self.serialize_alignment(item.text_element.textAlignment()),
                         'textcolor': self.serialize_color(item.text_element.defaultTextColor()),
                         'textfont': self.serialize_font(item.text_element.font()),
                         'textattr': self.serialize_item_attributes(item.text_element)
@@ -198,6 +202,12 @@ class SceneSerializer:
             'x': canvas.pos().x(),
             'y': canvas.pos().y(),
         }
+
+    def serialize_alignment(self, alignment: Qt.AlignmentFlag):
+        return 'left' if (
+                alignment == Qt.AlignmentFlag.AlignLeft) else 'middle' if (
+                alignment == Qt.AlignmentFlag.AlignCenter) else 'right' if (
+                alignment == Qt.AlignmentFlag.AlignRight) else 'left'
 
     def serialize_path(self, path: QPainterPath):
         elements = []

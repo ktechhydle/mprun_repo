@@ -457,9 +457,6 @@ y: {int(self.mapToScene(point).y())}''')
             with open(local_file, 'r') as f:
                 item = CustomTextItem(f.read())
                 item.setToolTip('Imported Text')
-        elif local_file.endswith('.mp'):
-            self.canvas.parentWindow.open_recent(local_file)
-            return None
         else:
             pixmap = QPixmap(local_file)
             item = CustomPixmapItem(pixmap)
