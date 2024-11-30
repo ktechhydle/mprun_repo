@@ -1,15 +1,3 @@
-"""
-This is MPRUN's main file including attributes such as:
-
--Widget and UI creation
--Function declaration
--Event handling
--User data handling
-
-If you are using our integrated Python Scripting Interface,
-this file is the one you might want to read over to learn MPRUN's
-internal functions.
-"""
 import os
 import sys
 import time
