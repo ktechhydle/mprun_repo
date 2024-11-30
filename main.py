@@ -424,14 +424,6 @@ class MPRUN(mprun.gui.base_window):
         duplicate_action.setShortcut(QKeySequence('D'))
         duplicate_action.triggered.connect(self.canvas.duplicate)
 
-        scale_action = QAction('Scale', self)
-        scale_action.setShortcut(QKeySequence('Q'))
-        scale_action.triggered.connect(self.use_scale_tool)
-
-        rotate_action = QAction('Rotate', self)
-        rotate_action.setShortcut(QKeySequence('R'))
-        rotate_action.triggered.connect(self.use_rotate_tool)
-
         flip_horizontal_action = QAction('Flip Horizontal', self)
         flip_horizontal_action.setShortcut(QKeySequence(''))
         flip_horizontal_action.triggered.connect(lambda: self.properties_tab.useFlipHorizontal())
@@ -467,9 +459,6 @@ class MPRUN(mprun.gui.base_window):
         self.object_menu.addAction(bring_to_front_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(duplicate_action)
-        self.object_menu.addAction(scale_action)
-        self.object_menu.addAction(rotate_action)
-        self.object_menu.addSeparator()
         self.object_menu.addAction(flip_horizontal_action)
         self.object_menu.addAction(flip_vertical_action)
         self.object_menu.addSeparator()
@@ -813,28 +802,6 @@ class MPRUN(mprun.gui.base_window):
         self.add_text_btn.triggered.connect(self.update)
         self.add_text_btn.triggered.connect(self.use_text)
 
-        # Scale Button
-        self.scale_btn = QAction(QIcon('mprun_assets/assets/tools/scale_icon.png'), 'Scale Tool (Q)', self)
-        self.scale_btn.setToolTip(
-            '<b>Scale (Q)</b><br>'
-            'Scale items in the scene by clicking and dragging on them.<br>'
-            '<hr>'
-            '<i>Press F1 for more help.</i>'
-        )
-        self.scale_btn.setCheckable(True)
-        self.scale_btn.triggered.connect(self.use_scale_tool)
-
-        # Rotate Button
-        self.rotate_btn = QAction(QIcon('mprun_assets/assets/tools/rotate_tool_icon.png'), 'Rotate Tool (R)', self)
-        self.rotate_btn.setToolTip(
-            '<b>Rotate (R)</b><br>'
-            'Rotate items in the scene by clicking and dragging on them.<br>'
-            '<hr>'
-            '<i>Press F1 for more help.</i>'
-        )
-        self.rotate_btn.setCheckable(True)
-        self.rotate_btn.triggered.connect(self.use_rotate_tool)
-
         # Hide Button
         self.hide_btn = QAction(QIcon('mprun_assets/assets/tools/hide_icon.png'), 'Hide Element Tool (H)', self)
         self.hide_btn.setToolTip(
@@ -886,8 +853,6 @@ class MPRUN(mprun.gui.base_window):
         self.toolbar.addWidget(self.drawing_toolbutton)
         self.toolbar.addAction(self.label_btn)
         self.toolbar.addAction(self.add_text_btn)
-        self.toolbar.addAction(self.scale_btn)
-        self.toolbar.addAction(self.rotate_btn)
         self.toolbar.addAction(self.hide_btn)
         self.toolbar.addAction(self.unhide_btn)
         self.toolbar.addAction(self.add_canvas_btn)
@@ -901,8 +866,6 @@ class MPRUN(mprun.gui.base_window):
         self.action_group.addAction(self.sculpt_btn)
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
-        self.action_group.addAction(self.scale_btn)
-        self.action_group.addAction(self.rotate_btn)
         self.action_group.addAction(self.hide_btn)
         self.action_group.addAction(self.unhide_btn)
         self.action_group.addAction(self.add_canvas_btn)
@@ -1121,8 +1084,6 @@ class MPRUN(mprun.gui.base_window):
                                                             self.sculpt_btn,
                                                             self.label_btn,
                                                             self.add_text_btn,
-                                                            self.scale_btn,
-                                                            self.rotate_btn,
                                                             self.add_canvas_btn], self)
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
@@ -1339,14 +1300,6 @@ class MPRUN(mprun.gui.base_window):
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
-
-    def use_scale_tool(self):
-        self.scale_btn.setChecked(True)
-        self.canvas_view.disable_item_flags()
-
-    def use_rotate_tool(self):
-        self.rotate_btn.setChecked(True)
-        self.canvas_view.disable_item_flags()
 
     def use_rotate_direction(self, dir: str):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]

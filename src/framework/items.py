@@ -1207,8 +1207,8 @@ class CustomTextItem(QGraphicsTextItem):
 class LeaderLineItem(QGraphicsPathItem):
     def __init__(self, path, text: str):
         super().__init__(path)
+        self.arrow_head = QPolygonF()
 
-        self.gridEnabled = False
         self.text_element = CustomTextItem(text)
         self.text_element.setParentItem(self)
         self.text_element.setToolTip("Text")
@@ -1216,26 +1216,9 @@ class LeaderLineItem(QGraphicsPathItem):
     def shape(self):
         path = super().shape()
         path.addRect(self.boundingRect())
+        path.addRect(self.arrow_head.boundingRect())
 
         return path
-
-    def mousePressEvent(self, event):
-        if event.button() == LEFT_BUTTON:
-            self.mouse_offset = event.pos()
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.gridEnabled:
-            # Calculate the position relative to the scene's coordinate system
-            scene_pos = event.scenePos()
-            x = (int(scene_pos.x() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.x())
-            y = (int(scene_pos.y() / self.scene().gridSize) * self.scene().gridSize - self.mouse_offset.y())
-
-            # Set the position relative to the scene's coordinate system
-            self.setPos(x, y)
-
-        else:
-            super().mouseMoveEvent(event)
 
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
@@ -1282,6 +1265,8 @@ class LeaderLineItem(QGraphicsPathItem):
 
                 # Create a polygon for the arrowhead
                 arrow_head = QPolygonF([end_point, p1, p2])
+
+                self.arrow_head = arrow_head
 
                 # Draw the arrowhead
                 painter.drawPolygon(arrow_head)

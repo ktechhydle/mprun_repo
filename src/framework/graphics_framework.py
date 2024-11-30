@@ -49,9 +49,7 @@ class CustomGraphicsView(QGraphicsView):
         self.sculpt_btn = actions[4]
         self.line_and_label_btn = actions[5]
         self.text_btn = actions[6]
-        self.scale_btn = actions[7]
-        self.rotate_btn = actions[8]
-        self.add_canvas_btn = actions[9]
+        self.add_canvas_btn = actions[7]
 
         # Items
         self.canvas = canvas
@@ -64,8 +62,6 @@ class CustomGraphicsView(QGraphicsView):
         self.pathDrawingTool = PathDrawerTool(self.canvas, self)
         self.penDrawingTool = PenDrawerTool(self.canvas, self)
         self.labelingTool = LineAndLabelTool(self.canvas, self)
-        self.scalingTool = MouseScalingTool(self.canvas, self)
-        self.rotatingTool = MouseRotatingTool(self.canvas, self)
         self.sculptingTool = PathSculptingTool(self.canvas, self)
         self.canvasTool = AddCanvasTool(self.canvas, self)
 
@@ -133,16 +129,6 @@ y: {int(self.mapToScene(point).y())}''')
             self.on_add_text(event)
             super().mousePressEvent(event)
 
-        elif self.scale_btn.isChecked():
-            self.scalingTool.mousePress(event)
-            self.disable_item_flags()
-            super().mousePressEvent(event)
-
-        elif self.rotate_btn.isChecked():
-            self.rotatingTool.mousePress(event)
-            self.disable_item_flags()
-            super().mousePressEvent(event)
-
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.mousePress(event)
             self.disable_item_flags()
@@ -191,18 +177,6 @@ y: {int(self.mapToScene(point).y())}''')
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
-        elif self.scale_btn.isChecked():
-            self.scalingTool.specialToolTip(event)
-            self.scalingTool.mouseMove(event)
-            self.disable_item_flags()
-            super().mouseMoveEvent(event)
-
-        elif self.rotate_btn.isChecked():
-            self.rotatingTool.specialToolTip(event)
-            self.rotatingTool.mouseMove(event)
-            self.disable_item_flags()
-            super().mouseMoveEvent(event)
-
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.specialToolTip(event)
             self.canvasTool.mouseMove(event)
@@ -238,14 +212,6 @@ y: {int(self.mapToScene(point).y())}''')
             self.labelingTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
-        elif self.scale_btn.isChecked():
-            self.scalingTool.mouseRelease(event)
-            super().mouseReleaseEvent(event)
-
-        elif self.rotate_btn.isChecked():
-            self.rotatingTool.mouseRelease(event)
-            super().mouseReleaseEvent(event)
-
         elif self.add_canvas_btn.isChecked():
             self.canvasTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
@@ -266,17 +232,9 @@ y: {int(self.mapToScene(point).y())}''')
             if self.select_btn.isChecked():
                 self.parent().use_select()
 
-        self.parent().properties_tab.updateTransformUi()
-
     def mouseDoubleClickEvent(self, event):
         if self.sculpt_btn.isChecked():
             self.sculptingTool.mouseDoublePress(event)
-
-        if self.scale_btn.isChecked():
-            self.scalingTool.mouseDoublePress(event)
-
-        elif self.rotate_btn.isChecked():
-            self.rotatingTool.mouseDoublePress(event)
 
         else:
             super().mouseDoubleClickEvent(event)
