@@ -81,25 +81,13 @@ class CustomGraphicsView(QGraphicsView):
 
     def disable_item_flags(self):
         for item in self.canvas.items():
-            if isinstance(item, CanvasItem):
-                pass
-
-            elif isinstance(item, CanvasTextItem):
-                pass
-
-            else:
+            if not isinstance(item, (CanvasItem, CanvasTextItem)):
                 item.setFlag(ITEM_MOVABLE, False)
                 item.setFlag(ITEM_SELECTABLE, False)
 
     def disable_item_movement(self):
         for item in self.canvas.items():
-            if isinstance(item, CanvasItem):
-                pass
-
-            elif isinstance(item, CanvasTextItem):
-                pass
-
-            else:
+            if not isinstance(item, (CanvasItem, CanvasTextItem)):
                 item.setFlag(ITEM_MOVABLE, False)
 
     def show_tooltip(self, event):
