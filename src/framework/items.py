@@ -8,91 +8,87 @@ if getattr(sys, 'frozen', False):
     os.chdir(sys._MEIPASS)
 
 
-class ResizeRect(QGraphicsItemGroup):
-    childrenChanged = pyqtSignal(object)
-
-    handleTopLeft = 1
+class ResizeOrb(QGraphicsEllipseItem):
     handleTopMiddle = 2
-    handleTopRight = 3
-    handleMiddleLeft = 4
     handleMiddleRight = 5
-    handleBottomLeft = 6
-    handleBottomMiddle = 7
-    handleBottomRight = 8
 
-    handleSize = 12.0
-    handleSpace = -4.0
+    handleSize = 8
 
     handleCursors = {
-        handleTopLeft: Qt.CursorShape.SizeFDiagCursor,
-        handleTopMiddle: Qt.CursorShape.SizeVerCursor,
-        handleTopRight: Qt.CursorShape.SizeBDiagCursor,
-        handleMiddleLeft: Qt.CursorShape.SizeHorCursor,
+        handleTopMiddle: Qt.CursorShape.OpenHandCursor,
         handleMiddleRight: Qt.CursorShape.SizeHorCursor,
-        handleBottomLeft: Qt.CursorShape.SizeBDiagCursor,
-        handleBottomMiddle: Qt.CursorShape.SizeVerCursor,
-        handleBottomRight: Qt.CursorShape.SizeFDiagCursor,
     }
 
-    def __init__(self, scene):
+    def __init__(self, parent):
         super().__init__()
+        self.setParentItem(parent)
         self.setAcceptHoverEvents(True)
-        self.setToolTip('Multiple Items')
-        self.setFlags(ITEM_MOVABLE | ITEM_SELECTABLE)
+        self.setPen(QPen(QColor('#000000'), 3))
 
-        self.stored_items = []
-        self.stored_scene = scene
+        self.updateOrb()
 
         # Item resizing
         self.handles = {}
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
-        self.ogTransform = None
+        self.ogRotation = None
+        self.ogScale = None
         self.updateHandlesPos()
 
-    def boundingRect(self):
-        # Calculate the bounding rectangle based on the transformed position of the parent item
-        rect = super().boundingRect()
-        # Optionally expand it by handle size for accurate detection
-        return rect.adjusted(-self.handleSize, -self.handleSize, self.handleSize, self.handleSize)
-
     def shape(self):
-        path = super().shape()
+        # Create a path for the ellipse
+        path = QPainterPath()
+        path.addEllipse(self.rect())
 
-        for rect in self.handles.values():
-            path.addRect(rect)
+        # Use QPainterPathStroker to create the outline
+        stroker = QPainterPathStroker()
+        stroker.setWidth(2)
+
+        path = stroker.createStroke(path)
+
+        if hasattr(self, 'handles'):
+            for rect in self.handles.values():
+                path.addRect(rect)
 
         return path
 
+    def setFlag(self, flag, enabled=True):
+        pass
+
+    def setFlags(self, flags):
+        pass
+
     def mousePressEvent(self, event):
-        self.handleSelected = self.handleAt(event.scenePos())
+        self.handleSelected = self.handleAt(event.pos())
         if self.handleSelected:
-            self.ogTransform = self.transform()
             self.mousePressPos = event.pos()
             self.mousePressRect = self.boundingRect()
-
-        super().mousePressEvent(event)
+            self.ogScale = self.parentItem().scale()
+            self.ogRotation = self.parentItem().rotation()
 
     def mouseMoveEvent(self, event):
         if self.handleSelected is not None:
             self.interactiveResize(event.pos())
-        else:
-            super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, mouseEvent):
         super().mouseReleaseEvent(mouseEvent)
 
-        if self.ogTransform:
-            self.scene().addCommand(TransformCommand([self], [self.ogTransform], [self.transform()]))
-
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
-        self.ogTransform = None
 
-        self.setSelected(True)
-        self.update()
+        self.updateOrb()
+
+    def hoverMoveEvent(self, moveEvent):
+        handle = self.handleAt(moveEvent.pos())
+        cursor = Qt.CursorShape.ArrowCursor if handle is None else self.handleCursors[handle]
+        self.setCursor(cursor)
+        super().hoverMoveEvent(moveEvent)
+
+    def hoverLeaveEvent(self, moveEvent):
+        self.unsetCursor()
+        super().hoverLeaveEvent(moveEvent)
 
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
@@ -104,107 +100,41 @@ class ResizeRect(QGraphicsItemGroup):
         painter.setBrush(grip_color)
 
         for handle, rect in self.handles.items():
-            if self.handleSelected is None or handle == self.handleSelected:
-                painter.drawRect(rect)
+            painter.drawRect(rect)
 
             self.updateHandlesPos()
 
-    def hoverMoveEvent(self, moveEvent):
-        handle = self.handleAt(moveEvent.scenePos())
-        cursor = Qt.CursorShape.ArrowCursor if handle is None else self.handleCursors[handle]
-        self.setCursor(cursor)
-        super().hoverMoveEvent(moveEvent)
+    def interactiveResize(self, mousePos):
+        """ Perform shape interactive resize or rotation based on the selected handle. """
+        self.parentItem().prepareGeometryChange()
+        self.parentItem().setTransformOriginPoint(self.parentItem().boundingRect().center())
 
-    def hoverLeaveEvent(self, moveEvent):
-        self.unsetCursor()
-        super().hoverLeaveEvent(moveEvent)
+        if self.handleSelected is not None:
+            dx = mousePos.x() - self.mousePressPos.x()
+            dy = mousePos.y() - self.mousePressPos.y()
 
-    def setTransform(self, matrix, combine=False):
-        for item in self.stored_scene.items():
-            if item not in self.stored_scene.items():
-                self.addItemsToGroup(self.stored_items)
+            if self.handleSelected == self.handleTopMiddle:
+                # Calculate rotation
+                center = self.parentItem().boundingRect().center()
+                start_angle = math.atan2(self.mousePressPos.y() - center.y(), self.mousePressPos.x() - center.x())
+                current_angle = math.atan2(mousePos.y() - center.y(), mousePos.x() - center.x())
+                angle_diff = math.degrees(current_angle - start_angle)
+                new_rotation = self.parentItem().rotation() + angle_diff
+                self.parentItem().setRotation(new_rotation)
 
-        if self not in self.stored_scene.items():
-            self.stored_scene.addItem(self)
+            elif self.handleSelected == self.handleMiddleRight:
+                # Calculate scale
+                start_distance = math.hypot(self.mousePressPos.x() - self.parentItem().boundingRect().center().x(),
+                                            self.mousePressPos.y() - self.parentItem().boundingRect().center().y())
+                current_distance = math.hypot(mousePos.x() - self.parentItem().boundingRect().center().x(),
+                                              mousePos.y() - self.parentItem().boundingRect().center().y())
+                scale_factor = current_distance / start_distance
+                new_scale = self.parentItem().scale() * scale_factor
+                self.parentItem().setScale(new_scale)
 
-        if not self.isSelected():
-            self.setSelected(True)
-
-        super().setTransform(matrix, combine)
-
-    def setPos(self, pos):
-        for item in self.stored_scene.items():
-            if item not in self.stored_scene.items():
-                self.addItemsToGroup(self.stored_items)
-
-        if self not in self.stored_scene.items():
-            self.stored_scene.addItem(self)
-
-        if not self.isSelected():
-            self.setSelected(True)
-
-        super().setPos(pos)
-
-    def setRotation(self, angle):
-        for item in self.stored_scene.items():
-            if item not in self.stored_scene.items():
-                self.addItemsToGroup(self.stored_items)
-
-        if self not in self.stored_scene.items():
-            self.stored_scene.addItem(self)
-
-        if not self.isSelected():
-            self.setSelected(True)
-
-        super().setRotation(angle)
-
-    def setScale(self, scale):
-        for item in self.stored_scene.items():
-            if item not in self.stored_scene.items():
-                self.addItemsToGroup(self.stored_items)
-
-        if self not in self.stored_scene.items():
-            self.stored_scene.addItem(self)
-
-        if not self.isSelected():
-            self.setSelected(True)
-
-        super().setScale(scale)
-
-    def removeFromGroup(self, item):
-        super().removeFromGroup(item)
-
-    def addToGroup(self, item):
-        item.setSelected(False)
-
-        if item not in self.stored_items:
-            self.stored_items.append(item)
-
-        super().addToGroup(item)
-
-    def addItemsToGroup(self, items: list[QGraphicsItem]):
-        for item in items:
-            self.addToGroup(item)
-
-    def updateGroup(self):
-        for item in self.stored_items:
-            if item not in self.stored_scene.items():
-                self.removeFromGroup(item)
-
-            else:
-                self.addToGroup(item)
-
-        self.setSelected(True)
-
-    def clear(self):
-        for child in self.childItems():
-            self.removeFromGroup(child)
-
-        self.scene().removeItem(self)
+        self.updateHandlesPos()
 
     def handleAt(self, point):
-        point = self.mapFromScene(point)
-
         for f, v in self.handles.items():
             if v.contains(point):
                 return f
@@ -214,72 +144,34 @@ class ResizeRect(QGraphicsItemGroup):
     def updateHandlesPos(self):
         s = self.handleSize
         b = self.boundingRect()
-        self.handles[self.handleTopLeft] = QRectF(b.left(), b.top(), s, s)
         self.handles[self.handleTopMiddle] = QRectF(b.center().x() - s / 2, b.top(), s, s)
-        self.handles[self.handleTopRight] = QRectF(b.right() - s, b.top(), s, s)
-        self.handles[self.handleMiddleLeft] = QRectF(b.left(), b.center().y() - s / 2, s, s)
         self.handles[self.handleMiddleRight] = QRectF(b.right() - s, b.center().y() - s / 2, s, s)
-        self.handles[self.handleBottomLeft] = QRectF(b.left(), b.bottom() - s, s, s)
-        self.handles[self.handleBottomMiddle] = QRectF(b.center().x() - s / 2, b.bottom() - s, s, s)
-        self.handles[self.handleBottomRight] = QRectF(b.right() - s, b.bottom() - s, s, s)
 
-    def interactiveResize(self, mousePos):
-        """ Perform shape interactive resize. """
-        boundingRect = self.boundingRect()
-        rect = boundingRect
+    def updateOrb(self):
+        self.setScale(1)
+        self.setRotation(0)
 
-        self.prepareGeometryChange()
+        # Get the adjusted bounding rect
+        rect = self.parentItem().boundingRect().adjusted(-20, -20, 20, 20)
 
-        if self.handleSelected is not None:
-            dx = mousePos.x() - self.mousePressPos.x()
-            dy = mousePos.y() - self.mousePressPos.y()
+        # Ensure the rectangle is a square
+        size = max(rect.width(), rect.height())  # Use the larger dimension to make it a square
+        center = rect.center()
 
-            if self.handleSelected == self.handleTopLeft:
-                self.setTransform(QTransform().translate(dx, dy).scale(
-                    (self.mousePressRect.width() - dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() - dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleTopMiddle:
-                self.setTransform(QTransform().translate(0, dy).scale(
-                    1, (self.mousePressRect.height() - dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleTopRight:
-                self.setTransform(QTransform().translate(0, dy).scale(
-                    (self.mousePressRect.width() + dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() - dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleMiddleLeft:
-                self.setTransform(QTransform().translate(dx, 0).scale(
-                    (self.mousePressRect.width() - dx) / self.mousePressRect.width(),
-                    1
-                ), True)
-            elif self.handleSelected == self.handleMiddleRight:
-                self.setTransform(QTransform().translate(0, 0).scale(
-                    (self.mousePressRect.width() + dx) / self.mousePressRect.width(),
-                    1
-                ), True)
-            elif self.handleSelected == self.handleBottomLeft:
-                self.setTransform(QTransform().translate(dx, 0).scale(
-                    (self.mousePressRect.width() - dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() + dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleBottomMiddle:
-                self.setTransform(QTransform().translate(0, 0).scale(
-                    1, (self.mousePressRect.height() + dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleBottomRight:
-                self.setTransform(QTransform().translate(0, 0).scale(
-                    (self.mousePressRect.width() + dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() + dy) / self.mousePressRect.height()
-                ), True)
+        # Create a new square rect centered on the original rect
+        square_rect = QRectF(
+            center.x() - size / 2,
+            center.y() - size / 2,
+            size,
+            size
+        )
 
-        self.updateHandlesPos()
+        # Set the rect and position
+        self.setRect(square_rect)
+        self.setPos(self.parentItem().boundingRect().center() - self.boundingRect().center())
 
-    def duplicate(self):
-        pass
-
-    def copy(self):
-        pass
+        # Update the item
+        self.update()
 
 
 class CustomPathItem(QGraphicsPathItem):
@@ -768,29 +660,6 @@ class CustomSvgItem(QGraphicsSvgItem):
 
 
 class CustomTextItem(QGraphicsTextItem):
-    handleTopLeft = 1
-    handleTopMiddle = 2
-    handleTopRight = 3
-    handleMiddleLeft = 4
-    handleMiddleRight = 5
-    handleBottomLeft = 6
-    handleBottomMiddle = 7
-    handleBottomRight = 8
-
-    handleSize = 8.0
-    handleSpace = -4.0
-
-    handleCursors = {
-        handleTopLeft: Qt.CursorShape.SizeFDiagCursor,
-        handleTopMiddle: Qt.CursorShape.SizeVerCursor,
-        handleTopRight: Qt.CursorShape.SizeBDiagCursor,
-        handleMiddleLeft: Qt.CursorShape.SizeHorCursor,
-        handleMiddleRight: Qt.CursorShape.SizeHorCursor,
-        handleBottomLeft: Qt.CursorShape.SizeBDiagCursor,
-        handleBottomMiddle: Qt.CursorShape.SizeVerCursor,
-        handleBottomRight: Qt.CursorShape.SizeFDiagCursor,
-    }
-
     def __init__(self, text="", parent=None):
         super().__init__(text, parent)
         self.setToolTip('Text')
@@ -804,13 +673,8 @@ class CustomTextItem(QGraphicsTextItem):
         self.old_text = self.toPlainText()
         self.text_alignment = None
 
-        # Item resizing
-        self.handles = {}
-        self.handleSelected = None
-        self.mousePressPos = None
-        self.mousePressRect = None
-        self.ogTransform = None
-        self.updateHandlesPos()
+        # Resize
+        self.createOrb()
 
         # Create the suggestion popup
         self.suggestion_popup = QListWidget()
@@ -825,50 +689,6 @@ class CustomTextItem(QGraphicsTextItem):
         with open('internal data/_tricks.txt', 'r') as f:
             for line in f.readlines():
                 self.trick_types.append(line.strip())
-
-    def boundingRect(self):
-        """ Return the bounding rect of the SVG item. """
-        # Get the original bounding rect of the SVG item
-        original_rect = super().boundingRect()
-        o = self.handleSize
-        return original_rect.adjusted(-o, -o, o, o)
-
-    def shape(self):
-        """ Returns the shape of this item as a QPainterPath in local coordinates. """
-        path = super().shape()
-
-        if self.isSelected():
-            for shape in self.handles.values():
-                path.addRect(shape)
-
-        return path
-
-    def mousePressEvent(self, event):
-        self.handleSelected = self.handleAt(event.scenePos())
-        if self.handleSelected:
-            self.ogTransform = self.transform()
-            self.mousePressPos = event.pos()
-            self.mousePressRect = self.boundingRect()
-
-        super().mousePressEvent(event)
-
-    def mouseMoveEvent(self, event):
-        if self.handleSelected is not None:
-            self.interactiveResize(event.pos())
-        else:
-            super().mouseMoveEvent(event)
-
-    def mouseReleaseEvent(self, mouseEvent):
-        super().mouseReleaseEvent(mouseEvent)
-
-        if self.ogTransform:
-            self.scene().addCommand(TransformCommand([self], [self.ogTransform], [self.transform()]))
-
-        self.handleSelected = None
-        self.mousePressPos = None
-        self.mousePressRect = None
-        self.ogTransform = None
-        self.update()
 
     def mouseDoubleClickEvent(self, event):
         if self.locked == False:
@@ -972,35 +792,20 @@ class CustomTextItem(QGraphicsTextItem):
     def paint(self, painter, option, widget):
         super().paint(painter, option, widget)
 
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
-        # Draw resize grips if the item is selected
         if self.isSelected():
-            grip_color = QColor('#4f7fff')
-            pen = QPen(QColor('#4f7fff'), 1)
-            pen.setJoinStyle(PEN_JOIN_STYLE.MiterJoin)
-            painter.setPen(pen)
-            painter.setBrush(grip_color)
+            self.resize_orb.setVisible(True)
+            self.resize_orb.updateOrb()
 
-            for handle, rect in self.handles.items():
-                if self.handleSelected is None or handle == self.handleSelected:
-                    painter.drawRect(rect)
+        else:
+            self.resize_orb.setVisible(False)
 
-                self.updateHandlesPos()
+    def createOrb(self):
+        self.resize_orb = ResizeOrb(self)
 
-    def hoverMoveEvent(self, moveEvent):
-        if self.isSelected():
-            handle = self.handleAt(moveEvent.scenePos())
-            if handle is not None:
-                cursor = self.getTransformedCursor(handle)
-                self.setCursor(cursor)
-            else:
-                self.setCursor(Qt.CursorShape.ArrowCursor)
-        super().hoverMoveEvent(moveEvent)
+        if self.scene():
+            self.scene().addItem(self.resize_orb)
 
-    def hoverLeaveEvent(self, moveEvent):
-        self.unsetCursor()
-        super().hoverLeaveEvent(moveEvent)
+        self.resize_orb.setVisible(False)
 
     def setTextAlignment(self, alignment: Qt.AlignmentFlag):
         option = self.document().defaultTextOption()
@@ -1011,99 +816,6 @@ class CustomTextItem(QGraphicsTextItem):
 
     def textAlignment(self):
         return self.text_alignment
-
-    def handleAt(self, point):
-        if self.isSelected():
-            point = self.mapFromScene(point)
-
-            for f, v in self.handles.items():
-                if v.contains(point):
-                    return f
-
-            return None
-
-    def getTransformedCursor(self, handle):
-        """Get the correct cursor for a handle based on the item's transformation."""
-        transform = self.transform()
-        flipped_horizontally = transform.m11() < 0  # Scale factor in X is negative
-        flipped_vertically = transform.m22() < 0  # Scale factor in Y is negative
-
-        # Base cursors for each handle
-        base_cursor = self.handleCursors[handle]
-
-        # Handle diagonal corners flipping
-        if handle in (self.handleTopLeft, self.handleBottomRight):
-            if flipped_horizontally ^ flipped_vertically:  # XOR: one flip
-                base_cursor = Qt.CursorShape.SizeBDiagCursor if base_cursor == Qt.CursorShape.SizeFDiagCursor else Qt.CursorShape.SizeFDiagCursor
-        elif handle in (self.handleTopRight, self.handleBottomLeft):
-            if flipped_horizontally ^ flipped_vertically:  # XOR: one flip
-                base_cursor = Qt.CursorShape.SizeFDiagCursor if base_cursor == Qt.CursorShape.SizeBDiagCursor else Qt.CursorShape.SizeBDiagCursor
-
-        return base_cursor
-
-    def updateHandlesPos(self):
-        s = self.handleSize
-        b = self.boundingRect()
-        self.handles[self.handleTopLeft] = QRectF(b.left(), b.top(), s, s)
-        self.handles[self.handleTopMiddle] = QRectF(b.center().x() - s / 2, b.top(), s, s)
-        self.handles[self.handleTopRight] = QRectF(b.right() - s, b.top(), s, s)
-        self.handles[self.handleMiddleLeft] = QRectF(b.left(), b.center().y() - s / 2, s, s)
-        self.handles[self.handleMiddleRight] = QRectF(b.right() - s, b.center().y() - s / 2, s, s)
-        self.handles[self.handleBottomLeft] = QRectF(b.left(), b.bottom() - s, s, s)
-        self.handles[self.handleBottomMiddle] = QRectF(b.center().x() - s / 2, b.bottom() - s, s, s)
-        self.handles[self.handleBottomRight] = QRectF(b.right() - s, b.bottom() - s, s, s)
-
-    def interactiveResize(self, mousePos):
-        """ Perform shape interactive resize. """
-        boundingRect = self.boundingRect()
-        rect = boundingRect
-
-        self.prepareGeometryChange()
-
-        if self.handleSelected is not None:
-            dx = mousePos.x() - self.mousePressPos.x()
-            dy = mousePos.y() - self.mousePressPos.y()
-
-            if self.handleSelected == self.handleTopLeft:
-                self.setTransform(QTransform().translate(dx, dy).scale(
-                    (self.mousePressRect.width() - dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() - dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleTopMiddle:
-                self.setTransform(QTransform().translate(0, dy).scale(
-                    1, (self.mousePressRect.height() - dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleTopRight:
-                self.setTransform(QTransform().translate(0, dy).scale(
-                    (self.mousePressRect.width() + dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() - dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleMiddleLeft:
-                self.setTransform(QTransform().translate(dx, 0).scale(
-                    (self.mousePressRect.width() - dx) / self.mousePressRect.width(),
-                    1
-                ), True)
-            elif self.handleSelected == self.handleMiddleRight:
-                self.setTransform(QTransform().translate(0, 0).scale(
-                    (self.mousePressRect.width() + dx) / self.mousePressRect.width(),
-                    1
-                ), True)
-            elif self.handleSelected == self.handleBottomLeft:
-                self.setTransform(QTransform().translate(dx, 0).scale(
-                    (self.mousePressRect.width() - dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() + dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleBottomMiddle:
-                self.setTransform(QTransform().translate(0, 0).scale(
-                    1, (self.mousePressRect.height() + dy) / self.mousePressRect.height()
-                ), True)
-            elif self.handleSelected == self.handleBottomRight:
-                self.setTransform(QTransform().translate(0, 0).scale(
-                    (self.mousePressRect.width() + dx) / self.mousePressRect.width(),
-                    (self.mousePressRect.height() + dy) / self.mousePressRect.height()
-                ), True)
-
-        self.updateHandlesPos()
 
     def suggestTrickTypes(self, current_word):
         # Filter the suggestions and exclude the current word
