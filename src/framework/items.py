@@ -1214,11 +1214,20 @@ class LeaderLineItem(QGraphicsPathItem):
         self.text_element.setToolTip("Text")
 
     def shape(self):
+        # Call the superclass's shape method to get the original path
         path = super().shape()
-        path.addRect(self.boundingRect())
-        path.addRect(self.arrow_head.boundingRect())
 
-        return path
+        # Create a stroker to modify the path
+        stroker = QPainterPathStroker()
+        stroker.setWidth(2)
+
+        # Create a wider path
+        wider_path = stroker.createStroke(path)
+
+        # Optionally, unite the original path and the wider path
+        combined_path = path.united(wider_path)
+
+        return combined_path
 
     def paint(self, painter, option, widget=None):
         super().paint(painter, option, widget)
