@@ -634,7 +634,7 @@ class MPRUN(mprun.gui.base_window):
     def create_panels(self):
         # Upper dock widget
         self.libraries_tab = LibrariesPanel(self.canvas)
-        self.libraries_tab.setWindowFlag(WINDOW_TYPE_ON_TOP)
+        self.libraries_tab.setWindowFlag(WINDOW_TYPE_TOOL)
         self.libraries_tab.scroll_area.setStyleSheet('QScrollArea { border-radius: 5px; }')
         self.libraries_tab.scroll_area.setMinimumWidth(150)
         self.libraries_tab.scroll_area.setMaximumWidth(650)
