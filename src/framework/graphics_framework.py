@@ -386,6 +386,9 @@ y: {int(self.mapToScene(point).y())}''')
         for item in self.scene().items():
             item.update()
 
+            if hasattr(item, 'resize_orb'):
+                item.resize_orb.updateOrb()
+
     def keyPressEvent(self, event):
         super().keyPressEvent(event)
         self.update()

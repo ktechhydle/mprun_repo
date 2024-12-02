@@ -36,6 +36,12 @@ class ResizeOrb(QGraphicsEllipseItem):
         self.ogScale = None
         self.updateHandlesPos()
 
+    def setParentItem(self, parent):
+        self.parent_item = parent
+
+    def parentItem(self):
+        return self.parent_item
+
     def shape(self):
         # Create a path for the ellipse
         path = QPainterPath()
@@ -52,6 +58,9 @@ class ResizeOrb(QGraphicsEllipseItem):
                 path.addRect(rect)
 
         return path
+
+    def boundingRect(self):
+        return self.rect()
 
     def setFlag(self, flag, enabled=True):
         pass
@@ -96,7 +105,9 @@ class ResizeOrb(QGraphicsEllipseItem):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         grip_color = QColor('#4f7fff')
-        painter.setPen(QPen(QColor('#4f7fff'), 1))
+        grip_pen = QPen(QColor('#4f7fff'), 1)
+        grip_pen.setJoinStyle(Qt.PenJoinStyle.MiterJoin)
+        painter.setPen(grip_pen)
         painter.setBrush(grip_color)
 
         for handle, rect in self.handles.items():
@@ -105,6 +116,8 @@ class ResizeOrb(QGraphicsEllipseItem):
             self.updateHandlesPos()
 
         if self.handleSelected:
+            painter.setPen(QColor('#000000'))
+
             rotate_handle_text = f'{int(self.parentItem().rotation())}°'
             scale_handle_text = f'{int(self.parentItem().scale() * 100)}%'
 
@@ -172,8 +185,9 @@ class ResizeOrb(QGraphicsEllipseItem):
         self.handles[self.handleMiddleRight] = QRectF(b.right() - s, b.center().y() - s / 2, s, s)
 
     def updateOrb(self):
-        self.setScale(1)
-        self.setRotation(0)
+        self.setTransformOriginPoint(self.parentItem().transformOriginPoint())
+        self.setScale(self.parentItem().scale())
+        self.setRotation(self.parentItem().rotation())
 
         # Get the adjusted bounding rect
         rect = self.parentItem().boundingRect().adjusted(-20, -20, 20, 20)
@@ -191,8 +205,12 @@ class ResizeOrb(QGraphicsEllipseItem):
         )
 
         # Set the rect and position
+        self.setPos(self.parentItem().sceneBoundingRect().center() - self.boundingRect().center())
         self.setRect(square_rect)
-        self.setPos(self.parentItem().boundingRect().center() - self.boundingRect().center())
+
+        if self.scene():
+            if self.parentItem() not in self.scene().items():
+                self.setVisible(False)
 
         # Update the item
         self.update()
@@ -697,9 +715,6 @@ class CustomTextItem(QGraphicsTextItem):
         self.old_text = self.toPlainText()
         self.text_alignment = None
 
-        # Resize
-        self.createOrb()
-
         # Create the suggestion popup
         self.suggestion_popup = QListWidget()
         self.suggestion_popup.setToolTip('<i>Press the up-arrow key to accept suggestions</i>')
@@ -731,6 +746,8 @@ class CustomTextItem(QGraphicsTextItem):
             super().mouseDoubleClickEvent(event)
 
     def keyPressEvent(self, event: QKeyEvent):
+        self.resize_orb.updateOrb()
+
         if event.key() == Qt.Key.Key_Escape:
             self.clearFocus()
 
@@ -806,30 +823,31 @@ class CustomTextItem(QGraphicsTextItem):
         return super().eventFilter(obj, event)
 
     def itemChange(self, change, value):
-        if change == QGraphicsItem.ItemPositionChange and isinstance(self.parentItem(), LeaderLineItem):
+        if hasattr(self, 'resize_orb'):
+            self.resize_orb.updateOrb()
+
+        if isinstance(self.parentItem(), LeaderLineItem):
             self.parentItem().updatePathEndPoint()
 
-        elif change == QGraphicsItem.ItemSelectedChange and isinstance(self.parentItem(), LeaderLineItem):
-            self.parentItem().updatePathEndPoint()
         return super().itemChange(change, value)
 
     def paint(self, painter, option, widget):
         super().paint(painter, option, widget)
 
+        self.createOrb()
+
         if self.isSelected():
             self.resize_orb.setVisible(True)
-            self.resize_orb.updateOrb()
 
         else:
             self.resize_orb.setVisible(False)
 
     def createOrb(self):
-        self.resize_orb = ResizeOrb(self)
-
-        if self.scene():
+        if not hasattr(self, 'resize_orb'):
+            self.resize_orb = ResizeOrb(self)
             self.scene().addItem(self.resize_orb)
 
-        self.resize_orb.setVisible(False)
+            self.resize_orb.setVisible(False)
 
     def setTextAlignment(self, alignment: Qt.AlignmentFlag):
         option = self.document().defaultTextOption()
