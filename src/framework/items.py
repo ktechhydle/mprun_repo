@@ -16,7 +16,7 @@ class ResizeOrb(QGraphicsEllipseItem):
 
     handleCursors = {
         handleTopMiddle: Qt.CursorShape.OpenHandCursor,
-        handleMiddleRight: Qt.CursorShape.SizeHorCursor,
+        handleMiddleRight: Qt.CursorShape.SizeAllCursor,
     }
 
     def __init__(self, parent):
@@ -104,6 +104,18 @@ class ResizeOrb(QGraphicsEllipseItem):
 
             self.updateHandlesPos()
 
+        if self.handleSelected:
+            rotate_handle_text = f'{int(self.parentItem().rotation())}°'
+            scale_handle_text = f'{int(self.parentItem().scale() * 100)}%'
+
+            if self.handleSelected == self.handleTopMiddle:
+                painter.drawText(QPointF(self.currentHandle().x() - len(rotate_handle_text),
+                                         self.currentHandle().y() - 5), rotate_handle_text)
+
+            elif self.handleSelected == self.handleMiddleRight:
+                painter.drawText(self.currentHandle().bottomRight() + QPointF(5, 0),
+                                 scale_handle_text)
+
     def interactiveResize(self, mousePos):
         """ Perform shape interactive resize or rotation based on the selected handle. """
         self.parentItem().prepareGeometryChange()
@@ -120,6 +132,11 @@ class ResizeOrb(QGraphicsEllipseItem):
                 current_angle = math.atan2(mousePos.y() - center.y(), mousePos.x() - center.x())
                 angle_diff = math.degrees(current_angle - start_angle)
                 new_rotation = self.parentItem().rotation() + angle_diff
+
+                # Snap to 15-degree increments if Shift is held
+                if QApplication.keyboardModifiers() & SHIFT_MODIFIER:
+                    new_rotation = round(new_rotation / 15) * 15
+
                 self.parentItem().setRotation(new_rotation)
 
             elif self.handleSelected == self.handleMiddleRight:
@@ -130,9 +147,16 @@ class ResizeOrb(QGraphicsEllipseItem):
                                               mousePos.y() - self.parentItem().boundingRect().center().y())
                 scale_factor = current_distance / start_distance
                 new_scale = self.parentItem().scale() * scale_factor
+
                 self.parentItem().setScale(new_scale)
 
         self.updateHandlesPos()
+
+    def currentHandle(self) -> QRectF:
+        if self.handleSelected:
+            return self.handles[self.handleSelected]
+
+        return None
 
     def handleAt(self, point):
         for f, v in self.handles.items():
