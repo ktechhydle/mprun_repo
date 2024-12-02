@@ -602,6 +602,8 @@ class CustomTextItem(QGraphicsTextItem):
     def keyReleaseEvent(self, event):
         super().keyReleaseEvent(event)
 
+        self.resize_orb.updateOrb()
+
         if isinstance(self.parentItem(), LeaderLineItem):
             self.parentItem().updatePathEndPoint()
 
