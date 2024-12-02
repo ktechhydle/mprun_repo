@@ -195,7 +195,7 @@ class ResizeOrb(QGraphicsEllipseItem):
         self.setRotation(self.parentItem().rotation())
 
         # Get the adjusted bounding rect
-        rect = self.parentItem().boundingRect().adjusted(-20, -10, 20, 20)
+        rect = self.parentItem().boundingRect().adjusted(-20, -20, 20, 20)
 
         # Ensure the rectangle is a square
         size = max(rect.width(), rect.height())  # Use the larger dimension to make it a square
