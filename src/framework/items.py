@@ -94,6 +94,20 @@ class ResizeOrb(QGraphicsEllipseItem):
 
         self.updateOrb()
 
+    def mouseDoubleClickEvent(self, event):
+        self.handleSelected = self.handleAt(event.pos())
+
+        if self.handleSelected:
+            if self.handleSelected == self.handleTopMiddle:
+                if self.parentItem().rotation() != 0:
+                    self.scene().addCommand(RotateCommand(None,
+                                                          [self.parentItem()],
+                                                          [self.parentItem().rotation()],
+                                                          0))
+            elif self.handleSelected == self.handleMiddleRight:
+                if self.parentItem().scale() != 0:
+                    self.scene().addCommand(ScaleCommand(self.parentItem(), self.parentItem().scale(), 1))
+
     def hoverMoveEvent(self, moveEvent):
         handle = self.handleAt(moveEvent.pos())
         cursor = Qt.CursorShape.ArrowCursor if handle is None else self.handleCursors[handle]
