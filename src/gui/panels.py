@@ -339,6 +339,7 @@ class PropertiesPanel(mprun.gui.base_widget):
                 if item.parentItem().isSelected():
                     items.remove(item)
 
+            item.setTransformOriginPoint(item.boundingRect().center())
             old_rotations.append(item.rotation())
 
         if items:

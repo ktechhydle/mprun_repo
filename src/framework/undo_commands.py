@@ -168,6 +168,24 @@ class TransformCommand(QUndoCommand):
             item.setTransform(old_transform)
 
 
+class OrbTransformCommand(QUndoCommand):
+    def __init__(self, item, old_values: list, new_values: list):
+        super().__init__()
+        self.item = item
+        self.old_scale = old_values[0]
+        self.old_rotation = old_values[1]
+        self.new_scale = new_values[0]
+        self.new_rotation = new_values[1]
+
+    def redo(self):
+        self.item.setScale(self.new_scale)
+        self.item.setRotation(self.new_rotation)
+
+    def undo(self):
+        self.item.setScale(self.old_scale)
+        self.item.setRotation(self.old_rotation)
+
+
 class RotateCommand(QUndoCommand):
     def __init__(self, parent, items, old_rotations, new_rotation):
         super().__init__()
@@ -179,7 +197,6 @@ class RotateCommand(QUndoCommand):
     def redo(self):
         for item in self.items:
             item.setRotation(self.new_rotation)
-
 
     def undo(self):
         for item, old_rotation in zip(self.items, self.old_rotations):
@@ -310,8 +327,9 @@ class FontChangeCommand(QUndoCommand):
             item.update()
 
     def undo(self):
-        for item, old_font, old_color, old_align, old_width in zip(self.items, self.old_fonts, self.old_colors, self.old_aligns,
-                                                        self.old_text_widths):
+        for item, old_font, old_color, old_align, old_width in zip(self.items, self.old_fonts, self.old_colors,
+                                                                   self.old_aligns,
+                                                                   self.old_text_widths):
             item.setFont(old_font)
             item.setDefaultTextColor(old_color)
             item.setTextWidth(old_width)

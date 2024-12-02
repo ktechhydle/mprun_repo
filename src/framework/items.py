@@ -32,8 +32,7 @@ class ResizeOrb(QGraphicsEllipseItem):
         self.handleSelected = None
         self.mousePressPos = None
         self.mousePressRect = None
-        self.ogRotation = None
-        self.ogScale = None
+        self.ogTransform = []
         self.updateHandlesPos()
 
     def setParentItem(self, parent):
@@ -73,8 +72,7 @@ class ResizeOrb(QGraphicsEllipseItem):
         if self.handleSelected:
             self.mousePressPos = event.pos()
             self.mousePressRect = self.boundingRect()
-            self.ogScale = self.parentItem().scale()
-            self.ogRotation = self.parentItem().rotation()
+            self.ogTransform = [self.parentItem().scale(), self.parentItem().rotation()]
 
     def mouseMoveEvent(self, event):
         if self.handleSelected is not None:
@@ -82,6 +80,13 @@ class ResizeOrb(QGraphicsEllipseItem):
 
     def mouseReleaseEvent(self, mouseEvent):
         super().mouseReleaseEvent(mouseEvent)
+
+        if self.ogTransform:
+            self.scene().addCommand(OrbTransformCommand(self.parentItem(),
+                                                        self.ogTransform,
+                                                        [self.parentItem().scale(),
+                                                         self.parentItem().rotation()]
+                                                        ))
 
         self.handleSelected = None
         self.mousePressPos = None
@@ -190,7 +195,7 @@ class ResizeOrb(QGraphicsEllipseItem):
         self.setRotation(self.parentItem().rotation())
 
         # Get the adjusted bounding rect
-        rect = self.parentItem().boundingRect().adjusted(-20, -20, 20, 20)
+        rect = self.parentItem().boundingRect().adjusted(-20, -10, 20, 20)
 
         # Ensure the rectangle is a square
         size = max(rect.width(), rect.height())  # Use the larger dimension to make it a square
