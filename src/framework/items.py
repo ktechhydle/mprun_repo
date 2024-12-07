@@ -151,7 +151,9 @@ class ResizeOrb(QGraphicsEllipseItem):
     def interactiveResize(self, mousePos):
         """ Perform shape interactive resize or rotation based on the selected handle. """
         self.parentItem().prepareGeometryChange()
-        self.parentItem().setTransformOriginPoint(self.parentItem().boundingRect().center())
+
+        if not self.parentItem().transformOriginPoint():
+            self.parentItem().setTransformOriginPoint(self.parentItem().boundingRect().center())
 
         if self.handleSelected is not None:
             dx = mousePos.x() - self.mousePressPos.x()
@@ -224,8 +226,8 @@ class ResizeOrb(QGraphicsEllipseItem):
         )
 
         # Set the rect and position
-        self.setPos(self.parentItem().sceneBoundingRect().center() - self.boundingRect().center())
-        self.setRect(square_rect)
+        self.setPos(self.parentItem().pos())
+        self.setRect(square_rect.normalized())
 
         if self.scene():
             if self.parentItem() not in self.scene().items():
