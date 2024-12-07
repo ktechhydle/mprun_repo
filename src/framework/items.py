@@ -161,9 +161,9 @@ class ResizeOrb(QGraphicsEllipseItem):
 
             if self.handleSelected == self.handleTopMiddle:
                 # Calculate rotation
-                center = self.parentItem().boundingRect().center()
-                start_angle = math.atan2(self.mousePressPos.y() - center.y(), self.mousePressPos.x() - center.x())
+                center = self.mapToScene(self.parentItem().boundingRect().center())
                 current_angle = math.atan2(mousePos.y() - center.y(), mousePos.x() - center.x())
+                start_angle = math.atan2(self.mousePressPos.y() - center.y(), self.mousePressPos.x() - center.x())
                 angle_diff = math.degrees(current_angle - start_angle)
                 new_rotation = self.parentItem().rotation() + angle_diff
 
@@ -174,11 +174,13 @@ class ResizeOrb(QGraphicsEllipseItem):
                 self.parentItem().setRotation(new_rotation)
 
             elif self.handleSelected == self.handleMiddleRight:
+                rect = self.mapToScene(self.parentItem().boundingRect().center())
+
                 # Calculate scale
-                start_distance = math.hypot(self.mousePressPos.x() - self.parentItem().boundingRect().center().x(),
-                                            self.mousePressPos.y() - self.parentItem().boundingRect().center().y())
-                current_distance = math.hypot(mousePos.x() - self.parentItem().boundingRect().center().x(),
-                                              mousePos.y() - self.parentItem().boundingRect().center().y())
+                start_distance = math.hypot(self.mousePressPos.x() - rect.x(),
+                                            self.mousePressPos.y() - rect.y())
+                current_distance = math.hypot(mousePos.x() - rect.x(),
+                                              mousePos.y() - rect.y())
                 scale_factor = current_distance / start_distance
                 new_scale = self.parentItem().scale() * scale_factor
 
