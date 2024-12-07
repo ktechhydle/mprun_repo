@@ -641,7 +641,8 @@ class CustomTextItem(QGraphicsTextItem):
             super().mouseDoubleClickEvent(event)
 
     def keyPressEvent(self, event: QKeyEvent):
-        self.resize_orb.updateOrb()
+        if hasattr(self, 'resize_orb'):
+            self.resize_orb.updateOrb()
 
         if event.key() == Qt.Key.Key_Escape:
             self.clearFocus()
@@ -679,7 +680,8 @@ class CustomTextItem(QGraphicsTextItem):
     def keyReleaseEvent(self, event):
         super().keyReleaseEvent(event)
 
-        self.resize_orb.updateOrb()
+        if hasattr(self, 'resize_orb'):
+            self.resize_orb.updateOrb()
 
         if isinstance(self.parentItem(), LeaderLineItem):
             self.parentItem().updatePathEndPoint()
@@ -731,13 +733,14 @@ class CustomTextItem(QGraphicsTextItem):
     def paint(self, painter, option, widget):
         super().paint(painter, option, widget)
 
-        self.createOrb()
+        if not isinstance(self.parentItem(), LeaderLineItem):
+            self.createOrb()
 
-        if self.isSelected():
-            self.resize_orb.setVisible(True)
+            if self.isSelected():
+                self.resize_orb.setVisible(True)
 
-        else:
-            self.resize_orb.setVisible(False)
+            else:
+                self.resize_orb.setVisible(False)
 
     def createOrb(self):
         if not hasattr(self, 'resize_orb'):
