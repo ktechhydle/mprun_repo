@@ -13,6 +13,7 @@ class SceneSerializer:
             'mpversion': self.scene.mpversion,
             'copyright': copyright_message,
             'item_count': len(self.scene.items()),
+            'system_type': sys.platform
         })
 
         for item in self.scene.items():

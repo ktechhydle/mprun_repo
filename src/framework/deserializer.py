@@ -19,6 +19,11 @@ class SceneDeserializer:
                                                                       'amount of items, this can cause your computer '
                                                                       'to slow down.')
 
+        if metadata.get('system_type', 'unknown') != sys.platform:
+            QMessageBox.information(self.scene.parentWindow, 'Open File', 'This MPRUN file was saved on a different'
+                                                                          ' platform, replacing fonts and styles with '
+                                                                          'ones that match your platform.')
+
         for item_data in items_data:
             item = None
             if item_data['type'] == 'CanvasItem':
