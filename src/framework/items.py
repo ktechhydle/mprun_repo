@@ -71,7 +71,7 @@ class ResizeOrb(QGraphicsEllipseItem):
         self.handleSelected = self.handleAt(event.pos())
         if self.handleSelected:
             self.mousePressPos = event.pos()
-            self.mousePressRect = self.boundingRect()
+            self.mousePressRect = self.parentItem().boundingRect()
             self.ogTransform = [self.parentItem().scale(), self.parentItem().rotation()]
 
     def mouseMoveEvent(self, event):
@@ -161,7 +161,7 @@ class ResizeOrb(QGraphicsEllipseItem):
 
             if self.handleSelected == self.handleTopMiddle:
                 # Calculate rotation
-                center = self.mapToScene(self.parentItem().boundingRect().center())
+                center = self.mousePressRect.center()
                 current_angle = math.atan2(mousePos.y() - center.y(), mousePos.x() - center.x())
                 start_angle = math.atan2(self.mousePressPos.y() - center.y(), self.mousePressPos.x() - center.x())
                 angle_diff = math.degrees(current_angle - start_angle)
@@ -174,7 +174,7 @@ class ResizeOrb(QGraphicsEllipseItem):
                 self.parentItem().setRotation(new_rotation)
 
             elif self.handleSelected == self.handleMiddleRight:
-                rect = self.mapToScene(self.parentItem().boundingRect().center())
+                rect = self.mousePressRect.center()
 
                 # Calculate scale
                 start_distance = math.hypot(self.mousePressPos.x() - rect.x(),
