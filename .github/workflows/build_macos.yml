@@ -1,9 +1,9 @@
 name: macOS PyInstaller Build
 
 on:
-  release:
-    types:
-      - published
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -20,15 +20,15 @@ jobs:
 
       - name: Install project requirements for x86_64
         run: |
-          arch -x86_64 python -m pip install --upgrade pip
-          arch -x86_64 pip install pyinstaller
-          arch -x86_64 pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
           git clone https://github.com/ktechhydle/mp_software_stylesheets.git
           git clone https://github.com/ktechhydle/mprun_assets.git
 
       - name: Build macOS app for x86_64 using PyInstaller
         run: |
-          arch -x86_64 pyinstaller macos_build.spec
+          pyinstaller macos_build.spec
 
       - name: Install create-dmg using Homebrew
         run: |
