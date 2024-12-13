@@ -22,16 +22,16 @@ jobs:
         run: |
           brew install gcc gfortran
           brew install meson ninja cython
-          pip install --upgrade pip setuptools wheel
-          pip install --force-reinstall charset_normalizer
-          pip install pyinstaller
-          pip install -r requirements.txt
+          arch -x86_64 pip install --upgrade pip setuptools wheel
+          arch -x86_64 pip install --force-reinstall charset_normalizer
+          arch -x86_64 pip install pyinstaller
+          arch -x86_64 pip install -r requirements.txt
           git clone https://github.com/ktechhydle/mp_software_stylesheets.git
           git clone https://github.com/ktechhydle/mprun_assets.git
 
       - name: Build macOS app using PyInstaller
         run: |
-          pyinstaller macos_build.spec
+          arch -x86_64 pyinstaller macos_build.spec
 
       - name: Install create-dmg using Homebrew
         run: |
