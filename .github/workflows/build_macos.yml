@@ -20,13 +20,14 @@ jobs:
 
       - name: Install project requirements
         run: |
+          brew install gcc gfortran
+          brew install meson ninja cython
           pip install --upgrade pip setuptools wheel
+          pip install --force-reinstall charset_normalizer
           pip install pyinstaller
           pip install -r requirements.txt
           git clone https://github.com/ktechhydle/mp_software_stylesheets.git
           git clone https://github.com/ktechhydle/mprun_assets.git
-          brew install gcc gfortran
-          brew install meson ninja cython
 
       - name: Build macOS app using PyInstaller
         run: |
