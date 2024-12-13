@@ -18,15 +18,17 @@ jobs:
         with:
           python-version: 3.x
 
-      - name: Install project requirements for x86_64
+      - name: Install project requirements
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip setuptools wheel
           pip install pyinstaller
           pip install -r requirements.txt
           git clone https://github.com/ktechhydle/mp_software_stylesheets.git
           git clone https://github.com/ktechhydle/mprun_assets.git
+          brew install gcc gfortran
+          brew install meson ninja cython
 
-      - name: Build macOS app for x86_64 using PyInstaller
+      - name: Build macOS app using PyInstaller
         run: |
           pyinstaller macos_build.spec
 
