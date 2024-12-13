@@ -412,14 +412,6 @@ class MPRUN(mprun.gui.base_window):
         duplicate_action.setShortcut(QKeySequence('D'))
         duplicate_action.triggered.connect(self.canvas.duplicate)
 
-        flip_horizontal_action = QAction('Flip Horizontal', self)
-        flip_horizontal_action.setShortcut(QKeySequence(''))
-        flip_horizontal_action.triggered.connect(lambda: self.properties_tab.useFlipHorizontal())
-
-        flip_vertical_action = QAction('Flip Vertical', self)
-        flip_vertical_action.setShortcut(QKeySequence(''))
-        flip_vertical_action.triggered.connect(lambda: self.properties_tab.useFlipVertical())
-
         raise_layer_action = QAction('Raise Layer', self)
         raise_layer_action.setShortcut(QKeySequence('Up'))
         raise_layer_action.triggered.connect(self.use_raise_layer)
@@ -447,8 +439,6 @@ class MPRUN(mprun.gui.base_window):
         self.object_menu.addAction(bring_to_front_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(duplicate_action)
-        self.object_menu.addAction(flip_horizontal_action)
-        self.object_menu.addAction(flip_vertical_action)
         self.object_menu.addSeparator()
         self.object_menu.addAction(hide_action)
         self.object_menu.addAction(unhide_action)
@@ -694,7 +684,7 @@ class MPRUN(mprun.gui.base_window):
         self.actions['Change Fill Color'] = self.properties_tab.fill_color_btn
         self.actions['Change Font Color'] = self.characters_tab.font_color_btn
 
-        self.properties_tab.set_properties_tab_enabled(False)
+        self.properties_tab.setPropertiesTabEnabled(False)
 
     def create_toolbar1(self):
         self.action_group = QActionGroup(self)

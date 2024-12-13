@@ -34,10 +34,13 @@ class PropertiesPanel(mprun.gui.base_widget):
         appearence_label.setStyleSheet("QLabel { font-size: 12px; alignment: center; }")
         appearence_label.setAlignment(Qt.AlignLeft)
 
-        self.rotation_label = mprun.gui.icon_label('', 'ui/Tool Icons/rotate_icon.png', 20, 20)
-        self.rotation_label.setAlignment(Qt.AlignRight)
+        self.rotation_label = mprun.gui.icon_label('', 'mprun_assets/assets/tools/rotate_icon.png', 15, 15)
         self.rotation_label.setStyleSheet('font-size: 10px;')
         self.rotation_label.setContentsMargins(0, 0, 0, 0)
+
+        self.scale_label = mprun.gui.icon_label('', 'mprun_assets/assets/tools/scale_icon.png', 20, 20)
+        self.scale_label.setStyleSheet('font-size: 10px;')
+        self.scale_label.setContentsMargins(0, 0, 0, 0)
 
         self.x_pos_label = QLabel('X:')
         self.y_pos_label = QLabel('Y:')
@@ -45,68 +48,38 @@ class PropertiesPanel(mprun.gui.base_widget):
         self.height_transform_label = QLabel('H:')
         self.x_pos_spin = QSpinBox(self)
         self.x_pos_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.x_pos_spin.setFixedWidth(75)
         self.x_pos_spin.setMaximum(10000)
         self.x_pos_spin.setMinimum(-10000)
         self.x_pos_spin.setSuffix(' pt')
         self.x_pos_spin.setToolTip('Change the x position')
         self.y_pos_spin = QSpinBox(self)
         self.y_pos_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.y_pos_spin.setFixedWidth(75)
         self.y_pos_spin.setMaximum(10000)
         self.y_pos_spin.setMinimum(-10000)
         self.y_pos_spin.setSuffix(' pt')
         self.y_pos_spin.setToolTip('Change the y position')
-        self.width_scale_spin = QDoubleSpinBox(self)
-        self.width_scale_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.width_scale_spin.setFixedWidth(75)
-        self.width_scale_spin.setValue(0.0)
-        self.width_scale_spin.setDecimals(2)
-        self.width_scale_spin.setRange(-10000.00, 10000.00)
-        self.width_scale_spin.setSingleStep(1.0)
-        self.width_scale_spin.setSuffix('%')
-        self.width_scale_spin.setToolTip('Change the width')
-        self.height_scale_spin = QDoubleSpinBox(self)
-        self.height_scale_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.height_scale_spin.setFixedWidth(75)
-        self.height_scale_spin.setValue(0.0)
-        self.height_scale_spin.setDecimals(2)
-        self.height_scale_spin.setRange(-10000.00, 10000.00)
-        self.height_scale_spin.setSingleStep(1.0)
-        self.height_scale_spin.setSuffix('%')
-        self.height_scale_spin.setToolTip('Change the height')
         self.rotate_item_spin = QSpinBox(self)
         self.rotate_item_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
-        self.rotate_item_spin.setFixedWidth(65)
         self.rotate_item_spin.setRange(-360, 360)
         self.rotate_item_spin.setSuffix('°')
         self.rotate_item_spin.setToolTip('Change the rotation')
-        self.flip_horizontal_btn = QPushButton(QIcon('ui/Tool Icons/flip_horizontal_icon.png'), '')
-        self.flip_horizontal_btn.setToolTip('Flip horizontal')
-        self.flip_horizontal_btn.setStyleSheet('border: none;')
-        self.flip_horizontal_btn.clicked.connect(self.useFlipHorizontal)
-        self.flip_vertical_btn = QPushButton(QIcon('ui/Tool Icons/flip_vertical_icon.png'), '')
-        self.flip_vertical_btn.setToolTip('Flip vertical')
-        self.flip_vertical_btn.setStyleSheet('border: none;')
-        self.flip_vertical_btn.clicked.connect(self.useFlipVertical)
-        widget7 = mprun.gui.horizontal_layout()
-        widget7.layout().addWidget(self.x_pos_label)
-        widget7.layout().addWidget(self.x_pos_spin)
-        widget7.layout().addWidget(self.width_transform_label)
-        widget7.layout().addWidget(self.width_scale_spin)
-        widget7.layout().addStretch()
-        widget7.layout().addWidget(self.flip_horizontal_btn)
-        widget8 = mprun.gui.horizontal_layout()
-        widget8.layout().addWidget(self.y_pos_label)
-        widget8.layout().addWidget(self.y_pos_spin)
-        widget8.layout().addWidget(self.height_transform_label)
-        widget8.layout().addWidget(self.height_scale_spin)
-        widget8.layout().addStretch()
-        widget8.layout().addWidget(self.flip_vertical_btn)
-        widget9 = mprun.gui.horizontal_layout()
-        widget9.layout().addWidget(self.rotation_label)
-        widget9.layout().addWidget(self.rotate_item_spin)
-        widget9.layout().addStretch()
+        self.rotate_item_spin.setMinimumWidth(90)
+        self.scale_item_spin = QSpinBox(self)
+        self.scale_item_spin.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.scale_item_spin.setRange(-10000, 10000)
+        self.scale_item_spin.setSuffix('%')
+        self.scale_item_spin.setToolTip('Change the scale')
+        self.scale_item_spin.setMinimumWidth(90)
+        self.transform_grid_layout = QGridLayout()
+        self.transform_grid_layout.setVerticalSpacing(20)
+        self.transform_grid_layout.addWidget(self.x_pos_label, 0, 0)
+        self.transform_grid_layout.addWidget(self.x_pos_spin, 0, 1)
+        self.transform_grid_layout.addWidget(self.y_pos_label, 0, 2)
+        self.transform_grid_layout.addWidget(self.y_pos_spin, 0, 3)
+        self.transform_grid_layout.addWidget(self.rotation_label, 1, 0)
+        self.transform_grid_layout.addWidget(self.rotate_item_spin, 1, 1)
+        self.transform_grid_layout.addWidget(self.scale_label, 1, 2)
+        self.transform_grid_layout.addWidget(self.scale_item_spin, 1, 3)
 
         fill_label = QLabel('Fill')
         fill_label.setStyleSheet('color: white;')
@@ -174,16 +147,15 @@ class PropertiesPanel(mprun.gui.base_widget):
         self.join_style_combo.currentIndexChanged.connect(self.updateItemPen)
         self.x_pos_spin.valueChanged.connect(self.useSetItemPos)
         self.y_pos_spin.valueChanged.connect(self.useSetItemPos)
-        self.width_scale_spin.valueChanged.connect(self.useScaleX)
-        self.height_scale_spin.valueChanged.connect(self.useScaleY)
         self.rotate_item_spin.valueChanged.connect(self.useRotate)
+        self.scale_item_spin.valueChanged.connect(self.useScale)
 
         self.properties_tab_layout.addWidget(self.selection_label)
         self.properties_tab_layout.addWidget(self.transform_separator)
         self.properties_tab_layout.addWidget(self.transform_label)
-        self.properties_tab_layout.addWidget(widget7)
-        self.properties_tab_layout.addWidget(widget8)
-        self.properties_tab_layout.addWidget(widget9)
+        self.properties_tab_layout.addSpacing(20)
+        self.properties_tab_layout.addLayout(self.transform_grid_layout)
+        self.properties_tab_layout.addSpacing(20)
         self.properties_tab_layout.addWidget(mprun.gui.horizontal_splitter())
         self.properties_tab_layout.addWidget(appearence_label)
         self.properties_tab_layout.addWidget(widget5)
@@ -287,48 +259,6 @@ class PropertiesPanel(mprun.gui.base_widget):
     def getBrush(self) -> QBrush:
         return QBrush(QColor(self.brush_color.get()))
 
-    def useScaleX(self, value):
-        self.useScale(self.width_scale_spin.value(), self.height_scale_spin.value())
-
-    def useScaleY(self, value):
-        self.useScale(self.width_scale_spin.value(), self.height_scale_spin.value())
-
-    def useScale(self, x_value, y_value):
-        try:
-            items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
-
-            # Remove items where parent is LeaderLineItem and selected
-            items = [item for item in items
-                     if not (isinstance(item, CustomTextItem) and isinstance(item.parentItem(),
-                                                                             LeaderLineItem) and item.parentItem().isSelected())]
-
-            old_transforms = []
-            new_transforms = []
-
-            for correct_item in items:
-                # Get the center of the bounding box
-                bounding_rect = correct_item.boundingRect()
-                center_x = bounding_rect.center().x()
-                center_y = bounding_rect.center().y()
-
-                scale_x = x_value / 100
-                scale_y = y_value / 100
-
-                # Record the old transform and calculate the new one
-                old_transforms.append(correct_item.transform())
-                transform = QTransform()
-                transform.translate(center_x, center_y)
-                transform.scale(scale_x, scale_y)
-                transform.translate(-center_x, -center_y)
-                new_transforms.append(transform)
-
-            # Create and add the command
-            command = TransformCommand(items, old_transforms, new_transforms)
-            self.canvas.addCommand(command)
-
-        except Exception as e:
-            print(f'Error during scaling: {e}')
-
     def useRotate(self, value):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
         old_rotations = []
@@ -345,6 +275,22 @@ class PropertiesPanel(mprun.gui.base_widget):
         if items:
             command = RotateCommand(self, items, old_rotations, value)
             self.canvas.addCommand(command)
+
+    def useScale(self, value):
+        items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
+        old_scales = []
+
+        # Rotate each item around the center
+        for item in items:
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                if item.parentItem().isSelected():
+                    items.remove(item)
+
+            item.setTransformOriginPoint(item.boundingRect().center())
+            old_scales.append(item.rotation())
+
+        if items:
+            self.canvas.addCommand(ScaleMultipleCommand(items, old_scales, value / 100))
 
     def useSetItemPos(self):
         self.canvas.blockSignals(True)
@@ -382,12 +328,6 @@ class PropertiesPanel(mprun.gui.base_widget):
         finally:
             self.canvas.blockSignals(False)
 
-    def useFlipHorizontal(self):
-        self.width_scale_spin.setValue(-self.width_scale_spin.value())
-
-    def useFlipVertical(self):
-        self.height_scale_spin.setValue(-self.height_scale_spin.value())
-
     def useChangeOpacity(self, value):
         # Calculate opacity value (normalize slider's value to the range 0.0-1.0)
         opacity = value / self.opacity_spin.maximum()
@@ -416,24 +356,22 @@ class PropertiesPanel(mprun.gui.base_widget):
     def updateTransformUi(self):
         # Block signals for all spinboxes at once
         spinboxes = [self.x_pos_spin, self.y_pos_spin,
-                     self.width_scale_spin, self.height_scale_spin,
-                     self.rotate_item_spin, self.opacity_spin]
+                     self.rotate_item_spin, self.opacity_spin, self.scale_item_spin]
         for spinbox in spinboxes:
             spinbox.blockSignals(True)
 
         selected_items = self.canvas.selectedItems()
 
         if selected_items:
-            self.set_properties_tab_enabled(False)
+            self.setPropertiesTabEnabled(False)
             first_item = selected_items[0]
 
             # Update based on first item only
             self.x_pos_spin.setValue(int(first_item.sceneBoundingRect().x()))
             self.y_pos_spin.setValue(int(first_item.sceneBoundingRect().y()))
             self.rotate_item_spin.setValue(int(first_item.rotation()))
+            self.scale_item_spin.setValue(int(first_item.scale() * 100))
             self.opacity_spin.setValue(int(first_item.opacity() * 100))
-            self.width_scale_spin.setValue(first_item.transform().m11() * 100)
-            self.height_scale_spin.setValue(first_item.transform().m22() * 100)
 
             # Update label based on selection count
             if len(selected_items) > 1:
@@ -445,36 +383,31 @@ class PropertiesPanel(mprun.gui.base_widget):
                 self.selection_label.setText(first_item.toolTip())
 
         else:
-            self.set_properties_tab_enabled(True)
+            self.setPropertiesTabEnabled(True)
 
         # Unblock signals for all spinboxes at once
         for spinbox in spinboxes:
             spinbox.blockSignals(False)
 
-    def set_properties_tab_enabled(self, enabled: bool):
+    def setPropertiesTabEnabled(self, enabled: bool):
         self.transform_separator.setHidden(enabled)
         self.transform_label.setHidden(enabled)
         self.x_pos_label.setHidden(enabled)
         self.x_pos_spin.setHidden(enabled)
         self.y_pos_label.setHidden(enabled)
         self.y_pos_spin.setHidden(enabled)
-        self.width_transform_label.setHidden(enabled)
-        self.height_transform_label.setHidden(enabled)
-        self.width_scale_spin.setHidden(enabled)
-        self.height_scale_spin.setHidden(enabled)
-        self.flip_horizontal_btn.setHidden(enabled)
-        self.flip_vertical_btn.setHidden(enabled)
         self.rotation_label.setHidden(enabled)
         self.rotate_item_spin.setHidden(enabled)
+        self.scale_label.setHidden(enabled)
+        self.scale_item_spin.setHidden(enabled)
 
         if enabled is True:
             self.selection_label.setText('No Selection')
             self.x_pos_spin.setValue(0)
             self.y_pos_spin.setValue(0)
             self.rotate_item_spin.setValue(0)
+            self.scale_item_spin.setValue(100)
             self.opacity_spin.setValue(100)
-            self.width_scale_spin.setValue(0.0)
-            self.height_scale_spin.setValue(0.0)
 
     def default(self):
         self.stroke_color_btn.setButtonColor(self.pen_color.get())

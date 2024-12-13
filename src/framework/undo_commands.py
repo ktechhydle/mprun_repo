@@ -203,6 +203,22 @@ class RotateCommand(QUndoCommand):
             item.setRotation(old_rotation)
 
 
+class ScaleMultipleCommand(QUndoCommand):
+    def __init__(self, items, old_scales, new_scale):
+        super().__init__()
+        self.items = items
+        self.old_scales = old_scales
+        self.new_scale = new_scale
+
+    def redo(self):
+        for item in self.items:
+            item.setScale(self.new_scale)
+
+    def undo(self):
+        for item, old_rotation in zip(self.items, self.old_scales):
+            item.setScale(old_rotation)
+
+
 class RotateDirectionCommand(QUndoCommand):
     def __init__(self, parent, items, old_rotations, new_rotations):
         super().__init__()

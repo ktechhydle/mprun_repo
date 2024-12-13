@@ -247,30 +247,6 @@ class CustomPathItem(QGraphicsPathItem):
 
         self.smooth = False
 
-    def itemChange(self, change, value):
-        if hasattr(self, 'resize_orb'):
-            self.resize_orb.updateOrb()
-
-        return super().itemChange(change, value)
-
-    def paint(self, painter, option, widget=None):
-        super().paint(painter, option, widget)
-
-        self.createOrb()
-
-        if self.isSelected():
-            self.resize_orb.setVisible(True)
-
-        else:
-            self.resize_orb.setVisible(False)
-
-    def createOrb(self):
-        if not hasattr(self, 'resize_orb'):
-            self.resize_orb = ResizeOrb(self)
-            self.scene().addItem(self.resize_orb)
-
-            self.resize_orb.setVisible(False)
-
     def duplicate(self):
         item = self.copy()
         item.moveBy(10, 10)
@@ -438,30 +414,6 @@ class CustomPixmapItem(QGraphicsPixmapItem):
 
         self.filename = None
 
-    def itemChange(self, change, value):
-        if hasattr(self, 'resize_orb'):
-            self.resize_orb.updateOrb()
-
-        return super().itemChange(change, value)
-
-    def paint(self, painter, option, widget=None):
-        super().paint(painter, option, widget)
-
-        self.createOrb()
-
-        if self.isSelected():
-            self.resize_orb.setVisible(True)
-
-        else:
-            self.resize_orb.setVisible(False)
-
-    def createOrb(self):
-        if not hasattr(self, 'resize_orb'):
-            self.resize_orb = ResizeOrb(self)
-            self.scene().addItem(self.resize_orb)
-
-            self.resize_orb.setVisible(False)
-
     def loadFromData(self, data):
         pixmap = QPixmap()
         pixmap.loadFromData(data)
@@ -510,30 +462,6 @@ class CustomSvgItem(QGraphicsSvgItem):
         self.svg_data = None
         for f in file:
             self.render = QSvgRenderer(f)
-
-    def itemChange(self, change, value):
-        if hasattr(self, 'resize_orb'):
-            self.resize_orb.updateOrb()
-
-        return super().itemChange(change, value)
-
-    def paint(self, painter, option, widget=None):
-        super().paint(painter, option, widget)
-
-        self.createOrb()
-
-        if self.isSelected():
-            self.resize_orb.setVisible(True)
-
-        else:
-            self.resize_orb.setVisible(False)
-
-    def createOrb(self):
-        if not hasattr(self, 'resize_orb'):
-            self.resize_orb = ResizeOrb(self)
-            self.scene().addItem(self.resize_orb)
-
-            self.resize_orb.setVisible(False)
 
     def loadFromData(self, svg_data) -> None:
         try:
@@ -722,32 +650,10 @@ class CustomTextItem(QGraphicsTextItem):
         return super().eventFilter(obj, event)
 
     def itemChange(self, change, value):
-        if hasattr(self, 'resize_orb'):
-            self.resize_orb.updateOrb()
-
         if isinstance(self.parentItem(), LeaderLineItem):
             self.parentItem().updatePathEndPoint()
 
         return super().itemChange(change, value)
-
-    def paint(self, painter, option, widget):
-        super().paint(painter, option, widget)
-
-        if not isinstance(self.parentItem(), LeaderLineItem):
-            self.createOrb()
-
-            if self.isSelected():
-                self.resize_orb.setVisible(True)
-
-            else:
-                self.resize_orb.setVisible(False)
-
-    def createOrb(self):
-        if not hasattr(self, 'resize_orb'):
-            self.resize_orb = ResizeOrb(self)
-            self.scene().addItem(self.resize_orb)
-
-            self.resize_orb.setVisible(False)
 
     def setTextAlignment(self, alignment: Qt.AlignmentFlag):
         option = self.document().defaultTextOption()
