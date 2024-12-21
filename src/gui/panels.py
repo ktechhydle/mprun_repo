@@ -287,7 +287,7 @@ class PropertiesPanel(mprun.gui.base_widget):
                     items.remove(item)
 
             item.setTransformOriginPoint(item.boundingRect().center())
-            old_scales.append(item.rotation())
+            old_scales.append(item.scale())
 
         if items:
             self.canvas.addCommand(ScaleMultipleCommand(items, old_scales, value / 100))
