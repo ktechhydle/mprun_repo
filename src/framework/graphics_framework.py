@@ -760,7 +760,11 @@ class CustomGraphicsScene(QGraphicsScene):
         new_items = []
 
         for item in self.selectedItems():
-            new_items.append(item.duplicate())
+            if isinstance(item, CustomTextItem) and isinstance(item.parentItem(), LeaderLineItem):
+                continue
+
+            else:
+                new_items.append(item.duplicate())
 
         if new_items:
             self.addCommand(MultiAddItemCommand(self, new_items))
