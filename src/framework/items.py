@@ -902,6 +902,8 @@ class LeaderLineItem(QGraphicsPathItem):
         item.text_element.setPos(self.text_element.pos())
         item.text_element.setZValue(self.text_element.zValue())
         item.text_element.setOpacity(self.text_element.opacity())
+        item.text_element.setTextAlignment(self.text_element.textAlignment())
+        item.text_element.setTextWidth(self.text_element.textWidth())
 
         item.updatePathEndPoint()
 
