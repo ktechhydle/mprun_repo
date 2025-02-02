@@ -61,7 +61,7 @@ jobs:
           codesign --deep --force --sign - "MPRUN_${{ env.VERSION }}+macOS_setup.dmg"
 
       - name: Upload DMG as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: MPRUN_${{ env.VERSION }}+macOS_setup.dmg
           path: "MPRUN_${{ env.VERSION }}+macOS_setup.dmg"
