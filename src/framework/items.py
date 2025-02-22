@@ -655,6 +655,14 @@ class CustomTextItem(QGraphicsTextItem):
 
         return super().itemChange(change, value)
 
+    def update(self, rect=QRectF()):
+        super().update(rect)
+
+        document = self.document()
+        document.adjustSize()
+        new_width = document.idealWidth()
+        self.setTextWidth(new_width)
+
     def setTextAlignment(self, alignment: Qt.AlignmentFlag):
         option = self.document().defaultTextOption()
         option.setAlignment(alignment)

@@ -539,12 +539,6 @@ class CharactersPanel(mprun.gui.base_widget):
         self.font_letter_spacing_spin.setSuffix(' pt')
         self.font_letter_spacing_spin.setToolTip('Change the font letter spacing')
 
-        self.text_width_spin = QSpinBox(self)
-        self.text_width_spin.setRange(1, 10000)
-        self.text_width_spin.setFixedWidth(90)
-        self.text_width_spin.setSuffix(' pt')
-        self.text_width_spin.setToolTip('Change the text width')
-        self.text_width_spin.setValue(135)
         self.font_color_btn = mprun.gui.color_picking_button(self)
         self.font_color_btn.setFixedWidth(81)
         self.font_color_btn.setToolTip('Change the font color')
@@ -617,14 +611,12 @@ class CharactersPanel(mprun.gui.base_widget):
 
         font_color_hlayout = mprun.gui.horizontal_layout()
         font_color_hlayout.layout().setContentsMargins(0, 0, 0, 0)
-        font_color_hlayout.layout().addWidget(self.text_width_spin)
         font_color_hlayout.layout().addStretch()
         font_color_hlayout.layout().addWidget(QLabel('Color:'))
         font_color_hlayout.layout().addWidget(self.font_color_btn)
 
         self.font_size_spin.valueChanged.connect(self.updateItemFont)
         self.font_letter_spacing_spin.valueChanged.connect(self.updateItemFont)
-        self.text_width_spin.valueChanged.connect(self.updateItemFont)
         self.font_choice_combo.currentFontChanged.connect(self.updateItemFont)
         self.font_choice_combo.currentTextChanged.connect(self.updateItemFont)
 
@@ -657,7 +649,6 @@ class CharactersPanel(mprun.gui.base_widget):
         font = self.getFont()
         new_color = QColor(self.font_color.get())
         alignment_option = self.getFontAlignment()
-        text_width = self.getTextWidth()
 
         selected_items = self.canvas.selectedItems()
         if selected_items:
@@ -665,18 +656,16 @@ class CharactersPanel(mprun.gui.base_widget):
             old_fonts = []
             old_colors = []
             old_alignment_options = []
-            old_text_widths = []
             for item in selected_items:
                 if isinstance(item, CustomTextItem):
                     items.append(item)
                     old_fonts.append(item.font())
                     old_colors.append(item.defaultTextColor())
                     old_alignment_options.append(item.textAlignment())
-                    old_text_widths.append(item.textWidth())
 
             if items:
                 command = FontChangeCommand(items, old_fonts, font, old_colors, new_color,
-                                            old_alignment_options, alignment_option, old_text_widths, text_width)
+                                            old_alignment_options, alignment_option)
                 self.canvas.addCommand(command)
                 for item in items:
                     if isinstance(item.parentItem(), LeaderLineItem):
@@ -699,9 +688,6 @@ class CharactersPanel(mprun.gui.base_widget):
         for button in self.alignment_group.buttons():
             if button.isChecked():
                 return button.stored_align
-
-    def getTextWidth(self):
-        return self.text_width_spin.value()
 
     def default(self):
         self.font_color_btn.setButtonColor(self.font_color.get())

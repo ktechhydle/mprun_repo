@@ -465,7 +465,6 @@ y: {int(self.mapToScene(point).y())}''')
                 self.text.setFont(self.parent().characters_tab.getFont())
                 self.text.setDefaultTextColor(self.parent().characters_tab.getFontColor())
                 self.text.setTextAlignment(self.parent().characters_tab.getFontAlignment())
-                self.text.setTextWidth(self.parent().characters_tab.getTextWidth())
 
                 add_command = AddItemCommand(self.canvas, self.text)
                 self.canvas.addCommand(add_command)

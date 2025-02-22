@@ -1082,7 +1082,6 @@ class MPRUN(mprun.gui.base_window):
         self.paper_text.setDefaultTextColor(self.characters_tab.getFontColor())
         self.paper_text.setFont(self.characters_tab.getFont())
         self.paper_text.setTextAlignment(self.characters_tab.getFontAlignment())
-        self.paper_text.setTextWidth(self.characters_tab.getTextWidth())
         self.paper_text.setFlag(ITEM_SELECTABLE)
         self.paper_text.setFlag(ITEM_MOVABLE)
         self.paper_text.setZValue(0)
@@ -1128,7 +1127,7 @@ class MPRUN(mprun.gui.base_window):
             self.characters_tab.font_choice_combo, self.characters_tab.font_color_btn,
             self.characters_tab.font_size_spin, self.characters_tab.font_letter_spacing_spin,
             self.characters_tab.bold_btn, self.characters_tab.italic_btn,
-            self.characters_tab.underline_btn, self.characters_tab.text_width_spin, self.characters_tab.alignleft_btn,
+            self.characters_tab.underline_btn, self.characters_tab.alignleft_btn,
             self.characters_tab.alignmiddle_btn, self.characters_tab.alignright_btn
         ]
 

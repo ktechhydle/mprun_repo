@@ -319,8 +319,7 @@ class EditPathCommand(QUndoCommand):
 
 
 class FontChangeCommand(QUndoCommand):
-    def __init__(self, items, old_fonts, new_font, old_colors, new_color, old_aligns, new_align, old_text_widths,
-                 new_text_width):
+    def __init__(self, items, old_fonts, new_font, old_colors, new_color, old_aligns, new_align):
         super().__init__()
 
         self.items = items
@@ -330,25 +329,20 @@ class FontChangeCommand(QUndoCommand):
         self.new_color = new_color
         self.old_aligns = old_aligns
         self.new_align = new_align
-        self.old_text_widths = old_text_widths
-        self.new_text_width = new_text_width
 
     def redo(self):
         for item in self.items:
             item.setFont(self.new_font)
             item.setDefaultTextColor(self.new_color)
-            item.setTextWidth(self.new_text_width)
             item.setTextAlignment(self.new_align)
 
             item.update()
 
     def undo(self):
-        for item, old_font, old_color, old_align, old_width in zip(self.items, self.old_fonts, self.old_colors,
-                                                                   self.old_aligns,
-                                                                   self.old_text_widths):
+        for item, old_font, old_color, old_align in zip(self.items, self.old_fonts, self.old_colors,
+                                                                   self.old_aligns):
             item.setFont(old_font)
             item.setDefaultTextColor(old_color)
-            item.setTextWidth(old_width)
             item.setTextAlignment(old_align)
 
             item.update()
