@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 119.66 51.87">
+<svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32.24 13.98">
   <defs>
     <style>
       .cls-1 {
         stroke: #4f504f;
         stroke-linecap: square;
         stroke-miterlimit: 10;
-        stroke-width: 3.6px;
+        stroke-width: .97px;
       }
 
       .cls-1, .cls-2 {
@@ -17,14 +17,14 @@
         stroke: #000;
         stroke-linecap: round;
         stroke-linejoin: round;
-        stroke-width: 2px;
+        stroke-width: .54px;
       }
     </style>
   </defs>
-  <g id="Layer_1-2" data-name="Layer 1">
+  <g id="Layer_1-2" data-name="Layer_1">
     <g>
-      <line class="cls-1" x1="1.8" y1="25.94" x2="83.29" y2="25.94"/>
-      <polyline class="cls-2" points="118.66 50.87 87.73 50.87 87.73 1 118.66 1"/>
+      <line class="cls-1" x1=".48" y1="6.99" x2="22.44" y2="6.99"/>
+      <polyline class="cls-2" points="31.97 13.71 23.64 13.71 23.64 .27 31.97 .27"/>
     </g>
   </g>
 </svg>
