@@ -11,7 +11,7 @@ from src.framework.three_dimensional_viewer.three_dimensional_viewer import Scen
 from src.framework.course_element_builder.course_element_builder import CourseElementBuilder
 from src.gui.app_screens import AboutWin, VersionWin, DisclaimerWin, SettingsWin
 from src.gui.icloud_integrator import iCloudIntegratorWin
-from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ImageTracingPanel, ScenePanel, \
+from src.gui.panels import PropertiesPanel, CharactersPanel, LibrariesPanel, ScenePanel, \
     CanvasEditorPanel
 from src.scripts.app_internal import *
 from src.scripts.get_version import get_latest_version
@@ -317,9 +317,6 @@ class MPRUN(mprun.gui.base_window):
         insert_image_action.setShortcut(QKeySequence('I'))
         insert_image_action.triggered.connect(self.insert_image)
 
-        image_trace_action = QAction('Trace Image', self)
-        image_trace_action.triggered.connect(lambda: self.image_trace_tab.useVectorize())
-
         smooth_action = QAction('Smooth Path', self)
         smooth_action.setShortcut(QKeySequence('Shift+S'))
         smooth_action.triggered.connect(self.use_smooth_path)
@@ -357,7 +354,6 @@ class MPRUN(mprun.gui.base_window):
         characters_menu.addAction(text_action)
 
         image_menu.addAction(insert_image_action)
-        image_menu.addAction(image_trace_action)
 
         scene_menu.addAction(select_action)
         scene_menu.addAction(pan_action)
@@ -657,12 +653,6 @@ class MPRUN(mprun.gui.base_window):
         self.characters_tab.setFixedHeight(215)
         self.characters_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
 
-        # Vectorize Tab
-        self.image_trace_tab = ImageTracingPanel(self.canvas, self)
-        self.image_trace_tab.setWindowFlag(WINDOW_TYPE_ON_TOP)
-        self.image_trace_tab.setFixedHeight(375)
-        self.image_trace_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
-
         # Canvas Tab
         self.canvas_tab = CanvasEditorPanel(self.canvas)
         self.canvas_tab.setFixedWidth(DEFAULT_PANEL_WIDTH)
@@ -674,7 +664,6 @@ class MPRUN(mprun.gui.base_window):
         # Add tabs
         self.toolbox.addItem(self.properties_tab, 'Properties')
         self.toolbox.addItem(self.characters_tab, 'Characters')
-        self.toolbox.addItem(self.image_trace_tab, 'Image Trace')
         self.toolbox.addItem(self.canvas_tab, 'Canvas')
         self.toolbox.addItem(self.scene_tab, 'Scene')
         self.toolbox.addSpacer()
