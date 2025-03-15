@@ -784,6 +784,7 @@ class LeaderLineItem(QGraphicsPathItem):
     def shape(self):
         # Call the superclass's shape method to get the original path
         path = super().shape()
+        path.addPolygon(self.arrow_head.boundingRect())
 
         # Create a stroker to modify the path
         stroker = QPainterPathStroker()
