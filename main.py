@@ -223,17 +223,12 @@ class MPRUN(mprun.gui.base_window):
         export_action.setShortcut(QKeySequence('Ctrl+E'))
         export_action.triggered.connect(self.canvas.exportManager.normalExport)
 
-        export_multiple_action = QAction('Export All', self)
-        export_multiple_action.setShortcut(QKeySequence('Ctrl+Shift+E'))
-        export_multiple_action.triggered.connect(self.canvas.exportManager.multipleExport)
-
         export_to_icloud_action = QAction(QIcon('mprun_assets/assets/ui/menu/url.svg'), 'Export To &iCloud...', self)
         export_to_icloud_action.triggered.connect(self.send_to_icloud)
 
         export_menu = mprun.gui.menu('Export', self)
         export_menu.setIcon(QIcon('mprun_assets/assets/ui/menu/output.svg'))
         export_menu.addAction(export_action)
-        export_menu.addAction(export_multiple_action)
         export_menu.addAction(export_to_icloud_action)
 
         repair_file_action = QAction(QIcon(self.style().standardIcon(self.style().SP_FileDialogToParent)),

@@ -4,7 +4,7 @@ from PyQt5.QtPrintSupport import QPrinter
 from PyQt5.QtSvg import QSvgGenerator
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QGraphicsScene
 from src.framework.items import CanvasItem
-from src.gui.app_screens import CanvasItemSelector, AllCanvasExporter
+from src.gui.app_screens import CanvasItemSelector
 from src.scripts.app_internal import supported_file_exporting, filter_extensions
 
 
@@ -49,10 +49,6 @@ class ExportManager:
                                     QMessageBox.Ok)
 
         selector.export_btn.clicked.connect(export)
-
-    def multipleExport(self):
-        selector = AllCanvasExporter(self.canvas, self.canvas.parentWindow)
-        selector.show()
 
     def exportAsBitmap(self, filename, selected_item):
         # Create a QImage with the size of the selected item (QGraphicsRectItem)
