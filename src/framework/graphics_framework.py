@@ -24,7 +24,15 @@ class CustomViewport(QOpenGLWidget):
 
 
 class CustomGraphicsView(QGraphicsView):
-    def __init__(self, canvas, actions: list, parent=None):
+    SelectTool = 0
+    PanTool = 2
+    PathTool = 3
+    LabelTool = 4
+    TextTool = 5
+    SculptTool = 6
+    CanvasTool = 7
+
+    def __init__(self, canvas, parent=None):
         super().__init__(parent)
         self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
         self.setOptimizationFlag(QGraphicsView.DontSavePainterState, True)
@@ -40,16 +48,7 @@ class CustomGraphicsView(QGraphicsView):
 
         self.w = None
         self.current_drag_item = None
-
-        # Set widgets
-        self.select_btn = actions[0]
-        self.pan_btn = actions[1]
-        self.path_btn = actions[2]
-        self.pen_btn = actions[3]
-        self.sculpt_btn = actions[4]
-        self.line_and_label_btn = actions[5]
-        self.text_btn = actions[6]
-        self.add_canvas_btn = actions[7]
+        self.current_tool = 0
 
         # Items
         self.canvas = canvas
@@ -60,7 +59,6 @@ class CustomGraphicsView(QGraphicsView):
 
         # Tools
         self.pathDrawingTool = PathDrawerTool(self.canvas, self)
-        self.penDrawingTool = PenDrawerTool(self.canvas, self)
         self.labelingTool = LineAndLabelTool(self.canvas, self)
         self.sculptingTool = PathSculptingTool(self.canvas, self)
         self.canvasTool = AddCanvasTool(self.canvas, self)
@@ -101,33 +99,29 @@ y: {int(self.mapToScene(point).y())}''')
 
     def mousePressEvent(self, event):
         # Check if the path tool is turned on
-        if self.path_btn.isChecked():
+        if self.currentTool() == CustomGraphicsView.PathTool:
             self.pathDrawingTool.mousePress(event)
 
-        elif self.pen_btn.isChecked():
-            self.penDrawingTool.mousePress(event)
-            self.disable_item_flags()
-
-        elif self.line_and_label_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.LabelTool:
             self.labelingTool.mousePress(event)
             self.disable_item_flags()
 
-        elif self.text_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.TextTool:
             self.disable_item_flags()
             self.on_add_text(event)
             super().mousePressEvent(event)
 
-        elif self.add_canvas_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.CanvasTool:
             self.canvasTool.mousePress(event)
             self.disable_item_flags()
             super().mousePressEvent(event)
 
-        elif self.pan_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.PanTool:
             self.on_pan_start(event)
             self.disable_item_flags()
             super().mousePressEvent(event)
 
-        elif self.sculpt_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.SculptTool:
             self.sculptingTool.mousePress(event)
             self.disable_item_flags()
 
@@ -143,40 +137,34 @@ y: {int(self.mapToScene(point).y())}''')
         if self.scene().selectedItems():
             self.update()
 
-        if self.path_btn.isChecked():
+        if self.currentTool() == CustomGraphicsView.PathTool:
             self.pathDrawingTool.specialToolTip(event)
             self.pathDrawingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
-        elif self.pen_btn.isChecked():
-            self.penDrawingTool.specialToolTip(event)
-            self.penDrawingTool.mouseMove(event)
-            self.disable_item_flags()
-            super().mouseMoveEvent(event)
-
-        elif self.text_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.TextTool:
             self.show_tooltip(event)
             super().mouseMoveEvent(event)
 
-        elif self.line_and_label_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.LabelTool:
             self.show_tooltip(event)
             self.labelingTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
-        elif self.add_canvas_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.CanvasTool:
             self.canvasTool.specialToolTip(event)
             self.canvasTool.mouseMove(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
-        elif self.pan_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.PanTool:
             self.show_tooltip(event)
             self.disable_item_flags()
             super().mouseMoveEvent(event)
 
-        elif self.sculpt_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.SculptTool:
             self.show_tooltip(event)
             self.sculptingTool.mouseMove(event)
             self.disable_item_flags()
@@ -187,28 +175,25 @@ y: {int(self.mapToScene(point).y())}''')
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
-        if self.path_btn.isChecked():
+        if self.currentTool() == CustomGraphicsView.PathTool:
             self.pathDrawingTool.mouseRelease(event)
 
-        elif self.pen_btn.isChecked():
-            self.penDrawingTool.mouseRelease(event)
-
-        elif self.text_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.TextTool:
             super().mouseReleaseEvent(event)
 
-        elif self.line_and_label_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.LabelTool:
             self.labelingTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
-        elif self.add_canvas_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.CanvasTool:
             self.canvasTool.mouseRelease(event)
             super().mouseReleaseEvent(event)
 
-        elif self.pan_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.PanTool:
             self.on_pan_end(event)
             super().mouseReleaseEvent(event)
 
-        elif self.sculpt_btn.isChecked():
+        elif self.currentTool() == CustomGraphicsView.SculptTool:
             self.sculptingTool.mouseRelease(event)
             self.disable_item_flags()
 
@@ -217,11 +202,11 @@ y: {int(self.mapToScene(point).y())}''')
 
         if event.button() == MIDDLE_BUTTON:
             self.on_pan_end(event)
-            if self.select_btn.isChecked():
+            if self.currentTool() == CustomGraphicsView.SelectTool:
                 self.parent().use_select()
 
     def mouseDoubleClickEvent(self, event):
-        if self.sculpt_btn.isChecked():
+        if self.currentTool() == CustomGraphicsView.SculptTool:
             self.sculptingTool.mouseDoublePress(event)
 
         else:
@@ -288,7 +273,7 @@ y: {int(self.mapToScene(point).y())}''')
         menu.exec(event.globalPos())
 
     def wheelEvent(self, event):
-        if self.sculpt_btn.isChecked() and not self.isPanning:
+        if self.currentTool() == CustomGraphicsView.SculptTool and not self.isPanning:
             if self.sculptingTool.sculpting_item:
                 if event.angleDelta().y() > 0:
                     self.sculptingTool.setSculptRadius(
@@ -441,6 +426,12 @@ y: {int(self.mapToScene(point).y())}''')
         except:
             pass
 
+    def currentTool(self):
+        return self.current_tool
+
+    def setCurrentTool(self, tool: int):
+        self.current_tool = tool
+
     def on_add_text(self, event):
         if event.button() == LEFT_BUTTON:
             self.setDragMode(QGraphicsView.DragMode.NoDrag)
@@ -474,12 +465,12 @@ y: {int(self.mapToScene(point).y())}''')
                 self.text.selectTextAndSetCursor()
 
     def on_add_canvas_trigger(self):
-        if self.add_canvas_btn.isChecked():
+        if self.currentTool() == CustomGraphicsView.CanvasTool:
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     item.setCanvasActive(True)
 
-        elif not self.add_canvas_btn.isChecked():
+        elif not self.currentTool() == CustomGraphicsView.CanvasTool:
             for item in self.canvas.items():
                 if isinstance(item, CanvasItem):
                     item.setCanvasActive(False)

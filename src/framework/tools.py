@@ -118,57 +118,6 @@ class PathDrawerTool(Tool):
             self.path_item = None
 
 
-class PenDrawerTool(DrawingTool):
-    def __init__(self, scene, view):
-        super().__init__(scene, view)
-
-    def specialToolTip(self, event):
-        self.showPathLengthToolTip(event)
-
-    def mousePress(self, event):
-        if event.button() == LEFT_BUTTON:
-            self.createNewPath(event)
-            self.view.setDragMode(QGraphicsView.DragMode.NoDrag)
-
-    def mouseMove(self, event):
-        if event.buttons() == LEFT_BUTTON and self.path:
-            self.path.lineTo(self.view.mapToScene(event.pos()))
-            self.removeTemporaryPath()
-
-            self.temp_path_item = CustomPathItem(self.path)
-            self.addPathToScene(self.temp_path_item)
-            try:
-                if event.modifiers() & SHIFT_MODIFIER:
-                    self.temp_path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
-                    self.path = self.temp_path_item.path()
-                else:
-                    self.temp_path_item.setPath(self.temp_path_item.smooth_path(self.temp_path_item.path(), 0.75))
-            except Exception:
-                pass
-
-            self.scene.update()
-
-    def mouseRelease(self, event):
-        if event.button() == LEFT_BUTTON and self.path:
-            self.path.lineTo(self.view.mapToScene(event.pos()))
-            self.removeTemporaryPath()
-            path_item = CustomPathItem(self.path)
-            try:
-                if event.modifiers() & SHIFT_MODIFIER:
-                    path_item.simplify(self.last_point, self.view.mapToScene(event.pos()))
-                else:
-                    path_item.setPath(path_item.smooth_path(path_item.path(), 0.1))
-            except Exception:
-                pass
-
-            self.addPathToScene(path_item)
-            if not path_item.path().isEmpty():
-                add_command = AddItemCommand(self.scene, path_item)
-                self.scene.addCommand(add_command)
-
-            self.path = None
-
-
 class LineAndLabelTool(Tool):
     def __init__(self, scene, view):
         super().__init__(scene, view)

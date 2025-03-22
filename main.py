@@ -289,11 +289,6 @@ class MPRUN(mprun.gui.base_window):
         path_action.triggered.connect(self.use_path)
         path_action.triggered.connect(self.update)
 
-        pen_action = QAction('Pen Draw', self)
-        pen_action.setShortcut(QKeySequence('Ctrl+L'))
-        pen_action.triggered.connect(self.use_pen_tool)
-        pen_action.triggered.connect(self.update)
-
         linelabel_action = QAction('Line and Label', self)
         linelabel_action.setShortcut(QKeySequence('T'))
         linelabel_action.triggered.connect(self.use_label)
@@ -337,7 +332,6 @@ class MPRUN(mprun.gui.base_window):
         add_shape_menu.addAction(add_shape_tri)
 
         drawing_menu.addAction(path_action)
-        drawing_menu.addAction(pen_action)
         drawing_menu.addAction(linelabel_action)
         drawing_menu.addAction(ceb_action)
         drawing_menu.addMenu(add_shape_menu)
@@ -711,17 +705,6 @@ class MPRUN(mprun.gui.base_window):
         self.path_btn.triggered.connect(self.update)
         self.path_btn.triggered.connect(self.use_path)
 
-        self.pen_btn = QAction(QIcon('mprun_assets/assets/tools/pen_draw_icon.png'), 'Pen Draw Tool (Ctrl+L)', self)
-        self.pen_btn.setCheckable(True)
-        self.pen_btn.setToolTip(
-            '<b>Pen (Ctrl+L)</b><br>'
-            'Draw smooth path items on the scene by clicking and drawing.<br>'
-            '<hr>'
-            '<i>Press F1 for more help.</i>'
-        )
-        self.pen_btn.triggered.connect(self.update)
-        self.pen_btn.triggered.connect(self.use_pen_tool)
-
         self.sculpt_btn = QAction(QIcon('mprun_assets/assets/tools/sculpt_icon.png'), 'Sculpt Tool (S)', self)
         self.sculpt_btn.setCheckable(True)
         self.sculpt_btn.setToolTip(
@@ -736,7 +719,6 @@ class MPRUN(mprun.gui.base_window):
         self.drawing_toolbutton = mprun.gui.toolbutton()
         self.drawing_toolbutton.setDefaultAction(self.path_btn)
         self.drawing_toolbutton.addAction(self.path_btn)
-        self.drawing_toolbutton.addAction(self.pen_btn)
         self.drawing_toolbutton.addAction(self.sculpt_btn)
 
         # Label draw button
@@ -823,7 +805,6 @@ class MPRUN(mprun.gui.base_window):
         self.action_group.addAction(self.select_btn)
         self.action_group.addAction(self.pan_btn)
         self.action_group.addAction(self.path_btn)
-        self.action_group.addAction(self.pen_btn)
         self.action_group.addAction(self.sculpt_btn)
         self.action_group.addAction(self.label_btn)
         self.action_group.addAction(self.add_text_btn)
@@ -1038,14 +1019,7 @@ class MPRUN(mprun.gui.base_window):
 
     def create_view(self):
         # QGraphicsView Logic
-        self.canvas_view = CustomGraphicsView(self.canvas, [self.select_btn,
-                                                            self.pan_btn,
-                                                            self.path_btn,
-                                                            self.pen_btn,
-                                                            self.sculpt_btn,
-                                                            self.label_btn,
-                                                            self.add_text_btn,
-                                                            self.add_canvas_btn], self)
+        self.canvas_view = CustomGraphicsView(self.canvas, self)
         self.canvas_view.setScene(self.canvas)
         self.action_group.triggered.connect(self.canvas_view.on_add_canvas_trigger)
 
@@ -1218,6 +1192,7 @@ class MPRUN(mprun.gui.base_window):
         self.select_btn.setChecked(True)
         self.canvas_view.on_add_canvas_trigger()
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
+        self.canvas_view.setCurrentTool(CustomGraphicsView.SelectTool)
 
     def use_select_all(self):
         self.select_btn.trigger()
@@ -1235,21 +1210,20 @@ class MPRUN(mprun.gui.base_window):
 
     def use_pan(self):
         self.pan_btn.setChecked(True)
+        self.canvas_view.setCurrentTool(CustomGraphicsView.PanTool)
 
     def use_path(self):
+        self.use_escape()
         self.path_btn.setChecked(True)
         self.drawing_toolbutton.setDefaultAction(self.path_btn)
         self.canvas_view.disable_item_flags()
-
-    def use_pen_tool(self):
-        self.pen_btn.setChecked(True)
-        self.drawing_toolbutton.setDefaultAction(self.pen_btn)
-        self.canvas_view.disable_item_flags()
+        self.canvas_view.setCurrentTool(CustomGraphicsView.PathTool)
 
     def use_sculpt_path(self):
         self.sculpt_btn.setChecked(True)
         self.drawing_toolbutton.setDefaultAction(self.sculpt_btn)
         self.canvas_view.disable_item_flags()
+        self.canvas_view.setCurrentTool(CustomGraphicsView.SculptTool)
 
     def use_set_sculpt_radius(self, value):
         self.canvas_view.sculptingTool.setSculptRadius(value)
@@ -1257,9 +1231,11 @@ class MPRUN(mprun.gui.base_window):
     def use_label(self):
         self.label_btn.setChecked(True)
         self.canvas_view.disable_item_flags()
+        self.canvas_view.setCurrentTool(CustomGraphicsView.LabelTool)
 
     def use_text(self):
         self.add_text_btn.setChecked(True)
+        self.canvas_view.setCurrentTool(CustomGraphicsView.TextTool)
 
     def use_rotate_direction(self, dir: str):
         items = [item for item in self.canvas.selectedItems() if not isinstance(item, CanvasItem)]
@@ -1334,6 +1310,7 @@ class MPRUN(mprun.gui.base_window):
         self.add_canvas_btn.setChecked(True)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
         self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
+        self.canvas_view.setCurrentTool(CustomGraphicsView.CanvasTool)
 
         for item in self.canvas.items():
             if isinstance(item, CanvasItem):
