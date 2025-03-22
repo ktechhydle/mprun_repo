@@ -82,15 +82,9 @@ class CustomToolbar(QToolBar):
         hide_this_action.triggered.connect(lambda: self.hideAction(event))
         unhide_all_actions = QAction('Unhide All Buttons', self)
         unhide_all_actions.triggered.connect(self.unhideAll)
-        help_action = QAction(self.style().standardIcon(self.style().SP_MessageBoxQuestion), '&Help', self)
 
         menu.addAction(hide_this_action)
         menu.addAction(unhide_all_actions)
-
-        if isinstance(self.parent(), QMainWindow):
-            help_action.triggered.connect(self.parent().show_help)
-            menu.addSeparator()
-            menu.addAction(help_action)
 
         menu.exec(event.globalPos())
 
