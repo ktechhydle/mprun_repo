@@ -1306,7 +1306,7 @@ class MPRUN(mprun.gui.base_window):
             print(f'Error during resetting items: {e}')
 
     def use_add_canvas(self):
-        self.toolbox.setCurrentWidget(self.canvas_tab)
+        self.use_escape()
         self.add_canvas_btn.setChecked(True)
         self.canvas_view.setDragMode(QGraphicsView.RubberBandDrag)
         self.canvas.setBackgroundBrush(QBrush(QColor('#737373')))
