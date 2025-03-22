@@ -267,3 +267,5 @@ class CourseElementBuilderView(QGraphicsView):
         self.scene().clearSelection()
         self.lipTool.cancel()
         self.lineTool.cancel()
+        self.rectTool.cancel()
+        self.arcTool.cancel()

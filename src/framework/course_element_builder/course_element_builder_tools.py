@@ -284,9 +284,6 @@ class ArcTool(BaseTool):
             current_pos = self.view.mapToScene(event.pos())
             self.path_item.setArcPoint(current_pos)
 
-    def mouseRelease(self, event):
-        pass
-
     def cancel(self):
         """Cancels the current tool operation and removes the arc."""
         if self.path_item:
@@ -297,5 +294,6 @@ class ArcTool(BaseTool):
             self.end_pos = None
             self.arc_point = None
             self.click_count = 0
+
         QToolTip.hideText()
 

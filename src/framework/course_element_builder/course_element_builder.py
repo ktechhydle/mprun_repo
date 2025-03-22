@@ -748,6 +748,7 @@ class CourseElementBuilder(mprun.gui.base_widget):
     def useTool(self):
         self.view.lipTool.cancel()
         self.view.lineTool.cancel()
+        self.view.rectTool.cancel()
         self.view.arcTool.cancel()
 
     def useDelete(self):
