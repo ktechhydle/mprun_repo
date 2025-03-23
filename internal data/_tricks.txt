@@ -9,7 +9,9 @@ Left
 Right
 Switch Right
 Switch Left
+Un-Nat
 Alleyoop
+Air To Fakie
 Backflip
 Wildcat
 Frontflip
