@@ -3,7 +3,7 @@ import sys
 import time
 import mprun.gui
 from mprun.constants import *
-from mp_software_stylesheets.styles import blenderCSS
+from mp_software_stylesheets.styles import MPRUNCSS
 from src.framework.items import *
 from src.framework.graphics_framework import CustomGraphicsView, CustomGraphicsScene, CustomViewport
 from src.framework.data_repairer import FileDataRepairer
@@ -1945,7 +1945,7 @@ def main() -> None:
     splash.show()
 
     app.processEvents()
-    app.setStyleSheet(blenderCSS)
+    app.setStyleSheet(MPRUNCSS)
 
     window = MPRUN()
     splash.finish(window)
